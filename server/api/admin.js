@@ -69,13 +69,6 @@ router.get("/dashboard/stats", requireAuth, requireAdmin, async (req, res) => {
         ]
       },
 
-      userActivityDistribution: [
-        { name: "Gaming", value: 45, fill: "#3b82f6" },
-        { name: "Chat", value: 25, fill: "#10b981" },
-        { name: "Forums", value: 15, fill: "#f59e0b" },
-        { name: "Store", value: 10, fill: "#ef4444" },
-        { name: "Profile", value: 5, fill: "#8b5cf6" },
-      ],
 
       serverStatusHistory: [
         { day: "Mon", value: 99.9 },
