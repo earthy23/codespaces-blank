@@ -81,8 +81,9 @@ router.post(
           .json({ error: "Username or email already exists" });
       }
 
-      // Hash password
-      const hashedPassword = await bcrypt.hash(password, 12);
+      // Hash password with optimized salt rounds for development
+      const saltRounds = process.env.NODE_ENV === 'production' ? 12 : 8;
+      const hashedPassword = await bcrypt.hash(password, saltRounds);
 
       // Create user
       const userId = createUser({
