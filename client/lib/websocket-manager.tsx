@@ -312,12 +312,6 @@ export function WebSocketManagerProvider({
 
 export function useWebSocket() {
   const context = useContext(WebSocketManagerContext);
-  if (context === undefined) {
-    console.error("useWebSocket called outside of WebSocketManagerProvider");
-    throw new Error(
-      "useWebSocket must be used within a WebSocketManagerProvider",
-    );
-  }
   return context;
 }
 
