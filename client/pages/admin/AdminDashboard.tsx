@@ -781,7 +781,7 @@ export default function AdminDashboard() {
                 <ResponsiveContainer width="100%" height={200}>
                   <PieChart>
                     <Pie
-                      data={[
+                      data={dashboardData?.userActivityDistribution || [
                         { name: "Gaming", value: 45, fill: "#3b82f6" },
                         { name: "Chat", value: 25, fill: "#10b981" },
                         { name: "Forums", value: 15, fill: "#f59e0b" },
