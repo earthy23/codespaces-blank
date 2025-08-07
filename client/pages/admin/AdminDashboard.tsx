@@ -740,7 +740,7 @@ export default function AdminDashboard() {
                 </div>
 
                 {/* Real-time Status with enhanced info */}
-                <div className="flex justify-between items-center text-xs text-gray-500 mt-2">
+                <div className="flex justify-between items-center text-xs text-gray-600 mt-2">
                   <span>Last updated: {new Date(lastMetricsUpdate).toLocaleTimeString()}</span>
                   {realTimeData && (
                     <div className="flex space-x-2">
@@ -772,19 +772,20 @@ export default function AdminDashboard() {
                       }
                       return item;
                     })}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="#d1d5db" />
-                      <XAxis dataKey="time" stroke="#6b7280" />
-                      <YAxis stroke="#6b7280" />
+                      <CartesianGrid strokeDasharray="3 3" stroke="#000000" />
+                      <XAxis dataKey="time" stroke="#000000" />
+                      <YAxis stroke="#000000" />
                       <Tooltip
                         contentStyle={{
                           backgroundColor: "#ffffff",
-                          border: "1px solid #d1d5db",
-                          borderRadius: "8px"
+                          border: "1px solid #000000",
+                          borderRadius: "8px",
+                          color: "#000000"
                         }}
                       />
-                      <Line type="monotone" dataKey="cpu" stroke="#4b5563" strokeWidth={2} name="CPU %" />
-                      <Line type="monotone" dataKey="memory" stroke="#6b7280" strokeWidth={2} name="Memory %" />
-                      <Line type="monotone" dataKey="network" stroke="#9ca3af" strokeWidth={2} name="Network %" />
+                      <Line type="monotone" dataKey="cpu" stroke="#000000" strokeWidth={3} name="CPU %" />
+                      <Line type="monotone" dataKey="memory" stroke="#6b7280" strokeWidth={3} name="Memory %" />
+                      <Line type="monotone" dataKey="network" stroke="#d1d5db" strokeWidth={3} name="Network %" />
                     </LineChart>
                   </ResponsiveContainer>
                 </div>
@@ -818,18 +819,18 @@ export default function AdminDashboard() {
                 {liveActivity.slice(0, 4).map((activity) => (
                   <div
                     key={activity.id}
-                    className="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-50 border-l-2 border-gray-500 bg-gray-50"
+                    className="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-100 border-l-2 border-black bg-gray-50"
                   >
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-medium truncate text-gray-900">
                         {activity.username || "System"} -{" "}
                         {activity.action.replace(/_/g, " ")}
                       </p>
-                      <p className="text-xs text-gray-700">
+                      <p className="text-xs text-black">
                         {formatTime(activity.timestamp)} • LIVE
                       </p>
                     </div>
-                    <Badge className="text-xs bg-gray-700 text-white">
+                    <Badge className="text-xs bg-black text-white">
                       {activity.category}
                     </Badge>
                   </div>
@@ -850,7 +851,7 @@ export default function AdminDashboard() {
                         {formatTime(activity.timestamp)}
                       </p>
                     </div>
-                    <Badge className="text-xs bg-gray-600 text-white">
+                    <Badge className="text-xs bg-black text-white">
                       {activity.category}
                     </Badge>
                   </div>
@@ -867,7 +868,7 @@ export default function AdminDashboard() {
             {liveActivity.length > 0 && (
               <div className="flex items-center justify-center mt-4 pt-3 border-t border-gray-200">
                 <div className="flex items-center space-x-2 text-xs text-gray-700">
-                  <div className="w-2 h-2 bg-gray-600 rounded-full animate-pulse"></div>
+                  <div className="w-2 h-2 bg-black rounded-full animate-pulse"></div>
                   <span>Live activity feed active</span>
                 </div>
               </div>
