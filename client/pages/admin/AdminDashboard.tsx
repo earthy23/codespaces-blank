@@ -614,7 +614,7 @@ export default function AdminDashboard() {
         </div>
 
         {/* Real-time System Performance */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 gap-6">
           {/* System Performance Metrics */}
           <Card className="bg-gray-900 border-gray-700">
             <CardHeader>
