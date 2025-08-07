@@ -10,7 +10,7 @@ export default function Index() {
     <MinecraftBackground>
       
       {/* Navigation */}
-      <nav className="relative z-10 border-b border-border bg-card/50 backdrop-blur-sm">
+      <nav className="relative z-10 border-b border-border bg-card">
         <div className="container mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <UECLogo size="lg" />
