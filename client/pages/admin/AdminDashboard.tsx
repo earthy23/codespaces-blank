@@ -877,9 +877,9 @@ export default function AdminDashboard() {
         </Card>
 
         {/* Enhanced Quick Actions */}
-        <Card className="bg-white border-gray-300">
+        <Card className="bg-white border-black">
           <CardHeader>
-            <CardTitle className="text-gray-900">Quick Actions & System Control</CardTitle>
+            <CardTitle className="text-black">Quick Actions & System Control</CardTitle>
             <CardDescription className="text-gray-600">
               Administrative tools, system management, and emergency controls
             </CardDescription>
@@ -891,22 +891,22 @@ export default function AdminDashboard() {
                 <h4 className="text-sm font-medium text-gray-600 mb-3">Management</h4>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                   <Link to="/admin/users">
-                    <Button className="w-full bg-gray-800 text-white hover:bg-gray-700 h-auto p-4 flex flex-col space-y-2">
+                    <Button className="w-full bg-black text-white hover:bg-gray-800 h-auto p-4 flex flex-col space-y-2">
                       <span className="text-sm">Manage Users</span>
                     </Button>
                   </Link>
                   <Link to="/admin/news">
-                    <Button className="w-full bg-gray-800 text-white hover:bg-gray-700 h-auto p-4 flex flex-col space-y-2">
+                    <Button className="w-full bg-black text-white hover:bg-gray-800 h-auto p-4 flex flex-col space-y-2">
                       <span className="text-sm">Create News</span>
                     </Button>
                   </Link>
                   <Link to="/admin/settings">
-                    <Button className="w-full bg-gray-800 text-white hover:bg-gray-700 h-auto p-4 flex flex-col space-y-2">
+                    <Button className="w-full bg-black text-white hover:bg-gray-800 h-auto p-4 flex flex-col space-y-2">
                       <span className="text-sm">System Settings</span>
                     </Button>
                   </Link>
                   <Link to="/admin/analytics">
-                    <Button className="w-full bg-gray-800 text-white hover:bg-gray-700 h-auto p-4 flex flex-col space-y-2">
+                    <Button className="w-full bg-black text-white hover:bg-gray-800 h-auto p-4 flex flex-col space-y-2">
                       <span className="text-sm">View Analytics</span>
                     </Button>
                   </Link>
@@ -917,16 +917,16 @@ export default function AdminDashboard() {
               <div>
                 <h4 className="text-sm font-medium text-gray-600 mb-3">System Controls</h4>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  <Button className="w-full bg-gray-700 text-white hover:bg-gray-600 h-auto p-4 flex flex-col space-y-2">
+                  <Button className="w-full bg-black text-white hover:bg-gray-800 h-auto p-4 flex flex-col space-y-2">
                     <span className="text-sm">Clear Cache</span>
                   </Button>
-                  <Button className="w-full bg-gray-700 text-white hover:bg-gray-600 h-auto p-4 flex flex-col space-y-2">
+                  <Button className="w-full bg-black text-white hover:bg-gray-800 h-auto p-4 flex flex-col space-y-2">
                     <span className="text-sm">Restart Services</span>
                   </Button>
-                  <Button className="w-full bg-gray-700 text-white hover:bg-gray-600 h-auto p-4 flex flex-col space-y-2">
+                  <Button className="w-full bg-black text-white hover:bg-gray-800 h-auto p-4 flex flex-col space-y-2">
                     <span className="text-sm">Maintenance Mode</span>
                   </Button>
-                  <Button className="w-full bg-gray-700 text-white hover:bg-gray-600 h-auto p-4 flex flex-col space-y-2">
+                  <Button className="w-full bg-black text-white hover:bg-gray-800 h-auto p-4 flex flex-col space-y-2">
                     <span className="text-sm">Health Check</span>
                   </Button>
                 </div>
@@ -936,13 +936,13 @@ export default function AdminDashboard() {
               <div>
                 <h4 className="text-sm font-medium text-gray-600 mb-3">Real-time Actions</h4>
                 <div className="flex flex-wrap gap-2">
-                  <Button size="sm" className="bg-gray-600 hover:bg-gray-500 text-white">
+                  <Button size="sm" className="bg-black hover:bg-gray-800 text-white">
                     Broadcast Message
                   </Button>
-                  <Button size="sm" className="bg-gray-600 hover:bg-gray-500 text-white">
+                  <Button size="sm" className="bg-black hover:bg-gray-800 text-white">
                     View Live Sessions
                   </Button>
-                  <Button size="sm" className="bg-gray-600 hover:bg-gray-500 text-white">
+                  <Button size="sm" className="bg-black hover:bg-gray-800 text-white">
                     Server Status
                   </Button>
                 </div>
