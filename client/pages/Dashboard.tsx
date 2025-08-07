@@ -296,8 +296,8 @@ export default function Dashboard() {
           <Card className="minecraft-panel mb-8">
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
-                <div className="w-8 h-8 rounded-lg bg-card border border-primary/50 flex items-center justify-center shadow-lg shadow-primary/20">
-                  <Shield className="w-5 h-5 text-primary drop-shadow-[0_0_4px_currentColor]" />
+                <div className="w-8 h-8 rounded-lg bg-card border border-primary/50 flex items-center justify-center shadow-lg shadow-primary/20 overflow-hidden">
+                  <img src="https://images.pexels.com/photos/10068851/pexels-photo-10068851.jpeg" alt="Partners" className="w-full h-full object-cover" />
                 </div>
                 <span>Our Partners</span>
               </CardTitle>
