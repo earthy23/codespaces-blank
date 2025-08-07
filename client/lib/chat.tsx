@@ -282,22 +282,41 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
     if (!user || !token) return [];
 
     try {
-      const response = await fetch(
-        `/api/chat/${chatId}/messages?limit=50&offset=${offset}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        },
-      );
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 6000); // 6 second timeout
 
-      if (response.ok) {
-        const data = await response.json();
-        return data.messages || [];
+      try {
+        const response = await fetch(
+          `/api/chat/${chatId}/messages?limit=50&offset=${offset}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+            signal: controller.signal,
+          },
+        );
+
+        clearTimeout(timeoutId);
+
+        if (response.ok) {
+          const data = await response.json();
+          return data.messages || [];
+        } else {
+          console.warn(`Failed to load messages for chat ${chatId}`);
+        }
+      } catch (fetchError) {
+        clearTimeout(timeoutId);
+        throw fetchError;
       }
     } catch (error) {
-      console.error("Error loading messages:", error);
+      if (error.name === 'AbortError') {
+        console.warn(`Chat messages loading timed out for chat ${chatId}`);
+      } else if (error.message?.includes('Failed to fetch')) {
+        console.warn(`Network issue loading messages for chat ${chatId}`);
+      } else {
+        console.error("Error loading messages:", error);
+      }
     }
     return [];
   };
