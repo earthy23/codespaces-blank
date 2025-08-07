@@ -314,12 +314,10 @@ export default function Dashboard() {
           <Card className="minecraft-panel mb-8">
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
-                <div className="w-8 h-8 rounded-lg bg-card border border-primary/50 flex items-center justify-center shadow-lg shadow-primary/20">
-                  <svg viewBox="0 0 24 24" fill="none" className="w-5 h-5 text-primary drop-shadow-[0_0_4px_currentColor]">
-                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" fill="currentColor"/>
-                    <path d="m9 12 2 2 4-4" stroke="white" strokeWidth="2" fill="none"/>
-                  </svg>
-                </div>
+                <svg viewBox="0 0 24 24" fill="none" className="w-6 h-6 text-primary">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" fill="currentColor"/>
+                  <path d="m9 12 2 2 4-4" stroke="white" strokeWidth="2" fill="none"/>
+                </svg>
                 <span>Our Partners</span>
               </CardTitle>
               <CardDescription>Organizations we work with</CardDescription>
