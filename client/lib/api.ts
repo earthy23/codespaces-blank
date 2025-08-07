@@ -212,7 +212,7 @@ const makeRequest = async (endpoint: string, options: RequestInit = {}) => {
     }
 
     // Handle other network errors
-    if (error.message.includes("Failed to fetch")) {
+    if (error.message?.includes("Failed to fetch")) {
       console.error("Fetch failure details:");
       console.error(`  URL: ${url}`);
       console.error(`  Error message: ${error.message}`);
