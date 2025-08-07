@@ -52,6 +52,12 @@ class ChatWebSocketServer {
     ws.userId = null;
     ws.authenticated = false;
 
+    const clientIP = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+
+    if (process.env.NODE_ENV === "development") {
+      console.log(`🔌 New WebSocket connection from ${clientIP}`);
+    }
+
     // Heartbeat
     ws.on("pong", () => {
       ws.isAlive = true;
@@ -63,16 +69,21 @@ class ChatWebSocketServer {
         this.handleMessage(ws, message);
       } catch (error) {
         console.error("WebSocket message parsing error:", error.message || error);
-        ws.send(
-          JSON.stringify({
-            type: "error",
-            message: "Invalid message format",
-          }),
-        );
+        if (ws.readyState === 1) { // WebSocket.OPEN
+          ws.send(
+            JSON.stringify({
+              type: "error",
+              message: "Invalid message format",
+            }),
+          );
+        }
       }
     });
 
-    ws.on("close", () => {
+    ws.on("close", (code, reason) => {
+      if (process.env.NODE_ENV === "development") {
+        console.log(`🔌 WebSocket disconnected: ${code} - ${reason || 'No reason'}`);
+      }
       this.handleDisconnection(ws);
     });
 
@@ -82,12 +93,17 @@ class ChatWebSocketServer {
     });
 
     // Send welcome message
-    ws.send(
-      JSON.stringify({
-        type: "welcome",
-        message: "Connected to UEC Chat WebSocket",
-      }),
-    );
+    try {
+      ws.send(
+        JSON.stringify({
+          type: "welcome",
+          message: "Connected to UEC WebSocket Server",
+          timestamp: new Date().toISOString()
+        }),
+      );
+    } catch (error) {
+      console.error("Error sending welcome message:", error.message);
+    }
   }
 
   handleMessage(ws, message) {
