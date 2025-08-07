@@ -895,40 +895,92 @@ export default function AdminDashboard() {
           </CardContent>
         </Card>
 
-        {/* Quick Actions */}
+        {/* Enhanced Quick Actions */}
         <Card className="bg-gray-900 border-gray-700">
           <CardHeader>
-            <CardTitle className="text-white">Quick Actions</CardTitle>
+            <CardTitle className="text-white">Quick Actions & System Control</CardTitle>
             <CardDescription className="text-gray-400">
-              Administrative tools and management functions
+              Administrative tools, system management, and emergency controls
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <Link to="/admin/users">
-                <Button className="w-full bg-gray-800 text-white hover:bg-gray-700 h-auto p-4 flex flex-col space-y-2">
-                  <Users className="w-6 h-6" />
-                  <span className="text-sm">Manage Users</span>
-                </Button>
-              </Link>
-              <Link to="/admin/news">
-                <Button className="w-full bg-gray-800 text-white hover:bg-gray-700 h-auto p-4 flex flex-col space-y-2">
-                  <Calendar className="w-6 h-6" />
-                  <span className="text-sm">Create News</span>
-                </Button>
-              </Link>
-              <Link to="/admin/settings">
-                <Button className="w-full bg-gray-800 text-white hover:bg-gray-700 h-auto p-4 flex flex-col space-y-2">
-                  <Zap className="w-6 h-6" />
-                  <span className="text-sm">System Settings</span>
-                </Button>
-              </Link>
-              <Link to="/admin/analytics">
-                <Button className="w-full bg-gray-800 text-white hover:bg-gray-700 h-auto p-4 flex flex-col space-y-2">
-                  <BarChart3 className="w-6 h-6" />
-                  <span className="text-sm">View Analytics</span>
-                </Button>
-              </Link>
+            <div className="space-y-6">
+              {/* Primary Actions */}
+              <div>
+                <h4 className="text-sm font-medium text-gray-400 mb-3">Management</h4>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  <Link to="/admin/users">
+                    <Button className="w-full bg-gray-800 text-white hover:bg-gray-700 h-auto p-4 flex flex-col space-y-2">
+                      <Users className="w-6 h-6" />
+                      <span className="text-sm">Manage Users</span>
+                    </Button>
+                  </Link>
+                  <Link to="/admin/news">
+                    <Button className="w-full bg-gray-800 text-white hover:bg-gray-700 h-auto p-4 flex flex-col space-y-2">
+                      <Calendar className="w-6 h-6" />
+                      <span className="text-sm">Create News</span>
+                    </Button>
+                  </Link>
+                  <Link to="/admin/settings">
+                    <Button className="w-full bg-gray-800 text-white hover:bg-gray-700 h-auto p-4 flex flex-col space-y-2">
+                      <Zap className="w-6 h-6" />
+                      <span className="text-sm">System Settings</span>
+                    </Button>
+                  </Link>
+                  <Link to="/admin/analytics">
+                    <Button className="w-full bg-gray-800 text-white hover:bg-gray-700 h-auto p-4 flex flex-col space-y-2">
+                      <BarChart3 className="w-6 h-6" />
+                      <span className="text-sm">View Analytics</span>
+                    </Button>
+                  </Link>
+                </div>
+              </div>
+
+              {/* System Controls */}
+              <div>
+                <h4 className="text-sm font-medium text-gray-400 mb-3">System Controls</h4>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  <Button className="w-full bg-green-800 text-white hover:bg-green-700 h-auto p-4 flex flex-col space-y-2">
+                    <CheckCircle className="w-6 h-6" />
+                    <span className="text-sm">Clear Cache</span>
+                  </Button>
+                  <Button className="w-full bg-blue-800 text-white hover:bg-blue-700 h-auto p-4 flex flex-col space-y-2">
+                    <RefreshCw className="w-6 h-6" />
+                    <span className="text-sm">Restart Services</span>
+                  </Button>
+                  <Button className="w-full bg-yellow-800 text-white hover:bg-yellow-700 h-auto p-4 flex flex-col space-y-2">
+                    <AlertTriangle className="w-6 h-6" />
+                    <span className="text-sm">Maintenance Mode</span>
+                  </Button>
+                  <Button className="w-full bg-purple-800 text-white hover:bg-purple-700 h-auto p-4 flex flex-col space-y-2">
+                    <Activity className="w-6 h-6" />
+                    <span className="text-sm">Health Check</span>
+                  </Button>
+                </div>
+              </div>
+
+              {/* Real-time Actions */}
+              <div>
+                <h4 className="text-sm font-medium text-gray-400 mb-3">Real-time Actions</h4>
+                <div className="flex flex-wrap gap-2">
+                  <Button size="sm" className="bg-gray-700 hover:bg-gray-600">
+                    <MessageCircle className="w-4 h-4 mr-2" />
+                    Broadcast Message
+                  </Button>
+                  <Button size="sm" className="bg-gray-700 hover:bg-gray-600">
+                    <Eye className="w-4 h-4 mr-2" />
+                    View Live Sessions
+                  </Button>
+                  <Button size="sm" className="bg-gray-700 hover:bg-gray-600">
+                    <Server className="w-4 h-4 mr-2" />
+                    Server Status
+                  </Button>
+                  <Button size="sm" className="bg-gray-700 hover:bg-gray-600">
+                    <ShoppingBag className="w-4 h-4 mr-2" />
+                    Revenue Report
+                  </Button>
+                </div>
+              </div>
             </div>
           </CardContent>
         </Card>
