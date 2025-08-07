@@ -116,19 +116,24 @@ const makeRequest = async (endpoint: string, options: RequestInit = {}) => {
   // FullStory detection utility
   const isFullStoryBlocking = () => {
     try {
-      return window.fetch !== fetch ||
-             (window.fetch.toString().includes('fullstory') ||
-              document.querySelector('script[src*="fullstory"]') !== null);
+      return (
+        window.fetch !== fetch ||
+        window.fetch.toString().includes("fullstory") ||
+        document.querySelector('script[src*="fullstory"]') !== null
+      );
     } catch {
       return false;
     }
   };
 
   // XMLHttpRequest fallback for fetch
-  const makeXHRRequest = async (url: string, config: RequestInit): Promise<Response> => {
+  const makeXHRRequest = async (
+    url: string,
+    config: RequestInit,
+  ): Promise<Response> => {
     return new Promise((resolve, reject) => {
       const xhr = new XMLHttpRequest();
-      xhr.open(config.method || 'GET', url);
+      xhr.open(config.method || "GET", url);
 
       // Set headers
       if (config.headers) {
@@ -156,7 +161,7 @@ const makeRequest = async (endpoint: string, options: RequestInit = {}) => {
             status: xhr.status,
             statusText: xhr.statusText,
             json: () => Promise.resolve({}),
-            text: () => Promise.resolve(xhr.responseText || ''),
+            text: () => Promise.resolve(xhr.responseText || ""),
             headers: new Headers(),
           } as Response);
         }
@@ -165,50 +170,50 @@ const makeRequest = async (endpoint: string, options: RequestInit = {}) => {
       let isManualAbort = false;
 
       xhr.onerror = () => {
-        if (process.env.NODE_ENV === 'development') {
-          console.warn('API XMLHttpRequest network error for:', url);
+        if (process.env.NODE_ENV === "development") {
+          console.warn("API XMLHttpRequest network error for:", url);
         }
         resolve({
           ok: false,
           status: 0,
-          statusText: 'Network Error',
+          statusText: "Network Error",
           json: () => Promise.resolve({}),
-          text: () => Promise.resolve(''),
+          text: () => Promise.resolve(""),
           headers: new Headers(),
         } as Response);
       };
 
       xhr.ontimeout = () => {
-        if (process.env.NODE_ENV === 'development') {
-          console.warn('API XMLHttpRequest timeout for:', url);
+        if (process.env.NODE_ENV === "development") {
+          console.warn("API XMLHttpRequest timeout for:", url);
         }
         resolve({
           ok: false,
           status: 408,
-          statusText: 'Request Timeout',
+          statusText: "Request Timeout",
           json: () => Promise.resolve({}),
-          text: () => Promise.resolve(''),
+          text: () => Promise.resolve(""),
           headers: new Headers(),
         } as Response);
       };
 
       // Handle manual aborts
       xhr.onabort = () => {
-        if (process.env.NODE_ENV === 'development') {
-          console.warn('API XMLHttpRequest manually aborted for:', url);
+        if (process.env.NODE_ENV === "development") {
+          console.warn("API XMLHttpRequest manually aborted for:", url);
         }
         resolve({
           ok: false,
           status: 0,
-          statusText: isManualAbort ? 'Aborted' : 'Cancelled',
+          statusText: isManualAbort ? "Aborted" : "Cancelled",
           json: () => Promise.resolve({}),
-          text: () => Promise.resolve(''),
+          text: () => Promise.resolve(""),
           headers: new Headers(),
         } as Response);
       };
 
       if (config.signal) {
-        config.signal.addEventListener('abort', () => {
+        config.signal.addEventListener("abort", () => {
           isManualAbort = true;
           xhr.abort();
         });
@@ -220,9 +225,9 @@ const makeRequest = async (endpoint: string, options: RequestInit = {}) => {
         resolve({
           ok: false,
           status: 0,
-          statusText: 'Send Error',
+          statusText: "Send Error",
           json: () => Promise.resolve({}),
-          text: () => Promise.resolve(''),
+          text: () => Promise.resolve(""),
           headers: new Headers(),
         } as Response);
       }
@@ -241,8 +246,11 @@ const makeRequest = async (endpoint: string, options: RequestInit = {}) => {
 
       // Check for FullStory interference and use fallback if needed
       if (isFullStoryBlocking()) {
-        if (process.env.NODE_ENV === 'development') {
-          console.warn("⚠️ FullStory detected, using XMLHttpRequest fallback for:", url);
+        if (process.env.NODE_ENV === "development") {
+          console.warn(
+            "⚠️ FullStory detected, using XMLHttpRequest fallback for:",
+            url,
+          );
         }
         response = await makeXHRRequest(url, config);
       } else {
@@ -257,19 +265,23 @@ const makeRequest = async (endpoint: string, options: RequestInit = {}) => {
       console.log(`📊 Response status: ${response.status} for ${url}`);
 
       // Handle aborted requests gracefully (status 0 from XMLHttpRequest)
-      if (response.status === 0 && response.statusText === 'Aborted') {
-        if (process.env.NODE_ENV === 'development') {
-          console.warn(`⚠️ Request aborted for ${url}, likely due to navigation or cancellation`);
+      if (response.status === 0 && response.statusText === "Aborted") {
+        if (process.env.NODE_ENV === "development") {
+          console.warn(
+            `⚠️ Request aborted for ${url}, likely due to navigation or cancellation`,
+          );
         }
         throw new Error("Request was cancelled. Please try again.");
       }
 
       // Handle network errors (status 0 but not aborted)
-      if (response.status === 0 && response.statusText !== 'Aborted') {
-        if (process.env.NODE_ENV === 'development') {
+      if (response.status === 0 && response.statusText !== "Aborted") {
+        if (process.env.NODE_ENV === "development") {
           console.warn(`⚠️ Network error (status 0) for ${url}`);
         }
-        throw new Error("Network error - please check your connection and try again.");
+        throw new Error(
+          "Network error - please check your connection and try again.",
+        );
       }
 
       // Handle authentication errors (but not for login/register endpoints)
@@ -361,30 +373,36 @@ const makeRequest = async (endpoint: string, options: RequestInit = {}) => {
     clearTimeout(timeoutId);
 
     // Don't log aborted/cancelled requests as errors since they're often intentional
-    const isAbortedError = error.name === "AbortError" ||
-                          error.message?.includes("aborted") ||
-                          error.message?.includes("HTTP 0: Aborted") ||
-                          error.message?.includes("cancelled");
+    const isAbortedError =
+      error.name === "AbortError" ||
+      error.message?.includes("aborted") ||
+      error.message?.includes("HTTP 0: Aborted") ||
+      error.message?.includes("cancelled");
 
     if (isAbortedError) {
-      if (process.env.NODE_ENV === 'development') {
+      if (process.env.NODE_ENV === "development") {
         console.warn(`⚠️ Request cancelled for ${url}: ${error.message}`);
       }
     } else {
       console.error(`💥 Request failed for ${url}:`, error);
-      console.error(`🔍 Error details:`, JSON.stringify({
-        name: error?.name || "Unknown",
-        message: error?.message || "No message available",
-        timeout: timeoutMs,
-        errorType: typeof error,
-        hasStack: !!error?.stack,
-      }));
+      console.error(
+        `🔍 Error details:`,
+        JSON.stringify({
+          name: error?.name || "Unknown",
+          message: error?.message || "No message available",
+          timeout: timeoutMs,
+          errorType: typeof error,
+          hasStack: !!error?.stack,
+        }),
+      );
     }
 
     // Track consecutive failures (but not for aborted requests)
     if (!isAbortedError) {
       consecutiveFailures++;
-      console.log(`📊 Connection status: ${consecutiveFailures} consecutive failures, last success: ${Math.round((Date.now() - lastSuccessfulRequest) / 1000)}s ago`);
+      console.log(
+        `📊 Connection status: ${consecutiveFailures} consecutive failures, last success: ${Math.round((Date.now() - lastSuccessfulRequest) / 1000)}s ago`,
+      );
     }
 
     // Clean up pending request on error
@@ -393,20 +411,28 @@ const makeRequest = async (endpoint: string, options: RequestInit = {}) => {
     }
 
     // Handle AbortError (timeout or manual abort)
-    if (error.name === "AbortError" || error.message?.includes("aborted") || error.message?.includes("HTTP 0: Aborted")) {
+    if (
+      error.name === "AbortError" ||
+      error.message?.includes("aborted") ||
+      error.message?.includes("HTTP 0: Aborted")
+    ) {
       const isOurTimeout = (controller as any)._isOurTimeout?.() || false;
 
       if (isOurTimeout) {
         const timeoutSeconds = Math.round(timeoutMs / 1000);
-        if (process.env.NODE_ENV === 'development') {
-          console.warn(`⚠️ Request timeout for ${url} after ${timeoutSeconds}s`);
+        if (process.env.NODE_ENV === "development") {
+          console.warn(
+            `⚠️ Request timeout for ${url} after ${timeoutSeconds}s`,
+          );
         }
         throw new Error(
           `Request timed out after ${timeoutSeconds} seconds. Please try again.`,
         );
       } else {
-        if (process.env.NODE_ENV === 'development') {
-          console.warn(`⚠️ Request cancelled for ${url} (likely due to navigation or component unmount)`);
+        if (process.env.NODE_ENV === "development") {
+          console.warn(
+            `⚠️ Request cancelled for ${url} (likely due to navigation or component unmount)`,
+          );
         }
         throw new Error("Request was cancelled. Please try again.");
       }
@@ -414,8 +440,10 @@ const makeRequest = async (endpoint: string, options: RequestInit = {}) => {
 
     // Handle status 0 errors specifically (from XMLHttpRequest fallback)
     if (error.message?.includes("HTTP 0:")) {
-      if (process.env.NODE_ENV === 'development') {
-        console.warn(`⚠️ XMLHttpRequest status 0 error for ${url}: ${error.message}`);
+      if (process.env.NODE_ENV === "development") {
+        console.warn(
+          `⚠️ XMLHttpRequest status 0 error for ${url}: ${error.message}`,
+        );
       }
       // Don't throw these errors as they're usually due to navigation or component unmounting
       throw new Error("Request was interrupted. Please try again.");
@@ -423,7 +451,7 @@ const makeRequest = async (endpoint: string, options: RequestInit = {}) => {
 
     // Handle network connectivity issues with retry logic
     if (error instanceof TypeError && error.message?.includes("fetch")) {
-      if (process.env.NODE_ENV === 'development') {
+      if (process.env.NODE_ENV === "development") {
         console.warn("Network error details:");
         console.warn(`  URL: ${url}`);
         console.warn(`  Error: ${error.message}`);
@@ -431,16 +459,20 @@ const makeRequest = async (endpoint: string, options: RequestInit = {}) => {
       }
 
       // Add retry for critical auth endpoints (only if not using XHR fallback already)
-      if (endpoint.includes("/auth/profile") && !options._isRetry && !isFullStoryBlocking()) {
-        if (process.env.NODE_ENV === 'development') {
+      if (
+        endpoint.includes("/auth/profile") &&
+        !options._isRetry &&
+        !isFullStoryBlocking()
+      ) {
+        if (process.env.NODE_ENV === "development") {
           console.log("🔄 Retrying profile request once...");
         }
         try {
           // Wait a short moment and retry once
-          await new Promise(resolve => setTimeout(resolve, 1000));
+          await new Promise((resolve) => setTimeout(resolve, 1000));
           return await makeRequest(endpoint, { ...options, _isRetry: true });
         } catch (retryError) {
-          if (process.env.NODE_ENV === 'development') {
+          if (process.env.NODE_ENV === "development") {
             console.warn("❌ Retry also failed:", retryError.message);
           }
         }
@@ -453,7 +485,7 @@ const makeRequest = async (endpoint: string, options: RequestInit = {}) => {
 
     // Handle other network errors (but be more graceful with FullStory detection)
     if (error.message?.includes("Failed to fetch")) {
-      if (process.env.NODE_ENV === 'development') {
+      if (process.env.NODE_ENV === "development") {
         console.warn("Fetch failure details:");
         console.warn(`  URL: ${url}`);
         console.warn(`  Error message: ${error.message}`);
@@ -461,8 +493,10 @@ const makeRequest = async (endpoint: string, options: RequestInit = {}) => {
 
       // Check for FullStory or other third-party interference
       if (error.stack?.includes("fullstory.com") || isFullStoryBlocking()) {
-        if (process.env.NODE_ENV === 'development') {
-          console.warn("⚠️ FullStory interference detected, should have used fallback");
+        if (process.env.NODE_ENV === "development") {
+          console.warn(
+            "⚠️ FullStory interference detected, should have used fallback",
+          );
         }
         throw new Error(
           "Network request interference detected. Please try refreshing the page.",
@@ -554,21 +588,31 @@ export const authApi = {
 
       // If it's a network error, try to provide more helpful error context
       if (error instanceof TypeError && error.message === "Failed to fetch") {
-        console.error("�� Network connectivity issue detected for profile endpoint");
+        console.error(
+          "�� Network connectivity issue detected for profile endpoint",
+        );
 
         // Try a simple health check to see if the server is reachable
         try {
           const healthResponse = await fetch("/api/health", {
             method: "GET",
-            signal: AbortSignal.timeout(3000)
+            signal: AbortSignal.timeout(3000),
           });
           if (healthResponse.ok) {
-            console.log("✅ Server health check passed - profile endpoint specific issue");
+            console.log(
+              "✅ Server health check passed - profile endpoint specific issue",
+            );
           } else {
-            console.error("❌ Server health check failed:", healthResponse.status);
+            console.error(
+              "❌ Server health check failed:",
+              healthResponse.status,
+            );
           }
         } catch (healthError) {
-          console.error("❌ Server completely unreachable:", healthError.message);
+          console.error(
+            "❌ Server completely unreachable:",
+            healthError.message,
+          );
         }
       }
 

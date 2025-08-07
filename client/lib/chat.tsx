@@ -66,9 +66,11 @@ const ChatContext = createContext<ChatContextType | undefined>(undefined);
 // FullStory detection utility
 const isFullStoryBlocking = () => {
   try {
-    return window.fetch !== fetch ||
-           (window.fetch.toString().includes('fullstory') ||
-            document.querySelector('script[src*="fullstory"]') !== null);
+    return (
+      window.fetch !== fetch ||
+      window.fetch.toString().includes("fullstory") ||
+      document.querySelector('script[src*="fullstory"]') !== null
+    );
   } catch {
     return false;
   }
@@ -79,7 +81,7 @@ const makeRequest = async (url: string, options: any = {}) => {
   if (isFullStoryBlocking()) {
     return new Promise<Response>((resolve, reject) => {
       const xhr = new XMLHttpRequest();
-      xhr.open(options.method || 'GET', url);
+      xhr.open(options.method || "GET", url);
 
       if (options.headers) {
         Object.entries(options.headers).forEach(([key, value]) => {
@@ -92,26 +94,28 @@ const makeRequest = async (url: string, options: any = {}) => {
           ok: xhr.status >= 200 && xhr.status < 300,
           status: xhr.status,
           json: () => Promise.resolve(JSON.parse(xhr.responseText)),
-          text: () => Promise.resolve(xhr.responseText)
+          text: () => Promise.resolve(xhr.responseText),
         } as Response;
         resolve(response);
       };
 
       xhr.onerror = () => {
-        if (process.env.NODE_ENV === 'development') {
-          console.warn('Chat XMLHttpRequest network error, returning empty response');
+        if (process.env.NODE_ENV === "development") {
+          console.warn(
+            "Chat XMLHttpRequest network error, returning empty response",
+          );
         }
         resolve({ ok: false, status: 0, json: () => Promise.resolve({}) });
       };
       xhr.ontimeout = () => {
-        if (process.env.NODE_ENV === 'development') {
-          console.warn('Chat XMLHttpRequest timeout, returning empty response');
+        if (process.env.NODE_ENV === "development") {
+          console.warn("Chat XMLHttpRequest timeout, returning empty response");
         }
         resolve({ ok: false, status: 408, json: () => Promise.resolve({}) });
       };
 
       if (options.signal) {
-        options.signal.addEventListener('abort', () => {
+        options.signal.addEventListener("abort", () => {
           xhr.abort();
           // Don't reject, just resolve with ok: false to handle gracefully
           resolve({ ok: false, status: 0, json: () => Promise.resolve({}) });
@@ -148,7 +152,7 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
       wsRef.current = new WebSocket(wsUrl);
 
       wsRef.current.onopen = () => {
-        if (process.env.NODE_ENV === 'development') {
+        if (process.env.NODE_ENV === "development") {
           console.log("Connected to chat WebSocket");
         }
         setIsConnected(true);
@@ -170,7 +174,9 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
           if (process.env.NODE_ENV === "development") {
             console.warn("❌ Chat WebSocket message parse error:", {
               error: error?.message || "Unknown parse error",
-              rawData: event.data?.substring(0, 100) + (event.data?.length > 100 ? "..." : ""),
+              rawData:
+                event.data?.substring(0, 100) +
+                (event.data?.length > 100 ? "..." : ""),
               timestamp: new Date().toISOString(),
             });
           }
@@ -178,7 +184,7 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
       };
 
       wsRef.current.onclose = () => {
-        if (process.env.NODE_ENV === 'development') {
+        if (process.env.NODE_ENV === "development") {
           console.log("WebSocket connection closed");
         }
         setIsConnected(false);
@@ -202,9 +208,14 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
         };
 
         if (process.env.NODE_ENV === "development") {
-          console.warn("⚠️ Chat WebSocket error (will attempt reconnect):", JSON.stringify(errorInfo));
+          console.warn(
+            "⚠️ Chat WebSocket error (will attempt reconnect):",
+            JSON.stringify(errorInfo),
+          );
         } else {
-          console.warn("⚠️ Chat WebSocket connection error, attempting reconnect...");
+          console.warn(
+            "⚠️ Chat WebSocket connection error, attempting reconnect...",
+          );
         }
 
         setIsConnected(false);
@@ -228,7 +239,7 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
 
     switch (type) {
       case "authenticated":
-        if (process.env.NODE_ENV === 'development') {
+        if (process.env.NODE_ENV === "development") {
           console.log("WebSocket authenticated");
         }
         break;
@@ -358,25 +369,30 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
         clearTimeout(timeoutId);
 
         // Handle different types of errors gracefully
-        if (fetchError.name === 'AbortError' || fetchError.message?.includes('aborted')) {
-          if (process.env.NODE_ENV === 'development') {
-            console.warn("Chat loading aborted/timed out, keeping existing data");
+        if (
+          fetchError.name === "AbortError" ||
+          fetchError.message?.includes("aborted")
+        ) {
+          if (process.env.NODE_ENV === "development") {
+            console.warn(
+              "Chat loading aborted/timed out, keeping existing data",
+            );
           }
           return; // Exit gracefully without throwing
         }
         throw fetchError;
       }
     } catch (error) {
-      if (error.name === 'AbortError' || error.message?.includes('aborted')) {
-        if (process.env.NODE_ENV === 'development') {
+      if (error.name === "AbortError" || error.message?.includes("aborted")) {
+        if (process.env.NODE_ENV === "development") {
           console.warn("Chat loading aborted, keeping existing data");
         }
-      } else if (error.message?.includes('Failed to fetch')) {
-        if (process.env.NODE_ENV === 'development') {
+      } else if (error.message?.includes("Failed to fetch")) {
+        if (process.env.NODE_ENV === "development") {
           console.warn("Network issue loading chats, keeping existing data");
         }
       } else {
-        if (process.env.NODE_ENV === 'development') {
+        if (process.env.NODE_ENV === "development") {
           console.warn("Error loading chats:", error.message || error);
         }
       }
@@ -412,7 +428,7 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
           const data = await response.json();
           return data.messages || [];
         } else {
-          if (process.env.NODE_ENV === 'development') {
+          if (process.env.NODE_ENV === "development") {
             console.warn(`Failed to load messages for chat ${chatId}`);
           }
         }
@@ -420,8 +436,11 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
         clearTimeout(timeoutId);
 
         // Handle abort errors gracefully
-        if (fetchError.name === 'AbortError' || fetchError.message?.includes('aborted')) {
-          if (process.env.NODE_ENV === 'development') {
+        if (
+          fetchError.name === "AbortError" ||
+          fetchError.message?.includes("aborted")
+        ) {
+          if (process.env.NODE_ENV === "development") {
             console.warn(`Chat messages loading aborted for chat ${chatId}`);
           }
           return []; // Return empty array instead of throwing
@@ -429,16 +448,16 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
         throw fetchError;
       }
     } catch (error) {
-      if (error.name === 'AbortError' || error.message?.includes('aborted')) {
-        if (process.env.NODE_ENV === 'development') {
+      if (error.name === "AbortError" || error.message?.includes("aborted")) {
+        if (process.env.NODE_ENV === "development") {
           console.warn(`Chat messages loading aborted for chat ${chatId}`);
         }
-      } else if (error.message?.includes('Failed to fetch')) {
-        if (process.env.NODE_ENV === 'development') {
+      } else if (error.message?.includes("Failed to fetch")) {
+        if (process.env.NODE_ENV === "development") {
           console.warn(`Network issue loading messages for chat ${chatId}`);
         }
       } else {
-        if (process.env.NODE_ENV === 'development') {
+        if (process.env.NODE_ENV === "development") {
           console.warn("Error loading messages:", error.message || error);
         }
       }
