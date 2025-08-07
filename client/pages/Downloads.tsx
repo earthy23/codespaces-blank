@@ -174,7 +174,7 @@ export default function Downloads() {
                               key={index}
                               className="flex items-center text-sm text-muted-foreground"
                             >
-                              <CheckCircle className="w-3 h-3 text-primary mr-2 flex-shrink-0" />
+                              <img src="https://images.pexels.com/photos/10068851/pexels-photo-10068851.jpeg" alt="Check" className="w-3 h-3 mr-2 flex-shrink-0 rounded object-cover" />
                               {feature}
                             </li>
                           ))}
