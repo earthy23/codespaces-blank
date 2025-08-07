@@ -9,41 +9,35 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { AdminLayout } from "@/components/ui/admin-layout";
-import {
-  Users,
-  MessageCircle,
-  DollarSign,
-  Activity,
-  AlertTriangle,
-  CheckCircle,
-  Clock,
-  Zap,
-  Eye,
-  ShoppingBag,
-  Calendar,
-  Server,
-  BarChart3,
-  RefreshCw,
-} from "lucide-react";
 import { useAuth } from "@/lib/auth";
 import { useWebSocket, useWebSocketEvent } from "@/lib/websocket-manager";
 import { cacheManager, CACHE_KEYS } from "@/lib/cache-manager";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Link } from "react-router-dom";
+import {
+  LineChart,
+  Line,
+  AreaChart,
+  Area,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+} from "recharts";
 
 interface DashboardStats {
   totalUsers: number;
   activeUsers: number;
   newUsersToday: number;
-  totalRevenue: number;
-  monthlyRevenue: number;
   activeSessions: number;
   totalMessages: number;
   flaggedMessages: number;
   supportTickets: number;
   pendingTickets: number;
   forumPosts: number;
-  serverUptime: number;
 }
 
 interface RecentActivity {
@@ -55,35 +49,43 @@ interface RecentActivity {
   level: string;
 }
 
-// Simple dark chart component
-const MiniChart = ({
-  data,
-  height = 60,
-  color = "white",
-}: {
-  data: number[];
-  height?: number;
-  color?: string;
-}) => {
-  const max = Math.max(...data);
-  const min = Math.min(...data);
-  const range = max - min;
+// Enhanced chart components using Recharts
+const MiniLineChart = ({ data, color = "#ffffff" }: { data: any[]; color?: string }) => (
+  <ResponsiveContainer width="100%" height={60}>
+    <LineChart data={data}>
+      <Line
+        type="monotone"
+        dataKey="value"
+        stroke={color}
+        strokeWidth={3}
+        dot={false}
+        activeDot={{ r: 4, fill: color }}
+      />
+    </LineChart>
+  </ResponsiveContainer>
+);
 
-  return (
-    <div className="flex items-end space-x-1" style={{ height }}>
-      {data.map((value, index) => (
-        <div
-          key={index}
-          className="bg-white flex-1 transition-all duration-300 rounded-sm"
-          style={{
-            height: `${range > 0 ? ((value - min) / range) * height : height / 2}px`,
-            minHeight: "2px",
-          }}
-        />
-      ))}
-    </div>
-  );
-};
+const MiniAreaChart = ({ data, color = "#ffffff" }: { data: any[]; color?: string }) => (
+  <ResponsiveContainer width="100%" height={60}>
+    <AreaChart data={data}>
+      <Area
+        type="monotone"
+        dataKey="value"
+        stroke={color}
+        fill={color}
+        fillOpacity={0.4}
+      />
+    </AreaChart>
+  </ResponsiveContainer>
+);
+
+const MiniBarChart = ({ data, color = "#ffffff" }: { data: any[]; color?: string }) => (
+  <ResponsiveContainer width="100%" height={60}>
+    <BarChart data={data}>
+      <Bar dataKey="value" fill={color} radius={[2, 2, 0, 0]} stroke={color} strokeWidth={1} />
+    </BarChart>
+  </ResponsiveContainer>
+);
 
 export default function AdminDashboard() {
   const { user, token } = useAuth();
@@ -98,26 +100,235 @@ export default function AdminDashboard() {
   const [isLoading, setIsLoading] = useState(false);
   const [onlineUsersCount, setOnlineUsersCount] = useState(0);
 
+  // Enhanced dashboard data
+  const [dashboardData, setDashboardData] = useState<any>(null);
+  const [systemMetrics, setSystemMetrics] = useState<any>(null);
+  const [lastMetricsUpdate, setLastMetricsUpdate] = useState(Date.now());
+  const [timeRange, setTimeRange] = useState("24h");
+  const [connectionStatus, setConnectionStatus] = useState<"connected" | "degraded" | "offline">("connected");
+  const [realTimeData, setRealTimeData] = useState<any>(null);
+  const [liveActivity, setLiveActivity] = useState<RecentActivity[]>([]);
+  const [lastActivityUpdate, setLastActivityUpdate] = useState(Date.now());
+  const abortControllerRef = useRef<AbortController | null>(null);
+
   useEffect(() => {
     if (!stats) {
       const fallbackStats: DashboardStats = {
-        totalUsers: 1247,
-        activeUsers: 312,
-        newUsersToday: 23,
-        totalRevenue: 15847.75,
-        monthlyRevenue: 2190.5,
-        activeSessions: 89,
-        totalMessages: 8547,
-        flaggedMessages: 3,
-        supportTickets: 67,
-        pendingTickets: 8,
-        forumPosts: 456,
-        serverUptime: 99.87,
+        totalUsers: 0,
+        activeUsers: 0,
+        newUsersToday: 0,
+        activeSessions: 0,
+        totalMessages: 0,
+        flaggedMessages: 0,
+        supportTickets: 0,
+        pendingTickets: 0,
+        forumPosts: 0,
       };
       setStats(fallbackStats);
     }
     loadDashboardData();
-  }, []);
+
+    // Set up real-time metrics updates every 30 seconds with robust error handling
+    const metricsInterval = setInterval(async () => {
+      if (!token || !user) return;
+
+      try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 second timeout
+
+        // Check for FullStory interference
+        const isFullStoryBlocking = () => {
+          try {
+            return window.fetch !== fetch ||
+                   (window.fetch.toString().includes('fullstory') ||
+                    document.querySelector('script[src*="fullstory"]') !== null);
+          } catch {
+            return false;
+          }
+        };
+
+        let response;
+        if (isFullStoryBlocking()) {
+          // Use XMLHttpRequest as fallback when FullStory is interfering
+          response = await new Promise((resolve) => {
+            const xhr = new XMLHttpRequest();
+            xhr.open('GET', '/api/admin/metrics/realtime');
+            xhr.setRequestHeader('Authorization', `Bearer ${token}`);
+            xhr.setRequestHeader('Content-Type', 'application/json');
+            xhr.timeout = 15000;
+
+            xhr.onload = () => {
+              try {
+                if (xhr.status >= 200 && xhr.status < 300) {
+                  resolve({
+                    ok: true,
+                    status: xhr.status,
+                    json: () => Promise.resolve(JSON.parse(xhr.responseText))
+                  });
+                } else {
+                  resolve({ ok: false, status: xhr.status });
+                }
+              } catch (parseError) {
+                resolve({ ok: false, status: xhr.status });
+              }
+            };
+
+            xhr.onerror = () => resolve({ ok: false, status: 0 });
+            xhr.ontimeout = () => resolve({ ok: false, status: 408 });
+
+            try {
+              xhr.send();
+            } catch (sendError) {
+              resolve({ ok: false, status: 0 });
+            }
+          });
+        } else {
+          try {
+            response = await fetch("/api/admin/metrics/realtime", {
+              headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
+              },
+              signal: controller.signal,
+            });
+          } catch (fetchError) {
+            response = { ok: false, status: 0 };
+          }
+        }
+
+        clearTimeout(timeoutId);
+
+          if (response.ok) {
+            const data = await response.json();
+            setSystemMetrics(data.metrics);
+            setRealTimeData(data.metrics);
+            setLastMetricsUpdate(Date.now());
+            setConnectionStatus("connected");
+
+            // Update live stats if we have real-time user data
+            if (data.metrics.userActivity) {
+              setStats(prevStats => {
+                if (prevStats) {
+                  return {
+                    ...prevStats,
+                    totalUsers: data.metrics.userActivity.totalUsers,
+                    activeUsers: data.metrics.userActivity.activeUsers,
+                    activeSessions: data.metrics.activeConnections,
+                  };
+                }
+                return prevStats;
+              });
+            }
+          } else {
+            console.warn("Metrics update failed, keeping previous data");
+            setConnectionStatus("degraded");
+          }
+      } catch (error) {
+        // Silently handle all errors to prevent console spam
+        setConnectionStatus("degraded");
+      }
+    }, 30000); // Increased interval to 30 seconds
+
+    // Set up live activity feed updates every 30 seconds with robust error handling
+    const activityInterval = setInterval(async () => {
+      if (!token || !user) return;
+
+      let controller;
+      let timeoutId;
+      try {
+        controller = new AbortController();
+        timeoutId = setTimeout(() => {
+          controller.abort();
+        }, 15000); // 15 second timeout
+
+          // Check for FullStory interference
+          const isFullStoryBlocking = () => {
+            try {
+              return window.fetch !== fetch ||
+                     (window.fetch.toString().includes('fullstory') ||
+                      document.querySelector('script[src*="fullstory"]') !== null);
+            } catch {
+              return false;
+            }
+          };
+
+          let response;
+          if (isFullStoryBlocking()) {
+            // Use XMLHttpRequest as fallback
+            response = await new Promise((resolve) => {
+              const xhr = new XMLHttpRequest();
+              xhr.open('GET', `/api/admin/activity/live?since=${lastActivityUpdate}&limit=10`);
+              xhr.setRequestHeader('Authorization', `Bearer ${token}`);
+              xhr.setRequestHeader('Content-Type', 'application/json');
+              xhr.timeout = 15000;
+
+              xhr.onload = () => {
+                try {
+                  if (xhr.status >= 200 && xhr.status < 300) {
+                    resolve({
+                      ok: true,
+                      json: () => Promise.resolve(JSON.parse(xhr.responseText))
+                    });
+                  } else {
+                    resolve({ ok: false });
+                  }
+                } catch (parseError) {
+                  resolve({ ok: false });
+                }
+              };
+
+              xhr.onerror = () => resolve({ ok: false });
+              xhr.ontimeout = () => resolve({ ok: false });
+
+              try {
+                xhr.send();
+              } catch (sendError) {
+                resolve({ ok: false });
+              }
+            });
+          } else {
+            try {
+              response = await fetch(`/api/admin/activity/live?since=${lastActivityUpdate}&limit=10`, {
+                headers: {
+                  Authorization: `Bearer ${token}`,
+                  "Content-Type": "application/json",
+                },
+                signal: controller.signal,
+              });
+            } catch (fetchError) {
+              response = { ok: false };
+            }
+          }
+
+          clearTimeout(timeoutId);
+
+          if (response.ok) {
+            const data = await response.json();
+            if (data.activity && data.activity.length > 0) {
+              setLiveActivity(prev => {
+                const newActivity = data.activity.filter(activity =>
+                  !prev.some(existing => existing.id === activity.id)
+                );
+                return [...newActivity, ...prev].slice(0, 10);
+              });
+              setLastActivityUpdate(data.timestamp);
+            }
+          }
+      } catch (error) {
+        if (timeoutId) clearTimeout(timeoutId);
+        // Silently handle all errors to prevent console spam
+      }
+    }, 30000); // Increased interval to 30 seconds
+
+    return () => {
+      clearInterval(metricsInterval);
+      clearInterval(activityInterval);
+      // Abort any pending requests when component unmounts
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+    };
+  }, [token]);
 
   // Real-time updates
   useWebSocketEvent("admin:stats_updated", (data) => {
@@ -161,88 +372,188 @@ export default function AdminDashboard() {
 
     try {
       setIsLoading(true);
-      const controller = new AbortController();
-
-      const [statsRes, activityRes] = await Promise.all([
-        fetch("/api/admin/dashboard/stats", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-          signal: controller.signal,
-        }),
-        fetch("/api/admin/logs?limit=10&level=info", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-          signal: controller.signal,
-        }),
-      ]);
-
-      if (statsRes.ok) {
-        const statsData = await statsRes.json();
-        const enhancedStats: DashboardStats = {
-          totalUsers: statsData.stats?.totalUsers || 1247,
-          activeUsers: Math.floor((statsData.stats?.totalUsers || 1247) * 0.25),
-          newUsersToday: 23,
-          totalRevenue: 15847.75,
-          monthlyRevenue: 2190.5,
-          activeSessions: statsData.stats?.activeSessions || 89,
-          totalMessages: 8547,
-          flaggedMessages: statsData.stats?.flaggedMessages || 3,
-          supportTickets: 67,
-          pendingTickets: 8,
-          forumPosts: 456,
-          serverUptime: 99.87,
-        };
-        setStats(enhancedStats);
-        cacheManager.set(CACHE_KEYS.ADMIN_STATS, enhancedStats);
+      
+      // Abort any existing request
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
       }
+      
+      const controller = new AbortController();
+      abortControllerRef.current = controller;
 
-      if (activityRes.ok) {
-        const activityData = await activityRes.json();
-        const logs = activityData.logs || [];
-        setRecentActivity(logs);
-        cacheManager.set(CACHE_KEYS.ADMIN_LOGS, logs);
+      // Set timeout for the entire operation
+      const timeoutId = setTimeout(() => {
+        controller.abort(new Error('Dashboard data loading timeout'));
+      }, 10000); // 10 second timeout
+
+      try {
+        const [statsRes, activityRes, metricsRes] = await Promise.allSettled([
+          fetch("/api/admin/dashboard/stats", {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+            signal: controller.signal,
+          }),
+          fetch("/api/admin/logs?limit=10&level=info", {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+            signal: controller.signal,
+          }),
+          fetch("/api/admin/metrics/realtime", {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+            signal: controller.signal,
+          }),
+        ]);
+
+        clearTimeout(timeoutId);
+
+        // Check overall connection status
+        const successCount = [statsRes, activityRes, metricsRes].filter(
+          (res) => res.status === 'fulfilled' && res.value.ok
+        ).length;
+
+        if (successCount === 3) {
+          setConnectionStatus("connected");
+        } else if (successCount >= 1) {
+          setConnectionStatus("degraded");
+        } else {
+          setConnectionStatus("offline");
+        }
+
+        // Handle stats response
+        if (statsRes.status === 'fulfilled' && statsRes.value.ok) {
+          const statsData = await statsRes.value.json();
+          const stats = statsData.stats;
+
+          // Set enhanced stats with better real data integration
+          const enhancedStats: DashboardStats = {
+            totalUsers: stats?.totalUsers || 0,
+            activeUsers: stats?.activeUsers || 0,
+            newUsersToday: stats?.newUsersToday || 0,
+            activeSessions: stats?.activeSessions || 0,
+            totalMessages: stats?.totalMessages || 0,
+            flaggedMessages: stats?.flaggedMessages || 0,
+            supportTickets: stats?.supportTickets || 0,
+            pendingTickets: stats?.pendingTickets || 0,
+            forumPosts: stats?.forumPosts || 0,
+          };
+          setStats(enhancedStats);
+          setDashboardData(stats);
+          cacheManager.set(CACHE_KEYS.ADMIN_STATS, enhancedStats);
+          
+          console.log("Dashboard stats loaded successfully:", {
+            users: enhancedStats.totalUsers,
+            active: enhancedStats.activeUsers,
+          });
+        } else {
+          console.warn("Failed to load dashboard stats, using cached/fallback data");
+          // Use cached data if available, otherwise set minimal fallback
+          if (!stats) {
+            const fallbackStats: DashboardStats = {
+              totalUsers: 0,
+              activeUsers: 0,
+              newUsersToday: 0,
+              activeSessions: 0,
+              totalMessages: 0,
+              flaggedMessages: 0,
+              supportTickets: 0,
+              pendingTickets: 0,
+              forumPosts: 0,
+            };
+            setStats(fallbackStats);
+            console.warn("Using fallback stats due to API failure");
+          }
+        }
+
+        // Handle activity response
+        if (activityRes.status === 'fulfilled' && activityRes.value.ok) {
+          const activityData = await activityRes.value.json();
+          const logs = activityData.logs || [];
+          setRecentActivity(logs);
+          cacheManager.set(CACHE_KEYS.ADMIN_LOGS, logs);
+        } else {
+          console.warn("Failed to load activity logs, keeping existing data");
+        }
+
+        // Handle metrics response
+        if (metricsRes.status === 'fulfilled' && metricsRes.value.ok) {
+          const metricsData = await metricsRes.value.json();
+          setSystemMetrics(metricsData.metrics);
+          setLastMetricsUpdate(Date.now());
+        } else {
+          console.warn("Failed to load system metrics, using fallback");
+        }
+      } catch (fetchError) {
+        clearTimeout(timeoutId);
+        throw fetchError;
       }
     } catch (error) {
       console.error("Error loading dashboard data:", error);
+
+      // Show user-friendly error handling and update connection status
+      if (error.name === 'AbortError') {
+        if (process.env.NODE_ENV === 'development') {
+          console.warn("Dashboard data loading timed out, using cached data");
+        }
+        setConnectionStatus("degraded");
+      } else if (error.message?.includes('Failed to fetch')) {
+        console.warn("Network connectivity issue, using cached/fallback data");
+        setConnectionStatus("offline");
+      } else {
+        console.error("Unexpected error loading dashboard data:", error.message);
+        setConnectionStatus("degraded");
+      }
+
+      // Ensure we have some data even on error
+      if (!stats) {
+        const emergencyFallback: DashboardStats = {
+          totalUsers: 0,
+          activeUsers: 0,
+          newUsersToday: 0,
+          activeSessions: 0,
+          totalMessages: 0,
+          flaggedMessages: 0,
+          supportTickets: 0,
+          pendingTickets: 0,
+          forumPosts: 0,
+        };
+        setStats(emergencyFallback);
+      }
     } finally {
       setIsLoading(false);
     }
-  };
-
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: "USD",
-    }).format(amount);
   };
 
   const formatTime = (timestamp: string) => {
     return new Date(timestamp).toLocaleString();
   };
 
-  const getActivityIcon = (category: string, action: string) => {
-    switch (category) {
-      case "auth":
-        return <Users className="w-4 h-4" />;
-      case "chat":
-        return <MessageCircle className="w-4 h-4" />;
-      case "store":
-        return <ShoppingBag className="w-4 h-4" />;
-      case "admin":
-        return <Eye className="w-4 h-4" />;
-      default:
-        return <Activity className="w-4 h-4" />;
-    }
-  };
+  // Enhanced chart data with proper structure for Recharts - use API data when available
+  const userGrowthData = dashboardData?.userGrowthData || [
+    { day: "Mon", value: stats?.newUsersToday || 0 },
+    { day: "Tue", value: stats?.newUsersToday || 0 },
+    { day: "Wed", value: stats?.newUsersToday || 0 },
+    { day: "Thu", value: stats?.newUsersToday || 0 },
+    { day: "Fri", value: stats?.newUsersToday || 0 },
+    { day: "Sat", value: stats?.newUsersToday || 0 },
+    { day: "Sun", value: stats?.newUsersToday || 0 },
+  ];
 
-  // Sample data for charts
-  const userGrowthData = [23, 19, 27, 31, 28, 35, 23];
-  const revenueData = [1654, 1789, 1923, 1856, 2190];
-  const activityData = [156, 143, 178, 165, 189, 201, 167];
+  const activityData = [
+    { day: "Mon", value: stats?.activeSessions || 0 },
+    { day: "Tue", value: stats?.activeSessions || 0 },
+    { day: "Wed", value: stats?.activeSessions || 0 },
+    { day: "Thu", value: stats?.activeSessions || 0 },
+    { day: "Fri", value: stats?.activeSessions || 0 },
+    { day: "Sat", value: stats?.activeSessions || 0 },
+    { day: "Sun", value: stats?.activeSessions || 0 },
+  ];
 
   return (
     <AdminLayout>
@@ -251,244 +562,331 @@ export default function AdminDashboard() {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold text-white">Admin Dashboard</h1>
-            <p className="text-gray-400">
+            <p className="text-gray-300">
               Welcome back, {user?.username}. System overview and controls.
             </p>
-            <div className="flex items-center mt-2 space-x-4">
-              <Badge
-                className={`text-xs ${isConnected ? "bg-green-600 text-white" : "bg-red-600 text-white"}`}
+          </div>
+          <div className="flex items-center space-x-3">
+            {/* Time Range Filter */}
+            <select
+              className="bg-white text-black border border-black rounded px-3 py-2 text-sm"
+              value={timeRange}
+              onChange={(e) => setTimeRange(e.target.value)}
+            >
+              <option value="1h">Last Hour</option>
+              <option value="24h">Last 24 Hours</option>
+              <option value="7d">Last 7 Days</option>
+              <option value="30d">Last 30 Days</option>
+            </select>
+
+            <div className="flex space-x-2">
+              <Button
+                onClick={loadDashboardData}
+                className="bg-white text-black hover:bg-gray-200"
+                disabled={isLoading}
+                size="sm"
               >
-                {isConnected ? "● Connected" : "● Offline"}
-              </Badge>
-              {onlineUsersCount > 0 && (
-                <Badge className="text-xs bg-gray-700 text-white">
-                  {onlineUsersCount} online
-                </Badge>
-              )}
+                <span className={`mr-2 ${isLoading ? "animate-spin" : ""}`}>
+                  {isLoading ? "↻" : "↻"}
+                </span>
+                Refresh All
+              </Button>
+
+              <Button
+                onClick={() => {
+                  setLiveActivity([]);
+                  setLastActivityUpdate(Date.now());
+                }}
+                className="bg-white text-black hover:bg-gray-200"
+                size="sm"
+              >
+                Clear Feed
+              </Button>
             </div>
           </div>
-          <Button
-            onClick={loadDashboardData}
-            className="bg-white text-black hover:bg-gray-200"
-            disabled={isLoading}
-          >
-            <RefreshCw
-              className={`w-4 h-4 mr-2 ${isLoading ? "animate-spin" : ""}`}
-            />
-            Refresh
-          </Button>
         </div>
 
         {/* Key Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <Card className="bg-gray-900 border-gray-700">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-gray-400">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <Card className="bg-white border-black">
+            <CardHeader>
+              <CardTitle className="text-sm font-medium text-black">
                 Total Users
               </CardTitle>
-              <Users className="h-4 w-4 text-gray-500" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-white">
+              <div className="text-2xl font-bold text-black">
                 {stats?.totalUsers || 0}
               </div>
-              <p className="text-xs text-gray-400">
-                <span className="text-white font-medium">
+              <p className="text-xs text-gray-600">
+                <span className="text-black font-medium">
                   +{stats?.newUsersToday || 0}
                 </span>{" "}
                 new today
               </p>
               <div className="mt-3">
-                <MiniChart data={userGrowthData} />
+                <MiniLineChart data={userGrowthData} color="#ffffff" />
               </div>
             </CardContent>
           </Card>
 
-          <Card className="bg-gray-900 border-gray-700">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-gray-400">
-                Monthly Revenue
-              </CardTitle>
-              <DollarSign className="h-4 w-4 text-gray-500" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-white">
-                {formatCurrency(stats?.monthlyRevenue || 0)}
-              </div>
-              <p className="text-xs text-gray-400">
-                <span className="text-white font-medium">+18.0%</span> from last
-                month
-              </p>
-              <div className="mt-3">
-                <MiniChart data={revenueData} />
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-gray-900 border-gray-700">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-gray-400">
+          <Card className="bg-white border-black">
+            <CardHeader>
+              <CardTitle className="text-sm font-medium text-black">
                 Active Sessions
               </CardTitle>
-              <Activity className="h-4 w-4 text-gray-500" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-white">
+              <div className="text-2xl font-bold text-black">
                 {stats?.activeSessions || 0}
               </div>
-              <p className="text-xs text-gray-400">
+              <p className="text-xs text-gray-600">
                 {stats?.activeUsers || 0} users online
               </p>
               <div className="mt-3">
-                <MiniChart data={activityData} />
+                <MiniBarChart data={activityData} color="#ffffff" />
               </div>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-gray-900 border-gray-700">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-gray-400">
-                Server Uptime
-              </CardTitle>
-              <Server className="h-4 w-4 text-gray-500" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-white">
-                {stats?.serverUptime || 0}%
-              </div>
-              <Progress
-                value={stats?.serverUptime || 0}
-                className="mt-2 bg-gray-700"
-              />
             </CardContent>
           </Card>
         </div>
 
-        {/* System Status Cards */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <Card className="bg-gray-900 border-gray-700">
+        {/* Enhanced Analytics Section */}
+        <div className="grid grid-cols-1 gap-6">
+          {/* User Growth Analytics */}
+          <Card className="bg-white border-black">
             <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <MessageCircle className="w-5 h-5 text-gray-400" />
-                <span className="text-white">Platform Activity</span>
+              <CardTitle className="flex items-center justify-between">
+                <div className="flex items-center space-x-2">
+                  <span className="text-black">User Activity & Growth</span>
+                </div>
+                <div className="flex items-center space-x-4 text-sm">
+                  <div className="flex items-center space-x-2">
+                    <div className="w-3 h-3 bg-black rounded"></div>
+                    <span className="text-gray-600">Daily Registrations</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <div className="w-3 h-3 bg-gray-500 rounded"></div>
+                    <span className="text-gray-600">Active Sessions</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <div className="w-3 h-3 bg-gray-300 rounded"></div>
+                    <span className="text-gray-600">Login Events</span>
+                  </div>
+                </div>
               </CardTitle>
+              <CardDescription className="text-gray-600">
+                Real-time user engagement metrics and registration trends
+                {dashboardData?.userGrowthData && (
+                  <span className="ml-2 text-black">• Live data</span>
+                )}
+              </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-400">Total Messages</span>
-                <span className="font-bold text-white">
-                  {stats?.totalMessages?.toLocaleString() || 0}
-                </span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-400">Flagged Messages</span>
-                <Badge className="bg-red-600 text-white">
-                  {stats?.flaggedMessages || 0}
-                </Badge>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-400">Forum Posts</span>
-                <span className="font-bold text-white">
-                  {stats?.forumPosts || 0}
-                </span>
-              </div>
-              <div className="pt-2">
-                <Link to="/admin/chat-review">
-                  <Button className="w-full bg-white text-black hover:bg-gray-200">
-                    <Eye className="w-4 h-4 mr-2" />
-                    Review Messages
-                  </Button>
-                </Link>
-              </div>
+            <CardContent>
+              <ResponsiveContainer width="100%" height={350}>
+                <AreaChart data={dashboardData?.userGrowthData || [
+                  { day: "Mon", registrations: stats?.newUsersToday || 0, activeSessions: stats?.activeSessions || 0, logins: (stats?.totalMessages || 0) },
+                  { day: "Tue", registrations: stats?.newUsersToday || 0, activeSessions: stats?.activeSessions || 0, logins: (stats?.totalMessages || 0) },
+                  { day: "Wed", registrations: stats?.newUsersToday || 0, activeSessions: stats?.activeSessions || 0, logins: (stats?.totalMessages || 0) },
+                  { day: "Thu", registrations: stats?.newUsersToday || 0, activeSessions: stats?.activeSessions || 0, logins: (stats?.totalMessages || 0) },
+                  { day: "Fri", registrations: stats?.newUsersToday || 0, activeSessions: stats?.activeSessions || 0, logins: (stats?.totalMessages || 0) },
+                  { day: "Sat", registrations: stats?.newUsersToday || 0, activeSessions: stats?.activeSessions || 0, logins: (stats?.totalMessages || 0) },
+                  { day: "Sun", registrations: stats?.newUsersToday || 0, activeSessions: stats?.activeSessions || 0, logins: (stats?.totalMessages || 0) },
+                ]}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#000000" />
+                  <XAxis dataKey="day" stroke="#000000" />
+                  <YAxis stroke="#000000" />
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: "#ffffff",
+                      border: "1px solid #000000",
+                      borderRadius: "8px"
+                    }}
+                    formatter={(value, name) => [value, name]}
+                    labelFormatter={(label) => `${label}`}
+                  />
+                  <Area
+                    type="monotone"
+                    dataKey="logins"
+                    stackId="1"
+                    stroke="#d1d5db"
+                    fill="#d1d5db"
+                    fillOpacity={0.4}
+                    name="Login Events"
+                  />
+                  <Area
+                    type="monotone"
+                    dataKey="activeSessions"
+                    stackId="2"
+                    stroke="#9ca3af"
+                    fill="#9ca3af"
+                    fillOpacity={0.6}
+                    name="Active Sessions"
+                  />
+                  <Area
+                    type="monotone"
+                    dataKey="registrations"
+                    stackId="3"
+                    stroke="#000000"
+                    fill="#000000"
+                    fillOpacity={0.8}
+                    name="New Registrations"
+                  />
+                </AreaChart>
+              </ResponsiveContainer>
             </CardContent>
           </Card>
 
-          <Card className="bg-gray-900 border-gray-700">
+        </div>
+
+        {/* System Status Cards */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+          <Card className="bg-white border-black">
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
-                <AlertTriangle className="w-5 h-5 text-gray-400" />
-                <span className="text-white">Support Overview</span>
+                <span className="text-black">Support Overview</span>
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-400">Total Tickets</span>
-                <span className="font-bold text-white">
+                <span className="text-sm text-gray-600">Total Tickets</span>
+                <span className="font-bold text-black">
                   {stats?.supportTickets || 0}
                 </span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-400">Pending Tickets</span>
-                <Badge className="bg-yellow-600 text-white">
+                <span className="text-sm text-gray-600">Pending Tickets</span>
+                <Badge className="bg-black text-white">
                   {stats?.pendingTickets || 0}
                 </Badge>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-400">Response Rate</span>
-                <span className="font-bold text-white">98.7%</span>
+                <span className="text-sm text-gray-600">Response Rate</span>
+                <span className="font-bold text-black">98.7%</span>
               </div>
               <div className="pt-2">
-                <Button className="w-full bg-white text-black hover:bg-gray-200">
-                  <CheckCircle className="w-4 h-4 mr-2" />
+                <Button className="w-full bg-black text-white hover:bg-gray-800">
                   Manage Support
                 </Button>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="bg-gray-900 border-gray-700">
+        </div>
+
+        {/* Real-time System Performance */}
+        <div className="grid grid-cols-1 gap-6">
+          {/* System Performance Metrics */}
+          <Card className="bg-white border-black">
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
-                <DollarSign className="w-5 h-5 text-gray-400" />
-                <span className="text-white">Revenue Breakdown</span>
+                <span className="text-black">System Performance</span>
               </CardTitle>
+              <CardDescription className="text-gray-600">
+                Real-time server metrics and performance indicators
+              </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-400">VIP Subscriptions</span>
-                <span className="font-bold text-white">
-                  {formatCurrency(1450.25)}
-                </span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-400">
-                  VIP++ Subscriptions
-                </span>
-                <span className="font-bold text-white">
-                  {formatCurrency(520.75)}
-                </span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-400">
-                  Legend Subscriptions
-                </span>
-                <span className="font-bold text-white">
-                  {formatCurrency(219.5)}
-                </span>
-              </div>
-              <div className="pt-2 border-t border-gray-700">
-                <div className="flex items-center justify-between font-bold">
-                  <span className="text-gray-400">Total This Month</span>
-                  <span className="text-white">
-                    {formatCurrency(stats?.monthlyRevenue || 0)}
-                  </span>
+            <CardContent>
+              <div className="space-y-6">
+                {/* CPU Usage */}
+                <div>
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-sm text-gray-600">CPU Usage</span>
+                    <span className="text-sm font-medium text-black">
+                      {systemMetrics?.system?.cpu || 23}%
+                    </span>
+                  </div>
+                  <Progress value={systemMetrics?.system?.cpu || 23} className="bg-gray-200" />
+                </div>
+
+                {/* Memory Usage */}
+                <div>
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-sm text-gray-600">Memory Usage</span>
+                    <span className="text-sm font-medium text-black">
+                      {systemMetrics?.system?.memory || 67}%
+                    </span>
+                  </div>
+                  <Progress value={systemMetrics?.system?.memory || 67} className="bg-gray-200" />
+                </div>
+
+                {/* Network I/O */}
+                <div>
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-sm text-gray-600">Network I/O</span>
+                    <span className="text-sm font-medium text-black">
+                      {systemMetrics?.system?.network || 34}%
+                    </span>
+                  </div>
+                  <Progress value={systemMetrics?.system?.network || 34} className="bg-gray-200" />
+                </div>
+
+                {/* Real-time Status with enhanced info */}
+                <div className="flex justify-between items-center text-xs text-gray-600 mt-2">
+                  <span>Last updated: {new Date(lastMetricsUpdate).toLocaleTimeString()}</span>
+                  {realTimeData && (
+                    <div className="flex space-x-2">
+                      <span>Uptime: {Math.floor((realTimeData.uptime || 0) / 3600)}h</span>
+                      <span>Mem: {realTimeData.memoryUsage?.used || 0}MB</span>
+                    </div>
+                  )}
+                </div>
+
+                {/* Performance Chart */}
+                <div className="mt-4">
+                  <ResponsiveContainer width="100%" height={150}>
+                    <LineChart data={(dashboardData?.systemPerformance?.performanceHistory || [
+                      { time: "00:00", cpu: 15, memory: 45, network: 20 },
+                      { time: "04:00", cpu: 25, memory: 52, network: 35 },
+                      { time: "08:00", cpu: 45, memory: 68, network: 55 },
+                      { time: "12:00", cpu: 35, memory: 72, network: 40 },
+                      { time: "16:00", cpu: 28, memory: 65, network: 38 },
+                      { time: "20:00", cpu: systemMetrics?.system?.cpu || 23, memory: systemMetrics?.system?.memory || 67, network: systemMetrics?.system?.network || 34 },
+                    ]).map((item, index, array) => {
+                      // Add real-time data point as the latest entry
+                      if (index === array.length - 1 && realTimeData) {
+                        return {
+                          ...item,
+                          cpu: realTimeData.system?.cpu || item.cpu,
+                          memory: realTimeData.system?.memory || item.memory,
+                          network: realTimeData.system?.network || item.network
+                        };
+                      }
+                      return item;
+                    })}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="#000000" />
+                      <XAxis dataKey="time" stroke="#000000" />
+                      <YAxis stroke="#000000" />
+                      <Tooltip
+                        contentStyle={{
+                          backgroundColor: "#ffffff",
+                          border: "1px solid #000000",
+                          borderRadius: "8px",
+                          color: "#000000"
+                        }}
+                      />
+                      <Line type="monotone" dataKey="cpu" stroke="#000000" strokeWidth={3} name="CPU %" />
+                      <Line type="monotone" dataKey="memory" stroke="#6b7280" strokeWidth={3} name="Memory %" />
+                      <Line type="monotone" dataKey="network" stroke="#d1d5db" strokeWidth={3} name="Network %" />
+                    </LineChart>
+                  </ResponsiveContainer>
                 </div>
               </div>
             </CardContent>
           </Card>
+
         </div>
 
         {/* Recent Activity */}
-        <Card className="bg-gray-900 border-gray-700">
+        <Card className="bg-white border-gray-300">
           <CardHeader>
             <CardTitle className="flex items-center justify-between">
               <div className="flex items-center space-x-2">
-                <Clock className="w-5 h-5 text-gray-400" />
-                <span className="text-white">Recent Activity</span>
+                <span className="text-gray-900">Recent Activity</span>
               </div>
               <Link to="/admin/logs">
                 <Button
-                  className="bg-white text-black hover:bg-gray-200"
+                  className="bg-gray-900 text-white hover:bg-gray-800"
                   size="sm"
                 >
                   View All Logs
@@ -497,74 +895,140 @@ export default function AdminDashboard() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            {recentActivity.length > 0 ? (
+            {(liveActivity.length > 0 || recentActivity.length > 0) ? (
               <div className="space-y-3">
-                {recentActivity.slice(0, 8).map((activity) => (
+                {/* Live Activity First */}
+                {liveActivity.slice(0, 4).map((activity) => (
                   <div
                     key={activity.id}
-                    className="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-800"
+                    className="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-100 border-l-2 border-black bg-gray-50"
                   >
-                    <div className="flex-shrink-0 text-gray-400">
-                      {getActivityIcon(activity.category, activity.action)}
-                    </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium truncate text-white">
+                      <p className="text-sm font-medium truncate text-gray-900">
                         {activity.username || "System"} -{" "}
                         {activity.action.replace(/_/g, " ")}
                       </p>
-                      <p className="text-xs text-gray-400">
+                      <p className="text-xs text-black">
+                        {formatTime(activity.timestamp)} • LIVE
+                      </p>
+                    </div>
+                    <Badge className="text-xs bg-black text-white">
+                      {activity.category}
+                    </Badge>
+                  </div>
+                ))}
+                
+                {/* Recent Activity */}
+                {recentActivity.slice(0, Math.max(4, 8 - liveActivity.length)).map((activity) => (
+                  <div
+                    key={activity.id}
+                    className="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-50"
+                  >
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium truncate text-gray-900">
+                        {activity.username || "System"} -{" "}
+                        {activity.action.replace(/_/g, " ")}
+                      </p>
+                      <p className="text-xs text-gray-600">
                         {formatTime(activity.timestamp)}
                       </p>
                     </div>
-                    <Badge className="text-xs bg-gray-700 text-white">
+                    <Badge className="text-xs bg-black text-white">
                       {activity.category}
                     </Badge>
                   </div>
                 ))}
               </div>
             ) : (
-              <div className="text-center py-8 text-gray-400">
-                <Activity className="w-12 h-12 mx-auto mb-2 opacity-50" />
+              <div className="text-center py-8 text-gray-600">
                 <p>No recent activity</p>
+                <p className="text-xs mt-1">Live feed will update automatically</p>
+              </div>
+            )}
+            
+            {/* Live indicator */}
+            {liveActivity.length > 0 && (
+              <div className="flex items-center justify-center mt-4 pt-3 border-t border-gray-200">
+                <div className="flex items-center space-x-2 text-xs text-gray-700">
+                  <div className="w-2 h-2 bg-black rounded-full animate-pulse"></div>
+                  <span>Live activity feed active</span>
+                </div>
               </div>
             )}
           </CardContent>
         </Card>
 
-        {/* Quick Actions */}
-        <Card className="bg-gray-900 border-gray-700">
+        {/* Enhanced Quick Actions */}
+        <Card className="bg-white border-black">
           <CardHeader>
-            <CardTitle className="text-white">Quick Actions</CardTitle>
-            <CardDescription className="text-gray-400">
-              Administrative tools and management functions
+            <CardTitle className="text-black">Quick Actions & System Control</CardTitle>
+            <CardDescription className="text-gray-600">
+              Administrative tools, system management, and emergency controls
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <Link to="/admin/users">
-                <Button className="w-full bg-gray-800 text-white hover:bg-gray-700 h-auto p-4 flex flex-col space-y-2">
-                  <Users className="w-6 h-6" />
-                  <span className="text-sm">Manage Users</span>
-                </Button>
-              </Link>
-              <Link to="/admin/news">
-                <Button className="w-full bg-gray-800 text-white hover:bg-gray-700 h-auto p-4 flex flex-col space-y-2">
-                  <Calendar className="w-6 h-6" />
-                  <span className="text-sm">Create News</span>
-                </Button>
-              </Link>
-              <Link to="/admin/settings">
-                <Button className="w-full bg-gray-800 text-white hover:bg-gray-700 h-auto p-4 flex flex-col space-y-2">
-                  <Zap className="w-6 h-6" />
-                  <span className="text-sm">System Settings</span>
-                </Button>
-              </Link>
-              <Link to="/admin/analytics">
-                <Button className="w-full bg-gray-800 text-white hover:bg-gray-700 h-auto p-4 flex flex-col space-y-2">
-                  <BarChart3 className="w-6 h-6" />
-                  <span className="text-sm">View Analytics</span>
-                </Button>
-              </Link>
+            <div className="space-y-6">
+              {/* Primary Actions */}
+              <div>
+                <h4 className="text-sm font-medium text-gray-600 mb-3">Management</h4>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  <Link to="/admin/users">
+                    <Button className="w-full bg-black text-white hover:bg-gray-800 h-auto p-4 flex flex-col space-y-2">
+                      <span className="text-sm">Manage Users</span>
+                    </Button>
+                  </Link>
+                  <Link to="/admin/news">
+                    <Button className="w-full bg-black text-white hover:bg-gray-800 h-auto p-4 flex flex-col space-y-2">
+                      <span className="text-sm">Create News</span>
+                    </Button>
+                  </Link>
+                  <Link to="/admin/settings">
+                    <Button className="w-full bg-black text-white hover:bg-gray-800 h-auto p-4 flex flex-col space-y-2">
+                      <span className="text-sm">System Settings</span>
+                    </Button>
+                  </Link>
+                  <Link to="/admin/analytics">
+                    <Button className="w-full bg-black text-white hover:bg-gray-800 h-auto p-4 flex flex-col space-y-2">
+                      <span className="text-sm">View Analytics</span>
+                    </Button>
+                  </Link>
+                </div>
+              </div>
+
+              {/* System Controls */}
+              <div>
+                <h4 className="text-sm font-medium text-gray-600 mb-3">System Controls</h4>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  <Button className="w-full bg-black text-white hover:bg-gray-800 h-auto p-4 flex flex-col space-y-2">
+                    <span className="text-sm">Clear Cache</span>
+                  </Button>
+                  <Button className="w-full bg-black text-white hover:bg-gray-800 h-auto p-4 flex flex-col space-y-2">
+                    <span className="text-sm">Restart Services</span>
+                  </Button>
+                  <Button className="w-full bg-black text-white hover:bg-gray-800 h-auto p-4 flex flex-col space-y-2">
+                    <span className="text-sm">Maintenance Mode</span>
+                  </Button>
+                  <Button className="w-full bg-black text-white hover:bg-gray-800 h-auto p-4 flex flex-col space-y-2">
+                    <span className="text-sm">Health Check</span>
+                  </Button>
+                </div>
+              </div>
+
+              {/* Real-time Actions */}
+              <div>
+                <h4 className="text-sm font-medium text-gray-600 mb-3">Real-time Actions</h4>
+                <div className="flex flex-wrap gap-2">
+                  <Button size="sm" className="bg-black hover:bg-gray-800 text-white">
+                    Broadcast Message
+                  </Button>
+                  <Button size="sm" className="bg-black hover:bg-gray-800 text-white">
+                    View Live Sessions
+                  </Button>
+                  <Button size="sm" className="bg-black hover:bg-gray-800 text-white">
+                    Server Status
+                  </Button>
+                </div>
+              </div>
             </div>
           </CardContent>
         </Card>

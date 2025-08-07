@@ -4,24 +4,6 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/lib/auth";
-import {
-  Shield,
-  Users,
-  MessageCircle,
-  Settings,
-  Newspaper,
-  Calendar,
-  BarChart3,
-  FileText,
-  ShoppingBag,
-  Activity,
-  ChevronLeft,
-  ChevronRight,
-  LogOut,
-  Home,
-  Menu,
-  X,
-} from "lucide-react";
 
 interface AdminLayoutProps {
   children: React.ReactNode;
@@ -31,22 +13,22 @@ const adminNavItems = [
   {
     section: "Overview",
     items: [
-      { icon: BarChart3, label: "Dashboard", path: "/admin", exactMatch: true },
-      { icon: Activity, label: "Analytics", path: "/admin/analytics" },
+      { label: "Dashboard", path: "/admin", exactMatch: true },
+      { label: "Analytics", path: "/admin/analytics" },
     ],
   },
   {
-    section: "Management",
+    section: "Management", 
     items: [
-      { icon: Users, label: "Users", path: "/admin/users" },
-      { icon: Newspaper, label: "News", path: "/admin/news" },
+      { label: "Users", path: "/admin/users" },
+      { label: "News", path: "/admin/news" },
     ],
   },
   {
     section: "System",
     items: [
-      { icon: FileText, label: "Logs", path: "/admin/logs" },
-      { icon: Settings, label: "Settings", path: "/admin/settings" },
+      { label: "Logs", path: "/admin/logs" },
+      { label: "Settings", path: "/admin/settings" },
     ],
   },
 ];
@@ -73,20 +55,18 @@ export function AdminLayout({ children }: AdminLayoutProps) {
   if (user?.role !== "admin" && user?.role !== "mod") {
     return (
       <div className="min-h-screen flex items-center justify-center bg-black">
-        <Card className="bg-gray-900 border border-gray-700">
+        <Card className="bg-white border border-black">
           <CardContent className="p-8 text-center">
-            <Shield className="w-16 h-16 mx-auto mb-4 text-gray-400" />
-            <h1 className="text-2xl font-bold mb-2 text-white">
+            <h1 className="text-2xl font-bold mb-2 text-black">
               Access Denied
             </h1>
-            <p className="text-gray-300 mb-4">
+            <p className="text-gray-600 mb-4">
               You don't have permission to access the admin panel.
             </p>
             <Button
               onClick={() => navigate("/dashboard")}
-              className="bg-white text-black hover:bg-gray-200"
+              className="bg-black text-white hover:bg-gray-800"
             >
-              <Home className="w-4 h-4 mr-2" />
               Go to Dashboard
             </Button>
           </CardContent>
@@ -99,12 +79,12 @@ export function AdminLayout({ children }: AdminLayoutProps) {
     <div className="min-h-screen bg-black flex text-white">
       {/* Desktop Sidebar */}
       <aside
-        className={`hidden lg:flex flex-col bg-black border-r border-gray-700 transition-all duration-300 ${
+        className={`hidden lg:flex flex-col bg-black border-r border-white transition-all duration-300 ${
           sidebarCollapsed ? "w-16" : "w-72"
         }`}
       >
         {/* Sidebar Header */}
-        <div className="p-4 border-b border-gray-700">
+        <div className="p-4 border-b border-white">
           <div className="flex items-center justify-between">
             {!sidebarCollapsed && (
               <div>
@@ -121,9 +101,9 @@ export function AdminLayout({ children }: AdminLayoutProps) {
               className="text-white hover:text-gray-300 hover:bg-gray-800"
             >
               {sidebarCollapsed ? (
-                <ChevronRight className="w-4 h-4" />
+                <span className="text-sm">»</span>
               ) : (
-                <ChevronLeft className="w-4 h-4" />
+                <span className="text-sm">«</span>
               )}
             </Button>
           </div>
@@ -140,7 +120,6 @@ export function AdminLayout({ children }: AdminLayoutProps) {
               )}
               <div className="space-y-1 mb-4">
                 {section.items.map((item) => {
-                  const Icon = item.icon;
                   const active = isActive(item.path, item.exactMatch);
 
                   return (
@@ -150,13 +129,10 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                       className={`flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors ${
                         active
                           ? "bg-white text-black"
-                          : "hover:bg-gray-800 text-gray-300 hover:text-white"
+                          : "hover:bg-gray-800 text-white hover:text-white"
                       }`}
                       title={sidebarCollapsed ? item.label : ""}
                     >
-                      <Icon
-                        className={`w-5 h-5 flex-shrink-0 ${active ? "text-black" : "text-gray-300"}`}
-                      />
                       {!sidebarCollapsed && (
                         <span className="text-sm font-medium">
                           {item.label}
@@ -171,14 +147,13 @@ export function AdminLayout({ children }: AdminLayoutProps) {
         </nav>
 
         {/* Sidebar Footer */}
-        <div className="p-4 border-t border-gray-700">
+        <div className="p-4 border-t border-white">
           <div className="space-y-2">
             <Link
               to="/dashboard"
-              className="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-gray-800 text-gray-300 hover:text-white transition-colors"
+              className="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-gray-800 text-white hover:text-white transition-colors"
               title={sidebarCollapsed ? "Back to Dashboard" : ""}
             >
-              <Home className="w-5 h-5 text-gray-300" />
               {!sidebarCollapsed && (
                 <span className="text-sm">Back to Dashboard</span>
               )}
@@ -186,12 +161,11 @@ export function AdminLayout({ children }: AdminLayoutProps) {
             <Button
               variant="ghost"
               onClick={handleLogout}
-              className={`w-full justify-start space-x-3 px-3 py-2 hover:bg-gray-800 hover:text-gray-300 text-gray-300 ${
+              className={`w-full justify-start space-x-3 px-3 py-2 hover:bg-gray-800 hover:text-white text-white ${
                 sidebarCollapsed ? "px-2" : ""
               }`}
               title={sidebarCollapsed ? "Logout" : ""}
             >
-              <LogOut className="w-5 h-5 text-gray-300" />
               {!sidebarCollapsed && <span className="text-sm">Logout</span>}
             </Button>
           </div>
@@ -204,9 +178,9 @@ export function AdminLayout({ children }: AdminLayoutProps) {
           variant="outline"
           size="sm"
           onClick={() => setMobileMenuOpen(true)}
-          className="bg-gray-900 border-gray-700 text-white hover:bg-gray-800"
+          className="bg-black border-white text-white hover:bg-gray-800"
         >
-          <Menu className="w-4 h-4" />
+          <span className="text-sm">☰</span>
         </Button>
       </div>
 
@@ -217,9 +191,9 @@ export function AdminLayout({ children }: AdminLayoutProps) {
             className="fixed inset-0 bg-black/50"
             onClick={() => setMobileMenuOpen(false)}
           />
-          <aside className="relative w-72 bg-black border-r border-gray-700">
+          <aside className="relative w-72 bg-black border-r border-white">
             {/* Mobile Header */}
-            <div className="p-4 border-b border-gray-700 flex items-center justify-between">
+            <div className="p-4 border-b border-white flex items-center justify-between">
               <div>
                 <h2 className="text-lg font-bold text-white">Admin Panel</h2>
                 <p className="text-xs text-gray-400">
@@ -232,7 +206,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                 onClick={() => setMobileMenuOpen(false)}
                 className="text-white hover:text-gray-300 hover:bg-gray-800"
               >
-                <X className="w-4 h-4" />
+                <span className="text-sm">✕</span>
               </Button>
             </div>
 
@@ -245,7 +219,6 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                   </h3>
                   <div className="space-y-1 mb-4">
                     {section.items.map((item) => {
-                      const Icon = item.icon;
                       const active = isActive(item.path, item.exactMatch);
 
                       return (
@@ -256,12 +229,9 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                           className={`flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors ${
                             active
                               ? "bg-white text-black"
-                              : "hover:bg-gray-800 text-gray-300 hover:text-white"
+                              : "hover:bg-gray-800 text-white hover:text-white"
                           }`}
                         >
-                          <Icon
-                            className={`w-5 h-5 ${active ? "text-black" : "text-gray-300"}`}
-                          />
                           <span className="text-sm font-medium">
                             {item.label}
                           </span>
@@ -274,21 +244,19 @@ export function AdminLayout({ children }: AdminLayoutProps) {
             </nav>
 
             {/* Mobile Footer */}
-            <div className="p-4 border-t border-gray-700 space-y-2">
+            <div className="p-4 border-t border-white space-y-2">
               <Link
                 to="/dashboard"
                 onClick={() => setMobileMenuOpen(false)}
-                className="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-gray-800 text-gray-300 hover:text-white transition-colors"
+                className="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-gray-800 text-white hover:text-white transition-colors"
               >
-                <Home className="w-5 h-5 text-gray-300" />
                 <span className="text-sm">Back to Dashboard</span>
               </Link>
               <Button
                 variant="ghost"
                 onClick={handleLogout}
-                className="w-full justify-start space-x-3 px-3 py-2 hover:bg-gray-800 hover:text-gray-300 text-gray-300"
+                className="w-full justify-start space-x-3 px-3 py-2 hover:bg-gray-800 hover:text-white text-white"
               >
-                <LogOut className="w-5 h-5 text-gray-300" />
                 <span className="text-sm">Logout</span>
               </Button>
             </div>

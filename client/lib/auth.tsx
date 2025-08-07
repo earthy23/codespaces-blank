@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from "react";
+import React, { createContext, useContext, useState, useEffect, useRef } from "react";
 import { authApi, tokenManager } from "./api";
 
 export interface User {
@@ -39,6 +39,8 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const lastRefreshRef = useRef<number>(0);
+  const refreshTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     // Check for existing valid token and load user
@@ -47,11 +49,36 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     } else {
       setLoading(false);
     }
+
+    // Cleanup on unmount
+    return () => {
+      if (refreshTimeoutRef.current) {
+        clearTimeout(refreshTimeoutRef.current);
+      }
+    };
   }, []);
 
   const refreshUser = async () => {
+    // Debounce rapid refresh calls (minimum 2 seconds between requests)
+    const now = Date.now();
+    const timeSinceLastRefresh = now - lastRefreshRef.current;
+    const minInterval = 2000; // 2 seconds
+
+    if (timeSinceLastRefresh < minInterval) {
+      // If a refresh was called recently, schedule a delayed refresh
+      if (refreshTimeoutRef.current) {
+        clearTimeout(refreshTimeoutRef.current);
+      }
+
+      refreshTimeoutRef.current = setTimeout(() => {
+        refreshUser();
+      }, minInterval - timeSinceLastRefresh);
+      return;
+    }
+
     try {
       setLoading(true);
+      lastRefreshRef.current = now;
 
       // Add timeout for auth response (increased for better reliability)
       const timeoutPromise = new Promise<never>((_, reject) =>
@@ -67,8 +94,21 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     } catch (error) {
       console.error("Failed to refresh user:", error);
 
-      tokenManager.clear();
-      setUser(null);
+      // More graceful handling of network errors
+      if (error instanceof Error && error.message.includes("Network error")) {
+        console.warn("🌐 Network connectivity issue during user refresh - keeping current session");
+        // Don't clear tokens on network errors, just log and continue
+        // This prevents users from being logged out due to temporary connectivity issues
+      } else if (error instanceof Error && error.message.includes("Authentication required")) {
+        console.log("🔐 Authentication required - clearing session");
+        tokenManager.clear();
+        setUser(null);
+      } else {
+        console.error("🔧 Unexpected error during user refresh:", error.message);
+        // For unexpected errors, be conservative and clear the session
+        tokenManager.clear();
+        setUser(null);
+      }
     } finally {
       setLoading(false);
     }

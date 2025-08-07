@@ -28,16 +28,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { AdminLayout } from "@/components/ui/admin-layout";
-import {
-  Newspaper,
-  Plus,
-  Edit,
-  Trash2,
-  Eye,
-  RefreshCw,
-  Calendar,
-  User,
-} from "lucide-react";
+// SVG icons removed as requested
 import { useAuth } from "@/lib/auth";
 
 interface NewsArticle {
@@ -313,7 +304,7 @@ export default function NewsAdmin() {
                     });
                   }}
                 >
-                  <Plus className="w-4 h-4 mr-2" />
+                  <span className="mr-2">+</span>
                   New Article
                 </Button>
               </DialogTrigger>
@@ -412,9 +403,9 @@ export default function NewsAdmin() {
               className="bg-gray-700 text-white hover:bg-gray-600"
               disabled={isLoading}
             >
-              <RefreshCw
-                className={`w-4 h-4 mr-2 ${isLoading ? "animate-spin" : ""}`}
-              />
+              <span className={`mr-2 ${isLoading ? "animate-spin" : ""}`}>
+                {isLoading ? "↻" : "↻"}
+              </span>
               Refresh
             </Button>
           </div>
@@ -550,7 +541,7 @@ export default function NewsAdmin() {
                             onClick={() => handleEdit(article)}
                             className="text-gray-300 hover:bg-gray-800"
                           >
-                            <Edit className="w-4 h-4" />
+                            <span>✎</span>
                           </Button>
 
                           {article.status === "draft" && (
@@ -585,7 +576,7 @@ export default function NewsAdmin() {
                             onClick={() => handleDelete(article.id)}
                             className="text-red-400 hover:bg-gray-800"
                           >
-                            <Trash2 className="w-4 h-4" />
+                            <span>🗑</span>
                           </Button>
                         </div>
                       </TableCell>

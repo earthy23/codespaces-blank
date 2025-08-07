@@ -52,6 +52,12 @@ class ChatWebSocketServer {
     ws.userId = null;
     ws.authenticated = false;
 
+    const clientIP = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+
+    if (process.env.NODE_ENV === "development") {
+      console.log(`🔌 New WebSocket connection from ${clientIP}`);
+    }
+
     // Heartbeat
     ws.on("pong", () => {
       ws.isAlive = true;
@@ -62,32 +68,42 @@ class ChatWebSocketServer {
         const message = JSON.parse(data.toString());
         this.handleMessage(ws, message);
       } catch (error) {
-        console.error("WebSocket message parsing error:", error);
-        ws.send(
-          JSON.stringify({
-            type: "error",
-            message: "Invalid message format",
-          }),
-        );
+        console.error("WebSocket message parsing error:", error.message || error);
+        if (ws.readyState === 1) { // WebSocket.OPEN
+          ws.send(
+            JSON.stringify({
+              type: "error",
+              message: "Invalid message format",
+            }),
+          );
+        }
       }
     });
 
-    ws.on("close", () => {
+    ws.on("close", (code, reason) => {
+      if (process.env.NODE_ENV === "development") {
+        console.log(`🔌 WebSocket disconnected: ${code} - ${reason || 'No reason'}`);
+      }
       this.handleDisconnection(ws);
     });
 
     ws.on("error", (error) => {
-      console.error("WebSocket error:", error);
+      console.error("WebSocket error:", error.message || error.toString() || error);
       this.handleDisconnection(ws);
     });
 
     // Send welcome message
-    ws.send(
-      JSON.stringify({
-        type: "welcome",
-        message: "Connected to UEC Chat WebSocket",
-      }),
-    );
+    try {
+      ws.send(
+        JSON.stringify({
+          type: "welcome",
+          message: "Connected to UEC WebSocket Server",
+          timestamp: new Date().toISOString()
+        }),
+      );
+    } catch (error) {
+      console.error("Error sending welcome message:", error.message);
+    }
   }
 
   handleMessage(ws, message) {
@@ -220,7 +236,7 @@ class ChatWebSocketServer {
         userId: user.id,
       });
     } catch (error) {
-      console.error("WebSocket authentication error:", error);
+      console.error("WebSocket authentication error:", error.message || error);
       ws.send(
         JSON.stringify({
           type: "auth_error",
@@ -240,7 +256,7 @@ class ChatWebSocketServer {
       const chatIds = new Set(chats.map((c) => c.chat_id));
       this.userChatRooms.set(userId, chatIds);
     } catch (error) {
-      console.error("Error loading user chat rooms:", error);
+      console.error("Error loading user chat rooms:", error.message || error);
     }
   }
 
@@ -384,7 +400,7 @@ class ChatWebSocketServer {
         }
       });
     } catch (error) {
-      console.error("Error broadcasting to chat:", error);
+      console.error("Error broadcasting to chat:", error.message || error);
     }
   }
 
@@ -417,15 +433,35 @@ class ChatWebSocketServer {
 
   // Health check - remove dead connections
   heartbeat() {
-    this.wss.clients.forEach((ws) => {
-      if (!ws.isAlive) {
-        this.handleDisconnection(ws);
-        return ws.terminate();
-      }
+    // Check main WebSocket server
+    if (this.wss && this.wss.clients) {
+      this.wss.clients.forEach((ws) => {
+        if (!ws.isAlive) {
+          this.handleDisconnection(ws);
+          return ws.terminate();
+        }
 
-      ws.isAlive = false;
-      ws.ping();
-    });
+        ws.isAlive = false;
+        if (ws.readyState === 1) { // WebSocket.OPEN
+          ws.ping();
+        }
+      });
+    }
+
+    // Check chat WebSocket server
+    if (this.chatWss && this.chatWss.clients) {
+      this.chatWss.clients.forEach((ws) => {
+        if (!ws.isAlive) {
+          this.handleDisconnection(ws);
+          return ws.terminate();
+        }
+
+        ws.isAlive = false;
+        if (ws.readyState === 1) { // WebSocket.OPEN
+          ws.ping();
+        }
+      });
+    }
   }
 
   // Start heartbeat interval
@@ -469,7 +505,7 @@ class ChatWebSocketServer {
         }
       });
     } catch (error) {
-      console.error("Error getting online users in chat:", error);
+      console.error("Error getting online users in chat:", error.message || error);
     }
 
     return onlineUsers;
@@ -580,7 +616,7 @@ class ChatWebSocketServer {
           });
         }
       } catch (error) {
-        console.error("Error getting user info:", error);
+        console.error("Error getting user info:", error.message || error);
       }
     });
     return users;

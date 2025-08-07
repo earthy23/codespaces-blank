@@ -57,29 +57,28 @@ app.use(
 // Rate limiting
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // limit each IP to 100 requests per windowMs
+  max: process.env.NODE_ENV === "production" ? 100 : 1000, // More lenient in development
   message: "Too many requests from this IP, please try again later.",
   standardHeaders: true,
   legacyHeaders: false,
+  // Skip rate limiting in development mode completely
+  skip: (req) => {
+    return process.env.NODE_ENV !== "production";
+  },
 });
 
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: process.env.NODE_ENV === "production" ? 10 : 50, // More lenient in development
+  max: process.env.NODE_ENV === "production" ? 10 : 99999, // Effectively unlimited in development
   message: {
     error: "Too many authentication attempts, please try again later.",
     retryAfter: "15 minutes",
   },
   standardHeaders: true,
   legacyHeaders: false,
-  // Skip rate limiting for localhost in development
+  // Skip rate limiting completely in development
   skip: (req) => {
-    return (
-      process.env.NODE_ENV !== "production" &&
-      (req.ip === "127.0.0.1" ||
-        req.ip === "::1" ||
-        req.ip === "::ffff:127.0.0.1")
-    );
+    return process.env.NODE_ENV !== "production";
   },
 });
 

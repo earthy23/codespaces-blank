@@ -12,46 +12,45 @@ const navigationSections = [
       {
         iconSvg: (
           <svg viewBox="0 0 24 24" fill="none" className="w-5 h-5">
-            <path d="M3 13h1v7c0 1.103.897 2 2 2h12c1.103 0 2-.897 2-2v-7h1a1 1 0 0 0 .707-1.707l-9-9a.999.999 0 0 0-1.414 0l-9 9A1 1 0 0 0 3 13z" fill="currentColor"/>
-            <rect x="8" y="15" width="8" height="6" fill="currentColor" opacity="0.7"/>
+            <path d="M3 12l9-9 9 9v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-8z" stroke="white" strokeWidth="2" fill="black"/>
+            <path d="M9 21V12h6v9" stroke="white" strokeWidth="2" fill="none"/>
           </svg>
         ),
         label: "Dashboard",
         path: "/dashboard",
-        description: "Your command center",
         iconColor: "text-primary",
         glow: "shadow-primary/50",
       },
       {
         iconSvg: (
           <svg viewBox="0 0 24 24" fill="none" className="w-5 h-5">
-            <rect x="3" y="4" width="18" height="2" rx="1" fill="currentColor"/>
-            <rect x="3" y="8" width="18" height="2" rx="1" fill="currentColor"/>
-            <rect x="3" y="12" width="18" height="2" rx="1" fill="currentColor"/>
-            <circle cx="6" cy="5" r="1" fill="currentColor" opacity="0.8"/>
-            <circle cx="6" cy="9" r="1" fill="currentColor" opacity="0.8"/>
-            <circle cx="6" cy="13" r="1" fill="currentColor" opacity="0.8"/>
-            <rect x="2" y="16" width="20" height="6" rx="2" fill="currentColor" opacity="0.6"/>
+            <rect x="2" y="3" width="20" height="6" rx="2" stroke="white" strokeWidth="2" fill="black"/>
+            <rect x="2" y="9" width="20" height="6" rx="2" stroke="white" strokeWidth="2" fill="black"/>
+            <rect x="2" y="15" width="20" height="6" rx="2" stroke="white" strokeWidth="2" fill="black"/>
+            <circle cx="6" cy="6" r="1" fill="white"/>
+            <circle cx="6" cy="12" r="1" fill="white"/>
+            <circle cx="6" cy="18" r="1" fill="white"/>
+            <circle cx="18" cy="6" r="1" fill="white"/>
+            <circle cx="18" cy="12" r="1" fill="white"/>
+            <circle cx="18" cy="18" r="1" fill="white"/>
           </svg>
         ),
         label: "Servers",
         path: "/servers",
-        description: "Browse & join servers",
         iconColor: "text-primary",
         glow: "shadow-primary/50",
       },
       {
         iconSvg: (
           <svg viewBox="0 0 24 24" fill="none" className="w-5 h-5">
-            <path d="M12 2L2 7l10 5 10-5-10-5z" fill="currentColor"/>
-            <path d="m2 17 10 5 10-5" stroke="currentColor" strokeWidth="2" fill="none"/>
-            <path d="m2 12 10 5 10-5" stroke="currentColor" strokeWidth="2" fill="none"/>
-            <circle cx="12" cy="12" r="2" fill="currentColor" opacity="0.8"/>
+            <path d="M3 7l9-4 9 4v10l-9 4-9-4V7z" stroke="white" strokeWidth="2" fill="black"/>
+            <path d="M3 7l9 4 9-4" stroke="white" strokeWidth="2"/>
+            <path d="M12 11v10" stroke="white" strokeWidth="2"/>
+            <circle cx="12" cy="7" r="2" stroke="white" strokeWidth="1.5" fill="none"/>
           </svg>
         ),
         label: "Downloads",
         path: "/downloads",
-        description: "Get clients & files",
         iconColor: "text-primary",
         glow: "shadow-primary/50",
       },
@@ -63,22 +62,21 @@ const navigationSections = [
       {
         iconSvg: (
           <svg viewBox="0 0 24 24" fill="none" className="w-5 h-5">
-            <circle cx="9" cy="7" r="4" fill="currentColor"/>
-            <path d="m3 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2" stroke="currentColor" strokeWidth="2" fill="none"/>
-            <circle cx="16" cy="11" r="3" fill="currentColor" opacity="0.7"/>
-            <path d="m22 21v-2a4 4 0 0 0-3-3.87" stroke="currentColor" strokeWidth="2" fill="none"/>
+            <circle cx="9" cy="7" r="3" stroke="white" strokeWidth="2" fill="black"/>
+            <path d="M3 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2" stroke="white" strokeWidth="2" fill="none"/>
+            <circle cx="16" cy="11" r="2" stroke="white" strokeWidth="2" fill="black"/>
+            <path d="M22 21v-2a4 4 0 0 0-3-3.87" stroke="white" strokeWidth="2" fill="none"/>
           </svg>
         ),
         label: "Friends",
         path: "/friends",
-        description: "Manage your friends",
         iconColor: "text-primary",
         glow: "shadow-primary/50",
       },
       {
         iconSvg: (
           <svg viewBox="0 0 24 24" fill="none" className="w-5 h-5">
-            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" fill="currentColor"/>
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" stroke="white" strokeWidth="2" fill="black"/>
             <circle cx="8" cy="11" r="1" fill="white"/>
             <circle cx="12" cy="11" r="1" fill="white"/>
             <circle cx="16" cy="11" r="1" fill="white"/>
@@ -86,23 +84,6 @@ const navigationSections = [
         ),
         label: "Chat",
         path: "/chat",
-        description: "Chat with friends",
-        iconColor: "text-primary",
-        glow: "shadow-primary/50",
-      },
-      {
-        iconSvg: (
-          <svg viewBox="0 0 24 24" fill="none" className="w-5 h-5">
-            <rect x="3" y="3" width="18" height="18" rx="2" fill="currentColor" opacity="0.6"/>
-            <path d="M8 7h8M8 11h8M8 15h6" stroke="currentColor" strokeWidth="2" fill="none"/>
-            <circle cx="6" cy="8" r="1" fill="currentColor"/>
-            <circle cx="6" cy="12" r="1" fill="currentColor"/>
-            <circle cx="6" cy="16" r="1" fill="currentColor"/>
-          </svg>
-        ),
-        label: "Forums",
-        path: "/forums",
-        description: "Community discussions",
         iconColor: "text-primary",
         glow: "shadow-primary/50",
       },
@@ -114,31 +95,25 @@ const navigationSections = [
       {
         iconSvg: (
           <svg viewBox="0 0 24 24" fill="none" className="w-5 h-5">
-            <path d="M3 11v3a1 1 0 0 0 1 1h2l4 4V7L6 11H4a1 1 0 0 0-1 1z" fill="currentColor"/>
-            <path d="M13.5 8.5a5 5 0 0 1 0 7" stroke="currentColor" strokeWidth="2" fill="none"/>
-            <path d="M16.5 5.5a9 9 0 0 1 0 13" stroke="currentColor" strokeWidth="2" fill="none"/>
-            <path d="M18.5 3.5a13 13 0 0 1 0 17" stroke="currentColor" strokeWidth="1.5" fill="none"/>
-            <circle cx="12" cy="12" r="2" fill="currentColor" opacity="0.6"/>
+            <path d="M18 8a6 6 0 0 0-6-6 6 6 0 0 0-6 6c0 7 6 9 6 9s6-2 6-9" stroke="white" strokeWidth="2" fill="black"/>
+            <path d="M13.73 21a2 2 0 0 1-3.46 0" stroke="white" strokeWidth="2" fill="none"/>
+            <circle cx="16" cy="6" r="2" fill="white"/>
           </svg>
         ),
         label: "News",
         path: "/news",
-        description: "Latest updates",
         iconColor: "text-primary",
         glow: "shadow-primary/50",
       },
       {
         iconSvg: (
           <svg viewBox="0 0 24 24" fill="none" className="w-5 h-5">
-            <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" fill="currentColor" opacity="0.7"/>
-            <line x1="3" y1="6" x2="21" y2="6" stroke="currentColor" strokeWidth="2"/>
-            <path d="m16 10a4 4 0 0 1-8 0" stroke="currentColor" strokeWidth="2" fill="none"/>
-            <circle cx="12" cy="14" r="2" fill="currentColor"/>
+            <circle cx="12" cy="12" r="9" stroke="white" strokeWidth="2" fill="black"/>
+            <text x="12" y="16" textAnchor="middle" fontSize="14" fontWeight="bold" fill="white">$</text>
           </svg>
         ),
         label: "Store",
         path: "/store",
-        description: "Premium content",
         iconColor: "text-primary",
         glow: "shadow-primary/50",
       },
@@ -150,26 +125,25 @@ const navigationSections = [
       {
         iconSvg: (
           <svg viewBox="0 0 24 24" fill="none" className="w-5 h-5">
-            <circle cx="12" cy="8" r="5" fill="currentColor"/>
-            <path d="M20 21a8 8 0 1 0-16 0" fill="currentColor" opacity="0.7"/>
+            <circle cx="12" cy="8" r="4" stroke="white" strokeWidth="2" fill="black"/>
+            <path d="M20 21a8 8 0 1 0-16 0" stroke="white" strokeWidth="2" fill="black"/>
           </svg>
         ),
         label: "Profile",
         path: "/profile",
-        description: "Your profile settings",
         iconColor: "text-primary",
         glow: "shadow-primary/50",
       },
       {
         iconSvg: (
           <svg viewBox="0 0 24 24" fill="none" className="w-5 h-5">
-            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" stroke="currentColor" strokeWidth="2" fill="none"/>
-            <circle cx="12" cy="17" r="1" fill="currentColor"/>
+            <circle cx="12" cy="12" r="9" stroke="white" strokeWidth="2" fill="black"/>
+            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" stroke="white" strokeWidth="2" fill="none"/>
+            <circle cx="12" cy="17" r="1" fill="white"/>
           </svg>
         ),
         label: "Support",
         path: "/support",
-        description: "Get help & support",
         iconColor: "text-primary",
         glow: "shadow-primary/50",
       },
@@ -243,9 +217,6 @@ export function NavigationSidebar() {
                           className={`font-semibold ${isActive ? "text-primary" : "text-sidebar-foreground"} group-hover:text-primary transition-colors`}
                         >
                           {item.label}
-                        </p>
-                        <p className="text-xs text-sidebar-foreground/70">
-                          {item.description}
                         </p>
                       </div>
                       {isActive && (

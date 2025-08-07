@@ -109,7 +109,11 @@ export const WebSocketManagerProvider = ({
 
     try {
       const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
-      const wsUrl = `${protocol}//${window.location.host}/ws`;
+      // In development, connect to the API server port (3000)
+      const host = process.env.NODE_ENV === "development"
+        ? window.location.hostname + ":3000"
+        : window.location.host;
+      const wsUrl = `${protocol}//${host}/ws`;
 
       if (process.env.NODE_ENV === "development") {
         console.log("🔌 Connecting to WebSocket:", wsUrl);
@@ -138,13 +142,13 @@ export const WebSocketManagerProvider = ({
           const message = JSON.parse(event.data);
           handleMessage(message);
         } catch (error) {
-          console.error("❌ WebSocket message parse error:", {
+          console.error("❌ WebSocket message parse error:", JSON.stringify({
             error: error.message,
             rawData:
               event.data?.substring(0, 100) +
               (event.data?.length > 100 ? "..." : ""),
             timestamp: new Date().toISOString(),
-          });
+          }));
         }
       };
 
@@ -207,17 +211,20 @@ export const WebSocketManagerProvider = ({
         };
 
         if (process.env.NODE_ENV === "development") {
-          console.error("❌ WebSocket error:", errorInfo);
+          console.warn("⚠️ WebSocket error (will attempt reconnect):", JSON.stringify(errorInfo));
         } else {
-          console.error("❌ WebSocket connection error occurred");
+          console.warn("⚠️ WebSocket connection error, attempting reconnect...");
         }
+
+        // Mark as disconnected for reconnection logic
+        setIsConnected(false);
       };
     } catch (error) {
-      console.error("❌ WebSocket connection setup error:", {
+      console.error("❌ WebSocket connection setup error:", JSON.stringify({
         message: error.message,
         type: error.name,
         timestamp: new Date().toISOString(),
-      });
+      }));
       setIsConnected(false);
     }
   }, [user, token]);
@@ -235,11 +242,11 @@ export const WebSocketManagerProvider = ({
         break;
 
       case "auth_error":
-        console.error("❌ WebSocket auth error:", {
+        console.error("❌ WebSocket auth error:", JSON.stringify({
           message: data?.message || "Unknown auth error",
           data: data,
           timestamp: new Date().toISOString(),
-        });
+        }));
         break;
 
       case "user_online":
@@ -339,11 +346,11 @@ export const WebSocketManagerProvider = ({
       try {
         connect();
       } catch (error) {
-        console.error("❌ WebSocket connection initiation error:", {
+        console.error("❌ WebSocket connection initiation error:", JSON.stringify({
           message: error?.message || "Unknown error",
           type: error?.name || "Unknown",
           timestamp: new Date().toISOString(),
-        });
+        }));
       }
     }
 

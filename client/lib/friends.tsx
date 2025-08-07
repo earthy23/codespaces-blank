@@ -61,55 +61,134 @@ export const FriendsProvider = ({ children }: { children: React.ReactNode }) => 
   const [onlineFriends, setOnlineFriends] = useState<Friend[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
+  // FullStory detection utility
+  const isFullStoryBlocking = () => {
+    try {
+      return window.fetch !== fetch ||
+             (window.fetch.toString().includes('fullstory') ||
+              document.querySelector('script[src*="fullstory"]') !== null);
+    } catch {
+      return false;
+    }
+  };
+
+  // XMLHttpRequest fallback for fetch
+  const makeRequest = async (url: string, options: any = {}) => {
+    if (isFullStoryBlocking()) {
+      return new Promise<Response>((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        xhr.open(options.method || 'GET', url);
+
+        if (options.headers) {
+          Object.entries(options.headers).forEach(([key, value]) => {
+            xhr.setRequestHeader(key, value as string);
+          });
+        }
+
+        xhr.onload = () => {
+          const response = {
+            ok: xhr.status >= 200 && xhr.status < 300,
+            status: xhr.status,
+            json: () => Promise.resolve(JSON.parse(xhr.responseText)),
+            text: () => Promise.resolve(xhr.responseText)
+          } as Response;
+          resolve(response);
+        };
+
+        xhr.onerror = () => reject(new Error('XMLHttpRequest failed'));
+        xhr.ontimeout = () => reject(new Error('XMLHttpRequest timeout'));
+
+        if (options.signal) {
+          options.signal.addEventListener('abort', () => {
+            xhr.abort();
+            reject(new Error('Request aborted'));
+          });
+        }
+
+        xhr.send(options.body || null);
+      });
+    }
+    return fetch(url, options);
+  };
+
   // Load all friends data from API
   const loadFriendsData = useCallback(async () => {
     if (!user || !token) return;
 
     try {
       setIsLoading(true);
-      const [friendsRes, requestsRes, sentRes] = await Promise.all([
-        fetch("/api/friends", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }),
-        fetch("/api/friends/requests", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }),
-        fetch("/api/friends/requests/sent", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }),
-      ]);
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 8000); // 8 second timeout
 
-      if (friendsRes.ok) {
-        const friendsData = await friendsRes.json();
-        setFriends(friendsData.friends || []);
+      try {
+        const [friendsRes, requestsRes, sentRes] = await Promise.allSettled([
+          makeRequest("/api/friends", {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+            signal: controller.signal,
+          }),
+          makeRequest("/api/friends/requests", {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+            signal: controller.signal,
+          }),
+          makeRequest("/api/friends/requests/sent", {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+            signal: controller.signal,
+          }),
+        ]);
 
-        // Filter online friends
-        const online = (friendsData.friends || []).filter(
-          (f: Friend) => f.status === "online" || f.status === "playing",
-        );
-        setOnlineFriends(online);
-      }
+        clearTimeout(timeoutId);
 
-      if (requestsRes.ok) {
-        const requestsData = await requestsRes.json();
-        setFriendRequests(requestsData.requests || []);
-      }
+        // Handle friends response
+        if (friendsRes.status === 'fulfilled' && friendsRes.value.ok) {
+          const friendsData = await friendsRes.value.json();
+          setFriends(friendsData.friends || []);
 
-      if (sentRes.ok) {
-        const sentData = await sentRes.json();
-        setSentRequests(sentData.requests || []);
+          // Filter online friends
+          const online = (friendsData.friends || []).filter(
+            (f: Friend) => f.status === "online" || f.status === "playing",
+          );
+          setOnlineFriends(online);
+        } else {
+          console.warn("Failed to load friends, keeping existing data");
+        }
+
+        // Handle friend requests response
+        if (requestsRes.status === 'fulfilled' && requestsRes.value.ok) {
+          const requestsData = await requestsRes.value.json();
+          setFriendRequests(requestsData.requests || []);
+        } else {
+          console.warn("Failed to load friend requests, keeping existing data");
+        }
+
+        // Handle sent requests response
+        if (sentRes.status === 'fulfilled' && sentRes.value.ok) {
+          const sentData = await sentRes.value.json();
+          setSentRequests(sentData.requests || []);
+        } else {
+          console.warn("Failed to load sent requests, keeping existing data");
+        }
+      } catch (fetchError) {
+        clearTimeout(timeoutId);
+        throw fetchError;
       }
     } catch (error) {
-      console.error("Error loading friends data:", error);
+      if (error.name === 'AbortError') {
+        console.warn("Friends data loading timed out, keeping existing data");
+      } else if (error.message?.includes('Failed to fetch')) {
+        console.warn("Network issue loading friends data, keeping existing data");
+      } else {
+        console.error("Error loading friends data:", error);
+      }
+      // Don't clear existing data on error
     } finally {
       setIsLoading(false);
     }
@@ -230,37 +309,58 @@ export const FriendsProvider = ({ children }: { children: React.ReactNode }) => 
     if (!user || !token) return false;
 
     try {
-      const response = await fetch("/api/friends/request", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ username }),
-      });
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
 
-      if (response.ok) {
-        // Refresh sent requests
-        const sentRes = await fetch("/api/friends/requests/sent", {
+      try {
+        const response = await makeRequest("/api/friends/request", {
+          method: "POST",
           headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
           },
+          body: JSON.stringify({ username }),
+          signal: controller.signal,
         });
 
-        if (sentRes.ok) {
-          const sentData = await sentRes.json();
-          setSentRequests(sentData.requests || []);
-        }
+        clearTimeout(timeoutId);
 
-        return true;
-      } else {
-        const errorData = await response.json();
-        console.error("Friend request error:", errorData.error);
-        return false;
+        if (response.ok) {
+          // Refresh sent requests
+          try {
+            const sentRes = await makeRequest("/api/friends/requests/sent", {
+              headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
+              },
+            });
+
+            if (sentRes.ok) {
+              const sentData = await sentRes.json();
+              setSentRequests(sentData.requests || []);
+            }
+          } catch (refreshError) {
+            console.warn("Failed to refresh sent requests after sending friend request");
+          }
+
+          return true;
+        } else {
+          const errorData = await response.json().catch(() => ({ error: "Unknown error" }));
+          console.error("Friend request error:", errorData.error);
+          return false;
+        }
+      } catch (fetchError) {
+        clearTimeout(timeoutId);
+        throw fetchError;
       }
     } catch (error) {
-      console.error("Error sending friend request:", error);
+      if (error.name === 'AbortError') {
+        console.warn("Friend request timed out");
+      } else if (error.message?.includes('Failed to fetch')) {
+        console.warn("Network issue sending friend request");
+      } else {
+        console.error("Error sending friend request:", error);
+      }
       return false;
     }
   };
@@ -269,7 +369,7 @@ export const FriendsProvider = ({ children }: { children: React.ReactNode }) => 
     if (!user || !token) return;
 
     try {
-      const response = await fetch(`/api/friends/request/${requestId}/accept`, {
+      const response = await makeRequest(`/api/friends/request/${requestId}/accept`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -293,7 +393,7 @@ export const FriendsProvider = ({ children }: { children: React.ReactNode }) => 
     if (!user || !token) return;
 
     try {
-      const response = await fetch(
+      const response = await makeRequest(
         `/api/friends/request/${requestId}/decline`,
         {
           method: "POST",
@@ -320,7 +420,7 @@ export const FriendsProvider = ({ children }: { children: React.ReactNode }) => 
     if (!user || !token) return;
 
     try {
-      const response = await fetch(`/api/friends/${friendId}`, {
+      const response = await makeRequest(`/api/friends/${friendId}`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -348,7 +448,7 @@ export const FriendsProvider = ({ children }: { children: React.ReactNode }) => 
     if (!user || !token) return;
 
     try {
-      const response = await fetch("/api/friends/status", {
+      const response = await makeRequest("/api/friends/status", {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -369,7 +469,7 @@ export const FriendsProvider = ({ children }: { children: React.ReactNode }) => 
     if (!user || !token || query.length < 2) return [];
 
     try {
-      const response = await fetch(
+      const response = await makeRequest(
         `/api/friends/search?q=${encodeURIComponent(query)}`,
         {
           headers: {
