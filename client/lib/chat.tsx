@@ -97,8 +97,18 @@ const makeRequest = async (url: string, options: any = {}) => {
         resolve(response);
       };
 
-      xhr.onerror = () => reject(new Error('XMLHttpRequest failed'));
-      xhr.ontimeout = () => reject(new Error('XMLHttpRequest timeout'));
+      xhr.onerror = () => {
+        if (process.env.NODE_ENV === 'development') {
+          console.warn('Chat XMLHttpRequest network error, returning empty response');
+        }
+        resolve({ ok: false, status: 0, json: () => Promise.resolve({}) });
+      };
+      xhr.ontimeout = () => {
+        if (process.env.NODE_ENV === 'development') {
+          console.warn('Chat XMLHttpRequest timeout, returning empty response');
+        }
+        resolve({ ok: false, status: 408, json: () => Promise.resolve({}) });
+      };
 
       if (options.signal) {
         options.signal.addEventListener('abort', () => {
