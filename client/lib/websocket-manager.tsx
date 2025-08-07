@@ -144,13 +144,25 @@ export const WebSocketManagerProvider = ({
       };
 
       wsRef.current.onclose = (event) => {
+        const closeCodeNames = {
+          1000: 'Normal Closure',
+          1001: 'Going Away',
+          1002: 'Protocol Error',
+          1003: 'Unsupported Data',
+          1006: 'Abnormal Closure',
+          1011: 'Server Error',
+          1012: 'Service Restart'
+        };
+
+        const closeReason = closeCodeNames[event.code] || `Unknown (${event.code})`;
+
         if (process.env.NODE_ENV === 'development') {
-          console.log("🔌 WebSocket disconnected:", event.code, event.reason);
+          console.log(`🔌 WebSocket disconnected: ${closeReason}`, event.reason || 'No reason provided');
         }
         setIsConnected(false);
 
-        // Auto-reconnect with exponential backoff
-        if (reconnectAttempts.current < maxReconnectAttempts) {
+        // Don't auto-reconnect for normal closure (1000) or when going away (1001)
+        if (event.code !== 1000 && event.code !== 1001 && reconnectAttempts.current < maxReconnectAttempts) {
           const delay = Math.pow(2, reconnectAttempts.current) * 1000; // 1s, 2s, 4s, 8s, 16s
           if (process.env.NODE_ENV === 'development') {
             console.log(
@@ -162,6 +174,12 @@ export const WebSocketManagerProvider = ({
             reconnectAttempts.current++;
             connect();
           }, delay);
+        } else if (event.code === 1000 || event.code === 1001) {
+          if (process.env.NODE_ENV === 'development') {
+            console.log("🔌 WebSocket closed normally, not reconnecting");
+          }
+        } else {
+          console.warn("🔌 WebSocket max reconnection attempts reached");
         }
       };
 
