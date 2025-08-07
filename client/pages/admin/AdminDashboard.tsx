@@ -9,22 +9,6 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { AdminLayout } from "@/components/ui/admin-layout";
-import {
-  Users,
-  MessageCircle,
-  DollarSign,
-  Activity,
-  AlertTriangle,
-  CheckCircle,
-  Clock,
-  Zap,
-  Eye,
-  ShoppingBag,
-  Calendar,
-  Server,
-  BarChart3,
-  RefreshCw,
-} from "lucide-react";
 import { useAuth } from "@/lib/auth";
 import { useWebSocket, useWebSocketEvent } from "@/lib/websocket-manager";
 import { cacheManager, CACHE_KEYS } from "@/lib/cache-manager";
@@ -48,15 +32,12 @@ interface DashboardStats {
   totalUsers: number;
   activeUsers: number;
   newUsersToday: number;
-  totalRevenue: number;
-  monthlyRevenue: number;
   activeSessions: number;
   totalMessages: number;
   flaggedMessages: number;
   supportTickets: number;
   pendingTickets: number;
   forumPosts: number;
-  serverUptime: number;
 }
 
 interface RecentActivity {
@@ -69,7 +50,7 @@ interface RecentActivity {
 }
 
 // Enhanced chart components using Recharts
-const MiniLineChart = ({ data, color = "#ffffff" }: { data: any[]; color?: string }) => (
+const MiniLineChart = ({ data, color = "#6b7280" }: { data: any[]; color?: string }) => (
   <ResponsiveContainer width="100%" height={60}>
     <LineChart data={data}>
       <Line
@@ -84,7 +65,7 @@ const MiniLineChart = ({ data, color = "#ffffff" }: { data: any[]; color?: strin
   </ResponsiveContainer>
 );
 
-const MiniAreaChart = ({ data, color = "#ffffff" }: { data: any[]; color?: string }) => (
+const MiniAreaChart = ({ data, color = "#6b7280" }: { data: any[]; color?: string }) => (
   <ResponsiveContainer width="100%" height={60}>
     <AreaChart data={data}>
       <Area
@@ -98,7 +79,7 @@ const MiniAreaChart = ({ data, color = "#ffffff" }: { data: any[]; color?: strin
   </ResponsiveContainer>
 );
 
-const MiniBarChart = ({ data, color = "#ffffff" }: { data: any[]; color?: string }) => (
+const MiniBarChart = ({ data, color = "#6b7280" }: { data: any[]; color?: string }) => (
   <ResponsiveContainer width="100%" height={60}>
     <BarChart data={data}>
       <Bar dataKey="value" fill={color} radius={[2, 2, 0, 0]} />
@@ -133,18 +114,15 @@ export default function AdminDashboard() {
   useEffect(() => {
     if (!stats) {
       const fallbackStats: DashboardStats = {
-        totalUsers: 1247,
-        activeUsers: 312,
-        newUsersToday: 23,
-        totalRevenue: 15847.75,
-        monthlyRevenue: 2190.5,
-        activeSessions: 89,
-        totalMessages: 8547,
-        flaggedMessages: 3,
-        supportTickets: 67,
-        pendingTickets: 8,
-        forumPosts: 456,
-        serverUptime: 99.87,
+        totalUsers: 0,
+        activeUsers: 0,
+        newUsersToday: 0,
+        activeSessions: 0,
+        totalMessages: 0,
+        flaggedMessages: 0,
+        supportTickets: 0,
+        pendingTickets: 0,
+        forumPosts: 0,
       };
       setStats(fallbackStats);
     }
@@ -173,7 +151,7 @@ export default function AdminDashboard() {
             setRealTimeData(data.metrics);
             setLastMetricsUpdate(Date.now());
             setConnectionStatus("connected");
-
+            
             // Update live stats if we have real-time user data
             if (data.metrics.userActivity) {
               setStats(prevStats => {
@@ -235,7 +213,7 @@ export default function AdminDashboard() {
             const data = await response.json();
             if (data.activity && data.activity.length > 0) {
               setLiveActivity(prev => {
-                const newActivity = data.activity.filter(activity =>
+                const newActivity = data.activity.filter(activity => 
                   !prev.some(existing => existing.id === activity.id)
                 );
                 return [...newActivity, ...prev].slice(0, 10);
@@ -245,7 +223,7 @@ export default function AdminDashboard() {
           }
         } catch (error) {
           if (timeoutId) clearTimeout(timeoutId);
-
+          
           if (error.name === 'AbortError') {
             // Timeout is expected behavior, just log in dev mode
             if (process.env.NODE_ENV === 'development') {
@@ -312,12 +290,12 @@ export default function AdminDashboard() {
 
     try {
       setIsLoading(true);
-
+      
       // Abort any existing request
       if (abortControllerRef.current) {
         abortControllerRef.current.abort();
       }
-
+      
       const controller = new AbortController();
       abortControllerRef.current = controller;
 
@@ -376,24 +354,20 @@ export default function AdminDashboard() {
             totalUsers: stats?.totalUsers || 0,
             activeUsers: stats?.activeUsers || 0,
             newUsersToday: stats?.newUsersToday || 0,
-            totalRevenue: stats?.totalRevenue || 0,
-            monthlyRevenue: stats?.monthlyRevenue || 0,
             activeSessions: stats?.activeSessions || 0,
             totalMessages: stats?.totalMessages || 0,
             flaggedMessages: stats?.flaggedMessages || 0,
             supportTickets: stats?.supportTickets || 0,
             pendingTickets: stats?.pendingTickets || 0,
             forumPosts: stats?.forumPosts || 0,
-            serverUptime: stats?.serverUptime || 0,
           };
           setStats(enhancedStats);
           setDashboardData(stats);
           cacheManager.set(CACHE_KEYS.ADMIN_STATS, enhancedStats);
-
+          
           console.log("Dashboard stats loaded successfully:", {
             users: enhancedStats.totalUsers,
             active: enhancedStats.activeUsers,
-            uptime: enhancedStats.serverUptime
           });
         } else {
           console.warn("Failed to load dashboard stats, using cached/fallback data");
@@ -403,15 +377,12 @@ export default function AdminDashboard() {
               totalUsers: 0,
               activeUsers: 0,
               newUsersToday: 0,
-              totalRevenue: 0,
-              monthlyRevenue: 0,
               activeSessions: 0,
               totalMessages: 0,
               flaggedMessages: 0,
               supportTickets: 0,
               pendingTickets: 0,
               forumPosts: 0,
-              serverUptime: 0,
             };
             setStats(fallbackStats);
             console.warn("Using fallback stats due to API failure");
@@ -435,17 +406,6 @@ export default function AdminDashboard() {
           setLastMetricsUpdate(Date.now());
         } else {
           console.warn("Failed to load system metrics, using fallback");
-          // Set fallback metrics
-          setSystemMetrics({
-            system: {
-              cpu: Math.floor(Math.random() * 20) + 15, // 15-35%
-              memory: Math.floor(Math.random() * 15) + 60, // 60-75%
-              network: Math.floor(Math.random() * 25) + 25, // 25-50%
-            },
-            activeConnections: Math.floor(Math.random() * 50) + 50,
-            requestsPerMinute: Math.floor(Math.random() * 100) + 150,
-          });
-          setLastMetricsUpdate(Date.now());
         }
       } catch (fetchError) {
         clearTimeout(timeoutId);
@@ -471,18 +431,15 @@ export default function AdminDashboard() {
       // Ensure we have some data even on error
       if (!stats) {
         const emergencyFallback: DashboardStats = {
-          totalUsers: 1247,
-          activeUsers: 312,
-          newUsersToday: 23,
-          totalRevenue: 15847.75,
-          monthlyRevenue: 2190.5,
-          activeSessions: 89,
-          totalMessages: 8547,
-          flaggedMessages: 3,
-          supportTickets: 67,
-          pendingTickets: 8,
-          forumPosts: 456,
-          serverUptime: 99.87,
+          totalUsers: 0,
+          activeUsers: 0,
+          newUsersToday: 0,
+          activeSessions: 0,
+          totalMessages: 0,
+          flaggedMessages: 0,
+          supportTickets: 0,
+          pendingTickets: 0,
+          forumPosts: 0,
         };
         setStats(emergencyFallback);
       }
@@ -491,61 +448,29 @@ export default function AdminDashboard() {
     }
   };
 
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: "USD",
-    }).format(amount);
-  };
-
   const formatTime = (timestamp: string) => {
     return new Date(timestamp).toLocaleString();
   };
 
-  const getActivityIcon = (category: string, action: string) => {
-    switch (category) {
-      case "auth":
-        return <Users className="w-4 h-4" />;
-      case "chat":
-        return <MessageCircle className="w-4 h-4" />;
-      case "store":
-        return <ShoppingBag className="w-4 h-4" />;
-      case "admin":
-        return <Eye className="w-4 h-4" />;
-      default:
-        return <Activity className="w-4 h-4" />;
-    }
-  };
-
   // Enhanced chart data with proper structure for Recharts - use API data when available
   const userGrowthData = dashboardData?.userGrowthData || [
-    { day: "Mon", value: 23 },
-    { day: "Tue", value: 19 },
-    { day: "Wed", value: 27 },
-    { day: "Thu", value: 31 },
-    { day: "Fri", value: 28 },
-    { day: "Sat", value: 35 },
-    { day: "Sun", value: 23 },
+    { day: "Mon", value: stats?.newUsersToday || 0 },
+    { day: "Tue", value: stats?.newUsersToday || 0 },
+    { day: "Wed", value: stats?.newUsersToday || 0 },
+    { day: "Thu", value: stats?.newUsersToday || 0 },
+    { day: "Fri", value: stats?.newUsersToday || 0 },
+    { day: "Sat", value: stats?.newUsersToday || 0 },
+    { day: "Sun", value: stats?.newUsersToday || 0 },
   ];
 
   const activityData = [
-    { day: "Mon", value: 156 },
-    { day: "Tue", value: 143 },
-    { day: "Wed", value: 178 },
-    { day: "Thu", value: 165 },
-    { day: "Fri", value: 189 },
-    { day: "Sat", value: 201 },
-    { day: "Sun", value: 167 },
-  ];
-
-  const serverStatusData = dashboardData?.serverStatusHistory || [
-    { day: "Mon", value: 99.9 },
-    { day: "Tue", value: 99.8 },
-    { day: "Wed", value: 99.7 },
-    { day: "Thu", value: 99.9 },
-    { day: "Fri", value: 99.8 },
-    { day: "Sat", value: 99.9 },
-    { day: "Sun", value: 99.87 },
+    { day: "Mon", value: stats?.activeSessions || 0 },
+    { day: "Tue", value: stats?.activeSessions || 0 },
+    { day: "Wed", value: stats?.activeSessions || 0 },
+    { day: "Thu", value: stats?.activeSessions || 0 },
+    { day: "Fri", value: stats?.activeSessions || 0 },
+    { day: "Sat", value: stats?.activeSessions || 0 },
+    { day: "Sun", value: stats?.activeSessions || 0 },
   ];
 
   return (
@@ -554,59 +479,43 @@ export default function AdminDashboard() {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-white">Admin Dashboard</h1>
-            <p className="text-gray-400">
+            <h1 className="text-3xl font-bold text-gray-900">Admin Dashboard</h1>
+            <p className="text-gray-600">
               Welcome back, {user?.username}. System overview and controls.
             </p>
             <div className="flex items-center mt-2 space-x-4">
-              <Badge
-                className={`text-xs ${isConnected ? "bg-green-600 text-white" : "bg-red-600 text-white"}`}
-              >
-                {isConnected ? "● Connected" : "● Offline"}
+              <Badge className="text-xs bg-gray-600 text-white">
+                {isConnected ? "Connected" : "Offline"}
               </Badge>
               {onlineUsersCount > 0 && (
-                <Badge className="text-xs bg-gray-700 text-white">
+                <Badge className="text-xs bg-gray-600 text-white">
                   {onlineUsersCount} online
                 </Badge>
               )}
-              <Badge className="text-xs bg-blue-600 text-white">
+              <Badge className="text-xs bg-gray-600 text-white">
                 Auto-refresh: 15s
               </Badge>
               {realTimeData && (
-                <Badge className="text-xs bg-purple-600 text-white">
+                <Badge className="text-xs bg-gray-600 text-white">
                   {realTimeData.requestsPerMinute || 0} req/min
                 </Badge>
               )}
-              <Badge
-                className={`text-xs ${
-                  connectionStatus === "connected"
-                    ? "bg-green-600 text-white"
-                    : connectionStatus === "degraded"
-                    ? "bg-yellow-600 text-white"
-                    : "bg-red-600 text-white"
-                }`}
-              >
+              <Badge className="text-xs bg-gray-600 text-white">
                 {connectionStatus === "connected"
-                  ? "● API Connected"
+                  ? "API Connected"
                   : connectionStatus === "degraded"
-                  ? "⚠ API Degraded"
-                  : "● API Offline"}
+                  ? "API Degraded"
+                  : "API Offline"}
               </Badge>
-              <Badge
-                className={`text-xs ${
-                  isConnected
-                    ? "bg-green-600 text-white"
-                    : "bg-gray-600 text-white"
-                }`}
-              >
-                {isConnected ? "🔌 WS Connected" : "🔌 WS Offline"}
+              <Badge className="text-xs bg-gray-600 text-white">
+                {isConnected ? "WS Connected" : "WS Offline"}
               </Badge>
             </div>
           </div>
           <div className="flex items-center space-x-3">
             {/* Time Range Filter */}
             <select
-              className="bg-gray-800 text-white border border-gray-600 rounded px-3 py-2 text-sm"
+              className="bg-white text-gray-900 border border-gray-300 rounded px-3 py-2 text-sm"
               value={timeRange}
               onChange={(e) => setTimeRange(e.target.value)}
             >
@@ -619,25 +528,24 @@ export default function AdminDashboard() {
             <div className="flex space-x-2">
               <Button
                 onClick={loadDashboardData}
-                className="bg-white text-black hover:bg-gray-200"
+                className="bg-gray-900 text-white hover:bg-gray-800"
                 disabled={isLoading}
                 size="sm"
               >
-                <RefreshCw
-                  className={`w-4 h-4 mr-2 ${isLoading ? "animate-spin" : ""}`}
-                />
+                <span className={`mr-2 ${isLoading ? "animate-spin" : ""}`}>
+                  {isLoading ? "↻" : "↻"}
+                </span>
                 Refresh All
               </Button>
-
+              
               <Button
                 onClick={() => {
                   setLiveActivity([]);
                   setLastActivityUpdate(Date.now());
                 }}
-                className="bg-blue-600 text-white hover:bg-blue-700"
+                className="bg-gray-700 text-white hover:bg-gray-600"
                 size="sm"
               >
-                <Activity className="w-4 h-4 mr-2" />
                 Clear Feed
               </Button>
             </div>
@@ -645,94 +553,45 @@ export default function AdminDashboard() {
         </div>
 
         {/* Key Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <Card className="bg-gray-900 border-gray-700">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-gray-400">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <Card className="bg-white border-gray-300">
+            <CardHeader>
+              <CardTitle className="text-sm font-medium text-gray-700">
                 Total Users
               </CardTitle>
-              <Users className="h-4 w-4 text-gray-500" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-white">
+              <div className="text-2xl font-bold text-gray-900">
                 {stats?.totalUsers || 0}
               </div>
-              <p className="text-xs text-gray-400">
-                <span className="text-white font-medium">
+              <p className="text-xs text-gray-600">
+                <span className="text-gray-900 font-medium">
                   +{stats?.newUsersToday || 0}
                 </span>{" "}
                 new today
               </p>
               <div className="mt-3">
-                <MiniLineChart data={userGrowthData} color="#22c55e" />
+                <MiniLineChart data={userGrowthData} color="#6b7280" />
               </div>
             </CardContent>
           </Card>
 
-          <Card className="bg-gray-900 border-gray-700">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-gray-400">
-                Monthly Revenue
-              </CardTitle>
-              <DollarSign className="h-4 w-4 text-gray-500" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-white">
-                {formatCurrency(stats?.monthlyRevenue || 0)}
-              </div>
-              <p className="text-xs text-gray-400">
-                <span className="text-green-400 font-medium">+12.4%</span> from last
-                month
-              </p>
-              <div className="mt-3">
-                <MiniAreaChart data={[
-                  { day: "W1", value: 420 },
-                  { day: "W2", value: 580 },
-                  { day: "W3", value: 650 },
-                  { day: "W4", value: stats?.monthlyRevenue || 540 },
-                ]} color="#10b981" />
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-gray-900 border-gray-700">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-gray-400">
+          <Card className="bg-white border-gray-300">
+            <CardHeader>
+              <CardTitle className="text-sm font-medium text-gray-700">
                 Active Sessions
               </CardTitle>
-              <Activity className="h-4 w-4 text-gray-500" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-white">
+              <div className="text-2xl font-bold text-gray-900">
                 {stats?.activeSessions || 0}
               </div>
-              <p className="text-xs text-gray-400">
+              <p className="text-xs text-gray-600">
                 {stats?.activeUsers || 0} users online
               </p>
               <div className="mt-3">
-                <MiniBarChart data={activityData} color="#3b82f6" />
+                <MiniBarChart data={activityData} color="#6b7280" />
               </div>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-gray-900 border-gray-700">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-gray-400">
-                Server Uptime
-              </CardTitle>
-              <Server className="h-4 w-4 text-gray-500" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-white">
-                {stats?.serverUptime || 0}%
-              </div>
-              <div className="mt-3">
-                <MiniLineChart data={serverStatusData} color="#f59e0b" />
-              </div>
-              <Progress
-                value={stats?.serverUptime || 0}
-                className="mt-2 bg-gray-700"
-              />
             </CardContent>
           </Card>
         </div>
@@ -740,53 +599,52 @@ export default function AdminDashboard() {
         {/* Enhanced Analytics Section */}
         <div className="grid grid-cols-1 gap-6">
           {/* User Growth Analytics */}
-          <Card className="bg-gray-900 border-gray-700">
+          <Card className="bg-white border-gray-300">
             <CardHeader>
               <CardTitle className="flex items-center justify-between">
                 <div className="flex items-center space-x-2">
-                  <Users className="w-5 h-5 text-blue-400" />
-                  <span className="text-white">User Activity & Growth</span>
+                  <span className="text-gray-900">User Activity & Growth</span>
                 </div>
                 <div className="flex items-center space-x-4 text-sm">
                   <div className="flex items-center space-x-2">
-                    <div className="w-3 h-3 bg-blue-500 rounded"></div>
-                    <span className="text-gray-400">Daily Registrations</span>
+                    <div className="w-3 h-3 bg-gray-500 rounded"></div>
+                    <span className="text-gray-600">Daily Registrations</span>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <div className="w-3 h-3 bg-green-500 rounded"></div>
-                    <span className="text-gray-400">Active Sessions</span>
+                    <div className="w-3 h-3 bg-gray-600 rounded"></div>
+                    <span className="text-gray-600">Active Sessions</span>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <div className="w-3 h-3 bg-purple-500 rounded"></div>
-                    <span className="text-gray-400">Login Events</span>
+                    <div className="w-3 h-3 bg-gray-700 rounded"></div>
+                    <span className="text-gray-600">Login Events</span>
                   </div>
                 </div>
               </CardTitle>
-              <CardDescription className="text-gray-400">
-              Real-time user engagement metrics and registration trends
-              {dashboardData?.userGrowthData && (
-                <span className="ml-2 text-green-400">• Live data</span>
-              )}
-            </CardDescription>
+              <CardDescription className="text-gray-600">
+                Real-time user engagement metrics and registration trends
+                {dashboardData?.userGrowthData && (
+                  <span className="ml-2 text-gray-700">• Live data</span>
+                )}
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <ResponsiveContainer width="100%" height={350}>
                 <AreaChart data={dashboardData?.userGrowthData || [
-                  { day: "Mon", registrations: 8, activeSessions: 45, logins: 127 },
-                  { day: "Tue", registrations: 12, activeSessions: 52, logins: 143 },
-                  { day: "Wed", registrations: 15, activeSessions: 48, logins: 156 },
-                  { day: "Thu", registrations: 11, activeSessions: 67, logins: 189 },
-                  { day: "Fri", registrations: 18, activeSessions: 71, logins: 201 },
-                  { day: "Sat", registrations: 22, activeSessions: 84, logins: 234 },
-                  { day: "Sun", registrations: 16, activeSessions: 62, logins: 178 },
+                  { day: "Mon", registrations: stats?.newUsersToday || 0, activeSessions: stats?.activeSessions || 0, logins: (stats?.totalMessages || 0) },
+                  { day: "Tue", registrations: stats?.newUsersToday || 0, activeSessions: stats?.activeSessions || 0, logins: (stats?.totalMessages || 0) },
+                  { day: "Wed", registrations: stats?.newUsersToday || 0, activeSessions: stats?.activeSessions || 0, logins: (stats?.totalMessages || 0) },
+                  { day: "Thu", registrations: stats?.newUsersToday || 0, activeSessions: stats?.activeSessions || 0, logins: (stats?.totalMessages || 0) },
+                  { day: "Fri", registrations: stats?.newUsersToday || 0, activeSessions: stats?.activeSessions || 0, logins: (stats?.totalMessages || 0) },
+                  { day: "Sat", registrations: stats?.newUsersToday || 0, activeSessions: stats?.activeSessions || 0, logins: (stats?.totalMessages || 0) },
+                  { day: "Sun", registrations: stats?.newUsersToday || 0, activeSessions: stats?.activeSessions || 0, logins: (stats?.totalMessages || 0) },
                 ]}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-                  <XAxis dataKey="day" stroke="#9ca3af" />
-                  <YAxis stroke="#9ca3af" />
+                  <CartesianGrid strokeDasharray="3 3" stroke="#d1d5db" />
+                  <XAxis dataKey="day" stroke="#6b7280" />
+                  <YAxis stroke="#6b7280" />
                   <Tooltip
                     contentStyle={{
-                      backgroundColor: "#1f2937",
-                      border: "1px solid #374151",
+                      backgroundColor: "#ffffff",
+                      border: "1px solid #d1d5db",
                       borderRadius: "8px"
                     }}
                     formatter={(value, name) => [value, name]}
@@ -796,8 +654,8 @@ export default function AdminDashboard() {
                     type="monotone"
                     dataKey="logins"
                     stackId="1"
-                    stroke="#8b5cf6"
-                    fill="#8b5cf6"
+                    stroke="#6b7280"
+                    fill="#6b7280"
                     fillOpacity={0.3}
                     name="Login Events"
                   />
@@ -805,8 +663,8 @@ export default function AdminDashboard() {
                     type="monotone"
                     dataKey="activeSessions"
                     stackId="2"
-                    stroke="#10b981"
-                    fill="#10b981"
+                    stroke="#9ca3af"
+                    fill="#9ca3af"
                     fillOpacity={0.6}
                     name="Active Sessions"
                   />
@@ -814,8 +672,8 @@ export default function AdminDashboard() {
                     type="monotone"
                     dataKey="registrations"
                     stackId="3"
-                    stroke="#3b82f6"
-                    fill="#3b82f6"
+                    stroke="#4b5563"
+                    fill="#4b5563"
                     fillOpacity={0.8}
                     name="New Registrations"
                   />
@@ -829,33 +687,31 @@ export default function AdminDashboard() {
         {/* System Status Cards */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
-          <Card className="bg-gray-900 border-gray-700">
+          <Card className="bg-white border-gray-300">
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
-                <AlertTriangle className="w-5 h-5 text-gray-400" />
-                <span className="text-white">Support Overview</span>
+                <span className="text-gray-900">Support Overview</span>
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-400">Total Tickets</span>
-                <span className="font-bold text-white">
+                <span className="text-sm text-gray-600">Total Tickets</span>
+                <span className="font-bold text-gray-900">
                   {stats?.supportTickets || 0}
                 </span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-400">Pending Tickets</span>
-                <Badge className="bg-yellow-600 text-white">
+                <span className="text-sm text-gray-600">Pending Tickets</span>
+                <Badge className="bg-gray-600 text-white">
                   {stats?.pendingTickets || 0}
                 </Badge>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-400">Response Rate</span>
-                <span className="font-bold text-white">98.7%</span>
+                <span className="text-sm text-gray-600">Response Rate</span>
+                <span className="font-bold text-gray-900">98.7%</span>
               </div>
               <div className="pt-2">
-                <Button className="w-full bg-white text-black hover:bg-gray-200">
-                  <CheckCircle className="w-4 h-4 mr-2" />
+                <Button className="w-full bg-gray-900 text-white hover:bg-gray-800">
                   Manage Support
                 </Button>
               </div>
@@ -867,13 +723,12 @@ export default function AdminDashboard() {
         {/* Real-time System Performance */}
         <div className="grid grid-cols-1 gap-6">
           {/* System Performance Metrics */}
-          <Card className="bg-gray-900 border-gray-700">
+          <Card className="bg-white border-gray-300">
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
-                <Activity className="w-5 h-5 text-purple-400" />
-                <span className="text-white">System Performance</span>
+                <span className="text-gray-900">System Performance</span>
               </CardTitle>
-              <CardDescription className="text-gray-400">
+              <CardDescription className="text-gray-600">
                 Real-time server metrics and performance indicators
               </CardDescription>
             </CardHeader>
@@ -882,34 +737,34 @@ export default function AdminDashboard() {
                 {/* CPU Usage */}
                 <div>
                   <div className="flex items-center justify-between mb-2">
-                    <span className="text-sm text-gray-400">CPU Usage</span>
-                    <span className="text-sm font-medium text-white">
+                    <span className="text-sm text-gray-600">CPU Usage</span>
+                    <span className="text-sm font-medium text-gray-900">
                       {systemMetrics?.system?.cpu || 23}%
                     </span>
                   </div>
-                  <Progress value={systemMetrics?.system?.cpu || 23} className="bg-gray-700" />
+                  <Progress value={systemMetrics?.system?.cpu || 23} className="bg-gray-200" />
                 </div>
 
                 {/* Memory Usage */}
                 <div>
                   <div className="flex items-center justify-between mb-2">
-                    <span className="text-sm text-gray-400">Memory Usage</span>
-                    <span className="text-sm font-medium text-white">
+                    <span className="text-sm text-gray-600">Memory Usage</span>
+                    <span className="text-sm font-medium text-gray-900">
                       {systemMetrics?.system?.memory || 67}%
                     </span>
                   </div>
-                  <Progress value={systemMetrics?.system?.memory || 67} className="bg-gray-700" />
+                  <Progress value={systemMetrics?.system?.memory || 67} className="bg-gray-200" />
                 </div>
 
                 {/* Network I/O */}
                 <div>
                   <div className="flex items-center justify-between mb-2">
-                    <span className="text-sm text-gray-400">Network I/O</span>
-                    <span className="text-sm font-medium text-white">
+                    <span className="text-sm text-gray-600">Network I/O</span>
+                    <span className="text-sm font-medium text-gray-900">
                       {systemMetrics?.system?.network || 34}%
                     </span>
                   </div>
-                  <Progress value={systemMetrics?.system?.network || 34} className="bg-gray-700" />
+                  <Progress value={systemMetrics?.system?.network || 34} className="bg-gray-200" />
                 </div>
 
                 {/* Real-time Status with enhanced info */}
@@ -945,19 +800,19 @@ export default function AdminDashboard() {
                       }
                       return item;
                     })}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-                      <XAxis dataKey="time" stroke="#9ca3af" />
-                      <YAxis stroke="#9ca3af" />
+                      <CartesianGrid strokeDasharray="3 3" stroke="#d1d5db" />
+                      <XAxis dataKey="time" stroke="#6b7280" />
+                      <YAxis stroke="#6b7280" />
                       <Tooltip
                         contentStyle={{
-                          backgroundColor: "#1f2937",
-                          border: "1px solid #374151",
+                          backgroundColor: "#ffffff",
+                          border: "1px solid #d1d5db",
                           borderRadius: "8px"
                         }}
                       />
-                      <Line type="monotone" dataKey="cpu" stroke="#ef4444" strokeWidth={2} name="CPU %" />
-                      <Line type="monotone" dataKey="memory" stroke="#3b82f6" strokeWidth={2} name="Memory %" />
-                      <Line type="monotone" dataKey="network" stroke="#10b981" strokeWidth={2} name="Network %" />
+                      <Line type="monotone" dataKey="cpu" stroke="#4b5563" strokeWidth={2} name="CPU %" />
+                      <Line type="monotone" dataKey="memory" stroke="#6b7280" strokeWidth={2} name="Memory %" />
+                      <Line type="monotone" dataKey="network" stroke="#9ca3af" strokeWidth={2} name="Network %" />
                     </LineChart>
                   </ResponsiveContainer>
                 </div>
@@ -968,16 +823,15 @@ export default function AdminDashboard() {
         </div>
 
         {/* Recent Activity */}
-        <Card className="bg-gray-900 border-gray-700">
+        <Card className="bg-white border-gray-300">
           <CardHeader>
             <CardTitle className="flex items-center justify-between">
               <div className="flex items-center space-x-2">
-                <Clock className="w-5 h-5 text-gray-400" />
-                <span className="text-white">Recent Activity</span>
+                <span className="text-gray-900">Recent Activity</span>
               </div>
               <Link to="/admin/logs">
                 <Button
-                  className="bg-white text-black hover:bg-gray-200"
+                  className="bg-gray-900 text-white hover:bg-gray-800"
                   size="sm"
                 >
                   View All Logs
@@ -992,42 +846,15 @@ export default function AdminDashboard() {
                 {liveActivity.slice(0, 4).map((activity) => (
                   <div
                     key={activity.id}
-                    className="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-800 border-l-2 border-green-500 bg-green-900/10"
+                    className="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-50 border-l-2 border-gray-500 bg-gray-50"
                   >
-                    <div className="flex-shrink-0 text-green-400">
-                      {getActivityIcon(activity.category, activity.action)}
-                    </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium truncate text-white">
+                      <p className="text-sm font-medium truncate text-gray-900">
                         {activity.username || "System"} -{" "}
                         {activity.action.replace(/_/g, " ")}
                       </p>
-                      <p className="text-xs text-green-400">
+                      <p className="text-xs text-gray-700">
                         {formatTime(activity.timestamp)} • LIVE
-                      </p>
-                    </div>
-                    <Badge className="text-xs bg-green-700 text-white">
-                      {activity.category}
-                    </Badge>
-                  </div>
-                ))}
-
-                {/* Recent Activity */}
-                {recentActivity.slice(0, Math.max(4, 8 - liveActivity.length)).map((activity) => (
-                  <div
-                    key={activity.id}
-                    className="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-800"
-                  >
-                    <div className="flex-shrink-0 text-gray-400">
-                      {getActivityIcon(activity.category, activity.action)}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium truncate text-white">
-                        {activity.username || "System"} -{" "}
-                        {activity.action.replace(/_/g, " ")}
-                      </p>
-                      <p className="text-xs text-gray-400">
-                        {formatTime(activity.timestamp)}
                       </p>
                     </div>
                     <Badge className="text-xs bg-gray-700 text-white">
@@ -1035,20 +862,40 @@ export default function AdminDashboard() {
                     </Badge>
                   </div>
                 ))}
+                
+                {/* Recent Activity */}
+                {recentActivity.slice(0, Math.max(4, 8 - liveActivity.length)).map((activity) => (
+                  <div
+                    key={activity.id}
+                    className="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-50"
+                  >
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium truncate text-gray-900">
+                        {activity.username || "System"} -{" "}
+                        {activity.action.replace(/_/g, " ")}
+                      </p>
+                      <p className="text-xs text-gray-600">
+                        {formatTime(activity.timestamp)}
+                      </p>
+                    </div>
+                    <Badge className="text-xs bg-gray-600 text-white">
+                      {activity.category}
+                    </Badge>
+                  </div>
+                ))}
               </div>
             ) : (
-              <div className="text-center py-8 text-gray-400">
-                <Activity className="w-12 h-12 mx-auto mb-2 opacity-50" />
+              <div className="text-center py-8 text-gray-600">
                 <p>No recent activity</p>
                 <p className="text-xs mt-1">Live feed will update automatically</p>
               </div>
             )}
-
+            
             {/* Live indicator */}
             {liveActivity.length > 0 && (
-              <div className="flex items-center justify-center mt-4 pt-3 border-t border-gray-700">
-                <div className="flex items-center space-x-2 text-xs text-green-400">
-                  <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+              <div className="flex items-center justify-center mt-4 pt-3 border-t border-gray-200">
+                <div className="flex items-center space-x-2 text-xs text-gray-700">
+                  <div className="w-2 h-2 bg-gray-600 rounded-full animate-pulse"></div>
                   <span>Live activity feed active</span>
                 </div>
               </div>
@@ -1057,10 +904,10 @@ export default function AdminDashboard() {
         </Card>
 
         {/* Enhanced Quick Actions */}
-        <Card className="bg-gray-900 border-gray-700">
+        <Card className="bg-white border-gray-300">
           <CardHeader>
-            <CardTitle className="text-white">Quick Actions & System Control</CardTitle>
-            <CardDescription className="text-gray-400">
+            <CardTitle className="text-gray-900">Quick Actions & System Control</CardTitle>
+            <CardDescription className="text-gray-600">
               Administrative tools, system management, and emergency controls
             </CardDescription>
           </CardHeader>
@@ -1068,29 +915,25 @@ export default function AdminDashboard() {
             <div className="space-y-6">
               {/* Primary Actions */}
               <div>
-                <h4 className="text-sm font-medium text-gray-400 mb-3">Management</h4>
+                <h4 className="text-sm font-medium text-gray-600 mb-3">Management</h4>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                   <Link to="/admin/users">
                     <Button className="w-full bg-gray-800 text-white hover:bg-gray-700 h-auto p-4 flex flex-col space-y-2">
-                      <Users className="w-6 h-6" />
                       <span className="text-sm">Manage Users</span>
                     </Button>
                   </Link>
                   <Link to="/admin/news">
                     <Button className="w-full bg-gray-800 text-white hover:bg-gray-700 h-auto p-4 flex flex-col space-y-2">
-                      <Calendar className="w-6 h-6" />
                       <span className="text-sm">Create News</span>
                     </Button>
                   </Link>
                   <Link to="/admin/settings">
                     <Button className="w-full bg-gray-800 text-white hover:bg-gray-700 h-auto p-4 flex flex-col space-y-2">
-                      <Zap className="w-6 h-6" />
                       <span className="text-sm">System Settings</span>
                     </Button>
                   </Link>
                   <Link to="/admin/analytics">
                     <Button className="w-full bg-gray-800 text-white hover:bg-gray-700 h-auto p-4 flex flex-col space-y-2">
-                      <BarChart3 className="w-6 h-6" />
                       <span className="text-sm">View Analytics</span>
                     </Button>
                   </Link>
@@ -1099,22 +942,18 @@ export default function AdminDashboard() {
 
               {/* System Controls */}
               <div>
-                <h4 className="text-sm font-medium text-gray-400 mb-3">System Controls</h4>
+                <h4 className="text-sm font-medium text-gray-600 mb-3">System Controls</h4>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  <Button className="w-full bg-green-800 text-white hover:bg-green-700 h-auto p-4 flex flex-col space-y-2">
-                    <CheckCircle className="w-6 h-6" />
+                  <Button className="w-full bg-gray-700 text-white hover:bg-gray-600 h-auto p-4 flex flex-col space-y-2">
                     <span className="text-sm">Clear Cache</span>
                   </Button>
-                  <Button className="w-full bg-blue-800 text-white hover:bg-blue-700 h-auto p-4 flex flex-col space-y-2">
-                    <RefreshCw className="w-6 h-6" />
+                  <Button className="w-full bg-gray-700 text-white hover:bg-gray-600 h-auto p-4 flex flex-col space-y-2">
                     <span className="text-sm">Restart Services</span>
                   </Button>
-                  <Button className="w-full bg-yellow-800 text-white hover:bg-yellow-700 h-auto p-4 flex flex-col space-y-2">
-                    <AlertTriangle className="w-6 h-6" />
+                  <Button className="w-full bg-gray-700 text-white hover:bg-gray-600 h-auto p-4 flex flex-col space-y-2">
                     <span className="text-sm">Maintenance Mode</span>
                   </Button>
-                  <Button className="w-full bg-purple-800 text-white hover:bg-purple-700 h-auto p-4 flex flex-col space-y-2">
-                    <Activity className="w-6 h-6" />
+                  <Button className="w-full bg-gray-700 text-white hover:bg-gray-600 h-auto p-4 flex flex-col space-y-2">
                     <span className="text-sm">Health Check</span>
                   </Button>
                 </div>
@@ -1122,23 +961,16 @@ export default function AdminDashboard() {
 
               {/* Real-time Actions */}
               <div>
-                <h4 className="text-sm font-medium text-gray-400 mb-3">Real-time Actions</h4>
+                <h4 className="text-sm font-medium text-gray-600 mb-3">Real-time Actions</h4>
                 <div className="flex flex-wrap gap-2">
-                  <Button size="sm" className="bg-gray-700 hover:bg-gray-600">
-                    <MessageCircle className="w-4 h-4 mr-2" />
+                  <Button size="sm" className="bg-gray-600 hover:bg-gray-500 text-white">
                     Broadcast Message
                   </Button>
-                  <Button size="sm" className="bg-gray-700 hover:bg-gray-600">
-                    <Eye className="w-4 h-4 mr-2" />
+                  <Button size="sm" className="bg-gray-600 hover:bg-gray-500 text-white">
                     View Live Sessions
                   </Button>
-                  <Button size="sm" className="bg-gray-700 hover:bg-gray-600">
-                    <Server className="w-4 h-4 mr-2" />
+                  <Button size="sm" className="bg-gray-600 hover:bg-gray-500 text-white">
                     Server Status
-                  </Button>
-                  <Button size="sm" className="bg-gray-700 hover:bg-gray-600">
-                    <ShoppingBag className="w-4 h-4 mr-2" />
-                    Revenue Report
                   </Button>
                 </div>
               </div>
