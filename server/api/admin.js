@@ -4,6 +4,8 @@ import { requireAuth, requireAdmin } from "../middleware/auth.js";
 import { logActivity, getLogs, clearLogs } from "../utils/logger.js";
 import { User } from "../models/User.js";
 import { Client } from "../models/Client.js";
+import { updateAllServerStatuses } from "../utils/server-status.js";
+import { getServersData } from "./servers.js";
 
 const router = express.Router();
 
