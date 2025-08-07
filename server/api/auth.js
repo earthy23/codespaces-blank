@@ -81,8 +81,9 @@ router.post(
           .json({ error: "Username or email already exists" });
       }
 
-      // Hash password
-      const hashedPassword = await bcrypt.hash(password, 12);
+      // Hash password with optimized salt rounds for development
+      const saltRounds = process.env.NODE_ENV === 'production' ? 12 : 8;
+      const hashedPassword = await bcrypt.hash(password, saltRounds);
 
       // Create user
       const userId = createUser({
@@ -145,6 +146,7 @@ router.post(
   "/login",
   [body("username").notEmpty(), body("password").notEmpty()],
   async (req, res) => {
+    const startTime = Date.now();
     try {
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
@@ -155,9 +157,12 @@ router.post(
       }
 
       const { username, password } = req.body;
+      console.log(`🔐 Login attempt for user: ${username}`);
 
       // Get user
+      const userLookupStart = Date.now();
       const user = getUserByUsername(username);
+      console.log(`📊 User lookup took: ${Date.now() - userLookupStart}ms`);
       if (!user) {
         await logActivity({
           action: "login_failed",
@@ -190,7 +195,10 @@ router.post(
       }
 
       // Verify password
+      const bcryptStart = Date.now();
       const validPassword = await bcrypt.compare(password, user.password);
+      console.log(`🔒 Password verification took: ${Date.now() - bcryptStart}ms`);
+
       if (!validPassword) {
         await logActivity({
           action: "login_failed",
@@ -233,6 +241,8 @@ router.post(
         ipAddress: req.ip,
         userAgent: req.get("User-Agent"),
       });
+
+      console.log(`✅ Login completed successfully in ${Date.now() - startTime}ms`);
 
       res.json({
         message: "Login successful",
@@ -391,8 +401,9 @@ router.put(
         return res.status(401).json({ error: "Invalid current password" });
       }
 
-      // Hash new password
-      const hashedPassword = await bcrypt.hash(newPassword, 12);
+      // Hash new password with optimized salt rounds
+      const saltRounds = process.env.NODE_ENV === 'production' ? 12 : 8;
+      const hashedPassword = await bcrypt.hash(newPassword, saltRounds);
       await updateUser(req.user.userId, {
         password: hashedPassword,
         mustChangePassword: false,
@@ -455,8 +466,9 @@ router.put(
         return res.status(400).json({ error: "Password change not required" });
       }
 
-      // Hash new password
-      const hashedPassword = await bcrypt.hash(newPassword, 12);
+      // Hash new password with optimized salt rounds
+      const saltRounds = process.env.NODE_ENV === 'production' ? 12 : 8;
+      const hashedPassword = await bcrypt.hash(newPassword, saltRounds);
       await updateUser(req.user.userId, {
         password: hashedPassword,
         mustChangePassword: false,

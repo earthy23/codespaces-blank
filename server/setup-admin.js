@@ -5,8 +5,9 @@ async function setupAdmin() {
   try {
     console.log('🔐 Setting up default admin user...');
     
-    // Hash default password
-    const hashedPassword = await bcrypt.hash('admin123', 12);
+    // Hash default password with optimized salt rounds
+    const saltRounds = process.env.NODE_ENV === 'production' ? 12 : 8;
+    const hashedPassword = await bcrypt.hash('admin123', saltRounds);
     
     // Create admin user
     const adminId = await createUser({

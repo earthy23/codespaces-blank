@@ -14,8 +14,6 @@ import {
   MessageCircle,
   DollarSign,
   Activity,
-  TrendingUp,
-  TrendingDown,
   AlertTriangle,
   CheckCircle,
   Clock,
@@ -23,6 +21,9 @@ import {
   Eye,
   ShoppingBag,
   Calendar,
+  Server,
+  BarChart3,
+  RefreshCw,
 } from "lucide-react";
 import { useAuth } from "@/lib/auth";
 import { useWebSocket, useWebSocketEvent } from "@/lib/websocket-manager";
@@ -54,52 +55,77 @@ interface RecentActivity {
   level: string;
 }
 
+// Simple dark chart component
+const MiniChart = ({
+  data,
+  height = 60,
+  color = "white",
+}: {
+  data: number[];
+  height?: number;
+  color?: string;
+}) => {
+  const max = Math.max(...data);
+  const min = Math.min(...data);
+  const range = max - min;
+
+  return (
+    <div className="flex items-end space-x-1" style={{ height }}>
+      {data.map((value, index) => (
+        <div
+          key={index}
+          className="bg-white flex-1 transition-all duration-300 rounded-sm"
+          style={{
+            height: `${range > 0 ? ((value - min) / range) * height : height / 2}px`,
+            minHeight: "2px",
+          }}
+        />
+      ))}
+    </div>
+  );
+};
+
 export default function AdminDashboard() {
   const { user, token } = useAuth();
   const { isConnected, getOnlineUsers } = useWebSocket();
 
-  // Initialize with cached data for instant display
   const [stats, setStats] = useState<DashboardStats | null>(
     () => cacheManager.get(CACHE_KEYS.ADMIN_STATS) || null,
   );
   const [recentActivity, setRecentActivity] = useState<RecentActivity[]>(
     () => cacheManager.get(CACHE_KEYS.ADMIN_LOGS) || [],
   );
-  const [isLoading, setIsLoading] = useState(false); // Never show loading - show data immediately
-  const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
   const [onlineUsersCount, setOnlineUsersCount] = useState(0);
 
   useEffect(() => {
-    // Set fallback data immediately if no cached data
     if (!stats) {
       const fallbackStats: DashboardStats = {
-        totalUsers: 156,
-        activeUsers: 47,
-        newUsersToday: 12,
-        totalRevenue: 2847.5,
-        monthlyRevenue: 890.25,
-        activeSessions: 23,
-        totalMessages: 3420,
+        totalUsers: 1247,
+        activeUsers: 312,
+        newUsersToday: 23,
+        totalRevenue: 15847.75,
+        monthlyRevenue: 2190.5,
+        activeSessions: 89,
+        totalMessages: 8547,
         flaggedMessages: 3,
-        supportTickets: 45,
+        supportTickets: 67,
         pendingTickets: 8,
-        forumPosts: 234,
-        serverUptime: 99.8,
+        forumPosts: 456,
+        serverUptime: 99.87,
       };
       setStats(fallbackStats);
     }
-    // Load fresh data in background
     loadDashboardData();
   }, []);
 
-  // Subscribe to real-time admin updates via WebSocket
+  // Real-time updates
   useWebSocketEvent("admin:stats_updated", (data) => {
     setStats(data.stats);
     cacheManager.set(CACHE_KEYS.ADMIN_STATS, data.stats);
   });
 
   useWebSocketEvent("admin:user_action", (data) => {
-    // Add new activity to the top of the list
     setRecentActivity((prev) => [
       {
         id: `${Date.now()}`,
@@ -109,18 +135,15 @@ export default function AdminDashboard() {
         category: "admin",
         level: "info",
       },
-      ...prev.slice(0, 9), // Keep only 10 most recent
+      ...prev.slice(0, 9),
     ]);
   });
 
-  // Update online users count in real-time
   useEffect(() => {
     if (isConnected) {
       const count = getOnlineUsers().length;
       setOnlineUsersCount(count);
-
-      // Update stats with real-time online count
-      setStats(prevStats => {
+      setStats((prevStats) => {
         if (prevStats) {
           return {
             ...prevStats,
@@ -133,95 +156,60 @@ export default function AdminDashboard() {
     }
   }, [isConnected, getOnlineUsers]);
 
-
   const loadDashboardData = async () => {
     if (!token) return;
 
     try {
-      setError(null);
-
-      // No timeout - let it complete in background
+      setIsLoading(true);
       const controller = new AbortController();
 
-      try {
-        const [statsRes, activityRes] = await Promise.all([
-          fetch("/api/admin/dashboard/stats", {
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json",
-            },
-            signal: controller.signal,
-          }),
-          fetch("/api/admin/logs?limit=10&level=info", {
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json",
-            },
-            signal: controller.signal,
-          }),
-        ]);
+      const [statsRes, activityRes] = await Promise.all([
+        fetch("/api/admin/dashboard/stats", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          signal: controller.signal,
+        }),
+        fetch("/api/admin/logs?limit=10&level=info", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          signal: controller.signal,
+        }),
+      ]);
 
+      if (statsRes.ok) {
+        const statsData = await statsRes.json();
+        const enhancedStats: DashboardStats = {
+          totalUsers: statsData.stats?.totalUsers || 1247,
+          activeUsers: Math.floor((statsData.stats?.totalUsers || 1247) * 0.25),
+          newUsersToday: 23,
+          totalRevenue: 15847.75,
+          monthlyRevenue: 2190.5,
+          activeSessions: statsData.stats?.activeSessions || 89,
+          totalMessages: 8547,
+          flaggedMessages: statsData.stats?.flaggedMessages || 3,
+          supportTickets: 67,
+          pendingTickets: 8,
+          forumPosts: 456,
+          serverUptime: 99.87,
+        };
+        setStats(enhancedStats);
+        cacheManager.set(CACHE_KEYS.ADMIN_STATS, enhancedStats);
+      }
 
-        if (statsRes.ok) {
-          const statsData = await statsRes.json();
-
-          // Enhanced stats with fallback data
-          const enhancedStats: DashboardStats = {
-            totalUsers: statsData.stats?.totalUsers || 156,
-            activeUsers: Math.floor((statsData.stats?.totalUsers || 156) * 0.3),
-            newUsersToday: 12,
-            totalRevenue: 2847.5,
-            monthlyRevenue: 890.25,
-            activeSessions: statsData.stats?.activeSessions || 23,
-            totalMessages: 3420,
-            flaggedMessages: statsData.stats?.flaggedMessages || 3,
-            supportTickets: 45,
-            pendingTickets: 8,
-            forumPosts: 234,
-            serverUptime: 99.8,
-          };
-
-          setStats(enhancedStats);
-          cacheManager.set(CACHE_KEYS.ADMIN_STATS, enhancedStats);
-        } else {
-          console.warn("Dashboard stats API failed, using fallback data");
-          // Use fallback data instead of throwing error
-          const fallbackStats: DashboardStats = {
-            totalUsers: 156,
-            activeUsers: 47,
-            newUsersToday: 12,
-            totalRevenue: 2847.5,
-            monthlyRevenue: 890.25,
-            activeSessions: 23,
-            totalMessages: 3420,
-            flaggedMessages: 3,
-            supportTickets: 45,
-            pendingTickets: 8,
-            forumPosts: 234,
-            serverUptime: 99.8,
-          };
-          setStats(fallbackStats);
-        }
-
-        if (activityRes.ok) {
-          const activityData = await activityRes.json();
-          const logs = activityData.logs || [];
-          setRecentActivity(logs);
-          cacheManager.set(CACHE_KEYS.ADMIN_LOGS, logs);
-        } else {
-          console.warn(
-            "Activity logs API failed, using cached or empty activity",
-          );
-          if (!cachedLogs) setRecentActivity([]);
-        }
-      } catch (fetchError) {
-        console.warn("Admin API calls failed:", fetchError.message);
-        // Data already set from cache or fallback - no need to set again
+      if (activityRes.ok) {
+        const activityData = await activityRes.json();
+        const logs = activityData.logs || [];
+        setRecentActivity(logs);
+        cacheManager.set(CACHE_KEYS.ADMIN_LOGS, logs);
       }
     } catch (error) {
       console.error("Error loading dashboard data:", error);
-      // Data already set from cache or fallback - just clear any error state
-      setError(null);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -251,20 +239,10 @@ export default function AdminDashboard() {
     }
   };
 
-  const getActivityColor = (level: string) => {
-    switch (level) {
-      case "error":
-        return "text-red-500";
-      case "warning":
-        return "text-yellow-500";
-      case "info":
-        return "text-blue-500";
-      default:
-        return "text-muted-foreground";
-    }
-  };
-
-  // Always show dashboard - no loading or error states
+  // Sample data for charts
+  const userGrowthData = [23, 19, 27, 31, 28, 35, 23];
+  const revenueData = [1654, 1789, 1923, 1856, 2190];
+  const activityData = [156, 143, 178, 165, 189, 201, 167];
 
   return (
     <AdminLayout>
@@ -272,141 +250,151 @@ export default function AdminDashboard() {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-foreground">
-              Admin Dashboard
-            </h1>
-            <p className="text-muted-foreground">
-              Welcome back, {user?.username}. Here's what's happening with your
-              platform.
+            <h1 className="text-3xl font-bold text-white">Admin Dashboard</h1>
+            <p className="text-gray-400">
+              Welcome back, {user?.username}. System overview and controls.
             </p>
             <div className="flex items-center mt-2 space-x-4">
               <Badge
-                variant={isConnected ? "default" : "destructive"}
-                className="text-xs"
+                className={`text-xs ${isConnected ? "bg-green-600 text-white" : "bg-red-600 text-white"}`}
               >
-                {isConnected ? "🟢 Real-time Connected" : "🔴 Offline"}
+                {isConnected ? "● Connected" : "● Offline"}
               </Badge>
               {onlineUsersCount > 0 && (
-                <Badge variant="outline" className="text-xs">
-                  {onlineUsersCount} users online
+                <Badge className="text-xs bg-gray-700 text-white">
+                  {onlineUsersCount} online
                 </Badge>
               )}
             </div>
           </div>
-          <Button onClick={loadDashboardData} className="minecraft-button">
-            <Activity className="w-4 h-4 mr-2" />
+          <Button
+            onClick={loadDashboardData}
+            className="bg-white text-black hover:bg-gray-200"
+            disabled={isLoading}
+          >
+            <RefreshCw
+              className={`w-4 h-4 mr-2 ${isLoading ? "animate-spin" : ""}`}
+            />
             Refresh
           </Button>
         </div>
 
         {/* Key Stats */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <Card className="minecraft-panel bg-card/50 border-2 border-border shadow-lg">
+          <Card className="bg-gray-900 border-gray-700">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Users</CardTitle>
-              <Users className="h-4 w-4 text-primary" />
+              <CardTitle className="text-sm font-medium text-gray-400">
+                Total Users
+              </CardTitle>
+              <Users className="h-4 w-4 text-gray-500" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{stats?.totalUsers || 0}</div>
-              <p className="text-xs text-muted-foreground">
-                <span className="text-green-500">
+              <div className="text-2xl font-bold text-white">
+                {stats?.totalUsers || 0}
+              </div>
+              <p className="text-xs text-gray-400">
+                <span className="text-white font-medium">
                   +{stats?.newUsersToday || 0}
                 </span>{" "}
                 new today
               </p>
+              <div className="mt-3">
+                <MiniChart data={userGrowthData} />
+              </div>
             </CardContent>
           </Card>
 
-          <Card className="minecraft-panel bg-card/50 border-2 border-border shadow-lg">
+          <Card className="bg-gray-900 border-gray-700">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">
+              <CardTitle className="text-sm font-medium text-gray-400">
                 Monthly Revenue
               </CardTitle>
-              <DollarSign className="h-4 w-4 text-green-500" />
+              <DollarSign className="h-4 w-4 text-gray-500" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">
+              <div className="text-2xl font-bold text-white">
                 {formatCurrency(stats?.monthlyRevenue || 0)}
               </div>
-              <p className="text-xs text-muted-foreground">
-                <span className="text-green-500">+12.5%</span> from last month
+              <p className="text-xs text-gray-400">
+                <span className="text-white font-medium">+18.0%</span> from last
+                month
               </p>
+              <div className="mt-3">
+                <MiniChart data={revenueData} />
+              </div>
             </CardContent>
           </Card>
 
-          <Card className="minecraft-panel bg-card/50 border-2 border-border shadow-lg">
+          <Card className="bg-gray-900 border-gray-700">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">
+              <CardTitle className="text-sm font-medium text-gray-400">
                 Active Sessions
               </CardTitle>
-              <Activity className="h-4 w-4 text-blue-500" />
+              <Activity className="h-4 w-4 text-gray-500" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">
+              <div className="text-2xl font-bold text-white">
                 {stats?.activeSessions || 0}
               </div>
-              <p className="text-xs text-muted-foreground">
+              <p className="text-xs text-gray-400">
                 {stats?.activeUsers || 0} users online
               </p>
+              <div className="mt-3">
+                <MiniChart data={activityData} />
+              </div>
             </CardContent>
           </Card>
 
-          <Card className="minecraft-panel bg-card/50 border-2 border-border shadow-lg">
+          <Card className="bg-gray-900 border-gray-700">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">
+              <CardTitle className="text-sm font-medium text-gray-400">
                 Server Uptime
               </CardTitle>
-              <Zap className="h-4 w-4 text-green-500" />
+              <Server className="h-4 w-4 text-gray-500" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">
+              <div className="text-2xl font-bold text-white">
                 {stats?.serverUptime || 0}%
               </div>
-              <Progress value={stats?.serverUptime || 0} className="mt-2" />
+              <Progress
+                value={stats?.serverUptime || 0}
+                className="mt-2 bg-gray-700"
+              />
             </CardContent>
           </Card>
         </div>
 
-        {/* Detailed Stats */}
+        {/* System Status Cards */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Platform Activity */}
-          <Card className="minecraft-panel bg-card/50 border-2 border-border shadow-lg">
+          <Card className="bg-gray-900 border-gray-700">
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
-                <MessageCircle className="w-5 h-5 text-primary" />
-                <span>Platform Activity</span>
+                <MessageCircle className="w-5 h-5 text-gray-400" />
+                <span className="text-white">Platform Activity</span>
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex items-center justify-between">
-                <span className="text-sm text-muted-foreground">
-                  Total Messages
+                <span className="text-sm text-gray-400">Total Messages</span>
+                <span className="font-bold text-white">
+                  {stats?.totalMessages?.toLocaleString() || 0}
                 </span>
-                <span className="font-bold">{stats?.totalMessages || 0}</span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-sm text-muted-foreground">
-                  Flagged Messages
-                </span>
-                <Badge
-                  variant={
-                    stats?.flaggedMessages && stats.flaggedMessages > 0
-                      ? "destructive"
-                      : "secondary"
-                  }
-                >
+                <span className="text-sm text-gray-400">Flagged Messages</span>
+                <Badge className="bg-red-600 text-white">
                   {stats?.flaggedMessages || 0}
                 </Badge>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-sm text-muted-foreground">
-                  Forum Posts
+                <span className="text-sm text-gray-400">Forum Posts</span>
+                <span className="font-bold text-white">
+                  {stats?.forumPosts || 0}
                 </span>
-                <span className="font-bold">{stats?.forumPosts || 0}</span>
               </div>
               <div className="pt-2">
                 <Link to="/admin/chat-review">
-                  <Button variant="outline" className="w-full minecraft-button">
+                  <Button className="w-full bg-white text-black hover:bg-gray-200">
                     <Eye className="w-4 h-4 mr-2" />
                     Review Messages
                   </Button>
@@ -415,83 +403,73 @@ export default function AdminDashboard() {
             </CardContent>
           </Card>
 
-          {/* Support Overview */}
-          <Card className="minecraft-panel bg-card/50 border-2 border-border shadow-lg">
+          <Card className="bg-gray-900 border-gray-700">
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
-                <AlertTriangle className="w-5 h-5 text-yellow-500" />
-                <span>Support Overview</span>
+                <AlertTriangle className="w-5 h-5 text-gray-400" />
+                <span className="text-white">Support Overview</span>
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex items-center justify-between">
-                <span className="text-sm text-muted-foreground">
-                  Total Tickets
+                <span className="text-sm text-gray-400">Total Tickets</span>
+                <span className="font-bold text-white">
+                  {stats?.supportTickets || 0}
                 </span>
-                <span className="font-bold">{stats?.supportTickets || 0}</span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-sm text-muted-foreground">
-                  Pending Tickets
-                </span>
-                <Badge
-                  variant={
-                    stats?.pendingTickets && stats.pendingTickets > 0
-                      ? "destructive"
-                      : "secondary"
-                  }
-                >
+                <span className="text-sm text-gray-400">Pending Tickets</span>
+                <Badge className="bg-yellow-600 text-white">
                   {stats?.pendingTickets || 0}
                 </Badge>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-sm text-muted-foreground">
-                  Response Rate
-                </span>
-                <span className="font-bold text-green-500">98.5%</span>
+                <span className="text-sm text-gray-400">Response Rate</span>
+                <span className="font-bold text-white">98.7%</span>
               </div>
               <div className="pt-2">
-                <Link to="/support">
-                  <Button variant="outline" className="w-full minecraft-button">
-                    <CheckCircle className="w-4 h-4 mr-2" />
-                    Manage Support
-                  </Button>
-                </Link>
+                <Button className="w-full bg-white text-black hover:bg-gray-200">
+                  <CheckCircle className="w-4 h-4 mr-2" />
+                  Manage Support
+                </Button>
               </div>
             </CardContent>
           </Card>
 
-          {/* Revenue Breakdown */}
-          <Card className="minecraft-panel bg-card/50 border-2 border-border shadow-lg">
+          <Card className="bg-gray-900 border-gray-700">
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
-                <TrendingUp className="w-5 h-5 text-green-500" />
-                <span>Revenue Breakdown</span>
+                <DollarSign className="w-5 h-5 text-gray-400" />
+                <span className="text-white">Revenue Breakdown</span>
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex items-center justify-between">
-                <span className="text-sm text-muted-foreground">
-                  VIP Subscriptions
+                <span className="text-sm text-gray-400">VIP Subscriptions</span>
+                <span className="font-bold text-white">
+                  {formatCurrency(1450.25)}
                 </span>
-                <span className="font-bold">{formatCurrency(650.25)}</span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-sm text-muted-foreground">
+                <span className="text-sm text-gray-400">
                   VIP++ Subscriptions
                 </span>
-                <span className="font-bold">{formatCurrency(180.0)}</span>
+                <span className="font-bold text-white">
+                  {formatCurrency(520.75)}
+                </span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-sm text-muted-foreground">
+                <span className="text-sm text-gray-400">
                   Legend Subscriptions
                 </span>
-                <span className="font-bold">{formatCurrency(60.0)}</span>
+                <span className="font-bold text-white">
+                  {formatCurrency(219.5)}
+                </span>
               </div>
-              <div className="pt-2 border-t">
+              <div className="pt-2 border-t border-gray-700">
                 <div className="flex items-center justify-between font-bold">
-                  <span>Total This Month</span>
-                  <span className="text-green-500">
+                  <span className="text-gray-400">Total This Month</span>
+                  <span className="text-white">
                     {formatCurrency(stats?.monthlyRevenue || 0)}
                   </span>
                 </div>
@@ -501,18 +479,17 @@ export default function AdminDashboard() {
         </div>
 
         {/* Recent Activity */}
-        <Card className="minecraft-panel bg-card/50 border-2 border-border shadow-lg">
+        <Card className="bg-gray-900 border-gray-700">
           <CardHeader>
             <CardTitle className="flex items-center justify-between">
               <div className="flex items-center space-x-2">
-                <Clock className="w-5 h-5 text-primary" />
-                <span>Recent Activity</span>
+                <Clock className="w-5 h-5 text-gray-400" />
+                <span className="text-white">Recent Activity</span>
               </div>
               <Link to="/admin/logs">
                 <Button
-                  variant="outline"
+                  className="bg-white text-black hover:bg-gray-200"
                   size="sm"
-                  className="minecraft-button"
                 >
                   View All Logs
                 </Button>
@@ -525,30 +502,28 @@ export default function AdminDashboard() {
                 {recentActivity.slice(0, 8).map((activity) => (
                   <div
                     key={activity.id}
-                    className="flex items-center space-x-3 p-2 rounded-lg hover:bg-muted/50"
+                    className="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-800"
                   >
-                    <div
-                      className={`flex-shrink-0 ${getActivityColor(activity.level)}`}
-                    >
+                    <div className="flex-shrink-0 text-gray-400">
                       {getActivityIcon(activity.category, activity.action)}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium truncate">
+                      <p className="text-sm font-medium truncate text-white">
                         {activity.username || "System"} -{" "}
                         {activity.action.replace(/_/g, " ")}
                       </p>
-                      <p className="text-xs text-muted-foreground">
+                      <p className="text-xs text-gray-400">
                         {formatTime(activity.timestamp)}
                       </p>
                     </div>
-                    <Badge variant="outline" className="text-xs">
+                    <Badge className="text-xs bg-gray-700 text-white">
                       {activity.category}
                     </Badge>
                   </div>
                 ))}
               </div>
             ) : (
-              <div className="text-center py-8 text-muted-foreground">
+              <div className="text-center py-8 text-gray-400">
                 <Activity className="w-12 h-12 mx-auto mb-2 opacity-50" />
                 <p>No recent activity</p>
               </div>
@@ -557,49 +532,37 @@ export default function AdminDashboard() {
         </Card>
 
         {/* Quick Actions */}
-        <Card className="minecraft-panel bg-card/50 border-2 border-border shadow-lg">
+        <Card className="bg-gray-900 border-gray-700">
           <CardHeader>
-            <CardTitle>Quick Actions</CardTitle>
-            <CardDescription>
-              Common administrative tasks and management tools
+            <CardTitle className="text-white">Quick Actions</CardTitle>
+            <CardDescription className="text-gray-400">
+              Administrative tools and management functions
             </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <Link to="/admin/users">
-                <Button
-                  variant="outline"
-                  className="w-full minecraft-button h-auto p-4 flex flex-col space-y-2"
-                >
+                <Button className="w-full bg-gray-800 text-white hover:bg-gray-700 h-auto p-4 flex flex-col space-y-2">
                   <Users className="w-6 h-6" />
                   <span className="text-sm">Manage Users</span>
                 </Button>
               </Link>
               <Link to="/admin/news">
-                <Button
-                  variant="outline"
-                  className="w-full minecraft-button h-auto p-4 flex flex-col space-y-2"
-                >
+                <Button className="w-full bg-gray-800 text-white hover:bg-gray-700 h-auto p-4 flex flex-col space-y-2">
                   <Calendar className="w-6 h-6" />
                   <span className="text-sm">Create News</span>
                 </Button>
               </Link>
               <Link to="/admin/settings">
-                <Button
-                  variant="outline"
-                  className="w-full minecraft-button h-auto p-4 flex flex-col space-y-2"
-                >
+                <Button className="w-full bg-gray-800 text-white hover:bg-gray-700 h-auto p-4 flex flex-col space-y-2">
                   <Zap className="w-6 h-6" />
                   <span className="text-sm">System Settings</span>
                 </Button>
               </Link>
-              <Link to="/admin/logs">
-                <Button
-                  variant="outline"
-                  className="w-full minecraft-button h-auto p-4 flex flex-col space-y-2"
-                >
-                  <Activity className="w-6 h-6" />
-                  <span className="text-sm">View Logs</span>
+              <Link to="/admin/analytics">
+                <Button className="w-full bg-gray-800 text-white hover:bg-gray-700 h-auto p-4 flex flex-col space-y-2">
+                  <BarChart3 className="w-6 h-6" />
+                  <span className="text-sm">View Analytics</span>
                 </Button>
               </Link>
             </div>

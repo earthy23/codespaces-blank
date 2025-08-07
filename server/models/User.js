@@ -93,7 +93,9 @@ const createInitialAdmin = () => {
     .get("admin");
 
   if (!existingAdmin) {
-    const hashedPassword = bcrypt.hashSync("admin123", 12);
+    // Use lower salt rounds in development for better performance
+    const saltRounds = process.env.NODE_ENV === 'production' ? 12 : 8;
+    const hashedPassword = bcrypt.hashSync("admin123", saltRounds);
     const adminId = `admin-${Date.now()}`;
 
     db.prepare(
@@ -372,8 +374,9 @@ export function createDefaultAdmin() {
     if (adminCount === 0) {
       console.log('🔐 No admin users found, creating default admin...');
 
-      // Hash default password synchronously
-      const hashedPassword = bcrypt.hashSync('admin123', 12);
+      // Hash default password synchronously with optimized salt rounds
+      const saltRounds = process.env.NODE_ENV === 'production' ? 12 : 8;
+      const hashedPassword = bcrypt.hashSync('admin123', saltRounds);
 
       // Create admin user
       const adminId = createUser({

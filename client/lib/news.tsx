@@ -30,7 +30,7 @@ const NewsContext = createContext<NewsContextType | undefined>(undefined);
 
 
 
-export function NewsProvider({ children }: { children: React.ReactNode }) {
+export const NewsProvider = ({ children }: { children: React.ReactNode }) => {
   const [posts, setPosts] = useState<NewsPost[]>([]);
   const { user } = useAuth();
 
@@ -116,12 +116,12 @@ export function NewsProvider({ children }: { children: React.ReactNode }) {
       {children}
     </NewsContext.Provider>
   );
-}
+};
 
-export function useNews() {
+export const useNews = () => {
   const context = useContext(NewsContext);
   if (context === undefined) {
     throw new Error('useNews must be used within a NewsProvider');
   }
   return context;
-}
+};

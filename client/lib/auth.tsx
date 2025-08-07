@@ -36,7 +36,7 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export function AuthProvider({ children }: { children: React.ReactNode }) {
+export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -53,9 +53,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       setLoading(true);
 
-      // Add timeout for faster auth response
+      // Add timeout for auth response (increased for better reliability)
       const timeoutPromise = new Promise<never>((_, reject) =>
-        setTimeout(() => reject(new Error("Auth timeout")), 3000),
+        setTimeout(() => reject(new Error("Auth timeout")), 10000),
       );
 
       const response = await Promise.race([
@@ -79,11 +79,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     password: string,
   ): Promise<boolean> => {
     try {
-      if (process.env.NODE_ENV === 'development') {
+      if (process.env.NODE_ENV === "development") {
         console.log("🔐 AuthProvider: Starting login...");
       }
       const response = await authApi.login(username, password);
-      if (process.env.NODE_ENV === 'development') {
+      if (process.env.NODE_ENV === "development") {
         console.log("🔐 AuthProvider: Login API response:", {
           hasUser: !!response.user,
           username: response.user?.username,
@@ -92,7 +92,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
 
       setUser(response.user);
-      if (process.env.NODE_ENV === 'development') {
+      if (process.env.NODE_ENV === "development") {
         console.log(
           "🔐 AuthProvider: User state set to:",
           response.user?.username,
@@ -203,9 +203,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       {children}
     </AuthContext.Provider>
   );
-}
+};
 
-export function useAuth() {
+export const useAuth = () => {
   try {
     const context = useContext(AuthContext);
     if (context === undefined) {
@@ -248,9 +248,10 @@ export function useAuth() {
         refreshUser: async () => {
           console.warn("RefreshUser called before AuthProvider is ready");
         },
+        token: null,
       };
     }
-    return context;
+    return { ...context, token: tokenManager.get() };
   } catch (error) {
     console.error("useAuth: Critical error accessing AuthContext:", error);
     // Return safe fallback even if useContext fails
@@ -264,6 +265,7 @@ export function useAuth() {
       changePassword: async () => false,
       isAdmin: () => false,
       refreshUser: async () => {},
+      token: null,
     };
   }
-}
+};

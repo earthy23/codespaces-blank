@@ -14,17 +14,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import {
-  Play,
-  Users,
-  MessageCircle,
-  Shield,
-  Server,
-  ExternalLink,
-  Zap,
-  Star,
-  Globe,
-} from "lucide-react";
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/lib/auth";
@@ -53,19 +42,46 @@ export default function Dashboard() {
     const fetchDashboardData = async () => {
       try {
         // Fetch clients
-        const clientsResponse = await fetch("/api/clients");
-        const clientsData = await clientsResponse.json();
-        setClients(clientsData.clients || []);
+        try {
+          const clientsResponse = await fetch("/api/clients");
+          if (clientsResponse.ok) {
+            const clientsData = await clientsResponse.json();
+            setClients(clientsData.clients || []);
+          } else {
+            setClients([]);
+          }
+        } catch (error) {
+          console.warn("Failed to fetch clients:", error);
+          setClients([]);
+        }
 
         // Fetch top servers
-        const serversResponse = await fetch("/api/servers/top?limit=3");
-        const serversData = await serversResponse.json();
-        setTopServers(serversData.servers || []);
+        try {
+          const serversResponse = await fetch("/api/servers/top?limit=3");
+          if (serversResponse.ok) {
+            const serversData = await serversResponse.json();
+            setTopServers(serversData.servers || []);
+          } else {
+            setTopServers([]);
+          }
+        } catch (error) {
+          console.warn("Failed to fetch servers:", error);
+          setTopServers([]);
+        }
 
         // Fetch partners
-        const partnersResponse = await fetch("/api/admin/partners");
-        const partnersData = await partnersResponse.json();
-        setPartners(partnersData.partners || []);
+        try {
+          const partnersResponse = await fetch("/api/admin/partners");
+          if (partnersResponse.ok) {
+            const partnersData = await partnersResponse.json();
+            setPartners(partnersData.partners || []);
+          } else {
+            setPartners([]);
+          }
+        } catch (error) {
+          console.warn("Failed to fetch partners:", error);
+          setPartners([]);
+        }
       } catch (error) {
         console.error("Failed to fetch dashboard data:", error);
         setClients([]);
@@ -86,13 +102,28 @@ export default function Dashboard() {
       const response = await fetch(`/api/clients/${selectedClient}/launch`, {
         method: "POST",
       });
-      const data = await response.json();
 
       if (response.ok) {
+        // Try to parse response data, but don't fail if it's not JSON
+        try {
+          const data = await response.json();
+          console.log("Launch response:", data);
+        } catch (parseError) {
+          console.warn("Response not JSON, continuing anyway");
+        }
         // Open client play URL
         window.open(`/api/clients/${selectedClient}/play`, "_blank");
       } else {
-        console.error("Failed to launch client:", data.error);
+        // Try to get error message, but handle cases where response is not JSON
+        try {
+          const data = await response.json();
+          console.error(
+            "Failed to launch client:",
+            data.error || "Unknown error",
+          );
+        } catch (parseError) {
+          console.error("Failed to launch client: Response not readable");
+        }
       }
     } catch (error) {
       console.error("Error launching client:", error);
@@ -112,7 +143,16 @@ export default function Dashboard() {
             </p>
           </div>
           <div className="flex items-center space-x-2">
-            <Star className="w-5 h-5 text-yellow-500" />
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              className="w-5 h-5 text-yellow-500"
+            >
+              <polygon
+                points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"
+                fill="currentColor"
+              />
+            </svg>
             <span className="text-sm font-medium">
               Level {user?.role === "admin" ? "Admin" : "Member"}
             </span>
@@ -120,12 +160,17 @@ export default function Dashboard() {
         </div>
 
         {/* Enhanced Client Launcher */}
-        <Card className="minecraft-panel mb-8 bg-card/50 border-2 border-primary/20 shadow-xl shadow-primary/10">
+        <Card className="minecraft-panel mb-8 bg-card border-2 border-primary/20 shadow-xl shadow-primary/10">
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
-              <div className="w-10 h-10 rounded-lg bg-card border border-primary/50 flex items-center justify-center shadow-lg shadow-primary/30">
-                <Play className="w-6 h-6 text-primary drop-shadow-[0_0_4px_currentColor]" />
-              </div>
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                className="w-8 h-8 text-primary"
+              >
+                <polygon points="5,21 19,12 5,3" fill="currentColor" />
+                <circle cx="12" cy="12" r="2" fill="white" />
+              </svg>
               <div>
                 <span className="text-xl">Launch Client</span>
                 <p className="text-sm font-normal text-muted-foreground">
@@ -143,112 +188,90 @@ export default function Dashboard() {
                   disabled={false}
                 >
                   <SelectTrigger className="minecraft-input h-12 text-base border-2">
-                    <SelectValue
-                      placeholder="Choose a client..."
-                    />
+                    <SelectValue placeholder="Choose a client..." />
                   </SelectTrigger>
                   <SelectContent>
-                    {clients.length > 0
-                      ? clients.map((client) => (
-                          <SelectItem key={client.id} value={client.id}>
-                            <div className="py-1">
-                              <div className="font-medium">
-                                {client.name} v{client.version}
-                              </div>
-                              <div className="text-sm text-muted-foreground">
-                                {client.description}
-                              </div>
+                    {clients.length > 0 ? (
+                      clients.map((client) => (
+                        <SelectItem key={client.id} value={client.id}>
+                          <div className="py-1">
+                            <div className="font-medium">
+                              {client.name} v{client.version}
                             </div>
-                          </SelectItem>
-                        ))
-                      : (
-                          <SelectItem value="no-clients" disabled>
-                            No clients available
-                          </SelectItem>
-                        )}
+                            <div className="text-sm text-muted-foreground">
+                              {client.description}
+                            </div>
+                          </div>
+                        </SelectItem>
+                      ))
+                    ) : (
+                      <SelectItem value="no-clients" disabled>
+                        No clients available
+                      </SelectItem>
+                    )}
                   </SelectContent>
                 </Select>
               </div>
               <Button
                 onClick={launchClient}
-                disabled={
-                  !selectedClient || selectedClient === "no-clients"
-                }
+                disabled={!selectedClient || selectedClient === "no-clients"}
                 size="lg"
                 className="h-12 px-8 minecraft-button bg-primary text-primary-foreground border-none hover:bg-primary/90 shadow-lg hover:shadow-primary/30"
               >
-                <Zap className="w-5 h-5 mr-2" />
-"Launch Game"
+                <svg viewBox="0 0 24 24" fill="none" className="w-5 h-5 mr-2">
+                  <polygon points="5,21 19,12 5,3" fill="currentColor" />
+                  <circle cx="12" cy="12" r="1" fill="white" />
+                </svg>
+                Launch Game
               </Button>
             </div>
           </CardContent>
         </Card>
-
-        {/* Enhanced Quick Stats */}
-        <div className="grid md:grid-cols-3 gap-6 mb-8">
-          <Card className="minecraft-panel bg-card/50 border-2 border-border shadow-lg hover:shadow-primary/10">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-muted-foreground">
-                    Online Friends
-                  </p>
-                  <p className="text-3xl font-bold text-foreground">
-                    {onlineFriends.length}
-                  </p>
-                </div>
-                <div className="w-12 h-12 rounded-lg bg-card border border-primary/50 flex items-center justify-center shadow-lg shadow-primary/20">
-                  <Users className="w-6 h-6 text-primary drop-shadow-[0_0_4px_currentColor]" />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="minecraft-panel bg-card/50 border-2 border-border shadow-lg hover:shadow-primary/10">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-muted-foreground">
-                    Unread Messages
-                  </p>
-                  <p className="text-3xl font-bold text-foreground">
-                    {unreadTotal}
-                  </p>
-                </div>
-                <div className="w-12 h-12 rounded-lg bg-card border border-primary/50 flex items-center justify-center shadow-lg shadow-primary/20">
-                  <MessageCircle className="w-6 h-6 text-primary drop-shadow-[0_0_4px_currentColor]" />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="minecraft-panel bg-card/50 border-2 border-border shadow-lg hover:shadow-primary/10">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-muted-foreground">
-                    Account Status
-                  </p>
-                  <p className="text-lg font-bold text-foreground">
-                    {user?.role === "admin" ? "Administrator" : "Member"}
-                  </p>
-                </div>
-                <div className="w-12 h-12 rounded-lg bg-card border border-primary/50 flex items-center justify-center shadow-lg shadow-primary/20">
-                  <Shield className="w-6 h-6 text-primary drop-shadow-[0_0_4px_currentColor]" />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
 
         {/* Top Servers */}
         {topServers.length > 0 && (
           <Card className="minecraft-panel mb-8">
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
-                <div className="w-8 h-8 rounded-lg bg-card border border-primary/50 flex items-center justify-center shadow-lg shadow-primary/20">
-                  <Server className="w-5 h-5 text-primary drop-shadow-[0_0_4px_currentColor]" />
-                </div>
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  className="w-6 h-6 text-primary"
+                >
+                  <rect
+                    x="3"
+                    y="4"
+                    width="18"
+                    height="2"
+                    rx="1"
+                    fill="currentColor"
+                  />
+                  <rect
+                    x="3"
+                    y="8"
+                    width="18"
+                    height="2"
+                    rx="1"
+                    fill="currentColor"
+                  />
+                  <rect
+                    x="3"
+                    y="12"
+                    width="18"
+                    height="2"
+                    rx="1"
+                    fill="currentColor"
+                  />
+                  <rect
+                    x="2"
+                    y="16"
+                    width="20"
+                    height="6"
+                    rx="2"
+                    fill="currentColor"
+                    opacity="0.6"
+                  />
+                </svg>
                 <span>Popular Servers</span>
               </CardTitle>
               <CardDescription>
@@ -290,7 +313,21 @@ export default function Dashboard() {
                           size="sm"
                           className="w-full bg-primary text-primary-foreground hover:bg-primary/90 shadow-md hover:shadow-primary/20"
                         >
-                          <Globe className="w-4 h-4 mr-2" />
+                          <svg
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            className="w-4 h-4 mr-2"
+                          >
+                            <circle
+                              cx="12"
+                              cy="12"
+                              r="10"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                              fill="none"
+                            />
+                            <circle cx="12" cy="12" r="3" fill="currentColor" />
+                          </svg>
                           View Servers
                         </Button>
                       </Link>
@@ -307,9 +344,22 @@ export default function Dashboard() {
           <Card className="minecraft-panel mb-8">
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
-                <div className="w-8 h-8 rounded-lg bg-card border border-primary/50 flex items-center justify-center shadow-lg shadow-primary/20">
-                  <Shield className="w-5 h-5 text-primary drop-shadow-[0_0_4px_currentColor]" />
-                </div>
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  className="w-6 h-6 text-primary"
+                >
+                  <path
+                    d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"
+                    fill="currentColor"
+                  />
+                  <path
+                    d="m9 12 2 2 4-4"
+                    stroke="white"
+                    strokeWidth="2"
+                    fill="none"
+                  />
+                </svg>
                 <span>Our Partners</span>
               </CardTitle>
               <CardDescription>Organizations we work with</CardDescription>
@@ -345,7 +395,32 @@ export default function Dashboard() {
                           className="inline-flex items-center text-xs text-primary hover:underline"
                         >
                           Visit
-                          <ExternalLink className="w-3 h-3 ml-1" />
+                          <svg
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            className="w-3 h-3 ml-1"
+                          >
+                            <path
+                              d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                              fill="none"
+                            />
+                            <polyline
+                              points="15,3 21,3 21,9"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                              fill="none"
+                            />
+                            <line
+                              x1="10"
+                              y1="14"
+                              x2="21"
+                              y2="3"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                            />
+                          </svg>
                         </a>
                       )}
                     </CardContent>

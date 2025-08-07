@@ -20,12 +20,14 @@ import forumsRoutes from "./api/forums.js";
 import chatRoutes from "./api/chat.js";
 import friendsRoutes from "./api/friends.js";
 import storeRoutes from "./api/store.js";
+import publicRoutes from "./api/public.js";
 
 // Import utilities
 import { logActivity } from "./utils/logger.js";
 import ChatWebSocketServer from "./websocket.js";
 import { createServer as createHTTPServer } from "http";
 import { createDefaultAdmin } from "./models/User.js";
+import { startPeriodicStatusChecks } from "./utils/server-status.js";
 
 // Load environment variables
 dotenv.config();
@@ -63,10 +65,22 @@ const limiter = rateLimit({
 
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 5, // limit each IP to 5 auth requests per windowMs
-  message: "Too many authentication attempts, please try again later.",
+  max: process.env.NODE_ENV === "production" ? 10 : 50, // More lenient in development
+  message: {
+    error: "Too many authentication attempts, please try again later.",
+    retryAfter: "15 minutes",
+  },
   standardHeaders: true,
   legacyHeaders: false,
+  // Skip rate limiting for localhost in development
+  skip: (req) => {
+    return (
+      process.env.NODE_ENV !== "production" &&
+      (req.ip === "127.0.0.1" ||
+        req.ip === "::1" ||
+        req.ip === "::ffff:127.0.0.1")
+    );
+  },
 });
 
 app.use(limiter);
@@ -82,6 +96,8 @@ app.use(
     origin: process.env.FRONTEND_URL || [
       "http://localhost:3000",
       "http://localhost:5173",
+      "http://localhost:8080",
+      "https://7b10610db8d44756a9e9dc629f6481f1-30e9842434a9496282981b9c3.fly.dev",
     ],
     credentials: true,
     optionsSuccessStatus: 200,
@@ -135,6 +151,7 @@ app.use("/api/forums", forumsRoutes);
 app.use("/api/chat", chatRoutes);
 app.use("/api/friends", friendsRoutes);
 app.use("/api/store", storeRoutes);
+app.use("/api/public", publicRoutes);
 
 // Health check endpoint
 app.get("/api/health", (req, res) => {
@@ -217,6 +234,9 @@ if (process.env.NODE_ENV !== "test") {
     // Create default admin user if none exists
     createDefaultAdmin();
 
+    // Start periodic server status checks (every 15 minutes)
+    startPeriodicStatusChecks(15);
+
     logActivity({
       action: "server_started",
       category: "system",
@@ -226,6 +246,7 @@ if (process.env.NODE_ENV !== "test") {
         environment: process.env.NODE_ENV || "development",
         nodeVersion: process.version,
         websocket: true,
+        serverStatusChecks: true,
       },
     });
   });

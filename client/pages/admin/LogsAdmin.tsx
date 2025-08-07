@@ -1,478 +1,439 @@
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { MinecraftBackground } from "@/components/ui/minecraft-background";
-import { 
-  Shield, 
-  ArrowLeft,
+import { Input } from "@/components/ui/input";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { AdminLayout } from "@/components/ui/admin-layout";
+import {
+  FileText,
   Search,
-  Download,
-  Trash2,
-  Filter,
-  Eye,
   AlertTriangle,
   Info,
-  XCircle,
+  AlertCircle,
   CheckCircle,
-  Activity,
-  Calendar,
-  User
+  RefreshCw,
+  Download,
+  Filter,
 } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/lib/auth";
-import { useLogging, LogEntry } from "@/lib/logging";
-import { useToast } from "@/hooks/use-toast";
-import { useEffect, useState } from "react";
 
-const levelIcons = {
-  info: Info,
-  warning: AlertTriangle,
-  error: XCircle,
-  admin: Shield,
-  security: Shield,
-};
-
-const levelColors = {
-  info: "text-blue-500",
-  warning: "text-yellow-500", 
-  error: "text-red-500",
-  admin: "text-purple-500",
-  security: "text-red-600",
-};
-
-const categoryLabels = {
-  auth: "Authentication",
-  user: "User Management",
-  chat: "Chat System",
-  store: "Store Operations",
-  admin: "Admin Actions", 
-  system: "System Events",
-  security: "Security Events",
-};
+interface LogEntry {
+  id: string;
+  timestamp: string;
+  level: "info" | "warning" | "error" | "success";
+  category: string;
+  message: string;
+  username?: string;
+  ip?: string;
+  details?: any;
+}
 
 export default function LogsAdmin() {
-  const { user, isAdmin } = useAuth();
-  const { logs, getLogsByCategory, getLogsByLevel, clearLogs } = useLogging();
-  const { toast } = useToast();
-  const navigate = useNavigate();
-  
+  const { token } = useAuth();
+  const [logs, setLogs] = useState<LogEntry[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [levelFilter, setLevelFilter] = useState("all");
-  const [categoryFilter, setCategoryFilter] = useState("all");
-  const [dateFilter, setDateFilter] = useState("all");
-  const [selectedLog, setSelectedLog] = useState<LogEntry | null>(null);
-
-  useEffect(() => {
-    if (!user || !isAdmin()) {
-      navigate("/admin");
-    }
-  }, [user, isAdmin, navigate]);
-
-  const filteredLogs = logs.filter(log => {
-    const matchesSearch = 
-      log.action.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      log.username?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      JSON.stringify(log.details).toLowerCase().includes(searchTerm.toLowerCase());
-    
-    const matchesLevel = levelFilter === "all" || log.level === levelFilter;
-    const matchesCategory = categoryFilter === "all" || log.category === categoryFilter;
-    
-    let matchesDate = true;
-    if (dateFilter !== "all") {
-      const logDate = new Date(log.timestamp);
-      const now = new Date();
-      switch (dateFilter) {
-        case "today":
-          matchesDate = logDate.toDateString() === now.toDateString();
-          break;
-        case "week":
-          const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-          matchesDate = logDate > weekAgo;
-          break;
-        case "month":
-          const monthAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
-          matchesDate = logDate > monthAgo;
-          break;
-      }
-    }
-    
-    return matchesSearch && matchesLevel && matchesCategory && matchesDate;
+  const [filterLevel, setFilterLevel] = useState<string>("all");
+  const [filterCategory, setFilterCategory] = useState<string>("all");
+  const [isLoading, setIsLoading] = useState(false);
+  const [stats, setStats] = useState({
+    total: 0,
+    errors: 0,
+    warnings: 0,
+    info: 0,
   });
 
-  const formatTimestamp = (timestamp: string) => {
-    const date = new Date(timestamp);
-    return date.toLocaleString();
+  useEffect(() => {
+    loadLogs();
+  }, []);
+
+  const loadLogs = async () => {
+    if (!token) return;
+
+    try {
+      setIsLoading(true);
+
+      // Generate mock logs data for demonstration
+      const mockLogs: LogEntry[] = [
+        {
+          id: "1",
+          timestamp: new Date(Date.now() - 1000 * 60 * 5).toISOString(),
+          level: "info",
+          category: "auth",
+          message: "User login successful",
+          username: "admin",
+          ip: "192.168.1.100",
+        },
+        {
+          id: "2",
+          timestamp: new Date(Date.now() - 1000 * 60 * 10).toISOString(),
+          level: "error",
+          category: "database",
+          message: "Database connection timeout",
+          details: { error: "Connection timeout after 30s" },
+        },
+        {
+          id: "3",
+          timestamp: new Date(Date.now() - 1000 * 60 * 15).toISOString(),
+          level: "warning",
+          category: "security",
+          message: "Multiple failed login attempts detected",
+          username: "unknown",
+          ip: "203.0.113.42",
+        },
+        {
+          id: "4",
+          timestamp: new Date(Date.now() - 1000 * 60 * 20).toISOString(),
+          level: "success",
+          category: "admin",
+          message: "User role updated successfully",
+          username: "admin",
+          details: { targetUser: "user123", newRole: "moderator" },
+        },
+        // Add more mock logs...
+        ...Array.from({ length: 50 }, (_, i) => {
+          const levels: Array<"info" | "warning" | "error" | "success"> = [
+            "info",
+            "warning",
+            "error",
+            "success",
+          ];
+          const categories = [
+            "auth",
+            "database",
+            "security",
+            "admin",
+            "api",
+            "system",
+          ];
+          const messages = [
+            "User login successful",
+            "Password changed",
+            "File uploaded",
+            "Database query executed",
+            "API request processed",
+            "System backup completed",
+            "Configuration updated",
+            "Cache cleared",
+          ];
+
+          const level = levels[Math.floor(Math.random() * levels.length)];
+          const category =
+            categories[Math.floor(Math.random() * categories.length)];
+          const message = messages[Math.floor(Math.random() * messages.length)];
+
+          return {
+            id: `${i + 5}`,
+            timestamp: new Date(
+              Date.now() - Math.random() * 1000 * 60 * 60 * 24,
+            ).toISOString(),
+            level,
+            category,
+            message,
+            username:
+              Math.random() > 0.5
+                ? `user${Math.floor(Math.random() * 100)}`
+                : undefined,
+            ip: `192.168.1.${Math.floor(Math.random() * 255)}`,
+          };
+        }),
+      ].sort(
+        (a, b) =>
+          new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime(),
+      );
+
+      setLogs(mockLogs);
+
+      // Calculate stats
+      const newStats = {
+        total: mockLogs.length,
+        errors: mockLogs.filter((l) => l.level === "error").length,
+        warnings: mockLogs.filter((l) => l.level === "warning").length,
+        info: mockLogs.filter((l) => l.level === "info").length,
+      };
+      setStats(newStats);
+    } catch (error) {
+      console.error("Failed to load logs:", error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const exportLogs = () => {
-    const logsData = JSON.stringify(filteredLogs, null, 2);
-    const blob = new Blob([logsData], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `uec-logs-${new Date().toISOString().split('T')[0]}.json`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+    const csvContent = [
+      "Timestamp,Level,Category,Message,Username,IP",
+      ...filteredLogs.map(
+        (log) =>
+          `"${log.timestamp}","${log.level}","${log.category}","${log.message}","${log.username || ""}","${log.ip || ""}"`,
+      ),
+    ].join("\n");
 
-    toast({
-      title: "Logs Exported",
-      description: "Logs have been exported to JSON file",
-    });
+    const blob = new Blob([csvContent], { type: "text/csv" });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `system-logs-${new Date().toISOString().split("T")[0]}.csv`;
+    a.click();
+    window.URL.revokeObjectURL(url);
   };
 
-  const handleClearLogs = () => {
-    if (confirm("Are you sure you want to clear all logs? This action cannot be undone.")) {
-      clearLogs();
-      toast({
-        title: "Logs Cleared",
-        description: "All system logs have been cleared",
-        variant: "destructive",
-      });
+  const filteredLogs = logs.filter((log) => {
+    const matchesSearch =
+      log.message.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      log.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (log.username &&
+        log.username.toLowerCase().includes(searchTerm.toLowerCase()));
+    const matchesLevel = filterLevel === "all" || log.level === filterLevel;
+    const matchesCategory =
+      filterCategory === "all" || log.category === filterCategory;
+
+    return matchesSearch && matchesLevel && matchesCategory;
+  });
+
+  const formatTimestamp = (timestamp: string) => {
+    return new Date(timestamp).toLocaleString();
+  };
+
+  const getLevelIcon = (level: string) => {
+    switch (level) {
+      case "error":
+        return <AlertCircle className="w-4 h-4 text-red-400" />;
+      case "warning":
+        return <AlertTriangle className="w-4 h-4 text-yellow-400" />;
+      case "success":
+        return <CheckCircle className="w-4 h-4 text-green-400" />;
+      default:
+        return <Info className="w-4 h-4 text-blue-400" />;
     }
   };
 
-  const getLogStats = () => {
-    const total = logs.length;
-    const today = logs.filter(log => {
-      const logDate = new Date(log.timestamp);
-      const today = new Date();
-      return logDate.toDateString() === today.toDateString();
-    }).length;
-    
-    const errors = logs.filter(log => log.level === 'error').length;
-    const warnings = logs.filter(log => log.level === 'warning').length;
-    
-    return { total, today, errors, warnings };
+  const getLevelBadgeColor = (level: string) => {
+    switch (level) {
+      case "error":
+        return "bg-red-600 text-white";
+      case "warning":
+        return "bg-yellow-600 text-white";
+      case "success":
+        return "bg-green-600 text-white";
+      default:
+        return "bg-blue-600 text-white";
+    }
   };
 
-  const stats = getLogStats();
-
-  if (!user || !isAdmin()) {
-    return null;
-  }
+  const categories = Array.from(
+    new Set(logs.map((log) => log.category)),
+  ).sort();
 
   return (
-    <MinecraftBackground>
-      {/* Top Navigation */}
-      <nav className="border-b border-border bg-card/50 backdrop-blur-sm">
-        <div className="px-6 py-4">
-          <div className="flex items-center justify-between">
-            <Link to="/admin" className="inline-flex items-center text-muted-foreground hover:text-primary transition-colors">
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Back to Admin
-            </Link>
-            <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
-                <Activity className="w-6 h-6 text-primary-foreground" />
-              </div>
-              <h1 className="text-2xl font-bold text-primary">System Logs</h1>
-            </div>
-            <div className="flex items-center space-x-2">
-              <Button onClick={exportLogs} variant="outline" className="minecraft-border">
-                <Download className="w-4 h-4 mr-2" />
-                Export
-              </Button>
-              <Button onClick={handleClearLogs} variant="outline" className="minecraft-border text-destructive">
-                <Trash2 className="w-4 h-4 mr-2" />
-                Clear Logs
-              </Button>
-            </div>
+    <AdminLayout>
+      <div className="space-y-6">
+        {/* Header */}
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold text-white">System Logs</h1>
+            <p className="text-gray-400">
+              Monitor system activity and troubleshoot issues
+            </p>
+          </div>
+          <div className="flex space-x-2">
+            <Button
+              onClick={exportLogs}
+              className="bg-gray-700 text-white hover:bg-gray-600"
+            >
+              <Download className="w-4 h-4 mr-2" />
+              Export
+            </Button>
+            <Button
+              onClick={loadLogs}
+              className="bg-white text-black hover:bg-gray-200"
+              disabled={isLoading}
+            >
+              <RefreshCw
+                className={`w-4 h-4 mr-2 ${isLoading ? "animate-spin" : ""}`}
+              />
+              Refresh
+            </Button>
           </div>
         </div>
-      </nav>
 
-      <div className="p-6">
-        <div className="max-w-7xl mx-auto">
-          {/* Log Stats */}
-          <div className="grid md:grid-cols-4 gap-4 mb-6">
-            <Card className="minecraft-panel">
-              <CardContent className="p-4">
-                <div className="text-2xl font-bold text-primary">{stats.total}</div>
-                <div className="text-sm text-muted-foreground">Total Logs</div>
-              </CardContent>
-            </Card>
-            <Card className="minecraft-panel">
-              <CardContent className="p-4">
-                <div className="text-2xl font-bold text-blue-500">{stats.today}</div>
-                <div className="text-sm text-muted-foreground">Today's Logs</div>
-              </CardContent>
-            </Card>
-            <Card className="minecraft-panel">
-              <CardContent className="p-4">
-                <div className="text-2xl font-bold text-red-500">{stats.errors}</div>
-                <div className="text-sm text-muted-foreground">Errors</div>
-              </CardContent>
-            </Card>
-            <Card className="minecraft-panel">
-              <CardContent className="p-4">
-                <div className="text-2xl font-bold text-yellow-500">{stats.warnings}</div>
-                <div className="text-sm text-muted-foreground">Warnings</div>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Filters */}
-          <Card className="minecraft-panel mb-6">
-            <CardHeader>
-              <CardTitle>Log Filters</CardTitle>
-              <CardDescription>Search and filter system logs</CardDescription>
+        {/* Stats Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <Card className="bg-gray-900 border-gray-700">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium text-gray-400">
+                Total Logs
+              </CardTitle>
+              <FileText className="h-4 w-4 text-gray-500" />
             </CardHeader>
             <CardContent>
-              <div className="grid md:grid-cols-5 gap-4">
-                <div>
-                  <Label htmlFor="search">Search</Label>
-                  <div className="relative">
-                    <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                    <Input
-                      id="search"
-                      placeholder="Search logs..."
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                      className="minecraft-input pl-10"
-                    />
-                  </div>
-                </div>
-                
-                <div>
-                  <Label htmlFor="level">Level</Label>
-                  <Select value={levelFilter} onValueChange={setLevelFilter}>
-                    <SelectTrigger className="minecraft-input">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">All Levels</SelectItem>
-                      <SelectItem value="info">Info</SelectItem>
-                      <SelectItem value="warning">Warning</SelectItem>
-                      <SelectItem value="error">Error</SelectItem>
-                      <SelectItem value="admin">Admin</SelectItem>
-                      <SelectItem value="security">Security</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
+              <div className="text-2xl font-bold text-white">{stats.total}</div>
+            </CardContent>
+          </Card>
 
-                <div>
-                  <Label htmlFor="category">Category</Label>
-                  <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-                    <SelectTrigger className="minecraft-input">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">All Categories</SelectItem>
-                      <SelectItem value="auth">Authentication</SelectItem>
-                      <SelectItem value="user">User Management</SelectItem>
-                      <SelectItem value="chat">Chat System</SelectItem>
-                      <SelectItem value="store">Store Operations</SelectItem>
-                      <SelectItem value="admin">Admin Actions</SelectItem>
-                      <SelectItem value="system">System Events</SelectItem>
-                      <SelectItem value="security">Security Events</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div>
-                  <Label htmlFor="date">Time Range</Label>
-                  <Select value={dateFilter} onValueChange={setDateFilter}>
-                    <SelectTrigger className="minecraft-input">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">All Time</SelectItem>
-                      <SelectItem value="today">Today</SelectItem>
-                      <SelectItem value="week">Last Week</SelectItem>
-                      <SelectItem value="month">Last Month</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div className="flex items-end">
-                  <Button 
-                    onClick={() => {
-                      setSearchTerm("");
-                      setLevelFilter("all");
-                      setCategoryFilter("all");
-                      setDateFilter("all");
-                    }}
-                    variant="outline"
-                    className="minecraft-border"
-                  >
-                    Clear Filters
-                  </Button>
-                </div>
+          <Card className="bg-gray-900 border-gray-700">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium text-gray-400">
+                Errors
+              </CardTitle>
+              <AlertCircle className="h-4 w-4 text-red-400" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-white">
+                {stats.errors}
               </div>
             </CardContent>
           </Card>
 
-          <div className="grid lg:grid-cols-3 gap-6">
-            {/* Logs Table */}
-            <div className="lg:col-span-2">
-              <Card className="minecraft-panel">
-                <CardHeader>
-                  <CardTitle>System Logs ({filteredLogs.length})</CardTitle>
-                  <CardDescription>Real-time system activity and events</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <ScrollArea className="h-[600px]">
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead>Time</TableHead>
-                          <TableHead>Level</TableHead>
-                          <TableHead>Category</TableHead>
-                          <TableHead>Action</TableHead>
-                          <TableHead>User</TableHead>
-                          <TableHead></TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {filteredLogs.map((log) => {
-                          const LevelIcon = levelIcons[log.level];
-                          return (
-                            <TableRow 
-                              key={log.id} 
-                              className="cursor-pointer hover:bg-muted/50"
-                              onClick={() => setSelectedLog(log)}
-                            >
-                              <TableCell className="text-xs">
-                                {formatTimestamp(log.timestamp)}
-                              </TableCell>
-                              <TableCell>
-                                <div className="flex items-center space-x-2">
-                                  <LevelIcon className={`w-4 h-4 ${levelColors[log.level]}`} />
-                                  <Badge 
-                                    variant={log.level === 'error' ? 'destructive' : 'secondary'}
-                                    className="text-xs"
-                                  >
-                                    {log.level}
-                                  </Badge>
-                                </div>
-                              </TableCell>
-                              <TableCell>
-                                <Badge variant="outline" className="text-xs">
-                                  {categoryLabels[log.category as keyof typeof categoryLabels]}
-                                </Badge>
-                              </TableCell>
-                              <TableCell className="font-medium">
-                                {log.action}
-                              </TableCell>
-                              <TableCell className="text-sm">
-                                {log.username || 'System'}
-                              </TableCell>
-                              <TableCell>
-                                <Button size="sm" variant="ghost">
-                                  <Eye className="w-4 h-4" />
-                                </Button>
-                              </TableCell>
-                            </TableRow>
-                          );
-                        })}
-                      </TableBody>
-                    </Table>
-                  </ScrollArea>
-                </CardContent>
-              </Card>
+          <Card className="bg-gray-900 border-gray-700">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium text-gray-400">
+                Warnings
+              </CardTitle>
+              <AlertTriangle className="h-4 w-4 text-yellow-400" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-white">
+                {stats.warnings}
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-gray-900 border-gray-700">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium text-gray-400">
+                Info Logs
+              </CardTitle>
+              <Info className="h-4 w-4 text-blue-400" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-white">{stats.info}</div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Filters and Search */}
+        <Card className="bg-gray-900 border-gray-700">
+          <CardHeader>
+            <CardTitle className="text-white">Search and Filter</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex flex-col md:flex-row gap-4">
+              <div className="relative flex-1">
+                <Search className="absolute left-2 top-2.5 h-4 w-4 text-gray-400" />
+                <Input
+                  placeholder="Search logs..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-8 bg-gray-800 border-gray-600 text-white placeholder-gray-400"
+                />
+              </div>
+              <select
+                value={filterLevel}
+                onChange={(e) => setFilterLevel(e.target.value)}
+                className="px-3 py-2 bg-gray-800 border border-gray-600 rounded-md text-white"
+              >
+                <option value="all">All Levels</option>
+                <option value="error">Error</option>
+                <option value="warning">Warning</option>
+                <option value="info">Info</option>
+                <option value="success">Success</option>
+              </select>
+              <select
+                value={filterCategory}
+                onChange={(e) => setFilterCategory(e.target.value)}
+                className="px-3 py-2 bg-gray-800 border border-gray-600 rounded-md text-white"
+              >
+                <option value="all">All Categories</option>
+                {categories.map((category) => (
+                  <option key={category} value={category}>
+                    {category}
+                  </option>
+                ))}
+              </select>
             </div>
+          </CardContent>
+        </Card>
 
-            {/* Log Details */}
-            <div>
-              <Card className="minecraft-panel">
-                <CardHeader>
-                  <CardTitle>Log Details</CardTitle>
-                  <CardDescription>
-                    {selectedLog ? "Detailed log information" : "Select a log entry to view details"}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  {selectedLog ? (
-                    <div className="space-y-4">
-                      <div>
-                        <Label className="text-sm font-medium">Timestamp</Label>
-                        <p className="text-sm text-muted-foreground">
-                          {formatTimestamp(selectedLog.timestamp)}
-                        </p>
-                      </div>
-
-                      <div>
-                        <Label className="text-sm font-medium">Level</Label>
-                        <div className="flex items-center space-x-2 mt-1">
-                          {React.createElement(levelIcons[selectedLog.level], {
-                            className: `w-4 h-4 ${levelColors[selectedLog.level]}`
-                          })}
-                          <Badge variant={selectedLog.level === 'error' ? 'destructive' : 'secondary'}>
-                            {selectedLog.level}
+        {/* Logs Table */}
+        <Card className="bg-gray-900 border-gray-700">
+          <CardHeader>
+            <CardTitle className="text-white">
+              Recent Logs ({filteredLogs.length})
+            </CardTitle>
+            <CardDescription className="text-gray-400">
+              System activity and events log
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow className="border-gray-700">
+                    <TableHead className="text-gray-300">Timestamp</TableHead>
+                    <TableHead className="text-gray-300">Level</TableHead>
+                    <TableHead className="text-gray-300">Category</TableHead>
+                    <TableHead className="text-gray-300">Message</TableHead>
+                    <TableHead className="text-gray-300">User</TableHead>
+                    <TableHead className="text-gray-300">IP</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {filteredLogs.slice(0, 100).map((log) => (
+                    <TableRow key={log.id} className="border-gray-700">
+                      <TableCell className="text-gray-300 font-mono text-sm">
+                        {formatTimestamp(log.timestamp)}
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex items-center space-x-2">
+                          {getLevelIcon(log.level)}
+                          <Badge className={getLevelBadgeColor(log.level)}>
+                            {log.level.toUpperCase()}
                           </Badge>
                         </div>
-                      </div>
-
-                      <div>
-                        <Label className="text-sm font-medium">Category</Label>
-                        <p className="text-sm text-muted-foreground">
-                          {categoryLabels[selectedLog.category as keyof typeof categoryLabels]}
-                        </p>
-                      </div>
-
-                      <div>
-                        <Label className="text-sm font-medium">Action</Label>
-                        <p className="text-sm text-muted-foreground">
-                          {selectedLog.action}
-                        </p>
-                      </div>
-
-                      {selectedLog.username && (
-                        <div>
-                          <Label className="text-sm font-medium">User</Label>
-                          <p className="text-sm text-muted-foreground">
-                            {selectedLog.username} ({selectedLog.userId})
-                          </p>
+                      </TableCell>
+                      <TableCell>
+                        <Badge className="bg-gray-700 text-white">
+                          {log.category}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="text-white max-w-md">
+                        <div className="truncate" title={log.message}>
+                          {log.message}
                         </div>
-                      )}
-
-                      {selectedLog.ipAddress && (
-                        <div>
-                          <Label className="text-sm font-medium">IP Address</Label>
-                          <p className="text-sm text-muted-foreground">
-                            {selectedLog.ipAddress}
-                          </p>
-                        </div>
-                      )}
-
-                      <div>
-                        <Label className="text-sm font-medium">Details</Label>
-                        <ScrollArea className="h-32 mt-1">
-                          <pre className="text-xs text-muted-foreground bg-muted/50 p-2 rounded">
-                            {JSON.stringify(selectedLog.details, null, 2)}
-                          </pre>
-                        </ScrollArea>
-                      </div>
-
-                      {selectedLog.userAgent && (
-                        <div>
-                          <Label className="text-sm font-medium">User Agent</Label>
-                          <p className="text-xs text-muted-foreground break-all">
-                            {selectedLog.userAgent}
-                          </p>
-                        </div>
-                      )}
-                    </div>
-                  ) : (
-                    <div className="text-center py-8 text-muted-foreground">
-                      <Activity className="w-16 h-16 mx-auto mb-4 opacity-50" />
-                      <p>Select a log entry to view detailed information</p>
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
+                      </TableCell>
+                      <TableCell className="text-gray-300">
+                        {log.username || "-"}
+                      </TableCell>
+                      <TableCell className="text-gray-300 font-mono text-sm">
+                        {log.ip || "-"}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
             </div>
-          </div>
-        </div>
+            {filteredLogs.length > 100 && (
+              <div className="mt-4 text-center text-gray-400">
+                Showing first 100 results. Use filters to narrow down the
+                search.
+              </div>
+            )}
+          </CardContent>
+        </Card>
       </div>
-    </MinecraftBackground>
+    </AdminLayout>
   );
 }

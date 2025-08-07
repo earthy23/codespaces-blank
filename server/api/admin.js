@@ -4,6 +4,8 @@ import { requireAuth, requireAdmin } from "../middleware/auth.js";
 import { logActivity, getLogs, clearLogs } from "../utils/logger.js";
 import { User } from "../models/User.js";
 import { Client } from "../models/Client.js";
+import { updateAllServerStatuses } from "../utils/server-status.js";
+import { getServersData } from "./servers.js";
 
 const router = express.Router();
 
@@ -753,5 +755,101 @@ router.delete(
     }
   },
 );
+
+// Get server list status (admin only)
+router.get("/servers/status", requireAuth, requireAdmin, async (req, res) => {
+  try {
+    const { servers } = getServersData();
+
+    const stats = {
+      total: servers.length,
+      online: servers.filter(s => s.isOnline).length,
+      offline: servers.filter(s => !s.isOnline).length,
+      lastChecked: servers.length > 0 ?
+        Math.max(...servers.map(s => new Date(s.lastChecked || 0).getTime())) : null,
+      servers: servers.map(server => ({
+        id: server.id,
+        name: server.name,
+        ip: server.ip,
+        port: server.port || 25565,
+        isOnline: server.isOnline,
+        playerCount: server.playerCount || 0,
+        maxPlayers: server.maxPlayers || 100,
+        lastChecked: server.lastChecked,
+        ownerName: server.ownerName,
+        category: server.category,
+        likes: server.likes || 0
+      }))
+    };
+
+    await logActivity({
+      userId: req.user.id,
+      username: req.user.username,
+      action: "servers_status_viewed",
+      category: "admin",
+      level: "info",
+      details: { serverCount: stats.total, onlineCount: stats.online },
+      ipAddress: req.ip,
+      userAgent: req.get("User-Agent"),
+    });
+
+    res.json({
+      message: "Server status retrieved successfully",
+      data: stats
+    });
+  } catch (error) {
+    console.error("Error getting server status:", error);
+    res.status(500).json({ error: "Failed to get server status" });
+  }
+});
+
+// Manually trigger server status update (admin only)
+router.post("/servers/update-status", requireAuth, requireAdmin, async (req, res) => {
+  try {
+    console.log(`🔄 Manual server status update triggered by admin: ${req.user.username}`);
+
+    const results = await updateAllServerStatuses();
+
+    await logActivity({
+      userId: req.user.id,
+      username: req.user.username,
+      action: "servers_status_updated",
+      category: "admin",
+      level: "info",
+      details: {
+        totalServers: results.total,
+        onlineServers: results.online,
+        offlineServers: results.offline,
+        statusChanges: results.changed,
+        triggeredBy: "manual"
+      },
+      ipAddress: req.ip,
+      userAgent: req.get("User-Agent"),
+    });
+
+    res.json({
+      message: "Server status update completed",
+      data: results
+    });
+  } catch (error) {
+    console.error("Error updating server status:", error);
+
+    await logActivity({
+      userId: req.user.id,
+      username: req.user.username,
+      action: "servers_status_update_failed",
+      category: "admin",
+      level: "error",
+      details: { error: error.message },
+      ipAddress: req.ip,
+      userAgent: req.get("User-Agent"),
+    });
+
+    res.status(500).json({
+      error: "Failed to update server status",
+      details: error.message
+    });
+  }
+});
 
 export default router;

@@ -37,28 +37,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Server,
-  Plus,
-  Heart,
-  MessageCircle,
-  Users,
-  Play,
-  Upload,
-  ExternalLink,
-  Crown,
-  Shield,
-  Clock,
-  Globe,
-  Zap,
-  Volume2,
-  Edit,
-  Trash2,
-  Settings,
-  Eye,
-  RefreshCw,
-} from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/lib/auth";
 import { serversApi } from "@/lib/api";
@@ -112,6 +91,7 @@ export default function Servers() {
   const [serverToDelete, setServerToDelete] = useState<GameServer | null>(null);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const { toast } = useToast();
+  const fetchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     if (!user) {
@@ -128,12 +108,29 @@ export default function Servers() {
       hasToken,
     });
 
+    // Clear any existing timeout
+    if (fetchTimeoutRef.current) {
+      clearTimeout(fetchTimeoutRef.current);
+    }
+
     if (user && hasToken) {
       console.log(
-        "🔄 Servers useEffect: User and token exist, fetching servers...",
+        "🔄 Servers useEffect: User and token exist, scheduling server fetch...",
       );
-      fetchServers();
-      fetchMyServers();
+
+      // Debounce the fetch to prevent rapid successive calls
+      fetchTimeoutRef.current = setTimeout(async () => {
+        try {
+          console.log("🔄 Starting debounced server fetch...");
+          await fetchServers();
+          // Small delay before second call
+          setTimeout(() => {
+            fetchMyServers();
+          }, 200);
+        } catch (error) {
+          console.error("❌ Error in debounced fetch:", error);
+        }
+      }, 300);
     } else {
       console.log(
         "🔄 Servers useEffect: Missing user or token, skipping fetch:",
@@ -143,19 +140,37 @@ export default function Servers() {
         },
       );
     }
+
+    // Cleanup timeout on unmount
+    return () => {
+      if (fetchTimeoutRef.current) {
+        clearTimeout(fetchTimeoutRef.current);
+      }
+    };
   }, [user]);
 
   const fetchServers = async () => {
+    // Prevent multiple simultaneous calls
+    if (loading) {
+      console.log("🔄 fetchServers: Already loading, skipping...");
+      return;
+    }
+
     try {
+      setLoading(true);
+      console.log("��� fetchServers: Starting API call...");
       const data = await serversApi.getAll();
+      console.log("✅ fetchServers: Success, got", data.servers?.length || 0, "servers");
       setServers(data.servers || []);
     } catch (error) {
-      console.error("Failed to fetch servers:", error);
+      console.error("❌ fetchServers: Failed to fetch servers:", error);
       toast({
         title: "Error",
-        description: "Failed to fetch servers",
+        description: error.message || "Failed to fetch servers",
         variant: "destructive",
       });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -169,7 +184,7 @@ export default function Servers() {
       });
 
       const token = localStorage.getItem("auth_token");
-      console.log("🔍 fetchMyServers: Auth token status:", {
+      console.log("��� fetchMyServers: Auth token status:", {
         hasToken: !!token,
         tokenLength: token?.length,
         tokenPreview: token?.substring(0, 20) + "...",
@@ -203,11 +218,11 @@ export default function Servers() {
     } catch (error) {
       console.error("❌ fetchMyServers: Failed to fetch my servers:", error);
 
-      // Only show toast for non-authentication errors
-      if (!error.message.includes("Authentication required")) {
+      // Only show toast for non-authentication errors and non-timeout errors
+      if (!error.message.includes("Authentication required") && !error.message.includes("timed out")) {
         toast({
           title: "Error",
-          description: `Failed to fetch your servers: ${error.message}`,
+          description: error.message || "Failed to fetch your servers",
           variant: "destructive",
         });
       }
@@ -301,6 +316,16 @@ export default function Servers() {
       formData.append("version", newServerData.version);
       formData.append("banner", bannerFile);
 
+      console.log("🔄 Submitting server data:", {
+        name: newServerData.name,
+        description: newServerData.description,
+        ip: newServerData.ip,
+        category: newServerData.category,
+        version: newServerData.version,
+        bannerSize: bannerFile.size,
+        bannerType: bannerFile.type
+      });
+
       const data = await serversApi.add(formData);
 
       setServers([...servers, data.server]);
@@ -313,9 +338,24 @@ export default function Servers() {
         description: "Server added successfully",
       });
     } catch (error: any) {
+      console.error("❌ Server submission error:", error);
+
+      let errorMessage = "Failed to add server";
+
+      if (typeof error === 'string') {
+        errorMessage = error;
+      } else if (error?.message) {
+        errorMessage = error.message;
+      } else if (error?.error) {
+        errorMessage = error.error;
+      } else if (typeof error === 'object') {
+        // Handle case where error is an object
+        errorMessage = JSON.stringify(error);
+      }
+
       toast({
         title: "Error",
-        description: error.message || "Failed to add server",
+        description: errorMessage,
         variant: "destructive",
       });
     }
@@ -550,19 +590,29 @@ export default function Servers() {
     <UserLayout>
       <div className="min-h-screen bg-background">
         {/* Top Navigation */}
-        <nav className="border-b border-border bg-card/50 backdrop-blur-sm">
+        <nav className="border-b border-border bg-card">
           <div className="px-6 py-4">
             <div className="flex items-center justify-between">
               <Link
                 to="/dashboard"
                 className="inline-flex items-center text-muted-foreground hover:text-primary transition-colors"
               >
-                <Server className="w-4 h-4 mr-2" />
+                <svg viewBox="0 0 24 24" fill="none" className="w-4 h-4 mr-2">
+                  <rect x="3" y="4" width="18" height="2" rx="1" fill="currentColor"/>
+                  <rect x="3" y="8" width="18" height="2" rx="1" fill="currentColor"/>
+                  <rect x="3" y="12" width="18" height="2" rx="1" fill="currentColor"/>
+                  <rect x="2" y="16" width="20" height="6" rx="2" fill="currentColor" opacity="0.6"/>
+                </svg>
                 Back to Dashboard
               </Link>
               <div className="flex items-center space-x-3">
                 <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
-                  <Server className="w-6 h-6 text-primary-foreground" />
+                  <svg viewBox="0 0 24 24" fill="none" className="w-6 h-6 text-primary-foreground">
+                    <rect x="3" y="4" width="18" height="2" rx="1" fill="currentColor"/>
+                    <rect x="3" y="8" width="18" height="2" rx="1" fill="currentColor"/>
+                    <rect x="3" y="12" width="18" height="2" rx="1" fill="currentColor"/>
+                    <rect x="2" y="16" width="20" height="6" rx="2" fill="currentColor" opacity="0.6"/>
+                  </svg>
                 </div>
                 <h1 className="text-2xl font-bold text-primary">
                   {currentView === "my" ? "My Servers" : "Server List"}
@@ -574,7 +624,11 @@ export default function Servers() {
                   onClick={() => setCurrentView("all")}
                   size="sm"
                 >
-                  <Globe className="w-4 h-4 mr-2" />
+                  <svg viewBox="0 0 24 24" fill="none" className="w-4 h-4 mr-2">
+                    <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" fill="none"/>
+                    <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20" stroke="currentColor" strokeWidth="2" fill="none"/>
+                    <path d="M2 12h20" stroke="currentColor" strokeWidth="2"/>
+                  </svg>
                   All Servers
                 </Button>
                 <Button
@@ -582,7 +636,11 @@ export default function Servers() {
                   onClick={() => setCurrentView("my")}
                   size="sm"
                 >
-                  <Settings className="w-4 h-4 mr-2" />
+                  <svg viewBox="0 0 24 24" fill="none" className="w-4 h-4 mr-2">
+                    <circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="2" fill="none"/>
+                    <path d="M12 1v6m0 6v6" stroke="currentColor" strokeWidth="2"/>
+                    <path d="m21 12-6-6-6 6 6 6 6-6Z" stroke="currentColor" strokeWidth="2" fill="none"/>
+                  </svg>
                   My Servers ({myServers.length})
                 </Button>
                 <Dialog
@@ -591,7 +649,9 @@ export default function Servers() {
                 >
                   <DialogTrigger asChild>
                     <Button className="bg-primary text-primary-foreground">
-                      <Plus className="w-4 h-4 mr-2" />
+                      <svg viewBox="0 0 24 24" fill="none" className="w-4 h-4 mr-2">
+                        <path d="M12 5v14m-7-7h14" stroke="currentColor" strokeWidth="2"/>
+                      </svg>
                       Add Server
                     </Button>
                   </DialogTrigger>
@@ -734,7 +794,11 @@ export default function Servers() {
                           Cancel
                         </Button>
                         <Button type="submit">
-                          <Upload className="w-4 h-4 mr-2" />
+                          <svg viewBox="0 0 24 24" fill="none" className="w-4 h-4 mr-2">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" stroke="currentColor" strokeWidth="2" fill="none"/>
+                            <polyline points="17,8 12,3 7,8" stroke="currentColor" strokeWidth="2" fill="none"/>
+                            <line x1="12" y1="3" x2="12" y2="15" stroke="currentColor" strokeWidth="2"/>
+                          </svg>
                           Add Server
                         </Button>
                       </DialogFooter>
@@ -785,8 +849,21 @@ export default function Servers() {
               </Select>
             </div>
 
+            {/* Loading State */}
+            {loading && (
+              <div className="text-center py-8">
+                <div className="inline-flex items-center space-x-2">
+                  <svg className="animate-spin h-5 w-5 text-primary" viewBox="0 0 24 24">
+                    <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" className="opacity-25"/>
+                    <path fill="currentColor" className="opacity-75" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
+                  </svg>
+                  <span className="text-muted-foreground">Loading servers...</span>
+                </div>
+              </div>
+            )}
+
             {/* Server List */}
-            {filteredServers.length > 0 ? (
+            {!loading && filteredServers.length > 0 ? (
               <div className="grid gap-6">
                 {filteredServers.map((server) => (
                   <Card
@@ -832,11 +909,16 @@ export default function Servers() {
 
                           <div className="flex items-center space-x-6 text-sm text-muted-foreground">
                             <div className="flex items-center space-x-1">
-                              <Heart className="w-4 h-4" />
+                              <svg viewBox="0 0 24 24" fill="none" className="w-4 h-4">
+                                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" stroke="currentColor" strokeWidth="2" fill="none"/>
+                              </svg>
                               <span>{server.likes} likes</span>
                             </div>
                             <div className="flex items-center space-x-1">
-                              <Clock className="w-4 h-4" />
+                              <svg viewBox="0 0 24 24" fill="none" className="w-4 h-4">
+                                <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" fill="none"/>
+                                <polyline points="12,6 12,12 16,14" stroke="currentColor" strokeWidth="2" fill="none"/>
+                              </svg>
                               <span>by {server.ownerName}</span>
                             </div>
                           </div>
@@ -862,7 +944,9 @@ export default function Servers() {
                             disabled={!server.isOnline}
                             className="bg-primary text-primary-foreground"
                           >
-                            <Play className="w-4 h-4 mr-2" />
+                            <svg viewBox="0 0 24 24" fill="none" className="w-4 h-4 mr-2">
+                              <polygon points="5,3 19,12 5,21" fill="currentColor"/>
+                            </svg>
                             {server.isOnline ? "Copy IP" : "Offline"}
                           </Button>
 
@@ -875,9 +959,9 @@ export default function Servers() {
                                 : ""
                             }
                           >
-                            <Heart
-                              className={`w-4 h-4 mr-2 ${server.hasLiked ? "fill-current" : ""}`}
-                            />
+                            <svg viewBox="0 0 24 24" className={`w-4 h-4 mr-2 ${server.hasLiked ? "fill-red-500" : "fill-none"}`}>
+                              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" stroke="currentColor" strokeWidth="2"/>
+                            </svg>
                             {server.hasLiked ? "Liked" : "Like"}
                           </Button>
 
@@ -886,7 +970,10 @@ export default function Servers() {
                             server.ownerId === user?.id) && (
                             <div className="space-y-2">
                               <div className="flex items-center space-x-1 text-xs text-green-600">
-                                <Crown className="w-3 h-3" />
+                                <svg viewBox="0 0 24 24" fill="none" className="w-3 h-3">
+                                  <path d="M5 12h14l-5-7v4.5z" fill="currentColor"/>
+                                  <path d="M5 12h14v7l-7-2-7 2v-7z" fill="currentColor" opacity="0.8"/>
+                                </svg>
                                 <span>You own this server</span>
                               </div>
                               <div className="flex space-x-2">
@@ -896,7 +983,10 @@ export default function Servers() {
                                   onClick={() => handleEditServer(server)}
                                   className="flex-1"
                                 >
-                                  <Edit className="w-4 h-4 mr-1" />
+                                  <svg viewBox="0 0 24 24" fill="none" className="w-4 h-4 mr-1">
+                                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" stroke="currentColor" strokeWidth="2" fill="none"/>
+                                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" stroke="currentColor" strokeWidth="2" fill="none"/>
+                                  </svg>
                                   Edit
                                 </Button>
                                 <Button
@@ -904,7 +994,10 @@ export default function Servers() {
                                   size="sm"
                                   onClick={() => handleRefreshStatus(server.id)}
                                 >
-                                  <RefreshCw className="w-4 h-4" />
+                                  <svg viewBox="0 0 24 24" fill="none" className="w-4 h-4">
+                                    <path d="M23 4v6h-6" stroke="currentColor" strokeWidth="2" fill="none"/>
+                                    <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" stroke="currentColor" strokeWidth="2" fill="none"/>
+                                  </svg>
                                 </Button>
                                 <Button
                                   variant="outline"
@@ -915,7 +1008,9 @@ export default function Servers() {
                                   }}
                                   className="text-red-500 hover:bg-red-50 hover:text-red-600"
                                 >
-                                  <Trash2 className="w-4 h-4" />
+                                  <svg viewBox="0 0 24 24" fill="none" className="w-4 h-4">
+                                    <path d="M3 6h18m-2 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" stroke="currentColor" strokeWidth="2" fill="none"/>
+                                  </svg>
                                 </Button>
                               </div>
                             </div>
@@ -925,7 +1020,10 @@ export default function Servers() {
                           {server.ownerId !== user?.id &&
                             currentView !== "my" && (
                               <div className="flex items-center space-x-1 text-xs text-muted-foreground mt-2">
-                                <Crown className="w-3 h-3" />
+                                <svg viewBox="0 0 24 24" fill="none" className="w-3 h-3">
+                                  <path d="M5 12h14l-5-7v4.5z" fill="currentColor"/>
+                                  <path d="M5 12h14v7l-7-2-7 2v-7z" fill="currentColor" opacity="0.8"/>
+                                </svg>
                                 <span>Owner: {server.ownerName}</span>
                               </div>
                             )}
@@ -935,9 +1033,14 @@ export default function Servers() {
                   </Card>
                 ))}
               </div>
-            ) : (
+            ) : !loading ? (
               <div className="text-center py-12">
-                <Server className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
+                <svg viewBox="0 0 24 24" fill="none" className="w-16 h-16 text-muted-foreground mx-auto mb-4">
+                  <rect x="3" y="4" width="18" height="2" rx="1" fill="currentColor"/>
+                  <rect x="3" y="8" width="18" height="2" rx="1" fill="currentColor"/>
+                  <rect x="3" y="12" width="18" height="2" rx="1" fill="currentColor"/>
+                  <rect x="2" y="16" width="20" height="6" rx="2" fill="currentColor" opacity="0.6"/>
+                </svg>
                 <h3 className="text-lg font-semibold mb-2">No servers found</h3>
                 <p className="text-muted-foreground mb-4">
                   {currentView === "my"
@@ -947,11 +1050,13 @@ export default function Servers() {
                       : "Be the first to add a server to the community!"}
                 </p>
                 <Button onClick={() => setIsAddServerOpen(true)}>
-                  <Plus className="w-4 h-4 mr-2" />
+                  <svg viewBox="0 0 24 24" fill="none" className="w-4 h-4 mr-2">
+                    <path d="M12 5v14m-7-7h14" stroke="currentColor" strokeWidth="2"/>
+                  </svg>
                   Add Your Server
                 </Button>
               </div>
-            )}
+            ) : null}
           </div>
         </div>
 
@@ -1109,7 +1214,11 @@ export default function Servers() {
                     Cancel
                   </Button>
                   <Button type="submit">
-                    <Upload className="w-4 h-4 mr-2" />
+                    <svg viewBox="0 0 24 24" fill="none" className="w-4 h-4 mr-2">
+                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" stroke="currentColor" strokeWidth="2" fill="none"/>
+                      <polyline points="17,8 12,3 7,8" stroke="currentColor" strokeWidth="2" fill="none"/>
+                      <line x1="12" y1="3" x2="12" y2="15" stroke="currentColor" strokeWidth="2"/>
+                    </svg>
                     Update Server
                   </Button>
                 </DialogFooter>
@@ -1126,7 +1235,9 @@ export default function Servers() {
           <AlertDialogContent>
             <AlertDialogHeader>
               <AlertDialogTitle className="flex items-center space-x-2">
-                <Trash2 className="w-5 h-5 text-red-500" />
+                <svg viewBox="0 0 24 24" fill="none" className="w-5 h-5 text-red-500">
+                  <path d="M3 6h18m-2 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" stroke="currentColor" strokeWidth="2" fill="none"/>
+                </svg>
                 <span>Delete Your Server</span>
               </AlertDialogTitle>
               <AlertDialogDescription>
@@ -1137,7 +1248,10 @@ export default function Servers() {
                   </p>
                   <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
                     <div className="flex items-center space-x-2 text-red-600 text-sm">
-                      <Crown className="w-4 h-4" />
+                      <svg viewBox="0 0 24 24" fill="none" className="w-4 h-4">
+                        <path d="M5 12h14l-5-7v4.5z" fill="currentColor"/>
+                        <path d="M5 12h14v7l-7-2-7 2v-7z" fill="currentColor" opacity="0.8"/>
+                      </svg>
                       <span className="font-medium">Server Owner:</span>
                       <span>{serverToDelete?.ownerName}</span>
                     </div>
@@ -1162,7 +1276,9 @@ export default function Servers() {
                 onClick={handleDeleteServer}
                 className="bg-red-500 hover:bg-red-600"
               >
-                <Trash2 className="w-4 h-4 mr-2" />
+                <svg viewBox="0 0 24 24" fill="none" className="w-4 h-4 mr-2">
+                  <path d="M3 6h18m-2 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" stroke="currentColor" strokeWidth="2" fill="none"/>
+                </svg>
                 Delete Server
               </AlertDialogAction>
             </AlertDialogFooter>

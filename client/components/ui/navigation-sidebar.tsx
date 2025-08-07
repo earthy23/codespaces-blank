@@ -1,18 +1,5 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  Gamepad2,
-  Users,
-  MessageCircle,
-  Newspaper,
-  Calendar,
-  ShoppingBag,
-  Download,
-  User,
-  HelpCircle,
-  MessageSquare,
-  Server,
-} from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "@/lib/auth";
 import { useFriends } from "@/lib/friends";
@@ -23,7 +10,12 @@ const navigationSections = [
     title: "Main",
     items: [
       {
-        icon: Gamepad2,
+        iconSvg: (
+          <svg viewBox="0 0 24 24" fill="none" className="w-5 h-5">
+            <path d="M3 13h1v7c0 1.103.897 2 2 2h12c1.103 0 2-.897 2-2v-7h1a1 1 0 0 0 .707-1.707l-9-9a.999.999 0 0 0-1.414 0l-9 9A1 1 0 0 0 3 13z" fill="currentColor"/>
+            <rect x="8" y="15" width="8" height="6" fill="currentColor" opacity="0.7"/>
+          </svg>
+        ),
         label: "Dashboard",
         path: "/dashboard",
         description: "Your command center",
@@ -31,7 +23,17 @@ const navigationSections = [
         glow: "shadow-primary/50",
       },
       {
-        icon: Server,
+        iconSvg: (
+          <svg viewBox="0 0 24 24" fill="none" className="w-5 h-5">
+            <rect x="3" y="4" width="18" height="2" rx="1" fill="currentColor"/>
+            <rect x="3" y="8" width="18" height="2" rx="1" fill="currentColor"/>
+            <rect x="3" y="12" width="18" height="2" rx="1" fill="currentColor"/>
+            <circle cx="6" cy="5" r="1" fill="currentColor" opacity="0.8"/>
+            <circle cx="6" cy="9" r="1" fill="currentColor" opacity="0.8"/>
+            <circle cx="6" cy="13" r="1" fill="currentColor" opacity="0.8"/>
+            <rect x="2" y="16" width="20" height="6" rx="2" fill="currentColor" opacity="0.6"/>
+          </svg>
+        ),
         label: "Servers",
         path: "/servers",
         description: "Browse & join servers",
@@ -39,7 +41,14 @@ const navigationSections = [
         glow: "shadow-primary/50",
       },
       {
-        icon: Download,
+        iconSvg: (
+          <svg viewBox="0 0 24 24" fill="none" className="w-5 h-5">
+            <path d="M12 2L2 7l10 5 10-5-10-5z" fill="currentColor"/>
+            <path d="m2 17 10 5 10-5" stroke="currentColor" strokeWidth="2" fill="none"/>
+            <path d="m2 12 10 5 10-5" stroke="currentColor" strokeWidth="2" fill="none"/>
+            <circle cx="12" cy="12" r="2" fill="currentColor" opacity="0.8"/>
+          </svg>
+        ),
         label: "Downloads",
         path: "/downloads",
         description: "Get clients & files",
@@ -52,7 +61,14 @@ const navigationSections = [
     title: "Social",
     items: [
       {
-        icon: Users,
+        iconSvg: (
+          <svg viewBox="0 0 24 24" fill="none" className="w-5 h-5">
+            <circle cx="9" cy="7" r="4" fill="currentColor"/>
+            <path d="m3 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2" stroke="currentColor" strokeWidth="2" fill="none"/>
+            <circle cx="16" cy="11" r="3" fill="currentColor" opacity="0.7"/>
+            <path d="m22 21v-2a4 4 0 0 0-3-3.87" stroke="currentColor" strokeWidth="2" fill="none"/>
+          </svg>
+        ),
         label: "Friends",
         path: "/friends",
         description: "Manage your friends",
@@ -60,7 +76,14 @@ const navigationSections = [
         glow: "shadow-primary/50",
       },
       {
-        icon: MessageCircle,
+        iconSvg: (
+          <svg viewBox="0 0 24 24" fill="none" className="w-5 h-5">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" fill="currentColor"/>
+            <circle cx="8" cy="11" r="1" fill="white"/>
+            <circle cx="12" cy="11" r="1" fill="white"/>
+            <circle cx="16" cy="11" r="1" fill="white"/>
+          </svg>
+        ),
         label: "Chat",
         path: "/chat",
         description: "Chat with friends",
@@ -68,7 +91,15 @@ const navigationSections = [
         glow: "shadow-primary/50",
       },
       {
-        icon: MessageSquare,
+        iconSvg: (
+          <svg viewBox="0 0 24 24" fill="none" className="w-5 h-5">
+            <rect x="3" y="3" width="18" height="18" rx="2" fill="currentColor" opacity="0.6"/>
+            <path d="M8 7h8M8 11h8M8 15h6" stroke="currentColor" strokeWidth="2" fill="none"/>
+            <circle cx="6" cy="8" r="1" fill="currentColor"/>
+            <circle cx="6" cy="12" r="1" fill="currentColor"/>
+            <circle cx="6" cy="16" r="1" fill="currentColor"/>
+          </svg>
+        ),
         label: "Forums",
         path: "/forums",
         description: "Community discussions",
@@ -81,7 +112,15 @@ const navigationSections = [
     title: "Content",
     items: [
       {
-        icon: Newspaper,
+        iconSvg: (
+          <svg viewBox="0 0 24 24" fill="none" className="w-5 h-5">
+            <path d="M3 11v3a1 1 0 0 0 1 1h2l4 4V7L6 11H4a1 1 0 0 0-1 1z" fill="currentColor"/>
+            <path d="M13.5 8.5a5 5 0 0 1 0 7" stroke="currentColor" strokeWidth="2" fill="none"/>
+            <path d="M16.5 5.5a9 9 0 0 1 0 13" stroke="currentColor" strokeWidth="2" fill="none"/>
+            <path d="M18.5 3.5a13 13 0 0 1 0 17" stroke="currentColor" strokeWidth="1.5" fill="none"/>
+            <circle cx="12" cy="12" r="2" fill="currentColor" opacity="0.6"/>
+          </svg>
+        ),
         label: "News",
         path: "/news",
         description: "Latest updates",
@@ -89,7 +128,14 @@ const navigationSections = [
         glow: "shadow-primary/50",
       },
       {
-        icon: ShoppingBag,
+        iconSvg: (
+          <svg viewBox="0 0 24 24" fill="none" className="w-5 h-5">
+            <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" fill="currentColor" opacity="0.7"/>
+            <line x1="3" y1="6" x2="21" y2="6" stroke="currentColor" strokeWidth="2"/>
+            <path d="m16 10a4 4 0 0 1-8 0" stroke="currentColor" strokeWidth="2" fill="none"/>
+            <circle cx="12" cy="14" r="2" fill="currentColor"/>
+          </svg>
+        ),
         label: "Store",
         path: "/store",
         description: "Premium content",
@@ -102,7 +148,12 @@ const navigationSections = [
     title: "Account",
     items: [
       {
-        icon: User,
+        iconSvg: (
+          <svg viewBox="0 0 24 24" fill="none" className="w-5 h-5">
+            <circle cx="12" cy="8" r="5" fill="currentColor"/>
+            <path d="M20 21a8 8 0 1 0-16 0" fill="currentColor" opacity="0.7"/>
+          </svg>
+        ),
         label: "Profile",
         path: "/profile",
         description: "Your profile settings",
@@ -110,7 +161,12 @@ const navigationSections = [
         glow: "shadow-primary/50",
       },
       {
-        icon: HelpCircle,
+        iconSvg: (
+          <svg viewBox="0 0 24 24" fill="none" className="w-5 h-5">
+            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" stroke="currentColor" strokeWidth="2" fill="none"/>
+            <circle cx="12" cy="17" r="1" fill="currentColor"/>
+          </svg>
+        ),
         label: "Support",
         path: "/support",
         description: "Get help & support",
@@ -133,7 +189,12 @@ export function NavigationSidebar() {
       <aside className="w-80 h-full bg-sidebar border-r border-sidebar-border flex flex-col">
         <div className="flex-1 overflow-y-auto p-4">
           <div className="text-center py-8">
-            <Users className="w-16 h-16 text-sidebar-foreground/30 mx-auto mb-4" />
+            <svg viewBox="0 0 24 24" fill="none" className="w-16 h-16 mx-auto mb-4 text-sidebar-foreground/30">
+              <circle cx="9" cy="7" r="4" fill="currentColor"/>
+              <path d="m3 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2" stroke="currentColor" strokeWidth="2" fill="none"/>
+              <circle cx="16" cy="11" r="3" fill="currentColor" opacity="0.7"/>
+              <path d="m22 21v-2a4 4 0 0 0-3-3.87" stroke="currentColor" strokeWidth="2" fill="none"/>
+            </svg>
             <h3 className="font-semibold text-sidebar-foreground mb-2">
               Sign in Required
             </h3>
@@ -174,12 +235,8 @@ export function NavigationSidebar() {
                     }`}
                   >
                     <div className="flex items-center space-x-3">
-                      <div
-                        className={`w-10 h-10 rounded-lg bg-card border border-border flex items-center justify-center shadow-lg group-hover:scale-110 group-hover:shadow-xl transition-all duration-300 ${isActive ? `shadow-lg ${item.glow}` : `group-hover:${item.glow} group-hover:shadow-primary/20`}`}
-                      >
-                        <item.icon
-                          className={`w-5 h-5 ${item.iconColor} ${isActive ? "drop-shadow-[0_0_4px_currentColor]" : ""}`}
-                        />
+                      <div className={`${item.iconColor} transition-colors duration-200`}>
+                        {item.iconSvg}
                       </div>
                       <div className="flex-1">
                         <p
@@ -249,7 +306,12 @@ export function NavigationSidebar() {
               ))
             ) : (
               <div className="text-center py-4">
-                <Users className="w-8 h-8 text-sidebar-foreground/30 mx-auto mb-2" />
+                <svg viewBox="0 0 24 24" fill="none" className="w-8 h-8 mx-auto mb-2 text-sidebar-foreground/30">
+                  <circle cx="9" cy="7" r="4" fill="currentColor"/>
+                  <path d="m3 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2" stroke="currentColor" strokeWidth="2" fill="none"/>
+                  <circle cx="16" cy="11" r="3" fill="currentColor" opacity="0.7"/>
+                  <path d="m22 21v-2a4 4 0 0 0-3-3.87" stroke="currentColor" strokeWidth="2" fill="none"/>
+                </svg>
                 <p className="text-xs text-sidebar-foreground/70">
                   No friends online
                 </p>
@@ -264,6 +326,24 @@ export function NavigationSidebar() {
               </Link>
             )}
           </div>
+        </div>
+
+        {/* Sidebar Toggle Button */}
+        <div className="border-t border-sidebar-border p-4">
+          <Button
+            variant="ghost"
+            className="w-full flex items-center justify-center hover:bg-white/10"
+            onClick={() => {
+              // Toggle sidebar functionality can be implemented here
+              console.log("Toggle sidebar");
+            }}
+          >
+            <svg viewBox="0 0 24 24" fill="none" className="w-5 h-5 text-sidebar-foreground">
+              <rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" strokeWidth="2" fill="none"/>
+              <path d="M9 3v18" stroke="currentColor" strokeWidth="2" fill="none"/>
+              <path d="M14 8l-2 2 2 2" stroke="currentColor" strokeWidth="2" fill="none"/>
+            </svg>
+          </Button>
         </div>
       </div>
     </aside>

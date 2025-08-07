@@ -3,14 +3,13 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { MinecraftBackground } from "@/components/ui/minecraft-background";
 import { UECLogo } from "@/components/ui/uec-logo";
-import { Play, Users, Shield, Download, MessageCircle, Gamepad2 } from "lucide-react";
 
 export default function Index() {
   return (
     <MinecraftBackground>
       
       {/* Navigation */}
-      <nav className="relative z-10 border-b border-border bg-card/50 backdrop-blur-sm">
+      <nav className="relative z-10 border-b border-border bg-card">
         <div className="container mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <UECLogo size="lg" />
@@ -56,13 +55,19 @@ export default function Index() {
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link to="/register">
                 <Button size="lg" className="minecraft-button bg-primary text-primary-foreground hover:bg-primary/90 px-8 py-6 text-lg">
-                  <Play className="w-5 h-5 mr-2" />
+                  <svg viewBox="0 0 24 24" fill="none" className="w-5 h-5 mr-2">
+                    <polygon points="5,3 19,12 5,21" fill="currentColor"/>
+                  </svg>
                   Start Playing Now
                 </Button>
               </Link>
               <Link to="/downloads">
                 <Button size="lg" variant="outline" className="minecraft-button px-8 py-6 text-lg">
-                  <Download className="w-5 h-5 mr-2" />
+                  <svg viewBox="0 0 24 24" fill="none" className="w-5 h-5 mr-2">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" stroke="currentColor" strokeWidth="2" fill="none"/>
+                    <polyline points="7,10 12,15 17,10" stroke="currentColor" strokeWidth="2" fill="none"/>
+                    <line x1="12" y1="15" x2="12" y2="3" stroke="currentColor" strokeWidth="2"/>
+                  </svg>
                   Download Clients
                 </Button>
               </Link>
@@ -72,7 +77,7 @@ export default function Index() {
       </section>
 
       {/* Features Section */}
-      <section className="relative z-10 py-16 bg-card/30">
+      <section className="relative z-10 py-16 bg-card/80">
         <div className="container mx-auto px-6">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold mb-4 text-primary">Why Choose UEC?</h2>
@@ -85,7 +90,10 @@ export default function Index() {
             <Card className="minecraft-panel">
               <CardContent className="p-6 text-center">
                 <div className="w-16 h-16 bg-primary/20 rounded-xl flex items-center justify-center mx-auto mb-4">
-                  <Play className="w-8 h-8 text-primary" />
+                  <svg viewBox="0 0 24 24" fill="none" className="w-8 h-8 text-primary">
+                    <polygon points="5,3 19,12 5,21" fill="currentColor"/>
+                    <circle cx="12" cy="12" r="2" fill="white"/>
+                  </svg>
                 </div>
                 <h3 className="text-xl font-semibold mb-3">Instant Launch</h3>
                 <p className="text-muted-foreground">
@@ -97,7 +105,11 @@ export default function Index() {
             <Card className="minecraft-panel">
               <CardContent className="p-6 text-center">
                 <div className="w-16 h-16 bg-primary/20 rounded-xl flex items-center justify-center mx-auto mb-4">
-                  <Users className="w-8 h-8 text-primary" />
+                  <svg viewBox="0 0 24 24" fill="none" className="w-8 h-8 text-primary">
+                    <circle cx="9" cy="7" r="4" fill="currentColor"/>
+                    <path d="m3 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2" stroke="currentColor" strokeWidth="2" fill="none"/>
+                    <circle cx="16" cy="11" r="3" fill="currentColor" opacity="0.7"/>
+                  </svg>
                 </div>
                 <h3 className="text-xl font-semibold mb-3">Social Hub</h3>
                 <p className="text-muted-foreground">
@@ -109,7 +121,10 @@ export default function Index() {
             <Card className="minecraft-panel">
               <CardContent className="p-6 text-center">
                 <div className="w-16 h-16 bg-primary/20 rounded-xl flex items-center justify-center mx-auto mb-4">
-                  <Shield className="w-8 h-8 text-primary" />
+                  <svg viewBox="0 0 24 24" fill="none" className="w-8 h-8 text-primary">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" fill="currentColor"/>
+                    <path d="m9 12 2 2 4-4" stroke="white" strokeWidth="2" fill="none"/>
+                  </svg>
                 </div>
                 <h3 className="text-xl font-semibold mb-3">Secure & Safe</h3>
                 <p className="text-muted-foreground">
@@ -134,26 +149,48 @@ export default function Index() {
                 </p>
                 <ul className="space-y-3 text-muted-foreground">
                   <li className="flex items-center">
-                    <MessageCircle className="w-5 h-5 text-primary mr-3" />
+                    <svg viewBox="0 0 24 24" fill="none" className="w-5 h-5 mr-3 text-primary">
+                      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" fill="currentColor"/>
+                      <circle cx="8" cy="11" r="1" fill="white"/>
+                      <circle cx="12" cy="11" r="1" fill="white"/>
+                      <circle cx="16" cy="11" r="1" fill="white"/>
+                    </svg>
                     Real-time chat and voice communication
                   </li>
                   <li className="flex items-center">
-                    <Users className="w-5 h-5 text-primary mr-3" />
+                    <svg viewBox="0 0 24 24" fill="none" className="w-5 h-5 mr-3 text-primary">
+                      <circle cx="9" cy="7" r="4" fill="currentColor"/>
+                      <path d="m3 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2" stroke="currentColor" strokeWidth="2" fill="none"/>
+                      <circle cx="16" cy="11" r="3" fill="currentColor" opacity="0.7"/>
+                    </svg>
                     Friend system and social features
                   </li>
                   <li className="flex items-center">
-                    <Download className="w-5 h-5 text-primary mr-3" />
+                    <svg viewBox="0 0 24 24" fill="none" className="w-5 h-5 mr-3 text-primary">
+                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" stroke="currentColor" strokeWidth="2" fill="none"/>
+                      <polyline points="7,10 12,15 17,10" stroke="currentColor" strokeWidth="2" fill="none"/>
+                      <line x1="12" y1="15" x2="12" y2="3" stroke="currentColor" strokeWidth="2"/>
+                    </svg>
                     Multiple client downloads and versions
                   </li>
                   <li className="flex items-center">
-                    <Shield className="w-5 h-5 text-primary mr-3" />
+                    <svg viewBox="0 0 24 24" fill="none" className="w-5 h-5 mr-3 text-primary">
+                      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" fill="currentColor"/>
+                      <path d="m9 12 2 2 4-4" stroke="white" strokeWidth="2" fill="none"/>
+                    </svg>
                     Advanced moderation and safety tools
                   </li>
                 </ul>
               </div>
               <div className="minecraft-panel p-8">
                 <div className="w-full h-48 bg-primary/10 rounded-lg flex items-center justify-center">
-                  <Gamepad2 className="w-24 h-24 text-primary/50" />
+                  <svg viewBox="0 0 24 24" fill="none" className="w-24 h-24 text-primary/50">
+                    <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" fill="currentColor"/>
+                    <circle cx="8" cy="12" r="2" fill="white"/>
+                    <circle cx="16" cy="12" r="2" fill="white"/>
+                    <rect x="11" y="8" width="2" height="8" rx="1" fill="white"/>
+                    <rect x="7" y="11" width="10" height="2" rx="1" fill="white"/>
+                  </svg>
                 </div>
               </div>
             </div>
@@ -170,7 +207,9 @@ export default function Index() {
           </p>
           <Link to="/register">
             <Button size="lg" className="minecraft-button bg-primary text-primary-foreground hover:bg-primary/90 px-8 py-6 text-lg">
-              <Play className="w-5 h-5 mr-2" />
+              <svg viewBox="0 0 24 24" fill="none" className="w-5 h-5 mr-2">
+                <polygon points="5,3 19,12 5,21" fill="currentColor"/>
+              </svg>
               Join UEC Now
             </Button>
           </Link>
@@ -178,7 +217,7 @@ export default function Index() {
       </section>
 
       {/* Footer */}
-      <footer className="relative z-10 border-t border-border bg-card/50 backdrop-blur-sm">
+      <footer className="relative z-10 border-t border-border bg-card">
         <div className="container mx-auto px-6 py-8">
           <div className="grid md:grid-cols-4 gap-8">
             <div>

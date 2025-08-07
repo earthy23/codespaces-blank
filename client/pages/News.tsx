@@ -7,7 +7,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Newspaper, Calendar, User, Edit, Plus } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/lib/auth";
 import { useNews } from "@/lib/news";
@@ -59,7 +58,10 @@ export default function News() {
           {isAdmin() && (
             <Link to="/admin/news">
               <Button className="minecraft-button bg-primary text-primary-foreground hover:bg-primary/90 shadow-lg hover:shadow-primary/30">
-                <Edit className="w-4 h-4 mr-2" />
+                <svg viewBox="0 0 24 24" fill="none" className="w-4 h-4 mr-2">
+                  <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" stroke="currentColor" strokeWidth="2" fill="none"/>
+                  <path d="m18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" stroke="currentColor" strokeWidth="2" fill="none"/>
+                </svg>
                 Manage News
               </Button>
             </Link>
@@ -86,7 +88,12 @@ export default function News() {
                           {categoryLabels[post.category] || "News"}
                         </Badge>
                         <div className="flex items-center text-sm text-muted-foreground">
-                          <Calendar className="w-4 h-4 mr-1" />
+                          <svg viewBox="0 0 24 24" fill="none" className="w-4 h-4 mr-1">
+                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2" stroke="currentColor" strokeWidth="2" fill="none"/>
+                            <line x1="16" y1="2" x2="16" y2="6" stroke="currentColor" strokeWidth="2"/>
+                            <line x1="8" y1="2" x2="8" y2="6" stroke="currentColor" strokeWidth="2"/>
+                            <line x1="3" y1="10" x2="21" y2="10" stroke="currentColor" strokeWidth="2"/>
+                          </svg>
                           {formatDate(post.publishedAt)}
                         </div>
                       </div>
@@ -100,7 +107,13 @@ export default function News() {
                       )}
                     </div>
                     <div className="w-12 h-12 rounded-lg bg-card border border-primary/50 flex items-center justify-center shadow-lg shadow-primary/20 ml-4">
-                      <Newspaper className="w-6 h-6 text-primary drop-shadow-[0_0_4px_currentColor]" />
+                      <svg viewBox="0 0 24 24" fill="none" className="w-6 h-6 text-primary drop-shadow-[0_0_4px_currentColor]">
+                        <path d="M3 11v3a1 1 0 0 0 1 1h2l4 4V7L6 11H4a1 1 0 0 0-1 1z" fill="currentColor"/>
+                        <path d="M13.5 8.5a5 5 0 0 1 0 7" stroke="currentColor" strokeWidth="2" fill="none"/>
+                        <path d="M16.5 5.5a9 9 0 0 1 0 13" stroke="currentColor" strokeWidth="2" fill="none"/>
+                        <path d="M18.5 3.5a13 13 0 0 1 0 17" stroke="currentColor" strokeWidth="1.5" fill="none"/>
+                        <circle cx="12" cy="12" r="2" fill="currentColor" opacity="0.6"/>
+                      </svg>
                     </div>
                   </div>
                 </CardHeader>
@@ -110,7 +123,10 @@ export default function News() {
                   </div>
                   <div className="flex items-center justify-between mt-6 pt-4 border-t border-border">
                     <div className="flex items-center text-sm text-muted-foreground">
-                      <User className="w-4 h-4 mr-1" />
+                      <svg viewBox="0 0 24 24" fill="none" className="w-4 h-4 mr-1">
+                        <circle cx="12" cy="8" r="5" fill="currentColor"/>
+                        <path d="M20 21a8 8 0 1 0-16 0" fill="currentColor" opacity="0.7"/>
+                      </svg>
                       By {post.authorName}
                     </div>
                     {post.imageUrl && (
@@ -126,7 +142,13 @@ export default function News() {
         ) : (
           <div className="text-center py-12">
             <div className="w-16 h-16 rounded-lg bg-card border border-primary/50 flex items-center justify-center shadow-lg shadow-primary/20 mx-auto mb-4">
-              <Newspaper className="w-8 h-8 text-primary drop-shadow-[0_0_4px_currentColor]" />
+              <svg viewBox="0 0 24 24" fill="none" className="w-8 h-8 text-primary drop-shadow-[0_0_4px_currentColor]">
+                <path d="M3 11v3a1 1 0 0 0 1 1h2l4 4V7L6 11H4a1 1 0 0 0-1 1z" fill="currentColor"/>
+                <path d="M13.5 8.5a5 5 0 0 1 0 7" stroke="currentColor" strokeWidth="2" fill="none"/>
+                <path d="M16.5 5.5a9 9 0 0 1 0 13" stroke="currentColor" strokeWidth="2" fill="none"/>
+                <path d="M18.5 3.5a13 13 0 0 1 0 17" stroke="currentColor" strokeWidth="1.5" fill="none"/>
+                <circle cx="12" cy="12" r="2" fill="currentColor" opacity="0.6"/>
+              </svg>
             </div>
             <h3 className="text-lg font-semibold mb-2">No news yet</h3>
             <p className="text-muted-foreground mb-4">
@@ -135,7 +157,10 @@ export default function News() {
             {isAdmin() && (
               <Link to="/admin/news">
                 <Button className="minecraft-button bg-primary text-primary-foreground hover:bg-primary/90 shadow-lg hover:shadow-primary/30">
-                  <Plus className="w-4 h-4 mr-2" />
+                  <svg viewBox="0 0 24 24" fill="none" className="w-4 h-4 mr-2">
+                    <line x1="12" y1="5" x2="12" y2="19" stroke="currentColor" strokeWidth="2"/>
+                    <line x1="5" y1="12" x2="19" y2="12" stroke="currentColor" strokeWidth="2"/>
+                  </svg>
                   Create First Post
                 </Button>
               </Link>
