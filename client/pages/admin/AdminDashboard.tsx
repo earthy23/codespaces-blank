@@ -359,11 +359,15 @@ export default function AdminDashboard() {
     } catch (error) {
       console.error("Error loading dashboard data:", error);
 
-      // Show user-friendly error handling
+      // Show user-friendly error handling and update connection status
       if (error.name === 'AbortError') {
         console.warn("Dashboard data loading timed out, using cached data");
+        setConnectionStatus("degraded");
       } else if (error.message?.includes('Failed to fetch')) {
         console.warn("Network connectivity issue, using cached/fallback data");
+        setConnectionStatus("offline");
+      } else {
+        setConnectionStatus("degraded");
       }
 
       // Ensure we have some data even on error
