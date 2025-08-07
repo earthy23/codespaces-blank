@@ -8,8 +8,13 @@ import { logActivity } from "./utils/logger.js";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const dbPath = path.join(__dirname, "data/uec.db");
+// Use the same database as the auth system
+const dataDir = path.join(process.cwd(), "data");
+const dbPath = path.join(dataDir, "uec_launcher.db");
 const db = new Database(dbPath);
+
+// Enable foreign keys for data integrity
+db.pragma("foreign_keys = ON");
 
 class ChatWebSocketServer {
   constructor() {
