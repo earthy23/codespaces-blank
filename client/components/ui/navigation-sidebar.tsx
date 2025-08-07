@@ -188,7 +188,12 @@ export function NavigationSidebar() {
       <aside className="w-80 h-full bg-sidebar border-r border-sidebar-border flex flex-col">
         <div className="flex-1 overflow-y-auto p-4">
           <div className="text-center py-8">
-            <img src="https://images.pexels.com/photos/9069288/pexels-photo-9069288.jpeg" alt="Users" className="w-16 h-16 mx-auto mb-4 rounded object-cover opacity-30" />
+            <svg viewBox="0 0 24 24" fill="none" className="w-16 h-16 mx-auto mb-4 text-sidebar-foreground/30">
+              <circle cx="9" cy="7" r="4" fill="currentColor"/>
+              <path d="m3 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2" stroke="currentColor" strokeWidth="2" fill="none"/>
+              <circle cx="16" cy="11" r="3" fill="currentColor" opacity="0.7"/>
+              <path d="m22 21v-2a4 4 0 0 0-3-3.87" stroke="currentColor" strokeWidth="2" fill="none"/>
+            </svg>
             <h3 className="font-semibold text-sidebar-foreground mb-2">
               Sign in Required
             </h3>
