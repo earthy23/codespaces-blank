@@ -82,6 +82,8 @@ app.use(
     origin: process.env.FRONTEND_URL || [
       "http://localhost:3000",
       "http://localhost:5173",
+      "http://localhost:8080",
+      "https://7b10610db8d44756a9e9dc629f6481f1-30e9842434a9496282981b9c3.fly.dev",
     ],
     credentials: true,
     optionsSuccessStatus: 200,
