@@ -318,7 +318,12 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
         break;
 
       case "error":
-        console.error("WebSocket error:", message.message);
+        if (process.env.NODE_ENV === "development") {
+          console.warn("⚠️ Chat WebSocket server error:", {
+            message: message.message || "Unknown server error",
+            timestamp: new Date().toISOString(),
+          });
+        }
         break;
     }
   };
