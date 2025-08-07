@@ -212,14 +212,12 @@ export default function Dashboard() {
                     {unreadTotal}
                   </p>
                 </div>
-                <div className="w-12 h-12 rounded-lg bg-card border border-primary/50 flex items-center justify-center shadow-lg shadow-primary/20">
-                  <svg viewBox="0 0 24 24" fill="none" className="w-6 h-6 text-primary drop-shadow-[0_0_4px_currentColor]">
-                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" fill="currentColor"/>
-                    <circle cx="8" cy="11" r="1" fill="white"/>
-                    <circle cx="12" cy="11" r="1" fill="white"/>
-                    <circle cx="16" cy="11" r="1" fill="white"/>
-                  </svg>
-                </div>
+                <svg viewBox="0 0 24 24" fill="none" className="w-8 h-8 text-primary">
+                  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" fill="currentColor"/>
+                  <circle cx="8" cy="11" r="1" fill="white"/>
+                  <circle cx="12" cy="11" r="1" fill="white"/>
+                  <circle cx="16" cy="11" r="1" fill="white"/>
+                </svg>
               </div>
             </CardContent>
           </Card>
