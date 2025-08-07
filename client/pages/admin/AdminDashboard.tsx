@@ -167,8 +167,10 @@ export default function AdminDashboard() {
             const data = await response.json();
             setSystemMetrics(data.metrics);
             setLastMetricsUpdate(Date.now());
+            setConnectionStatus("connected");
           } else {
             console.warn("Metrics update failed, keeping previous data");
+            setConnectionStatus("degraded");
           }
         } catch (error) {
           if (error.name === 'AbortError') {
