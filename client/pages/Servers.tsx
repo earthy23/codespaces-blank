@@ -125,16 +125,27 @@ export default function Servers() {
   }, [user]);
 
   const fetchServers = async () => {
+    // Prevent multiple simultaneous calls
+    if (loading) {
+      console.log("🔄 fetchServers: Already loading, skipping...");
+      return;
+    }
+
     try {
+      setLoading(true);
+      console.log("🔄 fetchServers: Starting API call...");
       const data = await serversApi.getAll();
+      console.log("✅ fetchServers: Success, got", data.servers?.length || 0, "servers");
       setServers(data.servers || []);
     } catch (error) {
-      console.error("Failed to fetch servers:", error);
+      console.error("❌ fetchServers: Failed to fetch servers:", error);
       toast({
         title: "Error",
-        description: "Failed to fetch servers",
+        description: error.message || "Failed to fetch servers",
         variant: "destructive",
       });
+    } finally {
+      setLoading(false);
     }
   };
 
