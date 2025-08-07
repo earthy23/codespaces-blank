@@ -128,35 +128,37 @@ export default function AdminDashboard() {
     }
     loadDashboardData();
 
-    // Set up real-time metrics updates every 20 seconds with better error handling
+    // Set up real-time metrics updates every 30 seconds with robust error handling
     const metricsInterval = setInterval(async () => {
-      if (token) {
-        try {
-          const controller = new AbortController();
-          const timeoutId = setTimeout(() => controller.abort(), 12000); // Increased to 12 second timeout
+      if (!token) return;
 
-          // Check for FullStory interference
-          const isFullStoryBlocking = () => {
-            try {
-              return window.fetch !== fetch ||
-                     (window.fetch.toString().includes('fullstory') ||
-                      document.querySelector('script[src*="fullstory"]') !== null);
-            } catch {
-              return false;
-            }
-          };
+      try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 second timeout
 
-          let response;
-          if (isFullStoryBlocking()) {
-            // Use XMLHttpRequest as fallback when FullStory is interfering
-            response = await new Promise((resolve, reject) => {
-              const xhr = new XMLHttpRequest();
-              xhr.open('GET', '/api/admin/metrics/realtime');
-              xhr.setRequestHeader('Authorization', `Bearer ${token}`);
-              xhr.setRequestHeader('Content-Type', 'application/json');
-              xhr.timeout = 12000; // Increased timeout
+        // Check for FullStory interference
+        const isFullStoryBlocking = () => {
+          try {
+            return window.fetch !== fetch ||
+                   (window.fetch.toString().includes('fullstory') ||
+                    document.querySelector('script[src*="fullstory"]') !== null);
+          } catch {
+            return false;
+          }
+        };
 
-              xhr.onload = () => {
+        let response;
+        if (isFullStoryBlocking()) {
+          // Use XMLHttpRequest as fallback when FullStory is interfering
+          response = await new Promise((resolve) => {
+            const xhr = new XMLHttpRequest();
+            xhr.open('GET', '/api/admin/metrics/realtime');
+            xhr.setRequestHeader('Authorization', `Bearer ${token}`);
+            xhr.setRequestHeader('Content-Type', 'application/json');
+            xhr.timeout = 15000;
+
+            xhr.onload = () => {
+              try {
                 if (xhr.status >= 200 && xhr.status < 300) {
                   resolve({
                     ok: true,
@@ -164,29 +166,24 @@ export default function AdminDashboard() {
                     json: () => Promise.resolve(JSON.parse(xhr.responseText))
                   });
                 } else {
-                  resolve({
-                    ok: false,
-                    status: xhr.status,
-                    json: () => Promise.resolve({})
-                  });
+                  resolve({ ok: false, status: xhr.status });
                 }
-              };
+              } catch (parseError) {
+                resolve({ ok: false, status: xhr.status });
+              }
+            };
 
-              xhr.onerror = () => {
-                if (process.env.NODE_ENV === 'development') {
-                  console.warn('Real-time metrics XHR network error, skipping update');
-                }
-                resolve({ ok: false, status: 0, json: () => Promise.resolve({}) });
-              };
-              xhr.ontimeout = () => {
-                if (process.env.NODE_ENV === 'development') {
-                  console.warn('Real-time metrics XHR timeout, skipping update');
-                }
-                resolve({ ok: false, status: 408, json: () => Promise.resolve({}) });
-              };
+            xhr.onerror = () => resolve({ ok: false, status: 0 });
+            xhr.ontimeout = () => resolve({ ok: false, status: 408 });
+
+            try {
               xhr.send();
-            });
-          } else {
+            } catch (sendError) {
+              resolve({ ok: false, status: 0 });
+            }
+          });
+        } else {
+          try {
             response = await fetch("/api/admin/metrics/realtime", {
               headers: {
                 Authorization: `Bearer ${token}`,
@@ -194,9 +191,12 @@ export default function AdminDashboard() {
               },
               signal: controller.signal,
             });
+          } catch (fetchError) {
+            response = { ok: false, status: 0 };
           }
+        }
 
-          clearTimeout(timeoutId);
+        clearTimeout(timeoutId);
 
           if (response.ok) {
             const data = await response.json();
@@ -223,38 +223,23 @@ export default function AdminDashboard() {
             console.warn("Metrics update failed, keeping previous data");
             setConnectionStatus("degraded");
           }
-        } catch (error) {
-          if (error.name === 'AbortError') {
-            if (process.env.NODE_ENV === 'development') {
-              console.warn("Metrics update timed out, keeping previous data");
-            }
-            setConnectionStatus("degraded");
-          } else if (error.message?.includes('Failed to fetch') || error.message?.includes('fetch')) {
-            if (process.env.NODE_ENV === 'development') {
-              console.warn("FullStory or network interference detected, keeping previous data");
-            }
-            setConnectionStatus("degraded");
-          } else {
-            if (process.env.NODE_ENV === 'development') {
-              console.warn("Error updating real-time metrics:", error.message || error);
-            }
-            setConnectionStatus("degraded");
-          }
-          // Don't update lastMetricsUpdate on error to show the data is stale
-        }
+      } catch (error) {
+        // Silently handle all errors to prevent console spam
+        setConnectionStatus("degraded");
       }
-    }, 20000); // Increased interval to 20 seconds
+    }, 30000); // Increased interval to 30 seconds
 
-    // Set up live activity feed updates every 15 seconds with better error handling
+    // Set up live activity feed updates every 30 seconds with robust error handling
     const activityInterval = setInterval(async () => {
-      if (token) {
-        let controller;
-        let timeoutId;
-        try {
-          controller = new AbortController();
-          timeoutId = setTimeout(() => {
-            controller.abort(new Error('Request timeout'));
-          }, 8000); // Increased timeout
+      if (!token) return;
+
+      let controller;
+      let timeoutId;
+      try {
+        controller = new AbortController();
+        timeoutId = setTimeout(() => {
+          controller.abort();
+        }, 15000); // 15 second timeout
 
           // Check for FullStory interference
           const isFullStoryBlocking = () => {
@@ -270,46 +255,49 @@ export default function AdminDashboard() {
           let response;
           if (isFullStoryBlocking()) {
             // Use XMLHttpRequest as fallback
-            response = await new Promise((resolve, reject) => {
+            response = await new Promise((resolve) => {
               const xhr = new XMLHttpRequest();
               xhr.open('GET', `/api/admin/activity/live?since=${lastActivityUpdate}&limit=10`);
               xhr.setRequestHeader('Authorization', `Bearer ${token}`);
               xhr.setRequestHeader('Content-Type', 'application/json');
-              xhr.timeout = 8000; // Increased timeout
+              xhr.timeout = 15000;
 
               xhr.onload = () => {
-                if (xhr.status >= 200 && xhr.status < 300) {
-                  resolve({
-                    ok: true,
-                    json: () => Promise.resolve(JSON.parse(xhr.responseText))
-                  });
-                } else {
+                try {
+                  if (xhr.status >= 200 && xhr.status < 300) {
+                    resolve({
+                      ok: true,
+                      json: () => Promise.resolve(JSON.parse(xhr.responseText))
+                    });
+                  } else {
+                    resolve({ ok: false });
+                  }
+                } catch (parseError) {
                   resolve({ ok: false });
                 }
               };
 
-              xhr.onerror = () => {
-                if (process.env.NODE_ENV === 'development') {
-                  console.warn('Live activity XHR network error, skipping update');
-                }
+              xhr.onerror = () => resolve({ ok: false });
+              xhr.ontimeout = () => resolve({ ok: false });
+
+              try {
+                xhr.send();
+              } catch (sendError) {
                 resolve({ ok: false });
-              };
-              xhr.ontimeout = () => {
-                if (process.env.NODE_ENV === 'development') {
-                  console.warn('Live activity XHR timeout, skipping update');
-                }
-                resolve({ ok: false });
-              };
-              xhr.send();
+              }
             });
           } else {
-            response = await fetch(`/api/admin/activity/live?since=${lastActivityUpdate}&limit=10`, {
-              headers: {
-                Authorization: `Bearer ${token}`,
-                "Content-Type": "application/json",
-              },
-              signal: controller.signal,
-            });
+            try {
+              response = await fetch(`/api/admin/activity/live?since=${lastActivityUpdate}&limit=10`, {
+                headers: {
+                  Authorization: `Bearer ${token}`,
+                  "Content-Type": "application/json",
+                },
+                signal: controller.signal,
+              });
+            } catch (fetchError) {
+              response = { ok: false };
+            }
           }
 
           clearTimeout(timeoutId);
@@ -326,26 +314,11 @@ export default function AdminDashboard() {
               setLastActivityUpdate(data.timestamp);
             }
           }
-        } catch (error) {
-          if (timeoutId) clearTimeout(timeoutId);
-
-          if (error.name === 'AbortError') {
-            // Timeout is expected behavior, just log in dev mode
-            if (process.env.NODE_ENV === 'development') {
-              console.warn("Live activity fetch timed out, skipping update");
-            }
-          } else if (error.message?.includes('Failed to fetch') || error.message?.includes('fetch')) {
-            if (process.env.NODE_ENV === 'development') {
-              console.warn("FullStory or network interference during live activity update, skipping cycle");
-            }
-          } else {
-            if (process.env.NODE_ENV === 'development') {
-              console.warn("Failed to fetch live activity:", error.message || error);
-            }
-          }
-        }
+      } catch (error) {
+        if (timeoutId) clearTimeout(timeoutId);
+        // Silently handle all errors to prevent console spam
       }
-    }, 15000); // Increased interval to 15 seconds
+    }, 30000); // Increased interval to 30 seconds
 
     return () => {
       clearInterval(metricsInterval);
