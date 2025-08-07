@@ -64,29 +64,46 @@ interface AnalyticsData {
 
 // Dark theme chart components
 const BarChart = ({ data, height = 200, title }: { data: Array<{label: string, value: number}>, height?: number, title?: string }) => {
-  const maxValue = Math.max(...data.map(d => d.value));
-  
+  const validData = data.filter(d => !isNaN(d.value) && d.value >= 0);
+  const maxValue = validData.length > 0 ? Math.max(...validData.map(d => d.value)) : 1;
+
+  if (validData.length === 0) {
+    return (
+      <div className="space-y-2">
+        {title && <h4 className="text-sm font-medium text-gray-400">{title}</h4>}
+        <div className="flex items-center justify-center text-gray-500" style={{ height: height }}>
+          <span className="text-sm">No data available</span>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-2">
       {title && <h4 className="text-sm font-medium text-gray-400">{title}</h4>}
       <div className="flex items-end space-x-1" style={{ height: height }}>
-        {data.map((item, index) => (
-          <div key={index} className="flex-1 flex flex-col items-center">
-            <div
-              className="bg-white w-full min-w-[8px] transition-all duration-300 rounded-sm"
-              style={{ 
-                height: `${(item.value / maxValue) * (height - 40)}px`,
-                minHeight: '2px'
-              }}
-            />
-            <div className="text-xs text-gray-400 mt-1 text-center truncate w-full">
-              {item.label}
+        {data.map((item, index) => {
+          const safeValue = isNaN(item.value) ? 0 : Math.max(0, item.value);
+          const barHeight = maxValue > 0 ? (safeValue / maxValue) * (height - 40) : 0;
+
+          return (
+            <div key={index} className="flex-1 flex flex-col items-center">
+              <div
+                className="bg-white w-full min-w-[8px] transition-all duration-300 rounded-sm"
+                style={{
+                  height: `${Math.max(2, barHeight)}px`,
+                  minHeight: '2px'
+                }}
+              />
+              <div className="text-xs text-gray-400 mt-1 text-center truncate w-full">
+                {item.label}
+              </div>
+              <div className="text-xs font-medium text-white">
+                {safeValue}
+              </div>
             </div>
-            <div className="text-xs font-medium text-white">
-              {item.value}
-            </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );
