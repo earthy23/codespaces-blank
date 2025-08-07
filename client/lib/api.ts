@@ -37,6 +37,7 @@ const checkNetworkHealth = async () => {
 // Request interceptor to add auth token with timeout and performance optimizations
 const makeRequest = async (endpoint: string, options: RequestInit = {}) => {
   const url = `${API_BASE_URL}${endpoint}`;
+  console.log(`🌐 API Request: ${options.method || 'GET'} ${url}`);
 
   // Create a request key for deduplication (only for GET requests)
   const method = (options.method || 'GET').toUpperCase();
@@ -110,7 +111,7 @@ const makeRequest = async (endpoint: string, options: RequestInit = {}) => {
   // Create the actual request promise
   const requestPromise = (async () => {
     try {
-      console.log(`🔗 Making request to: ${url}`, { method: config.method || 'GET', hasAuth: !!authToken });
+      console.log(`���� Making request to: ${url}`, { method: config.method || 'GET', hasAuth: !!authToken });
 
       // Check if fetch has been modified by third-party scripts
       if (typeof window !== 'undefined' && window.fetch.toString().includes('fullstory')) {
