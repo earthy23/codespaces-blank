@@ -224,6 +224,10 @@ const makeRequest = async (endpoint: string, options: RequestInit = {}) => {
   } catch (error) {
     clearTimeout(timeoutId);
     console.error(`💥 Request failed for ${url}:`, error);
+
+    // Track consecutive failures
+    consecutiveFailures++;
+    console.log(`📊 Connection status: ${consecutiveFailures} consecutive failures, last success: ${Math.round((Date.now() - lastSuccessfulRequest) / 1000)}s ago`);
     console.error(`🔍 Error details:`, JSON.stringify({
       name: error?.name || "Unknown",
       message: error?.message || "No message available",
