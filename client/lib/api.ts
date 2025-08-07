@@ -104,14 +104,24 @@ const makeRequest = async (endpoint: string, options: RequestInit = {}) => {
     clearTimeout(timeoutId);
     console.error(`💥 Request failed for ${url}:`, error);
 
+    // Handle AbortError (timeout or manual abort)
     if (error.name === "AbortError") {
-      throw new Error("Request timed out - please try again");
+      const timeoutSeconds = Math.round(timeoutMs / 1000);
+      throw new Error(`Request timed out after ${timeoutSeconds} seconds. Please try again.`);
     }
 
+    // Handle network connectivity issues
     if (error instanceof TypeError && error.message.includes("fetch")) {
       console.error("Network error details:", { url, error: error.message });
-      throw new Error("Network error - please check your connection");
+      throw new Error("Network error - please check your connection and try again");
     }
+
+    // Handle other network errors
+    if (error.message.includes("Failed to fetch")) {
+      throw new Error("Unable to connect to server - please check your internet connection");
+    }
+
+    // Re-throw the original error if it's already a proper Error object
     throw error;
   }
 };
