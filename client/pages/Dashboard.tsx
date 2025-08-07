@@ -175,7 +175,7 @@ export default function Dashboard() {
 
         {/* Enhanced Quick Stats */}
         <div className="grid md:grid-cols-3 gap-6 mb-8">
-          <Card className="minecraft-panel bg-card/50 border-2 border-border shadow-lg hover:shadow-primary/10">
+          <Card className="minecraft-panel bg-card border-2 border-border shadow-lg hover:shadow-primary/10">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
@@ -186,8 +186,8 @@ export default function Dashboard() {
                     {onlineFriends.length}
                   </p>
                 </div>
-                <div className="w-12 h-12 rounded-lg bg-card border border-primary/50 flex items-center justify-center shadow-lg shadow-primary/20">
-                  <Users className="w-6 h-6 text-primary drop-shadow-[0_0_4px_currentColor]" />
+                <div className="w-12 h-12 rounded-lg bg-card border border-primary/50 flex items-center justify-center shadow-lg shadow-primary/20 overflow-hidden">
+                  <img src="https://images.pexels.com/photos/9069288/pexels-photo-9069288.jpeg" alt="Friends" className="w-full h-full object-cover" />
                 </div>
               </div>
             </CardContent>
