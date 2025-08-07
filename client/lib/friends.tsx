@@ -208,7 +208,7 @@ export function FriendsProvider({ children }: { children: React.ReactNode }) {
     ]);
   }, [user]));
 
-  useWebSocketEvent("friends:request_accepted", useCallback((data) => {
+  safeUseWebSocketEvent("friends:request_accepted", useCallback((data) => {
     if (!user) return;
 
     // Remove from sent requests and add to friends
