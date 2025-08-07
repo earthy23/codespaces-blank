@@ -279,7 +279,7 @@ export default function Dashboard() {
                           size="sm"
                           className="w-full bg-primary text-primary-foreground hover:bg-primary/90 shadow-md hover:shadow-primary/20"
                         >
-                          <Globe className="w-4 h-4 mr-2" />
+                          <img src="https://images.pexels.com/photos/343457/pexels-photo-343457.jpeg" alt="Servers" className="w-4 h-4 mr-2 rounded object-cover" />
                           View Servers
                         </Button>
                       </Link>
