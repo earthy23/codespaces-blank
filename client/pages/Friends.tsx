@@ -609,7 +609,10 @@ export default function Friends() {
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                  <svg viewBox="0 0 24 24" fill="none" className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground">
+                    <circle cx="11" cy="11" r="8" stroke="currentColor" strokeWidth="2" fill="none"/>
+                    <path d="m21 21-4.35-4.35" stroke="currentColor" strokeWidth="2"/>
+                  </svg>
                   <Input
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
