@@ -535,11 +535,21 @@ const safeServerRequest = async (requestFn: () => Promise<any>, requestName: str
         error.message.includes("timed out") ||
         error.message.includes("cancelled") ||
         error.message.includes("aborted") ||
+        error.message.includes("Failed to fetch") ||
+        error.message.includes("Network error") ||
         error.name === "AbortError";
 
       if (isRetriableError && attempt <= maxRetries) {
         const delay = attempt * 1000; // Progressive delay: 1s, 2s
         console.log(`🔄 Retrying ${requestName} (attempt ${attempt}/${maxRetries}) after ${delay}ms...`);
+
+        // Check network health before retrying
+        const isNetworkHealthy = await checkNetworkHealth();
+        if (!isNetworkHealthy) {
+          console.error(`❌ Network health check failed, skipping retry for ${requestName}`);
+          throw new Error("Network connectivity issue - please check your connection and try again");
+        }
+
         await new Promise(resolve => setTimeout(resolve, delay));
         continue;
       }
