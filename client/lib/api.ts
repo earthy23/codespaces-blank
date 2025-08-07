@@ -24,9 +24,9 @@ const checkNetworkHealth = async () => {
   try {
     // Try a simple fetch to the same origin to check connectivity
     const response = await fetch(`${API_BASE_URL}/health`, {
-      method: 'GET',
-      headers: { 'Content-Type': 'application/json' },
-      signal: AbortSignal.timeout(2000) // 2 second timeout for health check
+      method: "GET",
+      headers: { "Content-Type": "application/json" },
+      signal: AbortSignal.timeout(2000), // 2 second timeout for health check
     });
     return response.ok;
   } catch (error) {
@@ -38,11 +38,11 @@ const checkNetworkHealth = async () => {
 // Request interceptor to add auth token with timeout and performance optimizations
 const makeRequest = async (endpoint: string, options: RequestInit = {}) => {
   const url = `${API_BASE_URL}${endpoint}`;
-  console.log(`🌐 API Request: ${options.method || 'GET'} ${url}`);
+  console.log(`🌐 API Request: ${options.method || "GET"} ${url}`);
 
   // Create a request key for deduplication (only for GET requests)
-  const method = (options.method || 'GET').toUpperCase();
-  const requestKey = method === 'GET' ? `${method}:${url}` : null;
+  const method = (options.method || "GET").toUpperCase();
+  const requestKey = method === "GET" ? `${method}:${url}` : null;
 
   // Check if there's already a pending identical GET request
   if (requestKey && pendingRequests.has(requestKey)) {
@@ -112,11 +112,19 @@ const makeRequest = async (endpoint: string, options: RequestInit = {}) => {
   // Create the actual request promise
   const requestPromise = (async () => {
     try {
-      console.log(`🔗 Making request to: ${url}`, { method: config.method || 'GET', hasAuth: !!authToken });
+      console.log(`🔗 Making request to: ${url}`, {
+        method: config.method || "GET",
+        hasAuth: !!authToken,
+      });
 
       // Check if fetch has been modified by third-party scripts
-      if (typeof window !== 'undefined' && window.fetch.toString().includes('fullstory')) {
-        console.warn("⚠️ Detected modified fetch API, using alternative approach");
+      if (
+        typeof window !== "undefined" &&
+        window.fetch.toString().includes("fullstory")
+      ) {
+        console.warn(
+          "⚠️ Detected modified fetch API, using alternative approach",
+        );
       }
 
       const response = await fetch(url, config);
@@ -149,10 +157,15 @@ const makeRequest = async (endpoint: string, options: RequestInit = {}) => {
         }));
 
         console.error(`❌ API Error for ${url}:`, errorData);
-        console.error(`📊 Response status: ${response.status} ${response.statusText}`);
+        console.error(
+          `📊 Response status: ${response.status} ${response.statusText}`,
+        );
         console.error(`🗂️ Raw error data:`, JSON.stringify(errorData, null, 2));
 
-        let errorMessage = errorData.error || errorData.message || `HTTP ${response.status}: ${response.statusText}`;
+        let errorMessage =
+          errorData.error ||
+          errorData.message ||
+          `HTTP ${response.status}: ${response.statusText}`;
 
         // Handle rate limiting errors specifically
         if (response.status === 429) {
@@ -162,7 +175,9 @@ const makeRequest = async (endpoint: string, options: RequestInit = {}) => {
 
         // Include validation details if available
         if (errorData.details && Array.isArray(errorData.details)) {
-          const validationErrors = errorData.details.map(detail => detail.msg || detail.message).join(', ');
+          const validationErrors = errorData.details
+            .map((detail) => detail.msg || detail.message)
+            .join(", ");
           errorMessage = `${errorMessage}: ${validationErrors}`;
         }
 
@@ -196,11 +211,11 @@ const makeRequest = async (endpoint: string, options: RequestInit = {}) => {
     clearTimeout(timeoutId);
     console.error(`💥 Request failed for ${url}:`, error);
     console.error(`🔍 Error details:`, {
-      name: error?.name || 'Unknown',
-      message: error?.message || 'No message available',
+      name: error?.name || "Unknown",
+      message: error?.message || "No message available",
       timeout: timeoutMs,
       errorType: typeof error,
-      hasStack: !!error?.stack
+      hasStack: !!error?.stack,
     });
 
     // Clean up pending request on error
@@ -215,7 +230,9 @@ const makeRequest = async (endpoint: string, options: RequestInit = {}) => {
       if (isOurTimeout) {
         const timeoutSeconds = Math.round(timeoutMs / 1000);
         console.warn(`⚠️ Request timeout for ${url} after ${timeoutSeconds}s`);
-        throw new Error(`Request timed out after ${timeoutSeconds} seconds. Please try again.`);
+        throw new Error(
+          `Request timed out after ${timeoutSeconds} seconds. Please try again.`,
+        );
       } else {
         console.warn(`⚠️ Request cancelled for ${url} (not due to timeout)`);
         throw new Error("Request was cancelled. Please try again.");
@@ -228,7 +245,9 @@ const makeRequest = async (endpoint: string, options: RequestInit = {}) => {
       console.error(`  URL: ${url}`);
       console.error(`  Error: ${error.message}`);
       console.error(`  Stack: ${error.stack}`);
-      throw new Error("Network error - please check your connection and try again");
+      throw new Error(
+        "Network error - please check your connection and try again",
+      );
     }
 
     // Handle other network errors
@@ -241,11 +260,15 @@ const makeRequest = async (endpoint: string, options: RequestInit = {}) => {
       // Check for FullStory or other third-party interference
       if (error.stack?.includes("fullstory.com")) {
         console.warn("⚠️ FullStory interference detected in fetch request");
-        throw new Error("Network request blocked by tracking software. Please try refreshing the page.");
+        throw new Error(
+          "Network request blocked by tracking software. Please try refreshing the page.",
+        );
       }
 
       // If fetch failed, suggest refreshing the page to clear any third-party interference
-      throw new Error("Network request failed. Please refresh the page and try again.");
+      throw new Error(
+        "Network request failed. Please refresh the page and try again.",
+      );
     }
 
     // Re-throw the original error if it's already a proper Error object
@@ -282,7 +305,10 @@ export const authApi = {
 
       return response;
     } catch (error) {
-      console.error(`❌ Login request failed after ${Date.now() - startTime}ms:`, error);
+      console.error(
+        `❌ Login request failed after ${Date.now() - startTime}ms:`,
+        error,
+      );
       // Re-throw the original error to preserve the actual error message
       throw error;
     }
@@ -559,7 +585,11 @@ if (typeof window !== "undefined") {
 */
 
 // Helper function to safely execute server API calls with automatic retry
-const safeServerRequest = async (requestFn: () => Promise<any>, requestName: string, maxRetries = 2) => {
+const safeServerRequest = async (
+  requestFn: () => Promise<any>,
+  requestName: string,
+  maxRetries = 2,
+) => {
   let attempt = 0;
 
   while (attempt <= maxRetries) {
@@ -578,16 +608,22 @@ const safeServerRequest = async (requestFn: () => Promise<any>, requestName: str
 
       if (isRetriableError && attempt <= maxRetries) {
         const delay = attempt * 1000; // Progressive delay: 1s, 2s
-        console.log(`🔄 Retrying ${requestName} (attempt ${attempt}/${maxRetries}) after ${delay}ms...`);
+        console.log(
+          `🔄 Retrying ${requestName} (attempt ${attempt}/${maxRetries}) after ${delay}ms...`,
+        );
 
         // Check network health before retrying
         const isNetworkHealthy = await checkNetworkHealth();
         if (!isNetworkHealthy) {
-          console.error(`❌ Network health check failed, skipping retry for ${requestName}`);
-          throw new Error("Network connectivity issue - please check your connection and try again");
+          console.error(
+            `❌ Network health check failed, skipping retry for ${requestName}`,
+          );
+          throw new Error(
+            "Network connectivity issue - please check your connection and try again",
+          );
         }
 
-        await new Promise(resolve => setTimeout(resolve, delay));
+        await new Promise((resolve) => setTimeout(resolve, delay));
         continue;
       }
 
@@ -600,16 +636,13 @@ const safeServerRequest = async (requestFn: () => Promise<any>, requestName: str
 // Servers API with enhanced retry logic
 export const serversApi = {
   getAll: async () => {
-    return safeServerRequest(
-      () => makeRequest("/servers"),
-      "getAll servers"
-    );
+    return safeServerRequest(() => makeRequest("/servers"), "getAll servers");
   },
 
   getMyServers: async () => {
     return safeServerRequest(
       () => makeRequest("/servers/my-servers"),
-      "getMyServers"
+      "getMyServers",
     );
   },
 

@@ -82,9 +82,8 @@ const defaultContextValue: WebSocketManagerContextType = {
   getOnlineUsers: () => [],
 };
 
-const WebSocketManagerContext = createContext<WebSocketManagerContextType>(
-  defaultContextValue
-);
+const WebSocketManagerContext =
+  createContext<WebSocketManagerContextType>(defaultContextValue);
 
 export const WebSocketManagerProvider = ({
   children,
@@ -112,7 +111,7 @@ export const WebSocketManagerProvider = ({
       const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
       const wsUrl = `${protocol}//${window.location.host}/ws`;
 
-      if (process.env.NODE_ENV === 'development') {
+      if (process.env.NODE_ENV === "development") {
         console.log("🔌 Connecting to WebSocket:", wsUrl);
       }
 
@@ -124,7 +123,7 @@ export const WebSocketManagerProvider = ({
       wsRef.current = new WebSocket(wsUrl);
 
       wsRef.current.onopen = () => {
-        if (process.env.NODE_ENV === 'development') {
+        if (process.env.NODE_ENV === "development") {
           console.log("✅ WebSocket connected");
         }
         setIsConnected(true);
@@ -141,34 +140,44 @@ export const WebSocketManagerProvider = ({
         } catch (error) {
           console.error("❌ WebSocket message parse error:", {
             error: error.message,
-            rawData: event.data?.substring(0, 100) + (event.data?.length > 100 ? '...' : ''),
-            timestamp: new Date().toISOString()
+            rawData:
+              event.data?.substring(0, 100) +
+              (event.data?.length > 100 ? "..." : ""),
+            timestamp: new Date().toISOString(),
           });
         }
       };
 
       wsRef.current.onclose = (event) => {
         const closeCodeNames = {
-          1000: 'Normal Closure',
-          1001: 'Going Away',
-          1002: 'Protocol Error',
-          1003: 'Unsupported Data',
-          1006: 'Abnormal Closure',
-          1011: 'Server Error',
-          1012: 'Service Restart'
+          1000: "Normal Closure",
+          1001: "Going Away",
+          1002: "Protocol Error",
+          1003: "Unsupported Data",
+          1006: "Abnormal Closure",
+          1011: "Server Error",
+          1012: "Service Restart",
         };
 
-        const closeReason = closeCodeNames[event.code] || `Unknown (${event.code})`;
+        const closeReason =
+          closeCodeNames[event.code] || `Unknown (${event.code})`;
 
-        if (process.env.NODE_ENV === 'development') {
-          console.log(`🔌 WebSocket disconnected: ${closeReason}`, event.reason || 'No reason provided');
+        if (process.env.NODE_ENV === "development") {
+          console.log(
+            `🔌 WebSocket disconnected: ${closeReason}`,
+            event.reason || "No reason provided",
+          );
         }
         setIsConnected(false);
 
         // Don't auto-reconnect for normal closure (1000) or when going away (1001)
-        if (event.code !== 1000 && event.code !== 1001 && reconnectAttempts.current < maxReconnectAttempts) {
+        if (
+          event.code !== 1000 &&
+          event.code !== 1001 &&
+          reconnectAttempts.current < maxReconnectAttempts
+        ) {
           const delay = Math.pow(2, reconnectAttempts.current) * 1000; // 1s, 2s, 4s, 8s, 16s
-          if (process.env.NODE_ENV === 'development') {
+          if (process.env.NODE_ENV === "development") {
             console.log(
               `🔄 Reconnecting in ${delay}ms... (attempt ${reconnectAttempts.current + 1})`,
             );
@@ -179,7 +188,7 @@ export const WebSocketManagerProvider = ({
             connect();
           }, delay);
         } else if (event.code === 1000 || event.code === 1001) {
-          if (process.env.NODE_ENV === 'development') {
+          if (process.env.NODE_ENV === "development") {
             console.log("🔌 WebSocket closed normally, not reconnecting");
           }
         } else {
@@ -191,11 +200,13 @@ export const WebSocketManagerProvider = ({
         // Extract meaningful error information
         const errorInfo = {
           type: event.type,
-          target: event.target?.readyState ? `readyState: ${event.target.readyState}` : 'unknown',
-          timestamp: new Date().toISOString()
+          target: event.target?.readyState
+            ? `readyState: ${event.target.readyState}`
+            : "unknown",
+          timestamp: new Date().toISOString(),
         };
 
-        if (process.env.NODE_ENV === 'development') {
+        if (process.env.NODE_ENV === "development") {
           console.error("❌ WebSocket error:", errorInfo);
         } else {
           console.error("❌ WebSocket connection error occurred");
@@ -205,7 +216,7 @@ export const WebSocketManagerProvider = ({
       console.error("❌ WebSocket connection setup error:", {
         message: error.message,
         type: error.name,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       });
       setIsConnected(false);
     }
@@ -218,7 +229,7 @@ export const WebSocketManagerProvider = ({
     // Handle system messages
     switch (type) {
       case "authenticated":
-        if (process.env.NODE_ENV === 'development') {
+        if (process.env.NODE_ENV === "development") {
           console.log("🔐 WebSocket authenticated:", data.user?.username);
         }
         break;
