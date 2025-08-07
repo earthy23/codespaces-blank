@@ -45,8 +45,11 @@ const makeRequest = async (endpoint: string, options: RequestInit = {}) => {
   };
 
   try {
+    console.log(`🔗 Making request to: ${url}`, { method: config.method || 'GET', hasAuth: !!authToken });
     const response = await fetch(url, config);
     clearTimeout(timeoutId);
+
+    console.log(`📊 Response status: ${response.status} for ${url}`);
 
     // Handle authentication errors (but not for login/register endpoints)
     if (
@@ -72,20 +75,25 @@ const makeRequest = async (endpoint: string, options: RequestInit = {}) => {
         error: `Request failed with status ${response.status}`,
       }));
 
+      console.error(`❌ API Error for ${url}:`, errorData);
       throw new Error(
         errorData.error || `HTTP ${response.status}: ${response.statusText}`,
       );
     }
 
-    return await response.json();
+    const data = await response.json();
+    console.log(`✅ Success for ${url}`);
+    return data;
   } catch (error) {
     clearTimeout(timeoutId);
+    console.error(`💥 Request failed for ${url}:`, error);
 
     if (error.name === "AbortError") {
       throw new Error("Request timed out - please try again");
     }
 
     if (error instanceof TypeError && error.message.includes("fetch")) {
+      console.error("Network error details:", { url, error: error.message });
       throw new Error("Network error - please check your connection");
     }
     throw error;
