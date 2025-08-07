@@ -1008,7 +1008,7 @@ export default function Servers() {
                   </Card>
                 ))}
               </div>
-            ) : (
+            ) : !loading ? (
               <div className="text-center py-12">
                 <svg viewBox="0 0 24 24" fill="none" className="w-16 h-16 text-muted-foreground mx-auto mb-4">
                   <rect x="3" y="4" width="18" height="2" rx="1" fill="currentColor"/>
@@ -1031,7 +1031,7 @@ export default function Servers() {
                   Add Your Server
                 </Button>
               </div>
-            )}
+            ) : null}
           </div>
         </div>
 
