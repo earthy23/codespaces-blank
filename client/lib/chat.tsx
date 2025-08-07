@@ -167,7 +167,13 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
           const message = JSON.parse(event.data);
           handleWebSocketMessage(message);
         } catch (error) {
-          console.error("Error parsing WebSocket message:", error);
+          if (process.env.NODE_ENV === "development") {
+            console.warn("❌ Chat WebSocket message parse error:", {
+              error: error?.message || "Unknown parse error",
+              rawData: event.data?.substring(0, 100) + (event.data?.length > 100 ? "..." : ""),
+              timestamp: new Date().toISOString(),
+            });
+          }
         }
       };
 
