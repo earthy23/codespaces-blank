@@ -29,7 +29,7 @@ const checkNetworkHealth = async () => {
     });
     return response.ok;
   } catch (error) {
-    console.warn("Network health check failed:", error.message);
+    console.warn("Network health check failed:", error?.message || error);
     return false;
   }
 };
