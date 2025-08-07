@@ -103,7 +103,8 @@ const makeRequest = async (url: string, options: any = {}) => {
       if (options.signal) {
         options.signal.addEventListener('abort', () => {
           xhr.abort();
-          reject(new Error('Request aborted'));
+          // Don't reject, just resolve with ok: false to handle gracefully
+          resolve({ ok: false, status: 0, json: () => Promise.resolve({}) });
         });
       }
 
