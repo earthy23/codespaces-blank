@@ -54,10 +54,10 @@ export function AdminLayout({ children }: AdminLayoutProps) {
 
   if (user?.role !== "admin" && user?.role !== "mod") {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <Card className="bg-white border border-gray-300">
+      <div className="min-h-screen flex items-center justify-center bg-black">
+        <Card className="bg-white border border-black">
           <CardContent className="p-8 text-center">
-            <h1 className="text-2xl font-bold mb-2 text-gray-900">
+            <h1 className="text-2xl font-bold mb-2 text-black">
               Access Denied
             </h1>
             <p className="text-gray-600 mb-4">
@@ -65,7 +65,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
             </p>
             <Button
               onClick={() => navigate("/dashboard")}
-              className="bg-gray-900 text-white hover:bg-gray-800"
+              className="bg-black text-white hover:bg-gray-800"
             >
               Go to Dashboard
             </Button>
@@ -76,19 +76,19 @@ export function AdminLayout({ children }: AdminLayoutProps) {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex text-gray-900">
+    <div className="min-h-screen bg-black flex text-white">
       {/* Desktop Sidebar */}
       <aside
-        className={`hidden lg:flex flex-col bg-white border-r border-gray-300 transition-all duration-300 ${
+        className={`hidden lg:flex flex-col bg-white border-r border-black transition-all duration-300 ${
           sidebarCollapsed ? "w-16" : "w-72"
         }`}
       >
         {/* Sidebar Header */}
-        <div className="p-4 border-b border-gray-300">
+        <div className="p-4 border-b border-black">
           <div className="flex items-center justify-between">
             {!sidebarCollapsed && (
               <div>
-                <h2 className="text-lg font-bold text-gray-900">Admin Panel</h2>
+                <h2 className="text-lg font-bold text-black">Admin Panel</h2>
                 <p className="text-xs text-gray-600">
                   Welcome, {user?.username}
                 </p>
@@ -98,7 +98,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
               variant="ghost"
               size="sm"
               onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
-              className="text-gray-900 hover:text-gray-600 hover:bg-gray-100"
+              className="text-black hover:text-gray-600 hover:bg-gray-100"
             >
               {sidebarCollapsed ? (
                 <span className="text-sm">»</span>
@@ -128,8 +128,8 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                       to={item.path}
                       className={`flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors ${
                         active
-                          ? "bg-gray-900 text-white"
-                          : "hover:bg-gray-100 text-gray-700 hover:text-gray-900"
+                          ? "bg-black text-white"
+                          : "hover:bg-gray-100 text-black hover:text-black"
                       }`}
                       title={sidebarCollapsed ? item.label : ""}
                     >
@@ -147,11 +147,11 @@ export function AdminLayout({ children }: AdminLayoutProps) {
         </nav>
 
         {/* Sidebar Footer */}
-        <div className="p-4 border-t border-gray-300">
+        <div className="p-4 border-t border-black">
           <div className="space-y-2">
             <Link
               to="/dashboard"
-              className="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-gray-100 text-gray-700 hover:text-gray-900 transition-colors"
+              className="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-gray-100 text-black hover:text-black transition-colors"
               title={sidebarCollapsed ? "Back to Dashboard" : ""}
             >
               {!sidebarCollapsed && (
@@ -161,7 +161,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
             <Button
               variant="ghost"
               onClick={handleLogout}
-              className={`w-full justify-start space-x-3 px-3 py-2 hover:bg-gray-100 hover:text-gray-900 text-gray-700 ${
+              className={`w-full justify-start space-x-3 px-3 py-2 hover:bg-gray-100 hover:text-black text-black ${
                 sidebarCollapsed ? "px-2" : ""
               }`}
               title={sidebarCollapsed ? "Logout" : ""}
@@ -178,7 +178,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
           variant="outline"
           size="sm"
           onClick={() => setMobileMenuOpen(true)}
-          className="bg-white border-gray-300 text-gray-900 hover:bg-gray-100"
+          className="bg-white border-black text-black hover:bg-gray-100"
         >
           <span className="text-sm">☰</span>
         </Button>
@@ -191,11 +191,11 @@ export function AdminLayout({ children }: AdminLayoutProps) {
             className="fixed inset-0 bg-black/50"
             onClick={() => setMobileMenuOpen(false)}
           />
-          <aside className="relative w-72 bg-white border-r border-gray-300">
+          <aside className="relative w-72 bg-white border-r border-black">
             {/* Mobile Header */}
-            <div className="p-4 border-b border-gray-300 flex items-center justify-between">
+            <div className="p-4 border-b border-black flex items-center justify-between">
               <div>
-                <h2 className="text-lg font-bold text-gray-900">Admin Panel</h2>
+                <h2 className="text-lg font-bold text-black">Admin Panel</h2>
                 <p className="text-xs text-gray-600">
                   Welcome, {user?.username}
                 </p>
@@ -204,7 +204,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                 variant="ghost"
                 size="sm"
                 onClick={() => setMobileMenuOpen(false)}
-                className="text-gray-900 hover:text-gray-600 hover:bg-gray-100"
+                className="text-black hover:text-gray-600 hover:bg-gray-100"
               >
                 <span className="text-sm">✕</span>
               </Button>
@@ -228,8 +228,8 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                           onClick={() => setMobileMenuOpen(false)}
                           className={`flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors ${
                             active
-                              ? "bg-gray-900 text-white"
-                              : "hover:bg-gray-100 text-gray-700 hover:text-gray-900"
+                              ? "bg-black text-white"
+                              : "hover:bg-gray-100 text-black hover:text-black"
                           }`}
                         >
                           <span className="text-sm font-medium">
@@ -244,18 +244,18 @@ export function AdminLayout({ children }: AdminLayoutProps) {
             </nav>
 
             {/* Mobile Footer */}
-            <div className="p-4 border-t border-gray-300 space-y-2">
+            <div className="p-4 border-t border-black space-y-2">
               <Link
                 to="/dashboard"
                 onClick={() => setMobileMenuOpen(false)}
-                className="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-gray-100 text-gray-700 hover:text-gray-900 transition-colors"
+                className="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-gray-100 text-black hover:text-black transition-colors"
               >
                 <span className="text-sm">Back to Dashboard</span>
               </Link>
               <Button
                 variant="ghost"
                 onClick={handleLogout}
-                className="w-full justify-start space-x-3 px-3 py-2 hover:bg-gray-100 hover:text-gray-900 text-gray-700"
+                className="w-full justify-start space-x-3 px-3 py-2 hover:bg-gray-100 hover:text-black text-black"
               >
                 <span className="text-sm">Logout</span>
               </Button>
@@ -265,7 +265,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
       )}
 
       {/* Main Content */}
-      <main className="flex-1 overflow-auto bg-gray-50">
+      <main className="flex-1 overflow-auto bg-black">
         <div className="p-6 lg:p-8">{children}</div>
       </main>
     </div>
