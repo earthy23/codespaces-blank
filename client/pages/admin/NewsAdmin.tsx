@@ -1,421 +1,474 @@
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Switch } from "@/components/ui/switch";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { MinecraftBackground } from "@/components/ui/minecraft-background";
-import { 
-  Shield, 
-  ArrowLeft,
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { AdminLayout } from "@/components/ui/admin-layout";
+import {
   Newspaper,
   Plus,
   Edit,
   Trash2,
   Eye,
-  Save,
-  Calendar
+  RefreshCw,
+  Calendar,
+  User,
 } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/lib/auth";
-import { useNews, NewsPost } from "@/lib/news";
-import { useLogging } from "@/lib/logging";
-import { useToast } from "@/hooks/use-toast";
-import { useEffect, useState } from "react";
+
+interface NewsArticle {
+  id: string;
+  title: string;
+  content: string;
+  summary: string;
+  author: string;
+  status: "draft" | "published" | "archived";
+  createdAt: string;
+  updatedAt: string;
+  publishedAt?: string;
+  tags: string[];
+}
 
 export default function NewsAdmin() {
-  const { user, isAdmin } = useAuth();
-  const { posts, addPost, updatePost, deletePost, publishPost, unpublishPost } = useNews();
-  const { logAction } = useLogging();
-  const { toast } = useToast();
-  const navigate = useNavigate();
-  
-  const [showForm, setShowForm] = useState(false);
-  const [editingPost, setEditingPost] = useState<NewsPost | null>(null);
+  const { token, user } = useAuth();
+  const [articles, setArticles] = useState<NewsArticle[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [editingArticle, setEditingArticle] = useState<NewsArticle | null>(null);
+  const [stats, setStats] = useState({
+    total: 0,
+    published: 0,
+    drafts: 0,
+    archived: 0,
+  });
+
+  // Form state
   const [formData, setFormData] = useState({
     title: "",
     content: "",
     summary: "",
-    category: "announcement" as NewsPost['category'],
-    published: false,
-    imageUrl: ""
+    tags: "",
   });
 
   useEffect(() => {
-    if (!user || !isAdmin()) {
-      navigate("/admin");
-    }
-  }, [user, isAdmin, navigate]);
+    loadArticles();
+  }, []);
 
-  const resetForm = () => {
-    setFormData({
-      title: "",
-      content: "",
-      summary: "",
-      category: "announcement",
-      published: false,
-      imageUrl: ""
-    });
-    setEditingPost(null);
-    setShowForm(false);
+  const loadArticles = async () => {
+    if (!token) return;
+
+    try {
+      setIsLoading(true);
+      
+      // Generate mock articles data
+      const mockArticles: NewsArticle[] = [
+        {
+          id: "1",
+          title: "Server Maintenance Complete",
+          content: "We have successfully completed the scheduled maintenance on all game servers. All systems are now running optimally with improved performance and stability.",
+          summary: "Scheduled maintenance completed, servers running optimally",
+          author: "admin",
+          status: "published",
+          createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 2).toISOString(),
+          updatedAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 2).toISOString(),
+          publishedAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 2).toISOString(),
+          tags: ["maintenance", "servers", "performance"],
+        },
+        {
+          id: "2",
+          title: "New VIP Features Released",
+          content: "We're excited to announce new VIP features including exclusive chat commands, priority server access, and custom profile badges.",
+          summary: "New VIP features now available for subscribers",
+          author: "admin",
+          status: "published",
+          createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 5).toISOString(),
+          updatedAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 5).toISOString(),
+          publishedAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 5).toISOString(),
+          tags: ["vip", "features", "announcement"],
+        },
+        {
+          id: "3",
+          title: "Community Event Planning",
+          content: "Draft article about upcoming community events and tournaments.",
+          summary: "Planning upcoming community events",
+          author: user?.username || "admin",
+          status: "draft",
+          createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24).toISOString(),
+          updatedAt: new Date(Date.now() - 1000 * 60 * 60 * 24).toISOString(),
+          tags: ["community", "events", "tournaments"],
+        },
+        // Add more mock articles...
+        ...Array.from({ length: 10 }, (_, i) => ({
+          id: `${i + 4}`,
+          title: `Sample Article ${i + 4}`,
+          content: `This is the content for sample article ${i + 4}. It contains detailed information about various topics.`,
+          summary: `Summary for article ${i + 4}`,
+          author: user?.username || "admin",
+          status: Math.random() > 0.3 ? "published" : Math.random() > 0.5 ? "draft" : "archived" as const,
+          createdAt: new Date(Date.now() - Math.random() * 1000 * 60 * 60 * 24 * 30).toISOString(),
+          updatedAt: new Date(Date.now() - Math.random() * 1000 * 60 * 60 * 24 * 30).toISOString(),
+          publishedAt: Math.random() > 0.3 ? new Date(Date.now() - Math.random() * 1000 * 60 * 60 * 24 * 30).toISOString() : undefined,
+          tags: ["sample", "article"],
+        }))
+      ].sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime());
+
+      setArticles(mockArticles);
+      
+      // Calculate stats
+      const newStats = {
+        total: mockArticles.length,
+        published: mockArticles.filter(a => a.status === "published").length,
+        drafts: mockArticles.filter(a => a.status === "draft").length,
+        archived: mockArticles.filter(a => a.status === "archived").length,
+      };
+      setStats(newStats);
+
+    } catch (error) {
+      console.error("Failed to load articles:", error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!formData.title || !formData.content || !formData.summary) {
-      toast({
-        title: "Validation Error",
-        description: "Title, content, and summary are required",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    const postData = {
-      ...formData,
-      author: user?.username || "Admin",
-      authorId: user?.id || "admin-1",
+    const articleData = {
+      title: formData.title,
+      content: formData.content,
+      summary: formData.summary,
+      tags: formData.tags.split(',').map(tag => tag.trim()).filter(tag => tag),
+      author: user?.username || "admin",
+      status: "draft" as const,
     };
 
-    if (editingPost) {
-      updatePost(editingPost.id, postData);
-      logAction('news_post_updated', 'admin', 'admin', {
-        postId: editingPost.id,
-        title: formData.title
-      });
-      toast({
-        title: "Post Updated",
-        description: "News post has been updated successfully",
-      });
+    if (editingArticle) {
+      // Update existing article
+      setArticles(prev => prev.map(article => 
+        article.id === editingArticle.id 
+          ? { 
+              ...article, 
+              ...articleData, 
+              updatedAt: new Date().toISOString() 
+            }
+          : article
+      ));
     } else {
-      addPost(postData);
-      logAction('news_post_created', 'admin', 'admin', {
-        title: formData.title,
-        published: formData.published
-      });
-      toast({
-        title: "Post Created",
-        description: "News post has been created successfully",
-      });
+      // Create new article
+      const newArticle: NewsArticle = {
+        id: Date.now().toString(),
+        ...articleData,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      };
+      setArticles(prev => [newArticle, ...prev]);
     }
 
-    resetForm();
+    // Reset form and close dialog
+    setFormData({ title: "", content: "", summary: "", tags: "" });
+    setEditingArticle(null);
+    setIsDialogOpen(false);
   };
 
-  const handleEdit = (post: NewsPost) => {
+  const handleEdit = (article: NewsArticle) => {
+    setEditingArticle(article);
     setFormData({
-      title: post.title,
-      content: post.content,
-      summary: post.summary,
-      category: post.category,
-      published: post.published,
-      imageUrl: post.imageUrl || ""
+      title: article.title,
+      content: article.content,
+      summary: article.summary,
+      tags: article.tags.join(", "),
     });
-    setEditingPost(post);
-    setShowForm(true);
+    setIsDialogOpen(true);
   };
 
-  const handleDelete = (post: NewsPost) => {
-    if (confirm(`Are you sure you want to delete "${post.title}"?`)) {
-      deletePost(post.id);
-      logAction('news_post_deleted', 'admin', 'admin', {
-        postId: post.id,
-        title: post.title
-      });
-      toast({
-        title: "Post Deleted",
-        description: "News post has been deleted",
-      });
+  const handleDelete = (articleId: string) => {
+    if (confirm("Are you sure you want to delete this article?")) {
+      setArticles(prev => prev.filter(article => article.id !== articleId));
     }
   };
 
-  const handleTogglePublish = (post: NewsPost) => {
-    if (post.published) {
-      unpublishPost(post.id);
-      logAction('news_post_unpublished', 'admin', 'admin', {
-        postId: post.id,
-        title: post.title
-      });
-      toast({
-        title: "Post Unpublished",
-        description: "News post has been unpublished",
-      });
-    } else {
-      publishPost(post.id);
-      logAction('news_post_published', 'admin', 'admin', {
-        postId: post.id,
-        title: post.title
-      });
-      toast({
-        title: "Post Published",
-        description: "News post has been published",
-      });
-    }
+  const updateStatus = (articleId: string, newStatus: "draft" | "published" | "archived") => {
+    setArticles(prev => prev.map(article => 
+      article.id === articleId 
+        ? { 
+            ...article, 
+            status: newStatus, 
+            updatedAt: new Date().toISOString(),
+            publishedAt: newStatus === "published" ? new Date().toISOString() : article.publishedAt
+          }
+        : article
+    ));
   };
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString();
   };
 
-  const getCategoryColor = (category: string) => {
-    switch (category) {
-      case 'announcement': return 'bg-blue-500';
-      case 'update': return 'bg-green-500';
-      case 'event': return 'bg-purple-500';
-      case 'maintenance': return 'bg-orange-500';
-      default: return 'bg-gray-500';
+  const getStatusBadgeColor = (status: string) => {
+    switch (status) {
+      case "published": return "bg-green-600 text-white";
+      case "draft": return "bg-yellow-600 text-white";
+      case "archived": return "bg-gray-600 text-white";
+      default: return "bg-gray-600 text-white";
     }
   };
 
-  if (!user || !isAdmin()) {
-    return null;
-  }
-
   return (
-    <MinecraftBackground>
-      {/* Top Navigation */}
-      <nav className="border-b border-border bg-card/50 backdrop-blur-sm">
-        <div className="px-6 py-4">
-          <div className="flex items-center justify-between">
-            <Link to="/admin" className="inline-flex items-center text-muted-foreground hover:text-primary transition-colors">
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Back to Admin
-            </Link>
-            <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
-                <Newspaper className="w-6 h-6 text-primary-foreground" />
-              </div>
-              <h1 className="text-2xl font-bold text-primary">News Management</h1>
-            </div>
+    <AdminLayout>
+      <div className="space-y-6">
+        {/* Header */}
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold text-white">News Management</h1>
+            <p className="text-gray-400">
+              Create and manage news articles and announcements
+            </p>
+          </div>
+          <div className="flex space-x-2">
+            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+              <DialogTrigger asChild>
+                <Button 
+                  className="bg-white text-black hover:bg-gray-200"
+                  onClick={() => {
+                    setEditingArticle(null);
+                    setFormData({ title: "", content: "", summary: "", tags: "" });
+                  }}
+                >
+                  <Plus className="w-4 h-4 mr-2" />
+                  New Article
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="bg-gray-900 border-gray-700 text-white max-w-2xl">
+                <DialogHeader>
+                  <DialogTitle>{editingArticle ? "Edit Article" : "Create New Article"}</DialogTitle>
+                  <DialogDescription className="text-gray-400">
+                    {editingArticle ? "Update the article details" : "Create a new news article or announcement"}
+                  </DialogDescription>
+                </DialogHeader>
+                <form onSubmit={handleSubmit} className="space-y-4">
+                  <div>
+                    <label className="text-sm font-medium text-gray-400">Title</label>
+                    <Input
+                      required
+                      value={formData.title}
+                      onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
+                      className="bg-gray-800 border-gray-600 text-white"
+                      placeholder="Article title"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-gray-400">Summary</label>
+                    <Input
+                      required
+                      value={formData.summary}
+                      onChange={(e) => setFormData(prev => ({ ...prev, summary: e.target.value }))}
+                      className="bg-gray-800 border-gray-600 text-white"
+                      placeholder="Brief summary"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-gray-400">Content</label>
+                    <Textarea
+                      required
+                      value={formData.content}
+                      onChange={(e) => setFormData(prev => ({ ...prev, content: e.target.value }))}
+                      className="bg-gray-800 border-gray-600 text-white min-h-[200px]"
+                      placeholder="Article content"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-gray-400">Tags (comma-separated)</label>
+                    <Input
+                      value={formData.tags}
+                      onChange={(e) => setFormData(prev => ({ ...prev, tags: e.target.value }))}
+                      className="bg-gray-800 border-gray-600 text-white"
+                      placeholder="news, announcement, update"
+                    />
+                  </div>
+                  <DialogFooter>
+                    <Button type="submit" className="bg-white text-black hover:bg-gray-200">
+                      {editingArticle ? "Update Article" : "Create Article"}
+                    </Button>
+                  </DialogFooter>
+                </form>
+              </DialogContent>
+            </Dialog>
             <Button 
-              onClick={() => setShowForm(true)}
-              className="minecraft-button bg-primary text-primary-foreground"
+              onClick={loadArticles} 
+              className="bg-gray-700 text-white hover:bg-gray-600"
+              disabled={isLoading}
             >
-              <Plus className="w-4 h-4 mr-2" />
-              Create Post
+              <RefreshCw className={`w-4 h-4 mr-2 ${isLoading ? "animate-spin" : ""}`} />
+              Refresh
             </Button>
           </div>
         </div>
-      </nav>
 
-      <div className="p-6">
-        <div className="max-w-6xl mx-auto">
-          {/* Stats */}
-          <div className="grid md:grid-cols-4 gap-4 mb-6">
-            <Card className="minecraft-panel">
-              <CardContent className="p-4">
-                <div className="text-2xl font-bold text-primary">{posts.length}</div>
-                <div className="text-sm text-muted-foreground">Total Posts</div>
-              </CardContent>
-            </Card>
-            <Card className="minecraft-panel">
-              <CardContent className="p-4">
-                <div className="text-2xl font-bold text-green-500">
-                  {posts.filter(p => p.published).length}
-                </div>
-                <div className="text-sm text-muted-foreground">Published</div>
-              </CardContent>
-            </Card>
-            <Card className="minecraft-panel">
-              <CardContent className="p-4">
-                <div className="text-2xl font-bold text-yellow-500">
-                  {posts.filter(p => !p.published).length}
-                </div>
-                <div className="text-sm text-muted-foreground">Drafts</div>
-              </CardContent>
-            </Card>
-            <Card className="minecraft-panel">
-              <CardContent className="p-4">
-                <div className="text-2xl font-bold text-blue-500">
-                  {posts.filter(p => p.category === 'announcement').length}
-                </div>
-                <div className="text-sm text-muted-foreground">Announcements</div>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Create/Edit Form */}
-          {showForm && (
-            <Card className="minecraft-panel mb-6">
-              <CardHeader>
-                <CardTitle>
-                  {editingPost ? "Edit News Post" : "Create News Post"}
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <form onSubmit={handleSubmit} className="space-y-4">
-                  <div className="grid md:grid-cols-2 gap-4">
-                    <div>
-                      <Label htmlFor="title">Title *</Label>
-                      <Input
-                        id="title"
-                        value={formData.title}
-                        onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                        className="minecraft-input"
-                        required
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="category">Category</Label>
-                      <Select 
-                        value={formData.category} 
-                        onValueChange={(value: NewsPost['category']) => setFormData({ ...formData, category: value })}
-                      >
-                        <SelectTrigger className="minecraft-input">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="announcement">Announcement</SelectItem>
-                          <SelectItem value="update">Update</SelectItem>
-                          <SelectItem value="event">Event</SelectItem>
-                          <SelectItem value="maintenance">Maintenance</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </div>
-
-                  <div>
-                    <Label htmlFor="summary">Summary *</Label>
-                    <Input
-                      id="summary"
-                      value={formData.summary}
-                      onChange={(e) => setFormData({ ...formData, summary: e.target.value })}
-                      placeholder="Brief summary for the news feed"
-                      className="minecraft-input"
-                      required
-                    />
-                  </div>
-
-                  <div>
-                    <Label htmlFor="content">Content *</Label>
-                    <Textarea
-                      id="content"
-                      value={formData.content}
-                      onChange={(e) => setFormData({ ...formData, content: e.target.value })}
-                      placeholder="Full article content..."
-                      className="minecraft-input min-h-48"
-                      required
-                    />
-                  </div>
-
-                  <div>
-                    <Label htmlFor="imageUrl">Image URL (Optional)</Label>
-                    <Input
-                      id="imageUrl"
-                      value={formData.imageUrl}
-                      onChange={(e) => setFormData({ ...formData, imageUrl: e.target.value })}
-                      placeholder="https://example.com/image.jpg"
-                      className="minecraft-input"
-                    />
-                  </div>
-
-                  <div className="flex items-center space-x-2">
-                    <Switch
-                      checked={formData.published}
-                      onCheckedChange={(checked) => setFormData({ ...formData, published: checked })}
-                    />
-                    <Label>Publish immediately</Label>
-                  </div>
-
-                  <div className="flex space-x-2">
-                    <Button 
-                      type="submit"
-                      className="minecraft-button bg-primary text-primary-foreground"
-                    >
-                      <Save className="w-4 h-4 mr-2" />
-                      {editingPost ? "Update Post" : "Create Post"}
-                    </Button>
-                    <Button 
-                      type="button"
-                      variant="outline"
-                      onClick={resetForm}
-                      className="minecraft-border"
-                    >
-                      Cancel
-                    </Button>
-                  </div>
-                </form>
-              </CardContent>
-            </Card>
-          )}
-
-          {/* Posts List */}
-          <Card className="minecraft-panel">
-            <CardHeader>
-              <CardTitle>News Posts ({posts.length})</CardTitle>
-              <CardDescription>Manage all news posts and announcements</CardDescription>
+        {/* Stats Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <Card className="bg-gray-900 border-gray-700">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium text-gray-400">Total Articles</CardTitle>
+              <Newspaper className="h-4 w-4 text-gray-500" />
             </CardHeader>
             <CardContent>
+              <div className="text-2xl font-bold text-white">{stats.total}</div>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-gray-900 border-gray-700">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium text-gray-400">Published</CardTitle>
+              <Eye className="h-4 w-4 text-green-400" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-white">{stats.published}</div>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-gray-900 border-gray-700">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium text-gray-400">Drafts</CardTitle>
+              <Edit className="h-4 w-4 text-yellow-400" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-white">{stats.drafts}</div>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-gray-900 border-gray-700">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium text-gray-400">Archived</CardTitle>
+              <Calendar className="h-4 w-4 text-gray-400" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-white">{stats.archived}</div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Articles Table */}
+        <Card className="bg-gray-900 border-gray-700">
+          <CardHeader>
+            <CardTitle className="text-white">Articles ({articles.length})</CardTitle>
+            <CardDescription className="text-gray-400">
+              Manage news articles and announcements
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="overflow-x-auto">
               <Table>
                 <TableHeader>
-                  <TableRow>
-                    <TableHead>Title</TableHead>
-                    <TableHead>Category</TableHead>
-                    <TableHead>Author</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Date</TableHead>
-                    <TableHead>Actions</TableHead>
+                  <TableRow className="border-gray-700">
+                    <TableHead className="text-gray-300">Title</TableHead>
+                    <TableHead className="text-gray-300">Status</TableHead>
+                    <TableHead className="text-gray-300">Author</TableHead>
+                    <TableHead className="text-gray-300">Updated</TableHead>
+                    <TableHead className="text-gray-300">Tags</TableHead>
+                    <TableHead className="text-gray-300">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {posts.map((post) => (
-                    <TableRow key={post.id}>
-                      <TableCell>
+                  {articles.map((article) => (
+                    <TableRow key={article.id} className="border-gray-700">
+                      <TableCell className="text-white">
                         <div>
-                          <div className="font-medium">{post.title}</div>
-                          <div className="text-sm text-muted-foreground truncate max-w-xs">
-                            {post.summary}
+                          <div className="font-medium">{article.title}</div>
+                          <div className="text-sm text-gray-400 truncate max-w-xs">
+                            {article.summary}
                           </div>
                         </div>
                       </TableCell>
                       <TableCell>
-                        <Badge className={`${getCategoryColor(post.category)} text-white`}>
-                          {post.category}
+                        <Badge className={getStatusBadgeColor(article.status)}>
+                          {article.status.toUpperCase()}
                         </Badge>
                       </TableCell>
-                      <TableCell className="text-sm">{post.author}</TableCell>
-                      <TableCell>
-                        {post.published ? (
-                          <Badge className="bg-green-500 text-white">Published</Badge>
-                        ) : (
-                          <Badge variant="secondary">Draft</Badge>
-                        )}
-                      </TableCell>
-                      <TableCell className="text-sm">
-                        {post.published 
-                          ? formatDate(post.publishedAt)
-                          : formatDate(post.updatedAt)
-                        }
-                      </TableCell>
-                      <TableCell>
+                      <TableCell className="text-gray-300">
                         <div className="flex items-center space-x-1">
+                          <User className="w-3 h-3" />
+                          <span>{article.author}</span>
+                        </div>
+                      </TableCell>
+                      <TableCell className="text-gray-300">
+                        {formatDate(article.updatedAt)}
+                      </TableCell>
+                      <TableCell className="text-gray-300">
+                        <div className="flex flex-wrap gap-1">
+                          {article.tags.slice(0, 2).map(tag => (
+                            <Badge key={tag} className="bg-gray-700 text-white text-xs">
+                              {tag}
+                            </Badge>
+                          ))}
+                          {article.tags.length > 2 && (
+                            <Badge className="bg-gray-700 text-white text-xs">
+                              +{article.tags.length - 2}
+                            </Badge>
+                          )}
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex space-x-2">
                           <Button
+                            variant="ghost"
                             size="sm"
-                            variant="outline"
-                            onClick={() => handleEdit(post)}
-                            className="minecraft-border"
+                            onClick={() => handleEdit(article)}
+                            className="text-gray-300 hover:bg-gray-800"
                           >
                             <Edit className="w-4 h-4" />
                           </Button>
+                          
+                          {article.status === "draft" && (
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => updateStatus(article.id, "published")}
+                              className="text-green-400 hover:bg-gray-800"
+                            >
+                              Publish
+                            </Button>
+                          )}
+                          
+                          {article.status === "published" && (
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => updateStatus(article.id, "archived")}
+                              className="text-yellow-400 hover:bg-gray-800"
+                            >
+                              Archive
+                            </Button>
+                          )}
+                          
                           <Button
+                            variant="ghost"
                             size="sm"
-                            variant="outline"
-                            onClick={() => handleTogglePublish(post)}
-                            className={`minecraft-border ${
-                              post.published ? 'text-yellow-600' : 'text-green-600'
-                            }`}
-                          >
-                            {post.published ? 'Unpublish' : 'Publish'}
-                          </Button>
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => handleDelete(post)}
-                            className="minecraft-border text-red-600"
+                            onClick={() => handleDelete(article.id)}
+                            className="text-red-400 hover:bg-gray-800"
                           >
                             <Trash2 className="w-4 h-4" />
                           </Button>
@@ -425,18 +478,10 @@ export default function NewsAdmin() {
                   ))}
                 </TableBody>
               </Table>
-              
-              {posts.length === 0 && (
-                <div className="text-center py-8 text-muted-foreground">
-                  <Newspaper className="w-16 h-16 mx-auto mb-4 opacity-50" />
-                  <p className="text-lg font-medium mb-2">No news posts yet</p>
-                  <p>Create your first news post to get started</p>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        </div>
+            </div>
+          </CardContent>
+        </Card>
       </div>
-    </MinecraftBackground>
+    </AdminLayout>
   );
 }
