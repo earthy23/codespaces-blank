@@ -111,8 +111,17 @@ export default function Servers() {
       console.log(
         "🔄 Servers useEffect: User and token exist, fetching servers...",
       );
-      fetchServers();
-      fetchMyServers();
+
+      // Fetch servers with a small delay to prevent race conditions
+      const fetchData = async () => {
+        await fetchServers();
+        // Small delay before second call
+        setTimeout(() => {
+          fetchMyServers();
+        }, 100);
+      };
+
+      fetchData();
     } else {
       console.log(
         "🔄 Servers useEffect: Missing user or token, skipping fetch:",
