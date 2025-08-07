@@ -101,7 +101,9 @@ export default function Dashboard() {
             </p>
           </div>
           <div className="flex items-center space-x-2">
-            <img src="https://images.pexels.com/photos/10068851/pexels-photo-10068851.jpeg" alt="Rank" className="w-5 h-5 rounded object-cover" />
+            <svg viewBox="0 0 24 24" fill="none" className="w-5 h-5 text-yellow-500">
+              <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26" fill="currentColor"/>
+            </svg>
             <span className="text-sm font-medium">
               Level {user?.role === "admin" ? "Admin" : "Member"}
             </span>
@@ -112,8 +114,11 @@ export default function Dashboard() {
         <Card className="minecraft-panel mb-8 bg-card border-2 border-primary/20 shadow-xl shadow-primary/10">
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
-              <div className="w-10 h-10 rounded-lg bg-card border border-primary/50 flex items-center justify-center shadow-lg shadow-primary/30 overflow-hidden">
-                <img src="https://images.pexels.com/photos/4225229/pexels-photo-4225229.jpeg" alt="Gaming Setup" className="w-full h-full object-cover" />
+              <div className="w-10 h-10 rounded-lg bg-card border border-primary/50 flex items-center justify-center shadow-lg shadow-primary/30">
+                <svg viewBox="0 0 24 24" fill="none" className="w-6 h-6 text-primary drop-shadow-[0_0_4px_currentColor]">
+                  <polygon points="5,21 19,12 5,3" fill="currentColor"/>
+                  <circle cx="12" cy="12" r="2" fill="white"/>
+                </svg>
               </div>
               <div>
                 <span className="text-xl">Launch Client</span>
@@ -166,7 +171,10 @@ export default function Dashboard() {
                 size="lg"
                 className="h-12 px-8 minecraft-button bg-primary text-primary-foreground border-none hover:bg-primary/90 shadow-lg hover:shadow-primary/30"
               >
-                <img src="https://images.pexels.com/photos/4225229/pexels-photo-4225229.jpeg" alt="Gaming" className="w-5 h-5 mr-2 rounded object-cover" />
+                <svg viewBox="0 0 24 24" fill="none" className="w-5 h-5 mr-2">
+                  <polygon points="5,21 19,12 5,3" fill="currentColor"/>
+                  <circle cx="12" cy="12" r="1" fill="white"/>
+                </svg>
 "Launch Game"
               </Button>
             </div>
@@ -186,8 +194,12 @@ export default function Dashboard() {
                     {onlineFriends.length}
                   </p>
                 </div>
-                <div className="w-12 h-12 rounded-lg bg-card border border-primary/50 flex items-center justify-center shadow-lg shadow-primary/20 overflow-hidden">
-                  <img src="https://images.pexels.com/photos/9069288/pexels-photo-9069288.jpeg" alt="Friends" className="w-full h-full object-cover" />
+                <div className="w-12 h-12 rounded-lg bg-card border border-primary/50 flex items-center justify-center shadow-lg shadow-primary/20">
+                  <svg viewBox="0 0 24 24" fill="none" className="w-6 h-6 text-primary drop-shadow-[0_0_4px_currentColor]">
+                    <circle cx="9" cy="7" r="4" fill="currentColor"/>
+                    <path d="m3 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2" stroke="currentColor" strokeWidth="2" fill="none"/>
+                    <circle cx="16" cy="11" r="3" fill="currentColor" opacity="0.7"/>
+                  </svg>
                 </div>
               </div>
             </CardContent>
@@ -204,8 +216,13 @@ export default function Dashboard() {
                     {unreadTotal}
                   </p>
                 </div>
-                <div className="w-12 h-12 rounded-lg bg-card border border-primary/50 flex items-center justify-center shadow-lg shadow-primary/20 overflow-hidden">
-                  <img src="https://images.pexels.com/photos/7640773/pexels-photo-7640773.jpeg" alt="Messages" className="w-full h-full object-cover" />
+                <div className="w-12 h-12 rounded-lg bg-card border border-primary/50 flex items-center justify-center shadow-lg shadow-primary/20">
+                  <svg viewBox="0 0 24 24" fill="none" className="w-6 h-6 text-primary drop-shadow-[0_0_4px_currentColor]">
+                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" fill="currentColor"/>
+                    <circle cx="8" cy="11" r="1" fill="white"/>
+                    <circle cx="12" cy="11" r="1" fill="white"/>
+                    <circle cx="16" cy="11" r="1" fill="white"/>
+                  </svg>
                 </div>
               </div>
             </CardContent>
@@ -222,8 +239,11 @@ export default function Dashboard() {
                     {user?.role === "admin" ? "Administrator" : "Member"}
                   </p>
                 </div>
-                <div className="w-12 h-12 rounded-lg bg-card border border-primary/50 flex items-center justify-center shadow-lg shadow-primary/20 overflow-hidden">
-                  <img src="https://images.pexels.com/photos/10068851/pexels-photo-10068851.jpeg" alt="Security" className="w-full h-full object-cover" />
+                <div className="w-12 h-12 rounded-lg bg-card border border-primary/50 flex items-center justify-center shadow-lg shadow-primary/20">
+                  <svg viewBox="0 0 24 24" fill="none" className="w-6 h-6 text-primary drop-shadow-[0_0_4px_currentColor]">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" fill="currentColor"/>
+                    <path d="m9 12 2 2 4-4" stroke="white" strokeWidth="2" fill="none"/>
+                  </svg>
                 </div>
               </div>
             </CardContent>
