@@ -60,6 +60,17 @@ const makeRequest = async (endpoint: string, options: RequestInit = {}) => {
     signal: controller.signal,
   };
 
+  // If the request already has a signal, create a combined signal
+  if (options.signal) {
+    const combinedController = new AbortController();
+
+    // Abort if either signal is aborted
+    options.signal.addEventListener('abort', () => combinedController.abort());
+    controller.signal.addEventListener('abort', () => combinedController.abort());
+
+    config.signal = combinedController.signal;
+  }
+
   try {
     console.log(`🔗 Making request to: ${url}`, { method: config.method || 'GET', hasAuth: !!authToken });
     const response = await fetch(url, config);
