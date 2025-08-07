@@ -275,7 +275,7 @@ export default function AdminDashboard() {
               xhr.open('GET', `/api/admin/activity/live?since=${lastActivityUpdate}&limit=10`);
               xhr.setRequestHeader('Authorization', `Bearer ${token}`);
               xhr.setRequestHeader('Content-Type', 'application/json');
-              xhr.timeout = 5000;
+              xhr.timeout = 8000; // Increased timeout
 
               xhr.onload = () => {
                 if (xhr.status >= 200 && xhr.status < 300) {
@@ -288,8 +288,18 @@ export default function AdminDashboard() {
                 }
               };
 
-              xhr.onerror = () => reject(new Error('Network error'));
-              xhr.ontimeout = () => reject(new Error('Request timeout'));
+              xhr.onerror = () => {
+                if (process.env.NODE_ENV === 'development') {
+                  console.warn('Live activity XHR network error, skipping update');
+                }
+                resolve({ ok: false });
+              };
+              xhr.ontimeout = () => {
+                if (process.env.NODE_ENV === 'development') {
+                  console.warn('Live activity XHR timeout, skipping update');
+                }
+                resolve({ ok: false });
+              };
               xhr.send();
             });
           } else {
