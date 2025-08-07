@@ -558,6 +558,15 @@ export default function AdminDashboard() {
                   ? "⚠ API Degraded"
                   : "● API Offline"}
               </Badge>
+              <Badge
+                className={`text-xs ${
+                  isConnected
+                    ? "bg-green-600 text-white"
+                    : "bg-gray-600 text-white"
+                }`}
+              >
+                {isConnected ? "🔌 WS Connected" : "🔌 WS Offline"}
+              </Badge>
             </div>
           </div>
           <div className="flex items-center space-x-3">
