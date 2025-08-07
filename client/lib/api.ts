@@ -210,13 +210,13 @@ const makeRequest = async (endpoint: string, options: RequestInit = {}) => {
   } catch (error) {
     clearTimeout(timeoutId);
     console.error(`💥 Request failed for ${url}:`, error);
-    console.error(`🔍 Error details:`, {
+    console.error(`🔍 Error details:`, JSON.stringify({
       name: error?.name || "Unknown",
       message: error?.message || "No message available",
       timeout: timeoutMs,
       errorType: typeof error,
       hasStack: !!error?.stack,
-    });
+    }));
 
     // Clean up pending request on error
     if (requestKey) {
