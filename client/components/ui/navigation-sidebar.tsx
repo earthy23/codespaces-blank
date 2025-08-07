@@ -120,7 +120,7 @@ export function NavigationSidebar() {
       <aside className="w-80 h-full bg-sidebar border-r border-sidebar-border flex flex-col">
         <div className="flex-1 overflow-y-auto p-4">
           <div className="text-center py-8">
-            <Users className="w-16 h-16 text-sidebar-foreground/30 mx-auto mb-4" />
+            <img src="https://images.pexels.com/photos/9069288/pexels-photo-9069288.jpeg" alt="Users" className="w-16 h-16 mx-auto mb-4 rounded object-cover opacity-30" />
             <h3 className="font-semibold text-sidebar-foreground mb-2">
               Sign in Required
             </h3>
