@@ -128,6 +128,7 @@ export default function AdminDashboard() {
   const [realTimeData, setRealTimeData] = useState<any>(null);
   const [liveActivity, setLiveActivity] = useState<RecentActivity[]>([]);
   const [lastActivityUpdate, setLastActivityUpdate] = useState(Date.now());
+  const abortControllerRef = useRef<AbortController | null>(null);
 
   useEffect(() => {
     if (!stats) {
@@ -262,6 +263,10 @@ export default function AdminDashboard() {
     return () => {
       clearInterval(metricsInterval);
       clearInterval(activityInterval);
+      // Abort any pending requests when component unmounts
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
     };
   }, [token]);
 
@@ -307,10 +312,19 @@ export default function AdminDashboard() {
 
     try {
       setIsLoading(true);
+
+      // Abort any existing request
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+
       const controller = new AbortController();
+      abortControllerRef.current = controller;
 
       // Set timeout for the entire operation
-      const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+      const timeoutId = setTimeout(() => {
+        controller.abort(new Error('Dashboard data loading timeout'));
+      }, 10000); // 10 second timeout
 
       try {
         const [statsRes, activityRes, metricsRes] = await Promise.allSettled([
