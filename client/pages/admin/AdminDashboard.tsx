@@ -128,12 +128,12 @@ export default function AdminDashboard() {
     }
     loadDashboardData();
 
-    // Set up real-time metrics updates every 15 seconds for better responsiveness
+    // Set up real-time metrics updates every 20 seconds with better error handling
     const metricsInterval = setInterval(async () => {
       if (token) {
         try {
           const controller = new AbortController();
-          const timeoutId = setTimeout(() => controller.abort(), 8000); // 8 second timeout for real-time updates
+          const timeoutId = setTimeout(() => controller.abort(), 12000); // Increased to 12 second timeout
 
           // Check for FullStory interference
           const isFullStoryBlocking = () => {
@@ -154,7 +154,7 @@ export default function AdminDashboard() {
               xhr.open('GET', '/api/admin/metrics/realtime');
               xhr.setRequestHeader('Authorization', `Bearer ${token}`);
               xhr.setRequestHeader('Content-Type', 'application/json');
-              xhr.timeout = 8000;
+              xhr.timeout = 12000; // Increased timeout
 
               xhr.onload = () => {
                 if (xhr.status >= 200 && xhr.status < 300) {
@@ -172,8 +172,18 @@ export default function AdminDashboard() {
                 }
               };
 
-              xhr.onerror = () => reject(new Error('Network error'));
-              xhr.ontimeout = () => reject(new Error('Request timeout'));
+              xhr.onerror = () => {
+                if (process.env.NODE_ENV === 'development') {
+                  console.warn('Real-time metrics XHR network error, skipping update');
+                }
+                resolve({ ok: false, status: 0, json: () => Promise.resolve({}) });
+              };
+              xhr.ontimeout = () => {
+                if (process.env.NODE_ENV === 'development') {
+                  console.warn('Real-time metrics XHR timeout, skipping update');
+                }
+                resolve({ ok: false, status: 408, json: () => Promise.resolve({}) });
+              };
               xhr.send();
             });
           } else {
