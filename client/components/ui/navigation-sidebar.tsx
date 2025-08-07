@@ -238,7 +238,7 @@ export function NavigationSidebar() {
               ))
             ) : (
               <div className="text-center py-4">
-                <Users className="w-8 h-8 text-sidebar-foreground/30 mx-auto mb-2" />
+                <img src="https://images.pexels.com/photos/9069288/pexels-photo-9069288.jpeg" alt="Users" className="w-8 h-8 mx-auto mb-2 rounded object-cover opacity-30" />
                 <p className="text-xs text-sidebar-foreground/70">
                   No friends online
                 </p>
