@@ -152,8 +152,17 @@ export function FriendsProvider({ children }: { children: React.ReactNode }) {
     return () => clearInterval(interval);
   }, [user, token, loadFriendsData]);
 
+  // Safe WebSocket event subscription helper
+  const safeUseWebSocketEvent = (event: string, callback: (data: any) => void) => {
+    try {
+      useWebSocketEvent(event as any, callback);
+    } catch (error) {
+      console.warn(`WebSocket event subscription failed for ${event}:`, error.message);
+    }
+  };
+
   // Subscribe to WebSocket friend events for real-time updates
-  useWebSocketEvent("friends:status_updated", useCallback((data) => {
+  safeUseWebSocketEvent("friends:status_updated", useCallback((data) => {
     if (!user) return;
 
     setFriends((prev) =>
