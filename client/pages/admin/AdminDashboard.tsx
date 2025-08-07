@@ -237,7 +237,16 @@ export default function AdminDashboard() {
             }
           }
         } catch (error) {
-          console.warn("Failed to fetch live activity:", error.message);
+          if (error.name === 'AbortError') {
+            // Timeout is expected behavior, just log in dev mode
+            if (process.env.NODE_ENV === 'development') {
+              console.warn("Live activity fetch timed out");
+            }
+          } else if (error.message?.includes('Failed to fetch')) {
+            console.warn("Network issue during live activity update, skipping this cycle");
+          } else {
+            console.warn("Failed to fetch live activity:", error.message);
+          }
         }
       }
     }, 10000);
