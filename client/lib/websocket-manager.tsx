@@ -316,15 +316,15 @@ export const useWebSocket = () => {
 };
 
 // Utility hook for subscribing to specific events
-export function useWebSocketEvent<K extends keyof WebSocketEvents>(
+export const useWebSocketEvent = <K extends keyof WebSocketEvents>(
   event: K,
   listener: EventListener<WebSocketEvents[K]>,
   deps: React.DependencyList = [],
-) {
+) => {
   const { subscribe } = useWebSocket();
 
   useEffect(() => {
     const unsubscribe = subscribe(event, listener);
     return unsubscribe;
   }, [subscribe, event, ...deps]);
-}
+};
