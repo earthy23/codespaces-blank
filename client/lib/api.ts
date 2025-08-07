@@ -148,7 +148,7 @@ const makeRequest = async (endpoint: string, options: RequestInit = {}) => {
 
         console.error(`🔍 Error message:`, errorMessage);
         if (errorData.details) {
-          console.error(`🔍 Validation details:`, errorData.details);
+          console.error(`��� Validation details:`, errorData.details);
         }
 
         throw new Error(errorMessage);
@@ -219,10 +219,11 @@ const makeRequest = async (endpoint: string, options: RequestInit = {}) => {
       // Check for FullStory or other third-party interference
       if (error.stack?.includes("fullstory.com")) {
         console.warn("⚠️ FullStory interference detected in fetch request");
-        throw new Error("Network request blocked by tracking software. Please try again or disable ad blockers.");
+        throw new Error("Network request blocked by tracking software. Please try refreshing the page.");
       }
 
-      throw new Error("Unable to connect to server - please check your internet connection");
+      // If fetch failed, suggest refreshing the page to clear any third-party interference
+      throw new Error("Network request failed. Please refresh the page and try again.");
     }
 
     // Re-throw the original error if it's already a proper Error object
@@ -523,7 +524,7 @@ if (typeof window !== "undefined") {
     })
     .catch((error) => {
       console.error("⚠️ API Health Check Failed:", error);
-      console.log("���� Check if the backend server is running on port 3000");
+      console.log("🔍 Check if the backend server is running on port 3000");
     });
 }
 
