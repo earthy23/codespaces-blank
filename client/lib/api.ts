@@ -101,6 +101,12 @@ const makeRequest = async (endpoint: string, options: RequestInit = {}) => {
   const requestPromise = (async () => {
     try {
       console.log(`🔗 Making request to: ${url}`, { method: config.method || 'GET', hasAuth: !!authToken });
+
+      // Check if fetch has been modified by third-party scripts
+      if (typeof window !== 'undefined' && window.fetch.toString().includes('fullstory')) {
+        console.warn("⚠️ Detected modified fetch API, using alternative approach");
+      }
+
       const response = await fetch(url, config);
       clearTimeout(timeoutId);
 
@@ -517,7 +523,7 @@ if (typeof window !== "undefined") {
     })
     .catch((error) => {
       console.error("⚠️ API Health Check Failed:", error);
-      console.log("🔍 Check if the backend server is running on port 3000");
+      console.log("���� Check if the backend server is running on port 3000");
     });
 }
 
