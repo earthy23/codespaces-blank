@@ -54,7 +54,6 @@ const navigationSections = [
         ),
         label: "Downloads",
         path: "/downloads",
-        description: "Get clients & files",
         iconColor: "text-primary",
         glow: "shadow-primary/50",
       },
