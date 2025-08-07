@@ -193,7 +193,9 @@ export default function AdminDashboard() {
           }
         } catch (error) {
           if (error.name === 'AbortError') {
-            console.warn("Metrics update timed out");
+            if (process.env.NODE_ENV === 'development') {
+              console.warn("Metrics update timed out");
+            }
             setConnectionStatus("degraded");
           } else if (error.message?.includes('Failed to fetch')) {
             console.warn("Network issue during metrics update, skipping this cycle");
@@ -210,9 +212,13 @@ export default function AdminDashboard() {
     // Set up live activity feed updates every 10 seconds
     const activityInterval = setInterval(async () => {
       if (token) {
+        let controller;
+        let timeoutId;
         try {
-          const controller = new AbortController();
-          const timeoutId = setTimeout(() => controller.abort(), 5000);
+          controller = new AbortController();
+          timeoutId = setTimeout(() => {
+            controller.abort(new Error('Request timeout'));
+          }, 5000);
 
           const response = await fetch(`/api/admin/activity/live?since=${lastActivityUpdate}&limit=10`, {
             headers: {
@@ -237,6 +243,8 @@ export default function AdminDashboard() {
             }
           }
         } catch (error) {
+          if (timeoutId) clearTimeout(timeoutId);
+
           if (error.name === 'AbortError') {
             // Timeout is expected behavior, just log in dev mode
             if (process.env.NODE_ENV === 'development') {
