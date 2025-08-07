@@ -372,7 +372,11 @@ export default function Friends() {
             ) : (
               <Card className="minecraft-panel bg-card/50 border-2 border-border shadow-lg">
                 <CardContent className="p-8 text-center">
-                  <Users className="w-16 h-16 mx-auto mb-4 opacity-50" />
+                  <svg viewBox="0 0 24 24" fill="none" className="w-16 h-16 mx-auto mb-4 opacity-50">
+                    <circle cx="9" cy="7" r="4" fill="currentColor"/>
+                    <path d="m3 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2" stroke="currentColor" strokeWidth="2" fill="none"/>
+                    <circle cx="16" cy="11" r="3" fill="currentColor" opacity="0.7"/>
+                  </svg>
                   <h3 className="text-xl font-semibold mb-2">No Friends Yet</h3>
                   <p className="text-muted-foreground mb-4">
                     Start building your network by adding friends!
