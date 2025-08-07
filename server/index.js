@@ -83,11 +83,10 @@ const authLimiter = rateLimit({
   legacyHeaders: false,
   // Skip rate limiting completely in development
   skip: (req) => {
-    // Skip all rate limiting in development mode
-    if (process.env.NODE_ENV !== "production") {
-      return true;
-    }
-    return false;
+    const isProduction = process.env.NODE_ENV === "production";
+    const shouldSkip = !isProduction;
+    console.log(`🔒 AuthLimiter: NODE_ENV=${process.env.NODE_ENV}, production=${isProduction}, skipping=${shouldSkip}, IP=${req.ip}`);
+    return shouldSkip;
   },
 });
 
