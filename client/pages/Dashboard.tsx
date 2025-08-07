@@ -42,19 +42,46 @@ export default function Dashboard() {
     const fetchDashboardData = async () => {
       try {
         // Fetch clients
-        const clientsResponse = await fetch("/api/clients");
-        const clientsData = await clientsResponse.json();
-        setClients(clientsData.clients || []);
+        try {
+          const clientsResponse = await fetch("/api/clients");
+          if (clientsResponse.ok) {
+            const clientsData = await clientsResponse.json();
+            setClients(clientsData.clients || []);
+          } else {
+            setClients([]);
+          }
+        } catch (error) {
+          console.warn("Failed to fetch clients:", error);
+          setClients([]);
+        }
 
         // Fetch top servers
-        const serversResponse = await fetch("/api/servers/top?limit=3");
-        const serversData = await serversResponse.json();
-        setTopServers(serversData.servers || []);
+        try {
+          const serversResponse = await fetch("/api/servers/top?limit=3");
+          if (serversResponse.ok) {
+            const serversData = await serversResponse.json();
+            setTopServers(serversData.servers || []);
+          } else {
+            setTopServers([]);
+          }
+        } catch (error) {
+          console.warn("Failed to fetch servers:", error);
+          setTopServers([]);
+        }
 
         // Fetch partners
-        const partnersResponse = await fetch("/api/admin/partners");
-        const partnersData = await partnersResponse.json();
-        setPartners(partnersData.partners || []);
+        try {
+          const partnersResponse = await fetch("/api/admin/partners");
+          if (partnersResponse.ok) {
+            const partnersData = await partnersResponse.json();
+            setPartners(partnersData.partners || []);
+          } else {
+            setPartners([]);
+          }
+        } catch (error) {
+          console.warn("Failed to fetch partners:", error);
+          setPartners([]);
+        }
       } catch (error) {
         console.error("Failed to fetch dashboard data:", error);
         setClients([]);
