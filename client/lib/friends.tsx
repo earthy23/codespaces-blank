@@ -6,19 +6,8 @@ import React, {
   useCallback,
 } from "react";
 import { useAuth } from "./auth";
+import { useWebSocket, useWebSocketEvent } from "./websocket-manager";
 import { cacheManager, CACHE_KEYS } from "./cache-manager";
-
-// Conditional WebSocket imports to prevent timing issues
-let useWebSocket: any = null;
-let useWebSocketEvent: any = null;
-
-try {
-  const webSocketModule = require("./websocket-manager");
-  useWebSocket = webSocketModule.useWebSocket;
-  useWebSocketEvent = webSocketModule.useWebSocketEvent;
-} catch (error) {
-  console.warn("WebSocket module not available:", error);
-}
 
 export interface Friend {
   id: string;
