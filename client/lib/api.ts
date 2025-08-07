@@ -2,6 +2,10 @@
 const API_BASE_URL = import.meta.env.VITE_API_URL || "/api";
 console.log(`🔧 API_BASE_URL configured as: ${API_BASE_URL}`);
 
+// Connection status tracking
+let lastSuccessfulRequest = Date.now();
+let consecutiveFailures = 0;
+
 // Request deduplication to prevent identical simultaneous requests
 const pendingRequests = new Map<string, Promise<any>>();
 
