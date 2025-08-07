@@ -536,7 +536,12 @@ export default function Servers() {
                 to="/dashboard"
                 className="inline-flex items-center text-muted-foreground hover:text-primary transition-colors"
               >
-                <Server className="w-4 h-4 mr-2" />
+                <svg viewBox="0 0 24 24" fill="none" className="w-4 h-4 mr-2">
+                  <rect x="3" y="4" width="18" height="2" rx="1" fill="currentColor"/>
+                  <rect x="3" y="8" width="18" height="2" rx="1" fill="currentColor"/>
+                  <rect x="3" y="12" width="18" height="2" rx="1" fill="currentColor"/>
+                  <rect x="2" y="16" width="20" height="6" rx="2" fill="currentColor" opacity="0.6"/>
+                </svg>
                 Back to Dashboard
               </Link>
               <div className="flex items-center space-x-3">
