@@ -359,18 +359,33 @@ const makeRequest = async (endpoint: string, options: RequestInit = {}) => {
     return await requestPromise;
   } catch (error) {
     clearTimeout(timeoutId);
-    console.error(`💥 Request failed for ${url}:`, error);
 
-    // Track consecutive failures
-    consecutiveFailures++;
-    console.log(`📊 Connection status: ${consecutiveFailures} consecutive failures, last success: ${Math.round((Date.now() - lastSuccessfulRequest) / 1000)}s ago`);
-    console.error(`🔍 Error details:`, JSON.stringify({
-      name: error?.name || "Unknown",
-      message: error?.message || "No message available",
-      timeout: timeoutMs,
-      errorType: typeof error,
-      hasStack: !!error?.stack,
-    }));
+    // Don't log aborted/cancelled requests as errors since they're often intentional
+    const isAbortedError = error.name === "AbortError" ||
+                          error.message?.includes("aborted") ||
+                          error.message?.includes("HTTP 0: Aborted") ||
+                          error.message?.includes("cancelled");
+
+    if (isAbortedError) {
+      if (process.env.NODE_ENV === 'development') {
+        console.warn(`⚠️ Request cancelled for ${url}: ${error.message}`);
+      }
+    } else {
+      console.error(`💥 Request failed for ${url}:`, error);
+      console.error(`🔍 Error details:`, JSON.stringify({
+        name: error?.name || "Unknown",
+        message: error?.message || "No message available",
+        timeout: timeoutMs,
+        errorType: typeof error,
+        hasStack: !!error?.stack,
+      }));
+    }
+
+    // Track consecutive failures (but not for aborted requests)
+    if (!isAbortedError) {
+      consecutiveFailures++;
+      console.log(`📊 Connection status: ${consecutiveFailures} consecutive failures, last success: ${Math.round((Date.now() - lastSuccessfulRequest) / 1000)}s ago`);
+    }
 
     // Clean up pending request on error
     if (requestKey) {
