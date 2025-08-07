@@ -125,6 +125,7 @@ export default function AdminDashboard() {
   const [lastMetricsUpdate, setLastMetricsUpdate] = useState(Date.now());
   const [timeRange, setTimeRange] = useState("24h");
   const [connectionStatus, setConnectionStatus] = useState<"connected" | "degraded" | "offline">("connected");
+  const [realTimeData, setRealTimeData] = useState<any>(null);
 
   useEffect(() => {
     if (!stats) {
@@ -146,12 +147,12 @@ export default function AdminDashboard() {
     }
     loadDashboardData();
 
-    // Set up real-time metrics updates every 30 seconds
+    // Set up real-time metrics updates every 15 seconds for better responsiveness
     const metricsInterval = setInterval(async () => {
       if (token) {
         try {
           const controller = new AbortController();
-          const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout for real-time updates
+          const timeoutId = setTimeout(() => controller.abort(), 8000); // 8 second timeout for real-time updates
 
           const response = await fetch("/api/admin/metrics/realtime", {
             headers: {
@@ -166,8 +167,24 @@ export default function AdminDashboard() {
           if (response.ok) {
             const data = await response.json();
             setSystemMetrics(data.metrics);
+            setRealTimeData(data.metrics);
             setLastMetricsUpdate(Date.now());
             setConnectionStatus("connected");
+
+            // Update live stats if we have real-time user data
+            if (data.metrics.userActivity) {
+              setStats(prevStats => {
+                if (prevStats) {
+                  return {
+                    ...prevStats,
+                    totalUsers: data.metrics.userActivity.totalUsers,
+                    activeUsers: data.metrics.userActivity.activeUsers,
+                    activeSessions: data.metrics.activeConnections,
+                  };
+                }
+                return prevStats;
+              });
+            }
           } else {
             console.warn("Metrics update failed, keeping previous data");
             setConnectionStatus("degraded");
@@ -186,7 +203,7 @@ export default function AdminDashboard() {
           // Don't update lastMetricsUpdate on error to show the data is stale
         }
       }
-    }, 30000);
+    }, 15000);
 
     return () => clearInterval(metricsInterval);
   }, [token]);
@@ -472,8 +489,13 @@ export default function AdminDashboard() {
                 </Badge>
               )}
               <Badge className="text-xs bg-blue-600 text-white">
-                Auto-refresh: 30s
+                Auto-refresh: 15s
               </Badge>
+              {realTimeData && (
+                <Badge className="text-xs bg-purple-600 text-white">
+                  {realTimeData.requestsPerMinute || 0} req/min
+                </Badge>
+              )}
               <Badge
                 className={`text-xs ${
                   connectionStatus === "connected"
@@ -782,22 +804,39 @@ export default function AdminDashboard() {
                   <Progress value={systemMetrics?.system?.network || 34} className="bg-gray-700" />
                 </div>
 
-                {/* Real-time Status */}
-                <div className="text-xs text-gray-500 mt-2">
-                  Last updated: {new Date(lastMetricsUpdate).toLocaleTimeString()}
+                {/* Real-time Status with enhanced info */}
+                <div className="flex justify-between items-center text-xs text-gray-500 mt-2">
+                  <span>Last updated: {new Date(lastMetricsUpdate).toLocaleTimeString()}</span>
+                  {realTimeData && (
+                    <div className="flex space-x-2">
+                      <span>Uptime: {Math.floor((realTimeData.uptime || 0) / 3600)}h</span>
+                      <span>Mem: {realTimeData.memoryUsage?.used || 0}MB</span>
+                    </div>
+                  )}
                 </div>
 
                 {/* Performance Chart */}
                 <div className="mt-4">
                   <ResponsiveContainer width="100%" height={150}>
-                    <LineChart data={dashboardData?.systemPerformance?.performanceHistory || [
+                    <LineChart data={(dashboardData?.systemPerformance?.performanceHistory || [
                       { time: "00:00", cpu: 15, memory: 45, network: 20 },
                       { time: "04:00", cpu: 25, memory: 52, network: 35 },
                       { time: "08:00", cpu: 45, memory: 68, network: 55 },
                       { time: "12:00", cpu: 35, memory: 72, network: 40 },
                       { time: "16:00", cpu: 28, memory: 65, network: 38 },
-                      { time: "20:00", cpu: 23, memory: 67, network: 34 },
-                    ]}>
+                      { time: "20:00", cpu: systemMetrics?.system?.cpu || 23, memory: systemMetrics?.system?.memory || 67, network: systemMetrics?.system?.network || 34 },
+                    ]).map((item, index, array) => {
+                      // Add real-time data point as the latest entry
+                      if (index === array.length - 1 && realTimeData) {
+                        return {
+                          ...item,
+                          cpu: realTimeData.system?.cpu || item.cpu,
+                          memory: realTimeData.system?.memory || item.memory,
+                          network: realTimeData.system?.network || item.network
+                        };
+                      }
+                      return item;
+                    })}>
                       <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
                       <XAxis dataKey="time" stroke="#9ca3af" />
                       <YAxis stroke="#9ca3af" />
