@@ -51,7 +51,16 @@ const FriendsContext = createContext<FriendsContextType | undefined>(undefined);
 
 export function FriendsProvider({ children }: { children: React.ReactNode }) {
   const { user, token } = useAuth();
-  const { isConnected, getOnlineUsers } = useWebSocket();
+
+  // Safe WebSocket access with error handling
+  let webSocketContext = null;
+  try {
+    webSocketContext = useWebSocket();
+  } catch (error) {
+    console.warn("WebSocket not available in FriendsProvider:", error.message);
+  }
+
+  const { isConnected = false, getOnlineUsers = () => [] } = webSocketContext || {};
 
   const [friends, setFriends] = useState<Friend[]>(() =>
     user ? cacheManager.get(CACHE_KEYS.USER_FRIENDS(user.id)) || [] : [],
