@@ -290,7 +290,7 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
     try {
       setIsLoading(true);
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 8000); // 8 second timeout
+      const timeoutId = setTimeout(() => controller.abort(), 10000); // Increased to 10 second timeout
 
       try {
         const response = await makeRequest("/api/chat", {
@@ -311,15 +311,29 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
         }
       } catch (fetchError) {
         clearTimeout(timeoutId);
+
+        // Handle different types of errors gracefully
+        if (fetchError.name === 'AbortError' || fetchError.message?.includes('aborted')) {
+          if (process.env.NODE_ENV === 'development') {
+            console.warn("Chat loading aborted/timed out, keeping existing data");
+          }
+          return; // Exit gracefully without throwing
+        }
         throw fetchError;
       }
     } catch (error) {
-      if (error.name === 'AbortError') {
-        console.warn("Chat loading timed out, keeping existing data");
+      if (error.name === 'AbortError' || error.message?.includes('aborted')) {
+        if (process.env.NODE_ENV === 'development') {
+          console.warn("Chat loading aborted, keeping existing data");
+        }
       } else if (error.message?.includes('Failed to fetch')) {
-        console.warn("Network issue loading chats, keeping existing data");
+        if (process.env.NODE_ENV === 'development') {
+          console.warn("Network issue loading chats, keeping existing data");
+        }
       } else {
-        console.error("Error loading chats:", error);
+        if (process.env.NODE_ENV === 'development') {
+          console.warn("Error loading chats:", error.message || error);
+        }
       }
       // Don't clear existing chats on error, keep current state
     } finally {
