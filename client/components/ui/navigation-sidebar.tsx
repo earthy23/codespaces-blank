@@ -1,18 +1,5 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  Gamepad2,
-  Users,
-  MessageCircle,
-  Newspaper,
-  Calendar,
-  ShoppingBag,
-  Download,
-  User,
-  HelpCircle,
-  MessageSquare,
-  Server,
-} from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "@/lib/auth";
 import { useFriends } from "@/lib/friends";
