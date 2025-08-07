@@ -175,10 +175,13 @@ export default function AdminDashboard() {
         } catch (error) {
           if (error.name === 'AbortError') {
             console.warn("Metrics update timed out");
+            setConnectionStatus("degraded");
           } else if (error.message?.includes('Failed to fetch')) {
             console.warn("Network issue during metrics update, skipping this cycle");
+            setConnectionStatus("offline");
           } else {
             console.error("Error updating real-time metrics:", error);
+            setConnectionStatus("degraded");
           }
           // Don't update lastMetricsUpdate on error to show the data is stale
         }
