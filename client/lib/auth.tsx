@@ -94,8 +94,21 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     } catch (error) {
       console.error("Failed to refresh user:", error);
 
-      tokenManager.clear();
-      setUser(null);
+      // More graceful handling of network errors
+      if (error instanceof Error && error.message.includes("Network error")) {
+        console.warn("🌐 Network connectivity issue during user refresh - keeping current session");
+        // Don't clear tokens on network errors, just log and continue
+        // This prevents users from being logged out due to temporary connectivity issues
+      } else if (error instanceof Error && error.message.includes("Authentication required")) {
+        console.log("🔐 Authentication required - clearing session");
+        tokenManager.clear();
+        setUser(null);
+      } else {
+        console.error("🔧 Unexpected error during user refresh:", error.message);
+        // For unexpected errors, be conservative and clear the session
+        tokenManager.clear();
+        setUser(null);
+      }
     } finally {
       setLoading(false);
     }
