@@ -115,6 +115,12 @@ export const WebSocketManagerProvider = ({
       if (process.env.NODE_ENV === 'development') {
         console.log("🔌 Connecting to WebSocket:", wsUrl);
       }
+
+      // Close existing connection if any
+      if (wsRef.current) {
+        wsRef.current.close();
+      }
+
       wsRef.current = new WebSocket(wsUrl);
 
       wsRef.current.onopen = () => {
