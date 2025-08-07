@@ -211,10 +211,13 @@ export const WebSocketManagerProvider = ({
         };
 
         if (process.env.NODE_ENV === "development") {
-          console.error("❌ WebSocket error:", JSON.stringify(errorInfo));
+          console.warn("⚠️ WebSocket error (will attempt reconnect):", JSON.stringify(errorInfo));
         } else {
-          console.error("❌ WebSocket connection error occurred");
+          console.warn("⚠️ WebSocket connection error, attempting reconnect...");
         }
+
+        // Mark as disconnected for reconnection logic
+        setIsConnected(false);
       };
     } catch (error) {
       console.error("❌ WebSocket connection setup error:", JSON.stringify({
