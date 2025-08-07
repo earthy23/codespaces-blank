@@ -241,6 +241,8 @@ router.post(
         userAgent: req.get("User-Agent"),
       });
 
+      console.log(`✅ Login completed successfully in ${Date.now() - startTime}ms`);
+
       res.json({
         message: "Login successful",
         token,
