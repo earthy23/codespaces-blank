@@ -20,6 +20,7 @@ import forumsRoutes from "./api/forums.js";
 import chatRoutes from "./api/chat.js";
 import friendsRoutes from "./api/friends.js";
 import storeRoutes from "./api/store.js";
+import publicRoutes from "./api/public.js";
 
 // Import utilities
 import { logActivity } from "./utils/logger.js";
