@@ -53,13 +53,6 @@ router.get("/dashboard/stats", requireAuth, requireAdmin, async (req, res) => {
         { day: "Sun", registrations: Math.floor(Math.random() * 12) + 8, activeSessions: Math.floor(Math.random() * 20) + 55, logins: Math.floor(Math.random() * 60) + 150 },
       ],
 
-      revenueData: [
-        { month: "Jul", vip: 850, vipPlus: 420, legend: 180, total: 1450 },
-        { month: "Aug", vip: 920, vipPlus: 480, legend: 220, total: 1620 },
-        { month: "Sep", vip: 1100, vipPlus: 520, legend: 280, total: 1900 },
-        { month: "Oct", vip: 950, vipPlus: 580, legend: 320, total: 1850 },
-        { month: "Nov", vip: 1450, vipPlus: 520, legend: 220, total: 2190 },
-      ],
 
       systemPerformance: {
         cpu: 23,
