@@ -260,6 +260,19 @@ export default function AdminDashboard() {
 
         clearTimeout(timeoutId);
 
+        // Check overall connection status
+        const successCount = [statsRes, activityRes, metricsRes].filter(
+          (res) => res.status === 'fulfilled' && res.value.ok
+        ).length;
+
+        if (successCount === 3) {
+          setConnectionStatus("connected");
+        } else if (successCount >= 1) {
+          setConnectionStatus("degraded");
+        } else {
+          setConnectionStatus("offline");
+        }
+
         // Handle stats response
         if (statsRes.status === 'fulfilled' && statsRes.value.ok) {
           const statsData = await statsRes.value.json();
