@@ -27,6 +27,7 @@ import { logActivity } from "./utils/logger.js";
 import ChatWebSocketServer from "./websocket.js";
 import { createServer as createHTTPServer } from "http";
 import { createDefaultAdmin } from "./models/User.js";
+import { startPeriodicStatusChecks } from "./utils/server-status.js";
 
 // Load environment variables
 dotenv.config();
