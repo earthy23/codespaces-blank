@@ -302,13 +302,11 @@ export default function Downloads() {
         <Card className="minecraft-panel mt-8 bg-card border-2 border-border shadow-lg">
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
-              <div className="w-8 h-8 rounded-lg bg-card border border-primary/50 flex items-center justify-center shadow-lg shadow-primary/20">
-                <svg viewBox="0 0 24 24" fill="none" className="w-5 h-5 text-primary drop-shadow-[0_0_4px_currentColor]">
-                  <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" fill="none"/>
-                  <path d="M12 16v-4" stroke="currentColor" strokeWidth="2" fill="none"/>
-                  <path d="M12 8h.01" stroke="currentColor" strokeWidth="2" fill="none"/>
-                </svg>
-              </div>
+              <svg viewBox="0 0 24 24" fill="none" className="w-6 h-6 text-primary">
+                <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" fill="none"/>
+                <path d="M12 16v-4" stroke="currentColor" strokeWidth="2" fill="none"/>
+                <path d="M12 8h.01" stroke="currentColor" strokeWidth="2" fill="none"/>
+              </svg>
               <span>Download Information</span>
             </CardTitle>
           </CardHeader>
