@@ -417,15 +417,35 @@ class ChatWebSocketServer {
 
   // Health check - remove dead connections
   heartbeat() {
-    this.wss.clients.forEach((ws) => {
-      if (!ws.isAlive) {
-        this.handleDisconnection(ws);
-        return ws.terminate();
-      }
+    // Check main WebSocket server
+    if (this.wss && this.wss.clients) {
+      this.wss.clients.forEach((ws) => {
+        if (!ws.isAlive) {
+          this.handleDisconnection(ws);
+          return ws.terminate();
+        }
 
-      ws.isAlive = false;
-      ws.ping();
-    });
+        ws.isAlive = false;
+        if (ws.readyState === 1) { // WebSocket.OPEN
+          ws.ping();
+        }
+      });
+    }
+
+    // Check chat WebSocket server
+    if (this.chatWss && this.chatWss.clients) {
+      this.chatWss.clients.forEach((ws) => {
+        if (!ws.isAlive) {
+          this.handleDisconnection(ws);
+          return ws.terminate();
+        }
+
+        ws.isAlive = false;
+        if (ws.readyState === 1) { // WebSocket.OPEN
+          ws.ping();
+        }
+      });
+    }
   }
 
   // Start heartbeat interval
