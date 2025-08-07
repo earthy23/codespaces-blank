@@ -378,19 +378,32 @@ const makeRequest = async (endpoint: string, options: RequestInit = {}) => {
     }
 
     // Handle AbortError (timeout or manual abort)
-    if (error.name === "AbortError" || error.message?.includes("aborted")) {
+    if (error.name === "AbortError" || error.message?.includes("aborted") || error.message?.includes("HTTP 0: Aborted")) {
       const isOurTimeout = (controller as any)._isOurTimeout?.() || false;
 
       if (isOurTimeout) {
         const timeoutSeconds = Math.round(timeoutMs / 1000);
-        console.warn(`⚠️ Request timeout for ${url} after ${timeoutSeconds}s`);
+        if (process.env.NODE_ENV === 'development') {
+          console.warn(`⚠️ Request timeout for ${url} after ${timeoutSeconds}s`);
+        }
         throw new Error(
           `Request timed out after ${timeoutSeconds} seconds. Please try again.`,
         );
       } else {
-        console.warn(`⚠️ Request cancelled for ${url} (not due to timeout)`);
+        if (process.env.NODE_ENV === 'development') {
+          console.warn(`⚠️ Request cancelled for ${url} (likely due to navigation or component unmount)`);
+        }
         throw new Error("Request was cancelled. Please try again.");
       }
+    }
+
+    // Handle status 0 errors specifically (from XMLHttpRequest fallback)
+    if (error.message?.includes("HTTP 0:")) {
+      if (process.env.NODE_ENV === 'development') {
+        console.warn(`⚠️ XMLHttpRequest status 0 error for ${url}: ${error.message}`);
+      }
+      // Don't throw these errors as they're usually due to navigation or component unmounting
+      throw new Error("Request was interrupted. Please try again.");
     }
 
     // Handle network connectivity issues with retry logic
