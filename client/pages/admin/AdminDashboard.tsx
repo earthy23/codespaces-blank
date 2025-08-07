@@ -124,6 +124,7 @@ export default function AdminDashboard() {
   const [systemMetrics, setSystemMetrics] = useState<any>(null);
   const [lastMetricsUpdate, setLastMetricsUpdate] = useState(Date.now());
   const [timeRange, setTimeRange] = useState("24h");
+  const [connectionStatus, setConnectionStatus] = useState<"connected" | "degraded" | "offline">("connected");
 
   useEffect(() => {
     if (!stats) {
