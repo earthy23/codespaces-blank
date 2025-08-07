@@ -171,7 +171,7 @@ export default function Servers() {
       }
 
       console.log(
-        "��� fetchMyServers: Prerequisites met, making API request...",
+        "✅ fetchMyServers: Prerequisites met, making API request...",
       );
       const data = await serversApi.getMyServers();
       console.log(
@@ -946,7 +946,10 @@ export default function Servers() {
                           {server.ownerId !== user?.id &&
                             currentView !== "my" && (
                               <div className="flex items-center space-x-1 text-xs text-muted-foreground mt-2">
-                                <Crown className="w-3 h-3" />
+                                <svg viewBox="0 0 24 24" fill="none" className="w-3 h-3">
+                                  <path d="M5 12h14l-5-7v4.5z" fill="currentColor"/>
+                                  <path d="M5 12h14v7l-7-2-7 2v-7z" fill="currentColor" opacity="0.8"/>
+                                </svg>
                                 <span>Owner: {server.ownerName}</span>
                               </div>
                             )}
