@@ -49,7 +49,7 @@ interface FriendsContextType {
 
 const FriendsContext = createContext<FriendsContextType | undefined>(undefined);
 
-export function FriendsProvider({ children }: { children: React.ReactNode }) {
+export const FriendsProvider = ({ children }: { children: React.ReactNode }) => {
   const { user, token } = useAuth();
   const { isConnected, getOnlineUsers } = useWebSocket();
 
@@ -435,7 +435,7 @@ export function FriendsProvider({ children }: { children: React.ReactNode }) {
       {children}
     </FriendsContext.Provider>
   );
-}
+};
 
 export const useFriends = () => {
   const context = useContext(FriendsContext);
