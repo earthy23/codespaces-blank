@@ -190,7 +190,7 @@ export default function Downloads() {
                           className="w-full minecraft-button bg-primary text-primary-foreground hover:bg-primary/90 shadow-lg hover:shadow-primary/30"
                           onClick={() => handlePlayOnline(client.webUrl)}
                         >
-                          <ExternalLink className="w-4 h-4 mr-2" />
+                          <img src="https://images.pexels.com/photos/4225229/pexels-photo-4225229.jpeg" alt="Play" className="w-4 h-4 mr-2 rounded object-cover" />
                           Play Online
                         </Button>
                         <Button
@@ -200,7 +200,7 @@ export default function Downloads() {
                             handleDownload(client.id, client.downloadUrl)
                           }
                         >
-                          <Download className="w-4 h-4 mr-2" />
+                          <img src="https://images.pexels.com/photos/7794018/pexels-photo-7794018.jpeg" alt="Download" className="w-4 h-4 mr-2 rounded object-cover" />
                           Download Client
                         </Button>
                       </div>
