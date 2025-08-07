@@ -138,6 +138,7 @@ app.use("/api/forums", forumsRoutes);
 app.use("/api/chat", chatRoutes);
 app.use("/api/friends", friendsRoutes);
 app.use("/api/store", storeRoutes);
+app.use("/api/public", publicRoutes);
 
 // Health check endpoint
 app.get("/api/health", (req, res) => {
