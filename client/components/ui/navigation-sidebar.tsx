@@ -87,7 +87,6 @@ const navigationSections = [
         ),
         label: "Chat",
         path: "/chat",
-        description: "Chat with friends",
         iconColor: "text-primary",
         glow: "shadow-primary/50",
       },
