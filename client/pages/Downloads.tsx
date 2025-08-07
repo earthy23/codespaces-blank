@@ -250,7 +250,7 @@ export default function Downloads() {
                           handleDownload(tool.name, tool.downloadUrl)
                         }
                       >
-                        <Download className="w-4 h-4 mr-2" />
+                        <img src="https://images.pexels.com/photos/7794018/pexels-photo-7794018.jpeg" alt="Download" className="w-4 h-4 mr-2 rounded object-cover" />
                         Download
                       </Button>
                     </div>
