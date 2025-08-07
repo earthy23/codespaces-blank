@@ -213,11 +213,11 @@ export const WebSocketManagerProvider = ({
         }
       };
     } catch (error) {
-      console.error("❌ WebSocket connection setup error:", {
+      console.error("❌ WebSocket connection setup error:", JSON.stringify({
         message: error.message,
         type: error.name,
         timestamp: new Date().toISOString(),
-      });
+      }));
       setIsConnected(false);
     }
   }, [user, token]);
