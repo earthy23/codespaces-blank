@@ -231,7 +231,7 @@ export default function AdminDashboard() {
 
     // Set up live activity feed updates every 30 seconds with robust error handling
     const activityInterval = setInterval(async () => {
-      if (!token) return;
+      if (!token || !user) return;
 
       let controller;
       let timeoutId;
