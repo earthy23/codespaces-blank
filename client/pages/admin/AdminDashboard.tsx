@@ -427,11 +427,16 @@ export default function AdminDashboard() {
                 {formatCurrency(stats?.monthlyRevenue || 0)}
               </div>
               <p className="text-xs text-gray-400">
-                <span className="text-white font-medium">+18.0%</span> from last
+                <span className="text-green-400 font-medium">+12.4%</span> from last
                 month
               </p>
               <div className="mt-3">
-                <MiniAreaChart data={revenueData} color="#10b981" />
+                <MiniAreaChart data={[
+                  { day: "W1", value: 420 },
+                  { day: "W2", value: 580 },
+                  { day: "W3", value: 650 },
+                  { day: "W4", value: stats?.monthlyRevenue || 540 },
+                ]} color="#10b981" />
               </div>
             </CardContent>
           </Card>
