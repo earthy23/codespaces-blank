@@ -50,14 +50,14 @@ interface RecentActivity {
 }
 
 // Enhanced chart components using Recharts
-const MiniLineChart = ({ data, color = "#000000" }: { data: any[]; color?: string }) => (
+const MiniLineChart = ({ data, color = "#ffffff" }: { data: any[]; color?: string }) => (
   <ResponsiveContainer width="100%" height={60}>
     <LineChart data={data}>
       <Line
         type="monotone"
         dataKey="value"
         stroke={color}
-        strokeWidth={2}
+        strokeWidth={3}
         dot={false}
         activeDot={{ r: 4, fill: color }}
       />
@@ -65,7 +65,7 @@ const MiniLineChart = ({ data, color = "#000000" }: { data: any[]; color?: strin
   </ResponsiveContainer>
 );
 
-const MiniAreaChart = ({ data, color = "#000000" }: { data: any[]; color?: string }) => (
+const MiniAreaChart = ({ data, color = "#ffffff" }: { data: any[]; color?: string }) => (
   <ResponsiveContainer width="100%" height={60}>
     <AreaChart data={data}>
       <Area
@@ -73,16 +73,16 @@ const MiniAreaChart = ({ data, color = "#000000" }: { data: any[]; color?: strin
         dataKey="value"
         stroke={color}
         fill={color}
-        fillOpacity={0.3}
+        fillOpacity={0.4}
       />
     </AreaChart>
   </ResponsiveContainer>
 );
 
-const MiniBarChart = ({ data, color = "#000000" }: { data: any[]; color?: string }) => (
+const MiniBarChart = ({ data, color = "#ffffff" }: { data: any[]; color?: string }) => (
   <ResponsiveContainer width="100%" height={60}>
     <BarChart data={data}>
-      <Bar dataKey="value" fill={color} radius={[2, 2, 0, 0]} />
+      <Bar dataKey="value" fill={color} radius={[2, 2, 0, 0]} stroke={color} strokeWidth={1} />
     </BarChart>
   </ResponsiveContainer>
 );
@@ -543,7 +543,7 @@ export default function AdminDashboard() {
                 new today
               </p>
               <div className="mt-3">
-                <MiniLineChart data={userGrowthData} color="#000000" />
+                <MiniLineChart data={userGrowthData} color="#ffffff" />
               </div>
             </CardContent>
           </Card>
@@ -562,7 +562,7 @@ export default function AdminDashboard() {
                 {stats?.activeUsers || 0} users online
               </p>
               <div className="mt-3">
-                <MiniBarChart data={activityData} color="#000000" />
+                <MiniBarChart data={activityData} color="#ffffff" />
               </div>
             </CardContent>
           </Card>
@@ -583,11 +583,11 @@ export default function AdminDashboard() {
                     <span className="text-gray-600">Daily Registrations</span>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <div className="w-3 h-3 bg-gray-600 rounded"></div>
+                    <div className="w-3 h-3 bg-gray-500 rounded"></div>
                     <span className="text-gray-600">Active Sessions</span>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <div className="w-3 h-3 bg-gray-400 rounded"></div>
+                    <div className="w-3 h-3 bg-gray-300 rounded"></div>
                     <span className="text-gray-600">Login Events</span>
                   </div>
                 </div>
@@ -626,17 +626,17 @@ export default function AdminDashboard() {
                     type="monotone"
                     dataKey="logins"
                     stackId="1"
-                    stroke="#9ca3af"
-                    fill="#9ca3af"
-                    fillOpacity={0.3}
+                    stroke="#d1d5db"
+                    fill="#d1d5db"
+                    fillOpacity={0.4}
                     name="Login Events"
                   />
                   <Area
                     type="monotone"
                     dataKey="activeSessions"
                     stackId="2"
-                    stroke="#6b7280"
-                    fill="#6b7280"
+                    stroke="#9ca3af"
+                    fill="#9ca3af"
                     fillOpacity={0.6}
                     name="Active Sessions"
                   />
