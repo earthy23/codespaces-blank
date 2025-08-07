@@ -369,18 +369,31 @@ export default function AdminDashboard() {
                   {onlineUsersCount} online
                 </Badge>
               )}
+              <Badge className="text-xs bg-blue-600 text-white">
+                Auto-refresh: 30s
+              </Badge>
             </div>
           </div>
-          <Button
-            onClick={loadDashboardData}
-            className="bg-white text-black hover:bg-gray-200"
-            disabled={isLoading}
-          >
-            <RefreshCw
-              className={`w-4 h-4 mr-2 ${isLoading ? "animate-spin" : ""}`}
-            />
-            Refresh
-          </Button>
+          <div className="flex items-center space-x-3">
+            {/* Time Range Filter */}
+            <select className="bg-gray-800 text-white border border-gray-600 rounded px-3 py-2 text-sm">
+              <option value="1h">Last Hour</option>
+              <option value="24h" selected>Last 24 Hours</option>
+              <option value="7d">Last 7 Days</option>
+              <option value="30d">Last 30 Days</option>
+            </select>
+
+            <Button
+              onClick={loadDashboardData}
+              className="bg-white text-black hover:bg-gray-200"
+              disabled={isLoading}
+            >
+              <RefreshCw
+                className={`w-4 h-4 mr-2 ${isLoading ? "animate-spin" : ""}`}
+              />
+              Refresh
+            </Button>
+          </div>
         </div>
 
         {/* Key Stats */}
