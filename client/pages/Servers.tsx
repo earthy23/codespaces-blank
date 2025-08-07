@@ -180,7 +180,7 @@ export default function Servers() {
       );
       setMyServers(data.servers || []);
     } catch (error) {
-      console.error("�� fetchMyServers: Failed to fetch my servers:", error);
+      console.error("❌ fetchMyServers: Failed to fetch my servers:", error);
 
       // Only show toast for non-authentication errors
       if (!error.message.includes("Authentication required")) {
@@ -733,7 +733,11 @@ export default function Servers() {
                           Cancel
                         </Button>
                         <Button type="submit">
-                          <Upload className="w-4 h-4 mr-2" />
+                          <svg viewBox="0 0 24 24" fill="none" className="w-4 h-4 mr-2">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" stroke="currentColor" strokeWidth="2" fill="none"/>
+                            <polyline points="17,8 12,3 7,8" stroke="currentColor" strokeWidth="2" fill="none"/>
+                            <line x1="12" y1="3" x2="12" y2="15" stroke="currentColor" strokeWidth="2"/>
+                          </svg>
                           Add Server
                         </Button>
                       </DialogFooter>
