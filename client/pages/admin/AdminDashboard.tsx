@@ -571,15 +571,15 @@ export default function AdminDashboard() {
         {/* Enhanced Analytics Section */}
         <div className="grid grid-cols-1 gap-6">
           {/* User Growth Analytics */}
-          <Card className="bg-white border-gray-300">
+          <Card className="bg-white border-black">
             <CardHeader>
               <CardTitle className="flex items-center justify-between">
                 <div className="flex items-center space-x-2">
-                  <span className="text-gray-900">User Activity & Growth</span>
+                  <span className="text-black">User Activity & Growth</span>
                 </div>
                 <div className="flex items-center space-x-4 text-sm">
                   <div className="flex items-center space-x-2">
-                    <div className="w-3 h-3 bg-gray-500 rounded"></div>
+                    <div className="w-3 h-3 bg-black rounded"></div>
                     <span className="text-gray-600">Daily Registrations</span>
                   </div>
                   <div className="flex items-center space-x-2">
@@ -587,7 +587,7 @@ export default function AdminDashboard() {
                     <span className="text-gray-600">Active Sessions</span>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <div className="w-3 h-3 bg-gray-700 rounded"></div>
+                    <div className="w-3 h-3 bg-gray-400 rounded"></div>
                     <span className="text-gray-600">Login Events</span>
                   </div>
                 </div>
@@ -595,7 +595,7 @@ export default function AdminDashboard() {
               <CardDescription className="text-gray-600">
                 Real-time user engagement metrics and registration trends
                 {dashboardData?.userGrowthData && (
-                  <span className="ml-2 text-gray-700">• Live data</span>
+                  <span className="ml-2 text-black">• Live data</span>
                 )}
               </CardDescription>
             </CardHeader>
@@ -610,13 +610,13 @@ export default function AdminDashboard() {
                   { day: "Sat", registrations: stats?.newUsersToday || 0, activeSessions: stats?.activeSessions || 0, logins: (stats?.totalMessages || 0) },
                   { day: "Sun", registrations: stats?.newUsersToday || 0, activeSessions: stats?.activeSessions || 0, logins: (stats?.totalMessages || 0) },
                 ]}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#d1d5db" />
-                  <XAxis dataKey="day" stroke="#6b7280" />
-                  <YAxis stroke="#6b7280" />
+                  <CartesianGrid strokeDasharray="3 3" stroke="#000000" />
+                  <XAxis dataKey="day" stroke="#000000" />
+                  <YAxis stroke="#000000" />
                   <Tooltip
                     contentStyle={{
                       backgroundColor: "#ffffff",
-                      border: "1px solid #d1d5db",
+                      border: "1px solid #000000",
                       borderRadius: "8px"
                     }}
                     formatter={(value, name) => [value, name]}
@@ -626,8 +626,8 @@ export default function AdminDashboard() {
                     type="monotone"
                     dataKey="logins"
                     stackId="1"
-                    stroke="#6b7280"
-                    fill="#6b7280"
+                    stroke="#9ca3af"
+                    fill="#9ca3af"
                     fillOpacity={0.3}
                     name="Login Events"
                   />
@@ -635,8 +635,8 @@ export default function AdminDashboard() {
                     type="monotone"
                     dataKey="activeSessions"
                     stackId="2"
-                    stroke="#9ca3af"
-                    fill="#9ca3af"
+                    stroke="#6b7280"
+                    fill="#6b7280"
                     fillOpacity={0.6}
                     name="Active Sessions"
                   />
@@ -644,8 +644,8 @@ export default function AdminDashboard() {
                     type="monotone"
                     dataKey="registrations"
                     stackId="3"
-                    stroke="#4b5563"
-                    fill="#4b5563"
+                    stroke="#000000"
+                    fill="#000000"
                     fillOpacity={0.8}
                     name="New Registrations"
                   />
@@ -659,31 +659,31 @@ export default function AdminDashboard() {
         {/* System Status Cards */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
-          <Card className="bg-white border-gray-300">
+          <Card className="bg-white border-black">
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
-                <span className="text-gray-900">Support Overview</span>
+                <span className="text-black">Support Overview</span>
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex items-center justify-between">
                 <span className="text-sm text-gray-600">Total Tickets</span>
-                <span className="font-bold text-gray-900">
+                <span className="font-bold text-black">
                   {stats?.supportTickets || 0}
                 </span>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-sm text-gray-600">Pending Tickets</span>
-                <Badge className="bg-gray-600 text-white">
+                <Badge className="bg-black text-white">
                   {stats?.pendingTickets || 0}
                 </Badge>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-sm text-gray-600">Response Rate</span>
-                <span className="font-bold text-gray-900">98.7%</span>
+                <span className="font-bold text-black">98.7%</span>
               </div>
               <div className="pt-2">
-                <Button className="w-full bg-gray-900 text-white hover:bg-gray-800">
+                <Button className="w-full bg-black text-white hover:bg-gray-800">
                   Manage Support
                 </Button>
               </div>
@@ -695,10 +695,10 @@ export default function AdminDashboard() {
         {/* Real-time System Performance */}
         <div className="grid grid-cols-1 gap-6">
           {/* System Performance Metrics */}
-          <Card className="bg-white border-gray-300">
+          <Card className="bg-white border-black">
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
-                <span className="text-gray-900">System Performance</span>
+                <span className="text-black">System Performance</span>
               </CardTitle>
               <CardDescription className="text-gray-600">
                 Real-time server metrics and performance indicators
@@ -710,7 +710,7 @@ export default function AdminDashboard() {
                 <div>
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-sm text-gray-600">CPU Usage</span>
-                    <span className="text-sm font-medium text-gray-900">
+                    <span className="text-sm font-medium text-black">
                       {systemMetrics?.system?.cpu || 23}%
                     </span>
                   </div>
@@ -721,7 +721,7 @@ export default function AdminDashboard() {
                 <div>
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-sm text-gray-600">Memory Usage</span>
-                    <span className="text-sm font-medium text-gray-900">
+                    <span className="text-sm font-medium text-black">
                       {systemMetrics?.system?.memory || 67}%
                     </span>
                   </div>
@@ -732,7 +732,7 @@ export default function AdminDashboard() {
                 <div>
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-sm text-gray-600">Network I/O</span>
-                    <span className="text-sm font-medium text-gray-900">
+                    <span className="text-sm font-medium text-black">
                       {systemMetrics?.system?.network || 34}%
                     </span>
                   </div>
