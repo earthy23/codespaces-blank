@@ -107,7 +107,6 @@ const navigationSections = [
         ),
         label: "News",
         path: "/news",
-        description: "Latest updates",
         iconColor: "text-primary",
         glow: "shadow-primary/50",
       },
