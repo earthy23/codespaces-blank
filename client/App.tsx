@@ -51,96 +51,98 @@ import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <AuthProvider>
-      <WebSocketManagerProvider>
-        <FriendsProvider>
-          <StoreProvider>
-            <ChatProvider>
-              <NewsProvider>
-                <LoggingProvider>
-                  <TooltipProvider>
-                    <Toaster />
-                    <Sonner />
-                    <BrowserRouter>
-                      <Routes>
-                        {/* Landing and Auth Routes */}
-                        <Route path="/" element={<Index />} />
-                        <Route path="/login" element={<Login />} />
-                        <Route path="/register" element={<Register />} />
-                        <Route
-                          path="/reset-password"
-                          element={<ResetPassword />}
-                        />
-                        <Route
-                          path="/force-password-change"
-                          element={<ForcePasswordChange />}
-                        />
+function App() {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <AuthProvider>
+        <WebSocketManagerProvider>
+          <FriendsProvider>
+            <StoreProvider>
+              <ChatProvider>
+                <NewsProvider>
+                  <LoggingProvider>
+                    <TooltipProvider>
+                      <Toaster />
+                      <Sonner />
+                      <BrowserRouter>
+                        <Routes>
+                          {/* Landing and Auth Routes */}
+                          <Route path="/" element={<Index />} />
+                          <Route path="/login" element={<Login />} />
+                          <Route path="/register" element={<Register />} />
+                          <Route
+                            path="/reset-password"
+                            element={<ResetPassword />}
+                          />
+                          <Route
+                            path="/force-password-change"
+                            element={<ForcePasswordChange />}
+                          />
 
-                        {/* Main App Routes */}
-                        <Route path="/dashboard" element={<Dashboard />} />
-                        <Route path="/chat" element={<Chat />} />
-                        <Route path="/chat/:chatId" element={<Chat />} />
-                        <Route path="/friends" element={<Friends />} />
-                        <Route path="/store" element={<Store />} />
-                        <Route path="/support" element={<Support />} />
-                        <Route path="/downloads" element={<Downloads />} />
-                        <Route path="/forums" element={<Forums />} />
-                        <Route path="/profile" element={<Profile />} />
-                        <Route path="/news" element={<News />} />
-                        <Route path="/servers" element={<Servers />} />
+                          {/* Main App Routes */}
+                          <Route path="/dashboard" element={<Dashboard />} />
+                          <Route path="/chat" element={<Chat />} />
+                          <Route path="/chat/:chatId" element={<Chat />} />
+                          <Route path="/friends" element={<Friends />} />
+                          <Route path="/store" element={<Store />} />
+                          <Route path="/support" element={<Support />} />
+                          <Route path="/downloads" element={<Downloads />} />
+                          <Route path="/forums" element={<Forums />} />
+                          <Route path="/profile" element={<Profile />} />
+                          <Route path="/news" element={<News />} />
+                          <Route path="/servers" element={<Servers />} />
 
-                        {/* Info Pages */}
-                        <Route path="/about" element={<About />} />
-                        <Route path="/terms" element={<Terms />} />
-                        <Route path="/privacy" element={<Privacy />} />
-                        <Route path="/partners" element={<Partners />} />
+                          {/* Info Pages */}
+                          <Route path="/about" element={<About />} />
+                          <Route path="/terms" element={<Terms />} />
+                          <Route path="/privacy" element={<Privacy />} />
+                          <Route path="/partners" element={<Partners />} />
 
-                        {/* Admin Routes */}
-                        <Route path="/admin" element={<AdminDashboard />} />
-                        <Route
-                          path="/admin/clients"
-                          element={<ClientsAdmin />}
-                        />
-                        <Route path="/admin/store" element={<StoreAdmin />} />
-                        <Route path="/admin/users" element={<UsersAdmin />} />
-                        <Route path="/admin/logs" element={<LogsAdmin />} />
-                        <Route
-                          path="/admin/analytics"
-                          element={<AnalyticsAdmin />}
-                        />
-                        <Route
-                          path="/admin/chat"
-                          element={<ChatReviewAdmin />}
-                        />
-                        <Route path="/admin/news" element={<NewsAdmin />} />
-                        <Route path="/admin/events" element={<EventsAdmin />} />
-                        <Route
-                          path="/admin/servers"
-                          element={<ServersAdmin />}
-                        />
-                        <Route path="/admin/ui-editor" element={<UIEditor />} />
-                        <Route
-                          path="/admin/domains"
-                          element={<DomainsAdmin />}
-                        />
-                        <Route path="/admin/email" element={<EmailAdmin />} />
+                          {/* Admin Routes */}
+                          <Route path="/admin" element={<AdminDashboard />} />
+                          <Route
+                            path="/admin/clients"
+                            element={<ClientsAdmin />}
+                          />
+                          <Route path="/admin/store" element={<StoreAdmin />} />
+                          <Route path="/admin/users" element={<UsersAdmin />} />
+                          <Route path="/admin/logs" element={<LogsAdmin />} />
+                          <Route
+                            path="/admin/analytics"
+                            element={<AnalyticsAdmin />}
+                          />
+                          <Route
+                            path="/admin/chat"
+                            element={<ChatReviewAdmin />}
+                          />
+                          <Route path="/admin/news" element={<NewsAdmin />} />
+                          <Route path="/admin/events" element={<EventsAdmin />} />
+                          <Route
+                            path="/admin/servers"
+                            element={<ServersAdmin />}
+                          />
+                          <Route path="/admin/ui-editor" element={<UIEditor />} />
+                          <Route
+                            path="/admin/domains"
+                            element={<DomainsAdmin />}
+                          />
+                          <Route path="/admin/email" element={<EmailAdmin />} />
 
-                        {/* Catch-all route */}
-                        <Route path="*" element={<NotFound />} />
-                      </Routes>
-                    </BrowserRouter>
-                  </TooltipProvider>
-                </LoggingProvider>
-              </NewsProvider>
-            </ChatProvider>
-          </StoreProvider>
-        </FriendsProvider>
-      </WebSocketManagerProvider>
-    </AuthProvider>
-  </QueryClientProvider>
-);
+                          {/* Catch-all route */}
+                          <Route path="*" element={<NotFound />} />
+                        </Routes>
+                      </BrowserRouter>
+                    </TooltipProvider>
+                  </LoggingProvider>
+                </NewsProvider>
+              </ChatProvider>
+            </StoreProvider>
+          </FriendsProvider>
+        </WebSocketManagerProvider>
+      </AuthProvider>
+    </QueryClientProvider>
+  );
+}
 
 const container = document.getElementById("root")!;
 
@@ -152,3 +154,5 @@ if (!(container as any)._reactRoot) {
 } else {
   (container as any)._reactRoot.render(<App />);
 }
+
+export default App;
