@@ -204,7 +204,16 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
         setIsConnected(false);
       };
     } catch (error) {
-      console.error("Error connecting to WebSocket:", error);
+      if (process.env.NODE_ENV === "development") {
+        console.warn("❌ Chat WebSocket connection setup error:", {
+          message: error?.message || "Unknown error",
+          type: error?.name || "Unknown",
+          timestamp: new Date().toISOString(),
+        });
+      } else {
+        console.warn("❌ Chat WebSocket connection failed, will retry");
+      }
+      setIsConnected(false);
     }
   }, [user, token]);
 
