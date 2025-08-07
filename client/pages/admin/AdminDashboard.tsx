@@ -130,7 +130,7 @@ export default function AdminDashboard() {
 
     // Set up real-time metrics updates every 30 seconds with robust error handling
     const metricsInterval = setInterval(async () => {
-      if (!token) return;
+      if (!token || !user) return;
 
       try {
         const controller = new AbortController();
