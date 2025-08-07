@@ -115,8 +115,20 @@ const makeRequest = async (endpoint: string, options: RequestInit = {}) => {
         }));
 
         console.error(`❌ API Error for ${url}:`, errorData);
-        const errorMessage = errorData.error || errorData.message || `HTTP ${response.status}: ${response.statusText}`;
+
+        let errorMessage = errorData.error || errorData.message || `HTTP ${response.status}: ${response.statusText}`;
+
+        // Include validation details if available
+        if (errorData.details && Array.isArray(errorData.details)) {
+          const validationErrors = errorData.details.map(detail => detail.msg || detail.message).join(', ');
+          errorMessage = `${errorMessage}: ${validationErrors}`;
+        }
+
         console.error(`🔍 Error message:`, errorMessage);
+        if (errorData.details) {
+          console.error(`🔍 Validation details:`, errorData.details);
+        }
+
         throw new Error(errorMessage);
       }
 
