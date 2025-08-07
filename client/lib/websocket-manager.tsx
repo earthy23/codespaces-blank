@@ -86,11 +86,11 @@ const WebSocketManagerContext = createContext<WebSocketManagerContextType>(
   defaultContextValue
 );
 
-export function WebSocketManagerProvider({
+export const WebSocketManagerProvider = ({
   children,
 }: {
   children: React.ReactNode;
-}) {
+}) => {
   const [isConnected, setIsConnected] = useState(false);
   const [onlineUsers, setOnlineUsers] = useState<Set<string>>(new Set());
   const [userStatuses, setUserStatuses] = useState<
@@ -308,7 +308,7 @@ export function WebSocketManagerProvider({
       {children}
     </WebSocketManagerContext.Provider>
   );
-}
+};
 
 export const useWebSocket = () => {
   const context = useContext(WebSocketManagerContext);
