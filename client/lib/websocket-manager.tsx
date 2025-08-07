@@ -339,11 +339,11 @@ export const WebSocketManagerProvider = ({
       try {
         connect();
       } catch (error) {
-        console.error("❌ WebSocket connection initiation error:", {
+        console.error("❌ WebSocket connection initiation error:", JSON.stringify({
           message: error?.message || "Unknown error",
           type: error?.name || "Unknown",
           timestamp: new Date().toISOString(),
-        });
+        }));
       }
     }
 
