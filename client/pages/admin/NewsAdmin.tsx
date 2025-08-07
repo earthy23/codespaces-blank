@@ -28,16 +28,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { AdminLayout } from "@/components/ui/admin-layout";
-import {
-  Newspaper,
-  Plus,
-  Edit,
-  Trash2,
-  Eye,
-  RefreshCw,
-  Calendar,
-  User,
-} from "lucide-react";
+// SVG icons removed as requested
 import { useAuth } from "@/lib/auth";
 
 interface NewsArticle {

@@ -11,17 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { AdminLayout } from "@/components/ui/admin-layout";
-import {
-  Settings,
-  Save,
-  RefreshCw,
-  Server,
-  Mail,
-  Shield,
-  Globe,
-  MessageCircle,
-  Users,
-} from "lucide-react";
+// SVG icons removed as requested
 import { useAuth } from "@/lib/auth";
 
 interface SystemSettings {

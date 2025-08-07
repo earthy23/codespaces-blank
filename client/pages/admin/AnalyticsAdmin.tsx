@@ -10,19 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
 import { AdminLayout } from "@/components/ui/admin-layout";
-import {
-  Users,
-  DollarSign,
-  MessageCircle,
-  Activity,
-  TrendingUp,
-  Calendar,
-  ShoppingBag,
-  RefreshCw,
-  BarChart3,
-  Server,
-  Zap,
-} from "lucide-react";
+// SVG icons removed as requested
 import { useAuth } from "@/lib/auth";
 import { useEffect, useState } from "react";
 
