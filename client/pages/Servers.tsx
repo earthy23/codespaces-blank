@@ -316,6 +316,16 @@ export default function Servers() {
       formData.append("version", newServerData.version);
       formData.append("banner", bannerFile);
 
+      console.log("🔄 Submitting server data:", {
+        name: newServerData.name,
+        description: newServerData.description,
+        ip: newServerData.ip,
+        category: newServerData.category,
+        version: newServerData.version,
+        bannerSize: bannerFile.size,
+        bannerType: bannerFile.type
+      });
+
       const data = await serversApi.add(formData);
 
       setServers([...servers, data.server]);
