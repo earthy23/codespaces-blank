@@ -245,7 +245,7 @@ export default function AdminDashboard() {
       }
     }, 20000); // Increased interval to 20 seconds
 
-    // Set up live activity feed updates every 10 seconds
+    // Set up live activity feed updates every 15 seconds with better error handling
     const activityInterval = setInterval(async () => {
       if (token) {
         let controller;
@@ -254,7 +254,7 @@ export default function AdminDashboard() {
           controller = new AbortController();
           timeoutId = setTimeout(() => {
             controller.abort(new Error('Request timeout'));
-          }, 5000);
+          }, 8000); // Increased timeout
 
           // Check for FullStory interference
           const isFullStoryBlocking = () => {
