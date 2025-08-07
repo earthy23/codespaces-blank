@@ -5,9 +5,13 @@ import { fileURLToPath } from "url";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Use the same database instance
-const dbPath = path.join(__dirname, "../data/uec.db");
+// Use the same database as the auth system
+const dataDir = path.join(process.cwd(), "data");
+const dbPath = path.join(dataDir, "uec_launcher.db");
 const db = new Database(dbPath);
+
+// Enable foreign keys for data integrity
+db.pragma("foreign_keys = ON");
 
 // Create clients table if it doesn't exist
 db.exec(`
