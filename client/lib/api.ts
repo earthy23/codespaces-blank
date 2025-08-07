@@ -189,6 +189,17 @@ const makeRequest = async (endpoint: string, options: RequestInit = {}) => {
 
     // Handle other network errors
     if (error.message.includes("Failed to fetch")) {
+      console.error("Fetch failure details:");
+      console.error(`  URL: ${url}`);
+      console.error(`  Error message: ${error.message}`);
+      console.error(`  Error stack: ${error.stack}`);
+
+      // Check for FullStory or other third-party interference
+      if (error.stack?.includes("fullstory.com")) {
+        console.warn("⚠️ FullStory interference detected in fetch request");
+        throw new Error("Network request blocked by tracking software. Please try again or disable ad blockers.");
+      }
+
       throw new Error("Unable to connect to server - please check your internet connection");
     }
 
