@@ -262,10 +262,10 @@ export function LoggingProvider({ children }: { children: React.ReactNode }) {
   );
 }
 
-export function useLogging() {
+export const useLogging = () => {
   const context = useContext(LoggingContext);
   if (context === undefined) {
     throw new Error('useLogging must be used within a LoggingProvider');
   }
   return context;
-}
+};
