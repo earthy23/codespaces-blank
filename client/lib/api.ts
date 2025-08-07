@@ -481,8 +481,18 @@ export const serversApi = {
     }
   },
 
-  getMyServers: async () => {
-    return await makeRequest("/servers/my-servers");
+  getMyServers: async (retryCount = 0) => {
+    try {
+      return await makeRequest("/servers/my-servers");
+    } catch (error) {
+      // Retry once if it's a timeout error and we haven't retried yet
+      if (retryCount === 0 && error.message.includes("timed out")) {
+        console.log("🔄 Retrying getMyServers request due to timeout...");
+        await new Promise(resolve => setTimeout(resolve, 1000)); // Wait 1 second
+        return serversApi.getMyServers(1); // Retry once
+      }
+      throw error;
+    }
   },
 
   getById: async (serverId: string) => {
