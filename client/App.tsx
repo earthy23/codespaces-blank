@@ -34,18 +34,9 @@ import Terms from "./pages/Terms";
 import Privacy from "./pages/Privacy";
 import Partners from "./pages/Partners";
 import AdminDashboard from "./pages/admin/AdminDashboard";
-import ClientsAdmin from "./pages/admin/ClientsAdmin";
-import StoreAdmin from "./pages/admin/StoreAdmin";
 import UsersAdmin from "./pages/admin/UsersAdmin";
 import LogsAdmin from "./pages/admin/LogsAdmin";
 import AnalyticsAdmin from "./pages/admin/AnalyticsAdmin";
-import ChatReviewAdmin from "./pages/admin/ChatReviewAdmin";
-import NewsAdmin from "./pages/admin/NewsAdmin";
-import EventsAdmin from "./pages/admin/EventsAdmin";
-import ServersAdmin from "./pages/admin/ServersAdmin";
-import UIEditor from "./pages/admin/UIEditor";
-import DomainsAdmin from "./pages/admin/DomainsAdmin";
-import EmailAdmin from "./pages/admin/EmailAdmin";
 
 import NotFound from "./pages/NotFound";
 
@@ -98,35 +89,11 @@ function App() {
                           <Route path="/privacy" element={<Privacy />} />
                           <Route path="/partners" element={<Partners />} />
 
-                          {/* Admin Routes */}
+                          {/* Admin Routes - Essential Pages Only */}
                           <Route path="/admin" element={<AdminDashboard />} />
-                          <Route
-                            path="/admin/clients"
-                            element={<ClientsAdmin />}
-                          />
-                          <Route path="/admin/store" element={<StoreAdmin />} />
                           <Route path="/admin/users" element={<UsersAdmin />} />
                           <Route path="/admin/logs" element={<LogsAdmin />} />
-                          <Route
-                            path="/admin/analytics"
-                            element={<AnalyticsAdmin />}
-                          />
-                          <Route
-                            path="/admin/chat"
-                            element={<ChatReviewAdmin />}
-                          />
-                          <Route path="/admin/news" element={<NewsAdmin />} />
-                          <Route path="/admin/events" element={<EventsAdmin />} />
-                          <Route
-                            path="/admin/servers"
-                            element={<ServersAdmin />}
-                          />
-                          <Route path="/admin/ui-editor" element={<UIEditor />} />
-                          <Route
-                            path="/admin/domains"
-                            element={<DomainsAdmin />}
-                          />
-                          <Route path="/admin/email" element={<EmailAdmin />} />
+                          <Route path="/admin/analytics" element={<AnalyticsAdmin />} />
 
                           {/* Catch-all route */}
                           <Route path="*" element={<NotFound />} />
