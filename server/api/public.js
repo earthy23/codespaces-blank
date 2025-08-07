@@ -223,7 +223,7 @@ router.get('/categories', async (req, res) => {
  */
 router.get('/stats', async (req, res) => {
   try {
-    const { servers: allServers } = await getServersData();
+    const { servers: allServers } = getServersData();
     
     const stats = {
       totalServers: allServers.length,
