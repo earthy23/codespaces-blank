@@ -235,8 +235,8 @@ export default function Dashboard() {
           <Card className="minecraft-panel mb-8">
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
-                <div className="w-8 h-8 rounded-lg bg-card border border-primary/50 flex items-center justify-center shadow-lg shadow-primary/20">
-                  <Server className="w-5 h-5 text-primary drop-shadow-[0_0_4px_currentColor]" />
+                <div className="w-8 h-8 rounded-lg bg-card border border-primary/50 flex items-center justify-center shadow-lg shadow-primary/20 overflow-hidden">
+                  <img src="https://images.pexels.com/photos/343457/pexels-photo-343457.jpeg" alt="Servers" className="w-full h-full object-cover" />
                 </div>
                 <span>Popular Servers</span>
               </CardTitle>
