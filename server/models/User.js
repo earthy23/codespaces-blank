@@ -93,7 +93,9 @@ const createInitialAdmin = () => {
     .get("admin");
 
   if (!existingAdmin) {
-    const hashedPassword = bcrypt.hashSync("admin123", 12);
+    // Use lower salt rounds in development for better performance
+    const saltRounds = process.env.NODE_ENV === 'production' ? 12 : 8;
+    const hashedPassword = bcrypt.hashSync("admin123", saltRounds);
     const adminId = `admin-${Date.now()}`;
 
     db.prepare(
