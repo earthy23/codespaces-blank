@@ -61,15 +61,9 @@ const limiter = rateLimit({
   message: "Too many requests from this IP, please try again later.",
   standardHeaders: true,
   legacyHeaders: false,
-  // Skip rate limiting for localhost in development
+  // Skip rate limiting in development mode completely
   skip: (req) => {
-    const isProduction = process.env.NODE_ENV === "production";
-    const isLocalhost = req.ip === "127.0.0.1" || req.ip === "::1" || req.ip === "::ffff:127.0.0.1";
-    const shouldSkip = !isProduction && isLocalhost;
-    if (req.url.includes('/auth/')) {
-      console.log(`🔒 GeneralLimiter: NODE_ENV=${process.env.NODE_ENV}, production=${isProduction}, localhost=${isLocalhost}, skipping=${shouldSkip}, IP=${req.ip}, URL=${req.url}`);
-    }
-    return shouldSkip;
+    return process.env.NODE_ENV !== "production";
   },
 });
 
