@@ -1161,7 +1161,9 @@ export default function Servers() {
           <AlertDialogContent>
             <AlertDialogHeader>
               <AlertDialogTitle className="flex items-center space-x-2">
-                <Trash2 className="w-5 h-5 text-red-500" />
+                <svg viewBox="0 0 24 24" fill="none" className="w-5 h-5 text-red-500">
+                  <path d="M3 6h18m-2 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" stroke="currentColor" strokeWidth="2" fill="none"/>
+                </svg>
                 <span>Delete Your Server</span>
               </AlertDialogTitle>
               <AlertDialogDescription>
@@ -1172,7 +1174,10 @@ export default function Servers() {
                   </p>
                   <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
                     <div className="flex items-center space-x-2 text-red-600 text-sm">
-                      <Crown className="w-4 h-4" />
+                      <svg viewBox="0 0 24 24" fill="none" className="w-4 h-4">
+                        <path d="M5 12h14l-5-7v4.5z" fill="currentColor"/>
+                        <path d="M5 12h14v7l-7-2-7 2v-7z" fill="currentColor" opacity="0.8"/>
+                      </svg>
                       <span className="font-medium">Server Owner:</span>
                       <span>{serverToDelete?.ownerName}</span>
                     </div>
