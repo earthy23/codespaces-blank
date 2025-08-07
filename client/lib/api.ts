@@ -180,7 +180,10 @@ const makeRequest = async (endpoint: string, options: RequestInit = {}) => {
 
     // Handle network connectivity issues
     if (error instanceof TypeError && error.message.includes("fetch")) {
-      console.error("Network error details:", { url, error: error.message });
+      console.error("Network error details:");
+      console.error(`  URL: ${url}`);
+      console.error(`  Error: ${error.message}`);
+      console.error(`  Stack: ${error.stack}`);
       throw new Error("Network error - please check your connection and try again");
     }
 
