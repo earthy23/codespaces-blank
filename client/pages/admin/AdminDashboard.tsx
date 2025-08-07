@@ -378,7 +378,7 @@ export default function AdminDashboard() {
                 month
               </p>
               <div className="mt-3">
-                <MiniChart data={revenueData} />
+                <MiniAreaChart data={revenueData} color="#10b981" />
               </div>
             </CardContent>
           </Card>
