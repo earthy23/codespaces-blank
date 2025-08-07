@@ -207,7 +207,7 @@ export const WebSocketManagerProvider = ({
         };
 
         if (process.env.NODE_ENV === "development") {
-          console.error("❌ WebSocket error:", errorInfo);
+          console.error("❌ WebSocket error:", JSON.stringify(errorInfo));
         } else {
           console.error("❌ WebSocket connection error occurred");
         }
