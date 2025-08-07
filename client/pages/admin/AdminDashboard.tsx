@@ -309,8 +309,8 @@ export default function AdminDashboard() {
     }
   };
 
-  // Enhanced chart data with proper structure for Recharts
-  const userGrowthData = [
+  // Enhanced chart data with proper structure for Recharts - use API data when available
+  const userGrowthData = dashboardData?.userGrowthData || [
     { day: "Mon", value: 23 },
     { day: "Tue", value: 19 },
     { day: "Wed", value: 27 },
@@ -320,7 +320,7 @@ export default function AdminDashboard() {
     { day: "Sun", value: 23 },
   ];
 
-  const revenueData = [
+  const revenueData = dashboardData?.revenueData || [
     { month: "Jul", value: 1654 },
     { month: "Aug", value: 1789 },
     { month: "Sep", value: 1923 },
@@ -338,7 +338,7 @@ export default function AdminDashboard() {
     { day: "Sun", value: 167 },
   ];
 
-  const serverStatusData = [
+  const serverStatusData = dashboardData?.serverStatusHistory || [
     { day: "Mon", value: 99.9 },
     { day: "Tue", value: 99.8 },
     { day: "Wed", value: 99.7 },
