@@ -221,9 +221,6 @@ export function NavigationSidebar() {
                         >
                           {item.label}
                         </p>
-                        <p className="text-xs text-sidebar-foreground/70">
-                          {item.description}
-                        </p>
                       </div>
                       {isActive && (
                         <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
