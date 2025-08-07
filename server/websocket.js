@@ -62,7 +62,7 @@ class ChatWebSocketServer {
         const message = JSON.parse(data.toString());
         this.handleMessage(ws, message);
       } catch (error) {
-        console.error("WebSocket message parsing error:", error);
+        console.error("WebSocket message parsing error:", error.message || error);
         ws.send(
           JSON.stringify({
             type: "error",
