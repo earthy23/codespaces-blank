@@ -200,6 +200,11 @@ const makeRequest = async (endpoint: string, options: RequestInit = {}) => {
 
       const data = await response.json();
       console.log(`✅ Success for ${url}`);
+
+      // Track successful request
+      lastSuccessfulRequest = Date.now();
+      consecutiveFailures = 0;
+
       return data;
     } finally {
       // Always clean up the pending request
