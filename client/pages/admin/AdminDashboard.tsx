@@ -318,14 +318,6 @@ export default function AdminDashboard() {
     { day: "Sun", value: 23 },
   ];
 
-  const revenueData = dashboardData?.revenueData || [
-    { month: "Jul", value: 1654 },
-    { month: "Aug", value: 1789 },
-    { month: "Sep", value: 1923 },
-    { month: "Oct", value: 1856 },
-    { month: "Nov", value: 2190 },
-  ];
-
   const activityData = [
     { day: "Mon", value: 156 },
     { day: "Tue", value: 143 },
