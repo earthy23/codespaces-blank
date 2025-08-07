@@ -453,9 +453,9 @@ export default function AnalyticsAdmin() {
               size="sm"
               disabled={isLoading}
             >
-              <RefreshCw
-                className={`w-4 h-4 mr-2 ${isLoading ? "animate-spin" : ""}`}
-              />
+              <span className={`mr-2 ${isLoading ? "animate-spin" : ""}`}>
+                {isLoading ? "↻" : "↻"}
+              </span>
               Refresh
             </Button>
           </div>

@@ -200,13 +200,13 @@ export default function LogsAdmin() {
   const getLevelIcon = (level: string) => {
     switch (level) {
       case "error":
-        return <AlertCircle className="w-4 h-4 text-red-400" />;
+        return <span className="w-4 h-4 text-red-400">❌</span>;
       case "warning":
-        return <AlertTriangle className="w-4 h-4 text-yellow-400" />;
+        return <span className="w-4 h-4 text-yellow-400">⚠️</span>;
       case "success":
-        return <CheckCircle className="w-4 h-4 text-green-400" />;
+        return <span className="w-4 h-4 text-green-400">✅</span>;
       default:
-        return <Info className="w-4 h-4 text-blue-400" />;
+        return <span className="w-4 h-4 text-blue-400">ℹ️</span>;
     }
   };
 
@@ -243,7 +243,7 @@ export default function LogsAdmin() {
               onClick={exportLogs}
               className="bg-gray-700 text-white hover:bg-gray-600"
             >
-              <Download className="w-4 h-4 mr-2" />
+              <span className="mr-2">⬇️</span>
               Export
             </Button>
             <Button
@@ -251,9 +251,9 @@ export default function LogsAdmin() {
               className="bg-white text-black hover:bg-gray-200"
               disabled={isLoading}
             >
-              <RefreshCw
-                className={`w-4 h-4 mr-2 ${isLoading ? "animate-spin" : ""}`}
-              />
+              <span className={`mr-2 ${isLoading ? "animate-spin" : ""}`}>
+                {isLoading ? "↻" : "↻"}
+              </span>
               Refresh
             </Button>
           </div>

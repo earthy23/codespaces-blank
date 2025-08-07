@@ -115,9 +115,9 @@ export default function SettingsAdmin() {
               className="bg-gray-700 text-white hover:bg-gray-600"
               disabled={isLoading}
             >
-              <RefreshCw
-                className={`w-4 h-4 mr-2 ${isLoading ? "animate-spin" : ""}`}
-              />
+              <span className={`mr-2 ${isLoading ? "animate-spin" : ""}`}>
+                {isLoading ? "↻" : "↻"}
+              </span>
               Refresh
             </Button>
             <Button
@@ -125,9 +125,9 @@ export default function SettingsAdmin() {
               className="bg-white text-black hover:bg-gray-200"
               disabled={isSaving}
             >
-              <Save
-                className={`w-4 h-4 mr-2 ${isSaving ? "animate-spin" : ""}`}
-              />
+              <span className={`mr-2 ${isSaving ? "animate-spin" : ""}`}>
+                {isSaving ? "↻" : "💾"}
+              </span>
               Save Changes
             </Button>
           </div>

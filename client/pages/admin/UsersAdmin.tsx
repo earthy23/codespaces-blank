@@ -239,9 +239,9 @@ export default function UsersAdmin() {
             className="bg-white text-black hover:bg-gray-200"
             disabled={isLoading}
           >
-            <RefreshCw
-              className={`w-4 h-4 mr-2 ${isLoading ? "animate-spin" : ""}`}
-            />
+            <span className={`mr-2 ${isLoading ? "animate-spin" : ""}`}>
+              {isLoading ? "↻" : "↻"}
+            </span>
             Refresh
           </Button>
         </div>
