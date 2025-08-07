@@ -28,7 +28,7 @@ import {
 import { useAuth } from "@/lib/auth";
 import { useWebSocket, useWebSocketEvent } from "@/lib/websocket-manager";
 import { cacheManager, CACHE_KEYS } from "@/lib/cache-manager";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Link } from "react-router-dom";
 import {
   LineChart,
