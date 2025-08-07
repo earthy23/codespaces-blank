@@ -34,9 +34,25 @@ const makeRequest = async (endpoint: string, options: RequestInit = {}) => {
     headers.Authorization = `Bearer ${authToken}`;
   }
 
-  // Add timeout to all requests (5 seconds for API calls)
+  // Dynamic timeout based on endpoint type
+  let timeoutMs = 5000; // Default 5 seconds
+
+  // Longer timeout for server operations that may involve connectivity tests
+  if (endpoint.includes("/servers")) {
+    timeoutMs = 15000; // 15 seconds for server operations
+  }
+
+  // Longer timeout for file uploads
+  if (options.method === "POST" && options.body instanceof FormData) {
+    timeoutMs = 30000; // 30 seconds for file uploads
+  }
+
+  // Add timeout to requests
   const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 5000);
+  const timeoutId = setTimeout(() => {
+    console.warn(`⏰ Request timeout after ${timeoutMs}ms for ${url}`);
+    controller.abort();
+  }, timeoutMs);
 
   const config: RequestInit = {
     ...options,
