@@ -224,7 +224,7 @@ export default function Friends() {
               </span>
             </div>
             <div className="flex items-center space-x-2">
-              <Users className="w-5 h-5 text-primary" />
+              <img src="https://images.pexels.com/photos/9069288/pexels-photo-9069288.jpeg" alt="Friends" className="w-5 h-5 rounded object-cover" />
               <span className="text-sm font-medium">
                 {friends.length} Friends
               </span>
