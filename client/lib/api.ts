@@ -154,6 +154,12 @@ const makeRequest = async (endpoint: string, options: RequestInit = {}) => {
 
         let errorMessage = errorData.error || errorData.message || `HTTP ${response.status}: ${response.statusText}`;
 
+        // Handle rate limiting errors specifically
+        if (response.status === 429) {
+          const retryAfter = errorData.retryAfter || "a few minutes";
+          errorMessage = `Too many requests. Please wait ${retryAfter} before trying again.`;
+        }
+
         // Include validation details if available
         if (errorData.details && Array.isArray(errorData.details)) {
           const validationErrors = errorData.details.map(detail => detail.msg || detail.message).join(', ');
