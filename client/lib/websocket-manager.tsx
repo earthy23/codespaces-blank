@@ -238,7 +238,7 @@ export const WebSocketManagerProvider = ({
         console.error("❌ WebSocket auth error:", {
           message: data?.message || "Unknown auth error",
           data: data,
-          timestamp: new Date().toISOString()
+          timestamp: new Date().toISOString(),
         });
         break;
 
@@ -275,7 +275,7 @@ export const WebSocketManagerProvider = ({
           message: error?.message || "Unknown error",
           type: error?.name || "Unknown",
           listenerType: type,
-          timestamp: new Date().toISOString()
+          timestamp: new Date().toISOString(),
         });
       }
     });
@@ -342,7 +342,7 @@ export const WebSocketManagerProvider = ({
         console.error("❌ WebSocket connection initiation error:", {
           message: error?.message || "Unknown error",
           type: error?.name || "Unknown",
-          timestamp: new Date().toISOString()
+          timestamp: new Date().toISOString(),
         });
       }
     }

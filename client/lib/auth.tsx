@@ -79,11 +79,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     password: string,
   ): Promise<boolean> => {
     try {
-      if (process.env.NODE_ENV === 'development') {
+      if (process.env.NODE_ENV === "development") {
         console.log("🔐 AuthProvider: Starting login...");
       }
       const response = await authApi.login(username, password);
-      if (process.env.NODE_ENV === 'development') {
+      if (process.env.NODE_ENV === "development") {
         console.log("🔐 AuthProvider: Login API response:", {
           hasUser: !!response.user,
           username: response.user?.username,
@@ -92,7 +92,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       }
 
       setUser(response.user);
-      if (process.env.NODE_ENV === 'development') {
+      if (process.env.NODE_ENV === "development") {
         console.log(
           "🔐 AuthProvider: User state set to:",
           response.user?.username,
