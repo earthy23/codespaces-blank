@@ -242,22 +242,37 @@ export default function Friends() {
               value="friends"
               className="flex items-center space-x-2"
             >
-              <Users className="w-4 h-4" />
+              <svg viewBox="0 0 24 24" fill="none" className="w-4 h-4">
+                <circle cx="9" cy="7" r="4" fill="currentColor"/>
+                <path d="m3 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2" stroke="currentColor" strokeWidth="2" fill="none"/>
+                <circle cx="16" cy="11" r="3" fill="currentColor" opacity="0.7"/>
+              </svg>
               <span>Friends ({friends.length})</span>
             </TabsTrigger>
             <TabsTrigger
               value="requests"
               className="flex items-center space-x-2"
             >
-              <Clock className="w-4 h-4" />
+              <svg viewBox="0 0 24 24" fill="none" className="w-4 h-4">
+                <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" fill="none"/>
+                <polyline points="12,6 12,12 16,14" stroke="currentColor" strokeWidth="2" fill="none"/>
+              </svg>
               <span>Requests ({friendRequests.length})</span>
             </TabsTrigger>
             <TabsTrigger value="sent" className="flex items-center space-x-2">
-              <UserPlus className="w-4 h-4" />
+              <svg viewBox="0 0 24 24" fill="none" className="w-4 h-4">
+                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" stroke="currentColor" strokeWidth="2" fill="none"/>
+                <circle cx="9" cy="7" r="4" stroke="currentColor" strokeWidth="2" fill="none"/>
+                <line x1="19" y1="8" x2="19" y2="14" stroke="currentColor" strokeWidth="2"/>
+                <line x1="22" y1="11" x2="16" y2="11" stroke="currentColor" strokeWidth="2"/>
+              </svg>
               <span>Sent ({sentRequests.length})</span>
             </TabsTrigger>
             <TabsTrigger value="add" className="flex items-center space-x-2">
-              <Search className="w-4 h-4" />
+              <svg viewBox="0 0 24 24" fill="none" className="w-4 h-4">
+                <circle cx="11" cy="11" r="8" stroke="currentColor" strokeWidth="2" fill="none"/>
+                <path d="m21 21-4.35-4.35" stroke="currentColor" strokeWidth="2"/>
+              </svg>
               <span>Add Friends</span>
             </TabsTrigger>
           </TabsList>
@@ -276,7 +291,11 @@ export default function Friends() {
                         <div className="flex items-center space-x-4">
                           <div className="relative">
                             <div className="w-12 h-12 rounded-lg bg-muted border border-border flex items-center justify-center">
-                              <Users className="w-6 h-6 text-muted-foreground" />
+                              <svg viewBox="0 0 24 24" fill="none" className="w-6 h-6 text-muted-foreground">
+                                <circle cx="9" cy="7" r="4" fill="currentColor"/>
+                                <path d="m3 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2" stroke="currentColor" strokeWidth="2" fill="none"/>
+                                <circle cx="16" cy="11" r="3" fill="currentColor" opacity="0.7"/>
+                              </svg>
                             </div>
                             <div
                               className={`absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-2 border-background ${getStatusColor(friend.status)}`}
@@ -295,7 +314,11 @@ export default function Friends() {
                                 }
                               >
                                 {friend.status === "playing" && (
-                                  <Gamepad2 className="w-3 h-3 mr-1" />
+                                  <svg viewBox="0 0 24 24" fill="none" className="w-3 h-3 mr-1">
+                                    <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" fill="currentColor"/>
+                                    <circle cx="8" cy="12" r="1" fill="white"/>
+                                    <circle cx="16" cy="12" r="1" fill="white"/>
+                                  </svg>
                                 )}
                                 {getStatusText(friend.status)}
                               </Badge>
@@ -319,7 +342,12 @@ export default function Friends() {
                             onClick={() => handleStartChat(friend.username)}
                             className="minecraft-button bg-primary/20 text-primary hover:bg-primary/30"
                           >
-                            <MessageCircle className="w-4 h-4" />
+                            <svg viewBox="0 0 24 24" fill="none" className="w-4 h-4">
+                              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" fill="currentColor"/>
+                              <circle cx="8" cy="11" r="1" fill="white"/>
+                              <circle cx="12" cy="11" r="1" fill="white"/>
+                              <circle cx="16" cy="11" r="1" fill="white"/>
+                            </svg>
                           </Button>
                           <Button
                             size="sm"
@@ -329,7 +357,11 @@ export default function Friends() {
                             }
                             className="minecraft-button border-red-500/50 text-red-500 hover:bg-red-500/20"
                           >
-                            <UserMinus className="w-4 h-4" />
+                            <svg viewBox="0 0 24 24" fill="none" className="w-4 h-4">
+                              <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" stroke="currentColor" strokeWidth="2" fill="none"/>
+                              <circle cx="9" cy="7" r="4" stroke="currentColor" strokeWidth="2" fill="none"/>
+                              <line x1="22" y1="11" x2="16" y2="11" stroke="currentColor" strokeWidth="2"/>
+                            </svg>
                           </Button>
                         </div>
                       </div>
