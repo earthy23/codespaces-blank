@@ -38,6 +38,7 @@ import UsersAdmin from "./pages/admin/UsersAdmin";
 import LogsAdmin from "./pages/admin/LogsAdmin";
 import AnalyticsAdmin from "./pages/admin/AnalyticsAdmin";
 import NewsAdmin from "./pages/admin/NewsAdmin";
+import SettingsAdmin from "./pages/admin/SettingsAdmin";
 
 import NotFound from "./pages/NotFound";
 
