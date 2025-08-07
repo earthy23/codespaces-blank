@@ -3,7 +3,6 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { MinecraftBackground } from "@/components/ui/minecraft-background";
 import { UECLogo } from "@/components/ui/uec-logo";
-import { Play, Users, Shield, Download, MessageCircle, Gamepad2 } from "lucide-react";
 
 export default function Index() {
   return (
@@ -56,13 +55,13 @@ export default function Index() {
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link to="/register">
                 <Button size="lg" className="minecraft-button bg-primary text-primary-foreground hover:bg-primary/90 px-8 py-6 text-lg">
-                  <Play className="w-5 h-5 mr-2" />
+                  <img src="https://images.pexels.com/photos/4225229/pexels-photo-4225229.jpeg" alt="Gaming Setup" className="w-5 h-5 mr-2 rounded object-cover" />
                   Start Playing Now
                 </Button>
               </Link>
               <Link to="/downloads">
                 <Button size="lg" variant="outline" className="minecraft-button px-8 py-6 text-lg">
-                  <Download className="w-5 h-5 mr-2" />
+                  <img src="https://images.pexels.com/photos/7794018/pexels-photo-7794018.jpeg" alt="Download" className="w-5 h-5 mr-2 rounded object-cover" />
                   Download Clients
                 </Button>
               </Link>
@@ -84,8 +83,8 @@ export default function Index() {
           <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
             <Card className="minecraft-panel">
               <CardContent className="p-6 text-center">
-                <div className="w-16 h-16 bg-primary/20 rounded-xl flex items-center justify-center mx-auto mb-4">
-                  <Play className="w-8 h-8 text-primary" />
+                <div className="w-16 h-16 bg-primary/20 rounded-xl flex items-center justify-center mx-auto mb-4 overflow-hidden">
+                  <img src="https://images.pexels.com/photos/4225229/pexels-photo-4225229.jpeg" alt="Gaming Setup" className="w-full h-full object-cover rounded-lg" />
                 </div>
                 <h3 className="text-xl font-semibold mb-3">Instant Launch</h3>
                 <p className="text-muted-foreground">
@@ -96,8 +95,8 @@ export default function Index() {
 
             <Card className="minecraft-panel">
               <CardContent className="p-6 text-center">
-                <div className="w-16 h-16 bg-primary/20 rounded-xl flex items-center justify-center mx-auto mb-4">
-                  <Users className="w-8 h-8 text-primary" />
+                <div className="w-16 h-16 bg-primary/20 rounded-xl flex items-center justify-center mx-auto mb-4 overflow-hidden">
+                  <img src="https://images.pexels.com/photos/9069288/pexels-photo-9069288.jpeg" alt="Friends Gaming" className="w-full h-full object-cover rounded-lg" />
                 </div>
                 <h3 className="text-xl font-semibold mb-3">Social Hub</h3>
                 <p className="text-muted-foreground">
@@ -108,8 +107,8 @@ export default function Index() {
 
             <Card className="minecraft-panel">
               <CardContent className="p-6 text-center">
-                <div className="w-16 h-16 bg-primary/20 rounded-xl flex items-center justify-center mx-auto mb-4">
-                  <Shield className="w-8 h-8 text-primary" />
+                <div className="w-16 h-16 bg-primary/20 rounded-xl flex items-center justify-center mx-auto mb-4 overflow-hidden">
+                  <img src="https://images.pexels.com/photos/10068851/pexels-photo-10068851.jpeg" alt="Warrior Shield" className="w-full h-full object-cover rounded-lg" />
                 </div>
                 <h3 className="text-xl font-semibold mb-3">Secure & Safe</h3>
                 <p className="text-muted-foreground">
@@ -134,26 +133,26 @@ export default function Index() {
                 </p>
                 <ul className="space-y-3 text-muted-foreground">
                   <li className="flex items-center">
-                    <MessageCircle className="w-5 h-5 text-primary mr-3" />
+                    <img src="https://images.pexels.com/photos/7640773/pexels-photo-7640773.jpeg" alt="Chat" className="w-5 h-5 mr-3 rounded object-cover" />
                     Real-time chat and voice communication
                   </li>
                   <li className="flex items-center">
-                    <Users className="w-5 h-5 text-primary mr-3" />
+                    <img src="https://images.pexels.com/photos/9069288/pexels-photo-9069288.jpeg" alt="Friends" className="w-5 h-5 mr-3 rounded object-cover" />
                     Friend system and social features
                   </li>
                   <li className="flex items-center">
-                    <Download className="w-5 h-5 text-primary mr-3" />
+                    <img src="https://images.pexels.com/photos/7794018/pexels-photo-7794018.jpeg" alt="Download" className="w-5 h-5 mr-3 rounded object-cover" />
                     Multiple client downloads and versions
                   </li>
                   <li className="flex items-center">
-                    <Shield className="w-5 h-5 text-primary mr-3" />
+                    <img src="https://images.pexels.com/photos/10068851/pexels-photo-10068851.jpeg" alt="Security" className="w-5 h-5 mr-3 rounded object-cover" />
                     Advanced moderation and safety tools
                   </li>
                 </ul>
               </div>
               <div className="minecraft-panel p-8">
-                <div className="w-full h-48 bg-primary/10 rounded-lg flex items-center justify-center">
-                  <Gamepad2 className="w-24 h-24 text-primary/50" />
+                <div className="w-full h-48 bg-primary/10 rounded-lg flex items-center justify-center overflow-hidden">
+                  <img src="https://images.pexels.com/photos/16070479/pexels-photo-16070479.jpeg" alt="Gaming Controller" className="w-full h-full object-cover rounded-lg" />
                 </div>
               </div>
             </div>
@@ -170,7 +169,7 @@ export default function Index() {
           </p>
           <Link to="/register">
             <Button size="lg" className="minecraft-button bg-primary text-primary-foreground hover:bg-primary/90 px-8 py-6 text-lg">
-              <Play className="w-5 h-5 mr-2" />
+              <img src="https://images.pexels.com/photos/4225229/pexels-photo-4225229.jpeg" alt="Gaming Setup" className="w-5 h-5 mr-2 rounded object-cover" />
               Join UEC Now
             </Button>
           </Link>
