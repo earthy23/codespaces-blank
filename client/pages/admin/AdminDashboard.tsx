@@ -135,13 +135,56 @@ export default function AdminDashboard() {
           const controller = new AbortController();
           const timeoutId = setTimeout(() => controller.abort(), 8000); // 8 second timeout for real-time updates
 
-          const response = await fetch("/api/admin/metrics/realtime", {
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json",
-            },
-            signal: controller.signal,
-          });
+          // Check for FullStory interference
+          const isFullStoryBlocking = () => {
+            try {
+              return window.fetch !== fetch ||
+                     (window.fetch.toString().includes('fullstory') ||
+                      document.querySelector('script[src*="fullstory"]') !== null);
+            } catch {
+              return false;
+            }
+          };
+
+          let response;
+          if (isFullStoryBlocking()) {
+            // Use XMLHttpRequest as fallback when FullStory is interfering
+            response = await new Promise((resolve, reject) => {
+              const xhr = new XMLHttpRequest();
+              xhr.open('GET', '/api/admin/metrics/realtime');
+              xhr.setRequestHeader('Authorization', `Bearer ${token}`);
+              xhr.setRequestHeader('Content-Type', 'application/json');
+              xhr.timeout = 8000;
+
+              xhr.onload = () => {
+                if (xhr.status >= 200 && xhr.status < 300) {
+                  resolve({
+                    ok: true,
+                    status: xhr.status,
+                    json: () => Promise.resolve(JSON.parse(xhr.responseText))
+                  });
+                } else {
+                  resolve({
+                    ok: false,
+                    status: xhr.status,
+                    json: () => Promise.resolve({})
+                  });
+                }
+              };
+
+              xhr.onerror = () => reject(new Error('Network error'));
+              xhr.ontimeout = () => reject(new Error('Request timeout'));
+              xhr.send();
+            });
+          } else {
+            response = await fetch("/api/admin/metrics/realtime", {
+              headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
+              },
+              signal: controller.signal,
+            });
+          }
 
           clearTimeout(timeoutId);
 
@@ -151,7 +194,7 @@ export default function AdminDashboard() {
             setRealTimeData(data.metrics);
             setLastMetricsUpdate(Date.now());
             setConnectionStatus("connected");
-            
+
             // Update live stats if we have real-time user data
             if (data.metrics.userActivity) {
               setStats(prevStats => {
@@ -176,9 +219,11 @@ export default function AdminDashboard() {
               console.warn("Metrics update timed out");
             }
             setConnectionStatus("degraded");
-          } else if (error.message?.includes('Failed to fetch')) {
-            console.warn("Network issue during metrics update, skipping this cycle");
-            setConnectionStatus("offline");
+          } else if (error.message?.includes('Failed to fetch') || error.message?.includes('fetch')) {
+            if (process.env.NODE_ENV === 'development') {
+              console.warn("FullStory or network interference detected, degrading service");
+            }
+            setConnectionStatus("degraded");
           } else {
             console.error("Error updating real-time metrics:", error);
             setConnectionStatus("degraded");
@@ -199,13 +244,51 @@ export default function AdminDashboard() {
             controller.abort(new Error('Request timeout'));
           }, 5000);
 
-          const response = await fetch(`/api/admin/activity/live?since=${lastActivityUpdate}&limit=10`, {
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json",
-            },
-            signal: controller.signal,
-          });
+          // Check for FullStory interference
+          const isFullStoryBlocking = () => {
+            try {
+              return window.fetch !== fetch ||
+                     (window.fetch.toString().includes('fullstory') ||
+                      document.querySelector('script[src*="fullstory"]') !== null);
+            } catch {
+              return false;
+            }
+          };
+
+          let response;
+          if (isFullStoryBlocking()) {
+            // Use XMLHttpRequest as fallback
+            response = await new Promise((resolve, reject) => {
+              const xhr = new XMLHttpRequest();
+              xhr.open('GET', `/api/admin/activity/live?since=${lastActivityUpdate}&limit=10`);
+              xhr.setRequestHeader('Authorization', `Bearer ${token}`);
+              xhr.setRequestHeader('Content-Type', 'application/json');
+              xhr.timeout = 5000;
+
+              xhr.onload = () => {
+                if (xhr.status >= 200 && xhr.status < 300) {
+                  resolve({
+                    ok: true,
+                    json: () => Promise.resolve(JSON.parse(xhr.responseText))
+                  });
+                } else {
+                  resolve({ ok: false });
+                }
+              };
+
+              xhr.onerror = () => reject(new Error('Network error'));
+              xhr.ontimeout = () => reject(new Error('Request timeout'));
+              xhr.send();
+            });
+          } else {
+            response = await fetch(`/api/admin/activity/live?since=${lastActivityUpdate}&limit=10`, {
+              headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
+              },
+              signal: controller.signal,
+            });
+          }
 
           clearTimeout(timeoutId);
 
@@ -213,7 +296,7 @@ export default function AdminDashboard() {
             const data = await response.json();
             if (data.activity && data.activity.length > 0) {
               setLiveActivity(prev => {
-                const newActivity = data.activity.filter(activity => 
+                const newActivity = data.activity.filter(activity =>
                   !prev.some(existing => existing.id === activity.id)
                 );
                 return [...newActivity, ...prev].slice(0, 10);
@@ -223,14 +306,16 @@ export default function AdminDashboard() {
           }
         } catch (error) {
           if (timeoutId) clearTimeout(timeoutId);
-          
+
           if (error.name === 'AbortError') {
             // Timeout is expected behavior, just log in dev mode
             if (process.env.NODE_ENV === 'development') {
               console.warn("Live activity fetch timed out");
             }
-          } else if (error.message?.includes('Failed to fetch')) {
-            console.warn("Network issue during live activity update, skipping this cycle");
+          } else if (error.message?.includes('Failed to fetch') || error.message?.includes('fetch')) {
+            if (process.env.NODE_ENV === 'development') {
+              console.warn("FullStory or network interference during live activity update, skipping cycle");
+            }
           } else {
             console.warn("Failed to fetch live activity:", error.message);
           }
