@@ -22,6 +22,16 @@ const getAuthToken = () => {
 const makeRequest = async (endpoint: string, options: RequestInit = {}) => {
   const url = `${API_BASE_URL}${endpoint}`;
 
+  // Create a request key for deduplication (only for GET requests)
+  const method = (options.method || 'GET').toUpperCase();
+  const requestKey = method === 'GET' ? `${method}:${url}` : null;
+
+  // Check if there's already a pending identical GET request
+  if (requestKey && pendingRequests.has(requestKey)) {
+    console.log(`🔄 Reusing pending request for ${url}`);
+    return pendingRequests.get(requestKey);
+  }
+
   const headers: Record<string, string> = {
     ...(options.headers as Record<string, string>),
   };
