@@ -137,9 +137,13 @@ const makeRequest = async (endpoint: string, options: RequestInit = {}) => {
     console.error(`🔍 Error details:`, {
       name: error.name,
       message: error.message,
-      stack: error.stack,
       timeout: timeoutMs
     });
+
+    // Clean up pending request on error
+    if (requestKey) {
+      pendingRequests.delete(requestKey);
+    }
 
     // Handle AbortError (timeout or manual abort)
     if (error.name === "AbortError" || error.message?.includes("aborted")) {
