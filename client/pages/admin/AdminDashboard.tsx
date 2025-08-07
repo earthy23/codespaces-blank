@@ -425,6 +425,102 @@ export default function AdminDashboard() {
           </Card>
         </div>
 
+        {/* Enhanced Analytics Section */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* User Growth Analytics */}
+          <Card className="bg-gray-900 border-gray-700">
+            <CardHeader>
+              <CardTitle className="flex items-center space-x-2">
+                <Users className="w-5 h-5 text-blue-400" />
+                <span className="text-white">User Growth Analytics</span>
+              </CardTitle>
+              <CardDescription className="text-gray-400">
+                Daily user registrations over the past 30 days
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ResponsiveContainer width="100%" height={250}>
+                <AreaChart data={[
+                  { date: "Nov 1", users: 12, active: 8 },
+                  { date: "Nov 5", users: 19, active: 14 },
+                  { date: "Nov 10", users: 25, active: 18 },
+                  { date: "Nov 15", users: 31, active: 24 },
+                  { date: "Nov 20", users: 28, active: 22 },
+                  { date: "Nov 25", users: 35, active: 28 },
+                  { date: "Nov 30", users: 42, active: 34 },
+                ]}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
+                  <XAxis dataKey="date" stroke="#9ca3af" />
+                  <YAxis stroke="#9ca3af" />
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: "#1f2937",
+                      border: "1px solid #374151",
+                      borderRadius: "8px"
+                    }}
+                  />
+                  <Area
+                    type="monotone"
+                    dataKey="users"
+                    stackId="1"
+                    stroke="#3b82f6"
+                    fill="#3b82f6"
+                    fillOpacity={0.6}
+                    name="New Users"
+                  />
+                  <Area
+                    type="monotone"
+                    dataKey="active"
+                    stackId="1"
+                    stroke="#10b981"
+                    fill="#10b981"
+                    fillOpacity={0.6}
+                    name="Active Users"
+                  />
+                </AreaChart>
+              </ResponsiveContainer>
+            </CardContent>
+          </Card>
+
+          {/* Revenue Analytics */}
+          <Card className="bg-gray-900 border-gray-700">
+            <CardHeader>
+              <CardTitle className="flex items-center space-x-2">
+                <DollarSign className="w-5 h-5 text-green-400" />
+                <span className="text-white">Revenue Analytics</span>
+              </CardTitle>
+              <CardDescription className="text-gray-400">
+                Monthly revenue breakdown by subscription tier
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ResponsiveContainer width="100%" height={250}>
+                <BarChart data={[
+                  { month: "Jul", vip: 850, vipPlus: 420, legend: 180 },
+                  { month: "Aug", vip: 920, vipPlus: 480, legend: 220 },
+                  { month: "Sep", vip: 1100, vipPlus: 520, legend: 280 },
+                  { month: "Oct", vip: 950, vipPlus: 580, legend: 320 },
+                  { month: "Nov", vip: 1450, vipPlus: 520, legend: 220 },
+                ]}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
+                  <XAxis dataKey="month" stroke="#9ca3af" />
+                  <YAxis stroke="#9ca3af" />
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: "#1f2937",
+                      border: "1px solid #374151",
+                      borderRadius: "8px"
+                    }}
+                  />
+                  <Bar dataKey="vip" stackId="a" fill="#10b981" name="VIP" />
+                  <Bar dataKey="vipPlus" stackId="a" fill="#3b82f6" name="VIP+" />
+                  <Bar dataKey="legend" stackId="a" fill="#f59e0b" name="Legend" />
+                </BarChart>
+              </ResponsiveContainer>
+            </CardContent>
+          </Card>
+        </div>
+
         {/* System Status Cards */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <Card className="bg-gray-900 border-gray-700">
