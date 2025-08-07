@@ -191,7 +191,7 @@ export function FriendsProvider({ children }: { children: React.ReactNode }) {
     });
   }, [user]));
 
-  useWebSocketEvent("friends:request_received", useCallback((data) => {
+  safeUseWebSocketEvent("friends:request_received", useCallback((data) => {
     if (!user || data.to !== user.id) return;
 
     setFriendRequests((prev) => [
