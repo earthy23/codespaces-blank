@@ -1202,7 +1202,9 @@ export default function Servers() {
                 onClick={handleDeleteServer}
                 className="bg-red-500 hover:bg-red-600"
               >
-                <Trash2 className="w-4 h-4 mr-2" />
+                <svg viewBox="0 0 24 24" fill="none" className="w-4 h-4 mr-2">
+                  <path d="M3 6h18m-2 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" stroke="currentColor" strokeWidth="2" fill="none"/>
+                </svg>
                 Delete Server
               </AlertDialogAction>
             </AlertDialogFooter>
