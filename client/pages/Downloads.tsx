@@ -216,12 +216,12 @@ export default function Downloads() {
               {tools.map((tool, index) => (
                 <Card
                   key={index}
-                  className="minecraft-panel bg-card/50 border-2 border-border shadow-lg hover:shadow-primary/10"
+                  className="minecraft-panel bg-card border-2 border-border shadow-lg hover:shadow-primary/10"
                 >
                   <CardHeader>
                     <CardTitle className="flex items-center space-x-2">
-                      <div className="w-8 h-8 rounded-lg bg-card border border-primary/50 flex items-center justify-center shadow-lg shadow-primary/20">
-                        <Download className="w-5 h-5 text-primary drop-shadow-[0_0_4px_currentColor]" />
+                      <div className="w-8 h-8 rounded-lg bg-card border border-primary/50 flex items-center justify-center shadow-lg shadow-primary/20 overflow-hidden">
+                        <img src="https://images.pexels.com/photos/7794018/pexels-photo-7794018.jpeg" alt="Download" className="w-full h-full object-cover" />
                       </div>
                       <span>{tool.name}</span>
                     </CardTitle>
