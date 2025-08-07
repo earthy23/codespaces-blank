@@ -348,7 +348,7 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
 
     try {
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 6000); // 6 second timeout
+      const timeoutId = setTimeout(() => controller.abort(), 8000); // Increased to 8 second timeout
 
       try {
         const response = await makeRequest(
@@ -368,19 +368,35 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
           const data = await response.json();
           return data.messages || [];
         } else {
-          console.warn(`Failed to load messages for chat ${chatId}`);
+          if (process.env.NODE_ENV === 'development') {
+            console.warn(`Failed to load messages for chat ${chatId}`);
+          }
         }
       } catch (fetchError) {
         clearTimeout(timeoutId);
+
+        // Handle abort errors gracefully
+        if (fetchError.name === 'AbortError' || fetchError.message?.includes('aborted')) {
+          if (process.env.NODE_ENV === 'development') {
+            console.warn(`Chat messages loading aborted for chat ${chatId}`);
+          }
+          return []; // Return empty array instead of throwing
+        }
         throw fetchError;
       }
     } catch (error) {
-      if (error.name === 'AbortError') {
-        console.warn(`Chat messages loading timed out for chat ${chatId}`);
+      if (error.name === 'AbortError' || error.message?.includes('aborted')) {
+        if (process.env.NODE_ENV === 'development') {
+          console.warn(`Chat messages loading aborted for chat ${chatId}`);
+        }
       } else if (error.message?.includes('Failed to fetch')) {
-        console.warn(`Network issue loading messages for chat ${chatId}`);
+        if (process.env.NODE_ENV === 'development') {
+          console.warn(`Network issue loading messages for chat ${chatId}`);
+        }
       } else {
-        console.error("Error loading messages:", error);
+        if (process.env.NODE_ENV === 'development') {
+          console.warn("Error loading messages:", error.message || error);
+        }
       }
     }
     return [];
