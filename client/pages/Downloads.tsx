@@ -30,7 +30,7 @@ const clientDownloads = [
     ],
     downloadUrl: "/downloads/vanilla-client.zip",
     webUrl: "/client/vanilla/",
-    icon: Gamepad2,
+    iconUrl: "https://images.pexels.com/photos/4225229/pexels-photo-4225229.jpeg",
   },
   {
     id: "pvp",
@@ -48,7 +48,7 @@ const clientDownloads = [
     ],
     downloadUrl: "/downloads/pvp-client.zip",
     webUrl: "/client/pvp/",
-    icon: Zap,
+    iconUrl: "https://images.pexels.com/photos/16070479/pexels-photo-16070479.jpeg",
   },
   {
     id: "creative",
@@ -66,7 +66,7 @@ const clientDownloads = [
     ],
     downloadUrl: "/downloads/creative-client.zip",
     webUrl: "/client/creative/",
-    icon: Users,
+    iconUrl: "https://images.pexels.com/photos/9069288/pexels-photo-9069288.jpeg",
   },
 ];
 
