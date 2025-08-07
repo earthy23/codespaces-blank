@@ -193,7 +193,7 @@ export default function Dashboard() {
             </CardContent>
           </Card>
 
-          <Card className="minecraft-panel bg-card/50 border-2 border-border shadow-lg hover:shadow-primary/10">
+          <Card className="minecraft-panel bg-card border-2 border-border shadow-lg hover:shadow-primary/10">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
@@ -204,8 +204,8 @@ export default function Dashboard() {
                     {unreadTotal}
                   </p>
                 </div>
-                <div className="w-12 h-12 rounded-lg bg-card border border-primary/50 flex items-center justify-center shadow-lg shadow-primary/20">
-                  <MessageCircle className="w-6 h-6 text-primary drop-shadow-[0_0_4px_currentColor]" />
+                <div className="w-12 h-12 rounded-lg bg-card border border-primary/50 flex items-center justify-center shadow-lg shadow-primary/20 overflow-hidden">
+                  <img src="https://images.pexels.com/photos/7640773/pexels-photo-7640773.jpeg" alt="Messages" className="w-full h-full object-cover" />
                 </div>
               </div>
             </CardContent>
