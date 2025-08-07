@@ -180,7 +180,7 @@ export default function Servers() {
       );
       setMyServers(data.servers || []);
     } catch (error) {
-      console.error("❌ fetchMyServers: Failed to fetch my servers:", error);
+      console.error("�� fetchMyServers: Failed to fetch my servers:", error);
 
       // Only show toast for non-authentication errors
       if (!error.message.includes("Authentication required")) {
@@ -588,7 +588,9 @@ export default function Servers() {
                 >
                   <DialogTrigger asChild>
                     <Button className="bg-primary text-primary-foreground">
-                      <Plus className="w-4 h-4 mr-2" />
+                      <svg viewBox="0 0 24 24" fill="none" className="w-4 h-4 mr-2">
+                        <path d="M12 5v14m-7-7h14" stroke="currentColor" strokeWidth="2"/>
+                      </svg>
                       Add Server
                     </Button>
                   </DialogTrigger>
