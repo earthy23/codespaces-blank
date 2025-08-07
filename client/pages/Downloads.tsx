@@ -30,7 +30,14 @@ const clientDownloads = [
     ],
     downloadUrl: "/downloads/vanilla-client.zip",
     webUrl: "/client/vanilla/",
-    iconUrl: "https://images.pexels.com/photos/4225229/pexels-photo-4225229.jpeg",
+    iconSvg: (
+      <svg viewBox="0 0 24 24" fill="none" className="w-6 h-6 text-primary drop-shadow-[0_0_4px_currentColor]">
+        <rect x="6" y="4" width="12" height="16" rx="2" fill="currentColor" opacity="0.8"/>
+        <rect x="8" y="6" width="8" height="2" rx="1" fill="white"/>
+        <rect x="8" y="9" width="8" height="2" rx="1" fill="white"/>
+        <rect x="8" y="12" width="6" height="2" rx="1" fill="white"/>
+      </svg>
+    ),
   },
   {
     id: "pvp",
@@ -48,7 +55,15 @@ const clientDownloads = [
     ],
     downloadUrl: "/downloads/pvp-client.zip",
     webUrl: "/client/pvp/",
-    iconUrl: "https://images.pexels.com/photos/16070479/pexels-photo-16070479.jpeg",
+    iconSvg: (
+      <svg viewBox="0 0 24 24" fill="none" className="w-6 h-6 text-primary drop-shadow-[0_0_4px_currentColor]">
+        <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" fill="currentColor"/>
+        <polyline points="7.5,4.21 12,6.81 16.5,4.21" stroke="white" strokeWidth="2" fill="none"/>
+        <polyline points="7.5,19.79 7.5,14.6 3,12" stroke="white" strokeWidth="2" fill="none"/>
+        <polyline points="21,12 16.5,14.6 16.5,19.79" stroke="white" strokeWidth="2" fill="none"/>
+        <polyline points="12,22.08 12,17" stroke="white" strokeWidth="2" fill="none"/>
+      </svg>
+    ),
   },
   {
     id: "creative",
@@ -66,7 +81,14 @@ const clientDownloads = [
     ],
     downloadUrl: "/downloads/creative-client.zip",
     webUrl: "/client/creative/",
-    iconUrl: "https://images.pexels.com/photos/9069288/pexels-photo-9069288.jpeg",
+    iconSvg: (
+      <svg viewBox="0 0 24 24" fill="none" className="w-6 h-6 text-primary drop-shadow-[0_0_4px_currentColor]">
+        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" fill="currentColor" opacity="0.8"/>
+        <circle cx="9" cy="7" r="4" fill="currentColor"/>
+        <path d="M22 21v-2a4 4 0 0 0-3-3.87" stroke="currentColor" strokeWidth="2" fill="none"/>
+        <path d="M16 3.13a4 4 0 0 1 0 7.75" stroke="currentColor" strokeWidth="2" fill="none"/>
+      </svg>
+    ),
   },
 ];
 
@@ -148,8 +170,8 @@ export default function Downloads() {
                   >
                     <CardHeader>
                       <div className="flex items-center space-x-3 mb-2">
-                        <div className="w-12 h-12 rounded-lg bg-card border border-primary/50 flex items-center justify-center shadow-lg shadow-primary/20 overflow-hidden">
-                          <img src={client.iconUrl} alt={client.name} className="w-full h-full object-cover" />
+                        <div className="w-12 h-12 rounded-lg bg-card border border-primary/50 flex items-center justify-center shadow-lg shadow-primary/20">
+                          {client.iconSvg}
                         </div>
                         <div>
                           <CardTitle className="text-xl">
@@ -174,7 +196,10 @@ export default function Downloads() {
                               key={index}
                               className="flex items-center text-sm text-muted-foreground"
                             >
-                              <img src="https://images.pexels.com/photos/10068851/pexels-photo-10068851.jpeg" alt="Check" className="w-3 h-3 mr-2 flex-shrink-0 rounded object-cover" />
+                              <svg viewBox="0 0 24 24" fill="none" className="w-3 h-3 mr-2 flex-shrink-0 text-primary">
+                                <circle cx="12" cy="12" r="10" fill="currentColor" opacity="0.8"/>
+                                <path d="m9 12 2 2 4-4" stroke="white" strokeWidth="2" fill="none"/>
+                              </svg>
                               {feature}
                             </li>
                           ))}
@@ -190,7 +215,9 @@ export default function Downloads() {
                           className="w-full minecraft-button bg-primary text-primary-foreground hover:bg-primary/90 shadow-lg hover:shadow-primary/30"
                           onClick={() => handlePlayOnline(client.webUrl)}
                         >
-                          <img src="https://images.pexels.com/photos/4225229/pexels-photo-4225229.jpeg" alt="Play" className="w-4 h-4 mr-2 rounded object-cover" />
+                          <svg viewBox="0 0 24 24" fill="none" className="w-4 h-4 mr-2">
+                            <polygon points="5,3 19,12 5,21" fill="currentColor"/>
+                          </svg>
                           Play Online
                         </Button>
                         <Button
@@ -200,7 +227,11 @@ export default function Downloads() {
                             handleDownload(client.id, client.downloadUrl)
                           }
                         >
-                          <img src="https://images.pexels.com/photos/7794018/pexels-photo-7794018.jpeg" alt="Download" className="w-4 h-4 mr-2 rounded object-cover" />
+                          <svg viewBox="0 0 24 24" fill="none" className="w-4 h-4 mr-2">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" stroke="currentColor" strokeWidth="2" fill="none"/>
+                            <polyline points="7,10 12,15 17,10" stroke="currentColor" strokeWidth="2" fill="none"/>
+                            <line x1="12" y1="15" x2="12" y2="3" stroke="currentColor" strokeWidth="2"/>
+                          </svg>
                           Download Client
                         </Button>
                       </div>
