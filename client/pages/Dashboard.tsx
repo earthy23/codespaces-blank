@@ -101,7 +101,7 @@ export default function Dashboard() {
             </p>
           </div>
           <div className="flex items-center space-x-2">
-            <Star className="w-5 h-5 text-yellow-500" />
+            <img src="https://images.pexels.com/photos/10068851/pexels-photo-10068851.jpeg" alt="Rank" className="w-5 h-5 rounded object-cover" />
             <span className="text-sm font-medium">
               Level {user?.role === "admin" ? "Admin" : "Member"}
             </span>
