@@ -522,9 +522,10 @@ export const healthApi = {
   },
 };
 
-// Test API connectivity on load
+// Health check is available but not automatically called to reduce console noise
+// Uncomment the following to enable automatic health check on load:
+/*
 if (typeof window !== "undefined") {
-  // Test the connection in development
   healthApi.check()
     .then((result) => {
       console.log("🎯 API Health Check:", result);
@@ -534,6 +535,7 @@ if (typeof window !== "undefined") {
       console.log("🔍 Check if the backend server is running on port 3000");
     });
 }
+*/
 
 // Helper function to safely execute server API calls with automatic retry
 const safeServerRequest = async (requestFn: () => Promise<any>, requestName: string, maxRetries = 2) => {
