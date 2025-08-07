@@ -44,13 +44,13 @@ router.get("/dashboard/stats", requireAuth, requireAdmin, async (req, res) => {
 
       // Analytics data for charts
       userGrowthData: [
-        { day: "Mon", value: 23, active: 18 },
-        { day: "Tue", value: 19, active: 15 },
-        { day: "Wed", value: 27, active: 22 },
-        { day: "Thu", value: 31, active: 25 },
-        { day: "Fri", value: 28, active: 23 },
-        { day: "Sat", value: 35, active: 28 },
-        { day: "Sun", value: 23, active: 19 },
+        { day: "Mon", registrations: Math.floor(Math.random() * 10) + 5, activeSessions: Math.floor(Math.random() * 20) + 40, logins: Math.floor(Math.random() * 50) + 120 },
+        { day: "Tue", registrations: Math.floor(Math.random() * 10) + 8, activeSessions: Math.floor(Math.random() * 25) + 45, logins: Math.floor(Math.random() * 60) + 130 },
+        { day: "Wed", registrations: Math.floor(Math.random() * 12) + 10, activeSessions: Math.floor(Math.random() * 15) + 50, logins: Math.floor(Math.random() * 40) + 140 },
+        { day: "Thu", registrations: Math.floor(Math.random() * 8) + 7, activeSessions: Math.floor(Math.random() * 30) + 55, logins: Math.floor(Math.random() * 70) + 160 },
+        { day: "Fri", registrations: Math.floor(Math.random() * 15) + 12, activeSessions: Math.floor(Math.random() * 25) + 65, logins: Math.floor(Math.random() * 80) + 180 },
+        { day: "Sat", registrations: Math.floor(Math.random() * 20) + 15, activeSessions: Math.floor(Math.random() * 35) + 70, logins: Math.floor(Math.random() * 90) + 200 },
+        { day: "Sun", registrations: Math.floor(Math.random() * 12) + 8, activeSessions: Math.floor(Math.random() * 20) + 55, logins: Math.floor(Math.random() * 60) + 150 },
       ],
 
       revenueData: [
