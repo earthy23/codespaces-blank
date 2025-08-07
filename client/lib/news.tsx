@@ -118,10 +118,10 @@ export function NewsProvider({ children }: { children: React.ReactNode }) {
   );
 }
 
-export function useNews() {
+export const useNews = () => {
   const context = useContext(NewsContext);
   if (context === undefined) {
     throw new Error('useNews must be used within a NewsProvider');
   }
   return context;
-}
+};
