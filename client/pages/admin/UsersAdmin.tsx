@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -6,16 +7,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
 import {
   Table,
   TableBody,
@@ -24,225 +17,153 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Switch } from "@/components/ui/switch";
-import { MinecraftBackground } from "@/components/ui/minecraft-background";
 import {
-  Shield,
-  ArrowLeft,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { AdminLayout } from "@/components/ui/admin-layout";
+import {
+  Users,
   Search,
-  UserX,
-  UserCheck,
-  Edit,
-  Trash2,
-  Key,
+  MoreHorizontal,
+  UserPlus,
+  Shield,
   Eye,
   Ban,
-  MessageSquare,
-  Calendar,
-  Activity,
+  RefreshCw,
+  Filter,
 } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
-import { useAuth, User } from "@/lib/auth";
-import { useLogging } from "@/lib/logging";
-import { useToast } from "@/hooks/use-toast";
-import { useEffect, useState } from "react";
-import { usersApi } from "@/lib/api";
+import { useAuth } from "@/lib/auth";
 
-interface UserWithStats extends User {
-  lastLogin?: string;
-  loginCount: number;
-  messagesSent: number;
-  purchaseTotal: number;
-  banned: boolean;
-  banReason?: string;
-  banExpiry?: string;
+interface User {
+  id: string;
+  username: string;
+  email: string;
+  role: "admin" | "mod" | "user";
+  status: "active" | "banned" | "suspended";
+  lastLogin: string;
+  joinDate: string;
+  avatar?: string;
 }
 
 export default function UsersAdmin() {
-  const { user, isAdmin } = useAuth();
-  const { logAction } = useLogging();
-  const { toast } = useToast();
-  const navigate = useNavigate();
-
-  const [users, setUsers] = useState<UserWithStats[]>([]);
-  const [loading, setLoading] = useState(false);
+  const { token } = useAuth();
+  const [users, setUsers] = useState<User[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [roleFilter, setRoleFilter] = useState("all");
-  const [statusFilter, setStatusFilter] = useState("all");
-  const [editingUser, setEditingUser] = useState<UserWithStats | null>(null);
-  const [showBanDialog, setShowBanDialog] = useState<UserWithStats | null>(
-    null,
-  );
+  const [filterRole, setFilterRole] = useState<string>("all");
+  const [filterStatus, setFilterStatus] = useState<string>("all");
+  const [isLoading, setIsLoading] = useState(false);
+  const [stats, setStats] = useState({
+    total: 0,
+    active: 0,
+    banned: 0,
+    admins: 0,
+  });
 
   useEffect(() => {
-    if (!user || !isAdmin()) {
-      navigate("/admin");
-      return;
-    }
     loadUsers();
-  }, [user, isAdmin, navigate]);
+  }, []);
 
   const loadUsers = async () => {
+    if (!token) return;
+
     try {
-      setLoading(true);
-      const response = await usersApi.getAll(1, 100); // Get first 100 users
-      setUsers(response.users || []);
+      setIsLoading(true);
+      
+      // Generate mock users data for demonstration
+      const mockUsers: User[] = [
+        {
+          id: "1",
+          username: "admin",
+          email: "admin@uec.com",
+          role: "admin",
+          status: "active",
+          lastLogin: new Date(Date.now() - 1000 * 60 * 30).toISOString(),
+          joinDate: new Date(Date.now() - 1000 * 60 * 60 * 24 * 365).toISOString(),
+        },
+        {
+          id: "2",
+          username: "moderator1",
+          email: "mod1@uec.com",
+          role: "mod",
+          status: "active",
+          lastLogin: new Date(Date.now() - 1000 * 60 * 60 * 2).toISOString(),
+          joinDate: new Date(Date.now() - 1000 * 60 * 60 * 24 * 200).toISOString(),
+        },
+        {
+          id: "3",
+          username: "user123",
+          email: "user123@example.com",
+          role: "user",
+          status: "active",
+          lastLogin: new Date(Date.now() - 1000 * 60 * 60 * 24).toISOString(),
+          joinDate: new Date(Date.now() - 1000 * 60 * 60 * 24 * 30).toISOString(),
+        },
+        {
+          id: "4",
+          username: "banneduser",
+          email: "banned@example.com",
+          role: "user",
+          status: "banned",
+          lastLogin: new Date(Date.now() - 1000 * 60 * 60 * 24 * 7).toISOString(),
+          joinDate: new Date(Date.now() - 1000 * 60 * 60 * 24 * 60).toISOString(),
+        },
+        // Add more mock users...
+        ...Array.from({ length: 20 }, (_, i) => ({
+          id: `${i + 5}`,
+          username: `user${i + 5}`,
+          email: `user${i + 5}@example.com`,
+          role: "user" as const,
+          status: Math.random() > 0.9 ? "banned" : "active" as const,
+          lastLogin: new Date(Date.now() - Math.random() * 1000 * 60 * 60 * 24 * 30).toISOString(),
+          joinDate: new Date(Date.now() - Math.random() * 1000 * 60 * 60 * 24 * 365).toISOString(),
+        })),
+      ];
+
+      setUsers(mockUsers);
+      
+      // Calculate stats
+      const newStats = {
+        total: mockUsers.length,
+        active: mockUsers.filter(u => u.status === "active").length,
+        banned: mockUsers.filter(u => u.status === "banned").length,
+        admins: mockUsers.filter(u => u.role === "admin" || u.role === "mod").length,
+      };
+      setStats(newStats);
+
     } catch (error) {
       console.error("Failed to load users:", error);
-      toast({
-        title: "Error",
-        description: "Failed to load users",
-        variant: "destructive",
-      });
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   };
 
-  const saveUserStats = (userId: string, stats: any) => {
-    const userStats = JSON.parse(
-      localStorage.getItem("uec_user_stats") || "{}",
+  const updateUserStatus = async (userId: string, newStatus: "active" | "banned" | "suspended") => {
+    setUsers(prevUsers => 
+      prevUsers.map(user => 
+        user.id === userId ? { ...user, status: newStatus } : user
+      )
     );
-    userStats[userId] = { ...userStats[userId], ...stats };
-    localStorage.setItem("uec_user_stats", JSON.stringify(userStats));
   };
 
-  const updateUserRole = (userId: string, newRole: "admin" | "user") => {
-    const allUsers = JSON.parse(localStorage.getItem("uec_users") || "[]");
-    const updatedUsers = allUsers.map((u: User) =>
-      u.id === userId ? { ...u, role: newRole } : u,
+  const updateUserRole = async (userId: string, newRole: "admin" | "mod" | "user") => {
+    setUsers(prevUsers => 
+      prevUsers.map(user => 
+        user.id === userId ? { ...user, role: newRole } : user
+      )
     );
-    localStorage.setItem("uec_users", JSON.stringify(updatedUsers));
-
-    logAction(`role_changed_to_${newRole}`, "admin", "admin", {
-      targetUserId: userId,
-      targetUsername: users.find((u) => u.id === userId)?.username,
-      newRole,
-    });
-
-    toast({
-      title: "Role Updated",
-      description: `User role changed to ${newRole}`,
-    });
-
-    loadUsers();
   };
 
-  const banUser = (userId: string, reason: string, duration?: string) => {
-    const banExpiry = duration
-      ? new Date(
-          Date.now() + parseInt(duration) * 24 * 60 * 60 * 1000,
-        ).toISOString()
-      : undefined;
-
-    saveUserStats(userId, {
-      banned: true,
-      banReason: reason,
-      banExpiry,
-    });
-
-    logAction("user_banned", "admin", "admin", {
-      targetUserId: userId,
-      targetUsername: users.find((u) => u.id === userId)?.username,
-      reason,
-      duration: duration ? `${duration} days` : "permanent",
-    });
-
-    toast({
-      title: "User Banned",
-      description: `User has been banned for: ${reason}`,
-    });
-
-    loadUsers();
-    setShowBanDialog(null);
-  };
-
-  const unbanUser = (userId: string) => {
-    saveUserStats(userId, {
-      banned: false,
-      banReason: undefined,
-      banExpiry: undefined,
-    });
-
-    logAction("user_unbanned", "admin", "admin", {
-      targetUserId: userId,
-      targetUsername: users.find((u) => u.id === userId)?.username,
-    });
-
-    toast({
-      title: "User Unbanned",
-      description: "User has been unbanned successfully",
-    });
-
-    loadUsers();
-  };
-
-  const resetPassword = (userId: string) => {
-    const newPassword = `temp${Math.random().toString(36).slice(2, 8)}`;
-    const passwords = JSON.parse(localStorage.getItem("uec_passwords") || "{}");
-    const targetUser = users.find((u) => u.id === userId);
-
-    if (targetUser) {
-      passwords[targetUser.username] = newPassword;
-      localStorage.setItem("uec_passwords", JSON.stringify(passwords));
-
-      logAction("password_reset", "admin", "admin", {
-        targetUserId: userId,
-        targetUsername: targetUser.username,
-      });
-
-      toast({
-        title: "Password Reset",
-        description: `New password: ${newPassword}`,
-      });
-    }
-  };
-
-  const deleteUser = (userId: string) => {
-    if (userId === user?.id) {
-      toast({
-        title: "Cannot Delete",
-        description: "You cannot delete your own account",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    if (confirm("Are you sure you want to permanently delete this user?")) {
-      const allUsers = JSON.parse(localStorage.getItem("uec_users") || "[]");
-      const updatedUsers = allUsers.filter((u: User) => u.id !== userId);
-      localStorage.setItem("uec_users", JSON.stringify(updatedUsers));
-
-      // Clean up user data
-      localStorage.removeItem(`uec_friends_${userId}`);
-      localStorage.removeItem(`uec_chats_${userId}`);
-      localStorage.removeItem(`uec_settings_${userId}`);
-
-      logAction("user_deleted", "admin", "admin", {
-        targetUserId: userId,
-        targetUsername: users.find((u) => u.id === userId)?.username,
-      });
-
-      toast({
-        title: "User Deleted",
-        description: "User and all associated data have been removed",
-      });
-
-      loadUsers();
-    }
-  };
-
-  const filteredUsers = users.filter((user) => {
-    const matchesSearch =
-      user.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      user.email.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesRole = roleFilter === "all" || user.role === roleFilter;
-    const matchesStatus =
-      statusFilter === "all" ||
-      (statusFilter === "banned" && user.banned) ||
-      (statusFilter === "active" && !user.banned);
-
+  const filteredUsers = users.filter(user => {
+    const matchesSearch = user.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         user.email.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesRole = filterRole === "all" || user.role === filterRole;
+    const matchesStatus = filterStatus === "all" || user.status === filterStatus;
+    
     return matchesSearch && matchesRole && matchesStatus;
   });
 
@@ -250,344 +171,262 @@ export default function UsersAdmin() {
     return new Date(dateString).toLocaleDateString();
   };
 
-  const getBadgeVariant = (role: string) => {
-    return role === "admin" ? "destructive" : "secondary";
+  const formatLastLogin = (dateString: string) => {
+    const now = new Date();
+    const loginDate = new Date(dateString);
+    const diffInMinutes = Math.floor((now.getTime() - loginDate.getTime()) / (1000 * 60));
+    
+    if (diffInMinutes < 60) {
+      return `${diffInMinutes}m ago`;
+    } else if (diffInMinutes < 1440) {
+      return `${Math.floor(diffInMinutes / 60)}h ago`;
+    } else {
+      return `${Math.floor(diffInMinutes / 1440)}d ago`;
+    }
   };
 
-  if (!user || !isAdmin()) {
-    return null;
-  }
+  const getRoleBadgeColor = (role: string) => {
+    switch (role) {
+      case "admin": return "bg-red-600 text-white";
+      case "mod": return "bg-blue-600 text-white";
+      default: return "bg-gray-600 text-white";
+    }
+  };
+
+  const getStatusBadgeColor = (status: string) => {
+    switch (status) {
+      case "active": return "bg-green-600 text-white";
+      case "banned": return "bg-red-600 text-white";
+      case "suspended": return "bg-yellow-600 text-white";
+      default: return "bg-gray-600 text-white";
+    }
+  };
 
   return (
-    <MinecraftBackground>
-      {/* Top Navigation */}
-      <nav className="border-b border-border bg-card/50 backdrop-blur-sm">
-        <div className="px-6 py-4">
-          <div className="flex items-center justify-between">
-            <Link
-              to="/admin"
-              className="inline-flex items-center text-muted-foreground hover:text-primary transition-colors"
-            >
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Back to Admin
-            </Link>
-            <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
-                <Shield className="w-6 h-6 text-primary-foreground" />
-              </div>
-              <h1 className="text-2xl font-bold text-primary">
-                User Management
-              </h1>
-            </div>
+    <AdminLayout>
+      <div className="space-y-6">
+        {/* Header */}
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold text-white">User Management</h1>
+            <p className="text-gray-400">
+              Manage user accounts, roles, and permissions
+            </p>
           </div>
+          <Button 
+            onClick={loadUsers} 
+            className="bg-white text-black hover:bg-gray-200"
+            disabled={isLoading}
+          >
+            <RefreshCw className={`w-4 h-4 mr-2 ${isLoading ? "animate-spin" : ""}`} />
+            Refresh
+          </Button>
         </div>
-      </nav>
 
-      <div className="p-6">
-        <div className="max-w-7xl mx-auto">
-          {/* Filters */}
-          <Card className="minecraft-panel mb-6">
-            <CardHeader>
-              <CardTitle>User Filters</CardTitle>
-              <CardDescription>Search and filter users</CardDescription>
+        {/* Stats Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <Card className="bg-gray-900 border-gray-700">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium text-gray-400">Total Users</CardTitle>
+              <Users className="h-4 w-4 text-gray-500" />
             </CardHeader>
             <CardContent>
-              <div className="grid md:grid-cols-4 gap-4">
-                <div>
-                  <Label htmlFor="search">Search Users</Label>
-                  <div className="relative">
-                    <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                    <Input
-                      id="search"
-                      placeholder="Username or email..."
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                      className="minecraft-input pl-10"
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <Label htmlFor="role">Role Filter</Label>
-                  <Select value={roleFilter} onValueChange={setRoleFilter}>
-                    <SelectTrigger className="minecraft-input">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">All Roles</SelectItem>
-                      <SelectItem value="user">Users</SelectItem>
-                      <SelectItem value="admin">Admins</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div>
-                  <Label htmlFor="status">Status Filter</Label>
-                  <Select value={statusFilter} onValueChange={setStatusFilter}>
-                    <SelectTrigger className="minecraft-input">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">All Status</SelectItem>
-                      <SelectItem value="active">Active</SelectItem>
-                      <SelectItem value="banned">Banned</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div className="flex items-end">
-                  <Button
-                    onClick={loadUsers}
-                    className="minecraft-button bg-primary text-primary-foreground"
-                  >
-                    Refresh
-                  </Button>
-                </div>
-              </div>
+              <div className="text-2xl font-bold text-white">{stats.total}</div>
             </CardContent>
           </Card>
 
-          {/* User Stats */}
-          <div className="grid md:grid-cols-4 gap-4 mb-6">
-            <Card className="minecraft-panel">
-              <CardContent className="p-4">
-                <div className="text-2xl font-bold text-primary">
-                  {users.length}
-                </div>
-                <div className="text-sm text-muted-foreground">Total Users</div>
-              </CardContent>
-            </Card>
-            <Card className="minecraft-panel">
-              <CardContent className="p-4">
-                <div className="text-2xl font-bold text-green-500">
-                  {users.filter((u) => !u.banned).length}
-                </div>
-                <div className="text-sm text-muted-foreground">
-                  Active Users
-                </div>
-              </CardContent>
-            </Card>
-            <Card className="minecraft-panel">
-              <CardContent className="p-4">
-                <div className="text-2xl font-bold text-red-500">
-                  {users.filter((u) => u.banned).length}
-                </div>
-                <div className="text-sm text-muted-foreground">
-                  Banned Users
-                </div>
-              </CardContent>
-            </Card>
-            <Card className="minecraft-panel">
-              <CardContent className="p-4">
-                <div className="text-2xl font-bold text-purple-500">
-                  {users.filter((u) => u.role === "admin").length}
-                </div>
-                <div className="text-sm text-muted-foreground">
-                  Administrators
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Users Table */}
-          <Card className="minecraft-panel">
-            <CardHeader>
-              <CardTitle>Users ({filteredUsers.length})</CardTitle>
-              <CardDescription>
-                Manage user accounts and permissions
-              </CardDescription>
+          <Card className="bg-gray-900 border-gray-700">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium text-gray-400">Active Users</CardTitle>
+              <Eye className="h-4 w-4 text-gray-500" />
             </CardHeader>
             <CardContent>
-              <div className="overflow-x-auto">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>User</TableHead>
-                      <TableHead>Role</TableHead>
-                      <TableHead>Status</TableHead>
-                      <TableHead>Joined</TableHead>
-                      <TableHead>Last Login</TableHead>
-                      <TableHead>Activity</TableHead>
-                      <TableHead>Actions</TableHead>
+              <div className="text-2xl font-bold text-white">{stats.active}</div>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-gray-900 border-gray-700">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium text-gray-400">Banned Users</CardTitle>
+              <Ban className="h-4 w-4 text-gray-500" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-white">{stats.banned}</div>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-gray-900 border-gray-700">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium text-gray-400">Staff Members</CardTitle>
+              <Shield className="h-4 w-4 text-gray-500" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-white">{stats.admins}</div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Filters and Search */}
+        <Card className="bg-gray-900 border-gray-700">
+          <CardHeader>
+            <CardTitle className="text-white">Search and Filter</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex flex-col md:flex-row gap-4">
+              <div className="relative flex-1">
+                <Search className="absolute left-2 top-2.5 h-4 w-4 text-gray-400" />
+                <Input
+                  placeholder="Search users..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-8 bg-gray-800 border-gray-600 text-white placeholder-gray-400"
+                />
+              </div>
+              <select
+                value={filterRole}
+                onChange={(e) => setFilterRole(e.target.value)}
+                className="px-3 py-2 bg-gray-800 border border-gray-600 rounded-md text-white"
+              >
+                <option value="all">All Roles</option>
+                <option value="admin">Admin</option>
+                <option value="mod">Moderator</option>
+                <option value="user">User</option>
+              </select>
+              <select
+                value={filterStatus}
+                onChange={(e) => setFilterStatus(e.target.value)}
+                className="px-3 py-2 bg-gray-800 border border-gray-600 rounded-md text-white"
+              >
+                <option value="all">All Status</option>
+                <option value="active">Active</option>
+                <option value="banned">Banned</option>
+                <option value="suspended">Suspended</option>
+              </select>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Users Table */}
+        <Card className="bg-gray-900 border-gray-700">
+          <CardHeader>
+            <CardTitle className="text-white">Users ({filteredUsers.length})</CardTitle>
+            <CardDescription className="text-gray-400">
+              Manage user accounts and permissions
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow className="border-gray-700">
+                    <TableHead className="text-gray-300">User</TableHead>
+                    <TableHead className="text-gray-300">Role</TableHead>
+                    <TableHead className="text-gray-300">Status</TableHead>
+                    <TableHead className="text-gray-300">Last Login</TableHead>
+                    <TableHead className="text-gray-300">Join Date</TableHead>
+                    <TableHead className="text-gray-300">Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {filteredUsers.map((user) => (
+                    <TableRow key={user.id} className="border-gray-700">
+                      <TableCell className="text-white">
+                        <div>
+                          <div className="font-medium">{user.username}</div>
+                          <div className="text-sm text-gray-400">{user.email}</div>
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <Badge className={getRoleBadgeColor(user.role)}>
+                          {user.role.toUpperCase()}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        <Badge className={getStatusBadgeColor(user.status)}>
+                          {user.status.toUpperCase()}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="text-gray-300">
+                        {formatLastLogin(user.lastLogin)}
+                      </TableCell>
+                      <TableCell className="text-gray-300">
+                        {formatDate(user.joinDate)}
+                      </TableCell>
+                      <TableCell>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" className="h-8 w-8 p-0 text-gray-300 hover:bg-gray-800">
+                              <MoreHorizontal className="h-4 w-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end" className="bg-gray-800 border-gray-700">
+                            <DropdownMenuLabel className="text-white">Actions</DropdownMenuLabel>
+                            <DropdownMenuSeparator className="bg-gray-700" />
+                            
+                            {user.role !== "admin" && (
+                              <>
+                                <DropdownMenuItem 
+                                  onClick={() => updateUserRole(user.id, "admin")}
+                                  className="text-gray-300 hover:bg-gray-700"
+                                >
+                                  Make Admin
+                                </DropdownMenuItem>
+                                <DropdownMenuItem 
+                                  onClick={() => updateUserRole(user.id, "mod")}
+                                  className="text-gray-300 hover:bg-gray-700"
+                                >
+                                  Make Moderator
+                                </DropdownMenuItem>
+                              </>
+                            )}
+                            
+                            {user.role !== "user" && (
+                              <DropdownMenuItem 
+                                onClick={() => updateUserRole(user.id, "user")}
+                                className="text-gray-300 hover:bg-gray-700"
+                              >
+                                Remove Staff Role
+                              </DropdownMenuItem>
+                            )}
+                            
+                            <DropdownMenuSeparator className="bg-gray-700" />
+                            
+                            {user.status === "active" && (
+                              <>
+                                <DropdownMenuItem 
+                                  onClick={() => updateUserStatus(user.id, "suspended")}
+                                  className="text-yellow-400 hover:bg-gray-700"
+                                >
+                                  Suspend User
+                                </DropdownMenuItem>
+                                <DropdownMenuItem 
+                                  onClick={() => updateUserStatus(user.id, "banned")}
+                                  className="text-red-400 hover:bg-gray-700"
+                                >
+                                  Ban User
+                                </DropdownMenuItem>
+                              </>
+                            )}
+                            
+                            {user.status !== "active" && (
+                              <DropdownMenuItem 
+                                onClick={() => updateUserStatus(user.id, "active")}
+                                className="text-green-400 hover:bg-gray-700"
+                              >
+                                Unban/Unsuspend
+                              </DropdownMenuItem>
+                            )}
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </TableCell>
                     </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {filteredUsers.map((userData) => (
-                      <TableRow key={userData.id}>
-                        <TableCell>
-                          <div>
-                            <div className="font-medium">
-                              {userData.username}
-                            </div>
-                            <div className="text-sm text-muted-foreground">
-                              {userData.email}
-                            </div>
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <Badge variant={getBadgeVariant(userData.role)}>
-                            {userData.role}
-                          </Badge>
-                        </TableCell>
-                        <TableCell>
-                          {userData.banned ? (
-                            <Badge variant="destructive">Banned</Badge>
-                          ) : (
-                            <Badge variant="default" className="bg-green-500">
-                              Active
-                            </Badge>
-                          )}
-                        </TableCell>
-                        <TableCell className="text-sm">
-                          {formatDate(userData.createdAt)}
-                        </TableCell>
-                        <TableCell className="text-sm">
-                          {formatDate(userData.lastLogin || userData.createdAt)}
-                        </TableCell>
-                        <TableCell>
-                          <div className="text-sm">
-                            <div>{userData.loginCount} logins</div>
-                            <div>{userData.messagesSent} messages</div>
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex items-center space-x-1">
-                            <Select
-                              onValueChange={(action) => {
-                                switch (action) {
-                                  case "make_admin":
-                                    updateUserRole(userData.id, "admin");
-                                    break;
-                                  case "make_user":
-                                    updateUserRole(userData.id, "user");
-                                    break;
-                                  case "ban":
-                                    setShowBanDialog(userData);
-                                    break;
-                                  case "unban":
-                                    unbanUser(userData.id);
-                                    break;
-                                  case "reset_password":
-                                    resetPassword(userData.id);
-                                    break;
-                                  case "delete":
-                                    deleteUser(userData.id);
-                                    break;
-                                }
-                              }}
-                            >
-                              <SelectTrigger className="minecraft-input w-32">
-                                <SelectValue placeholder="Actions" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                {userData.role === "user" && (
-                                  <SelectItem value="make_admin">
-                                    Make Admin
-                                  </SelectItem>
-                                )}
-                                {userData.role === "admin" &&
-                                  userData.id !== user?.id && (
-                                    <SelectItem value="make_user">
-                                      Remove Admin
-                                    </SelectItem>
-                                  )}
-                                {userData.banned ? (
-                                  <SelectItem value="unban">
-                                    Unban User
-                                  </SelectItem>
-                                ) : (
-                                  <SelectItem value="ban">Ban User</SelectItem>
-                                )}
-                                <SelectItem value="reset_password">
-                                  Reset Password
-                                </SelectItem>
-                                {userData.id !== user?.id && (
-                                  <SelectItem value="delete">
-                                    Delete User
-                                  </SelectItem>
-                                )}
-                              </SelectContent>
-                            </Select>
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Ban Dialog */}
-          {showBanDialog && (
-            <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-              <Card className="minecraft-panel w-full max-w-md">
-                <CardHeader>
-                  <CardTitle>Ban User: {showBanDialog.username}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <form
-                    onSubmit={(e) => {
-                      e.preventDefault();
-                      const formData = new FormData(
-                        e.target as HTMLFormElement,
-                      );
-                      const reason = formData.get("reason") as string;
-                      const duration = formData.get("duration") as string;
-                      banUser(showBanDialog.id, reason, duration);
-                    }}
-                  >
-                    <div className="space-y-4">
-                      <div>
-                        <Label htmlFor="reason">Ban Reason *</Label>
-                        <Input
-                          name="reason"
-                          placeholder="Enter ban reason..."
-                          className="minecraft-input"
-                          required
-                        />
-                      </div>
-
-                      <div>
-                        <Label htmlFor="duration">Duration (days)</Label>
-                        <Select name="duration">
-                          <SelectTrigger className="minecraft-input">
-                            <SelectValue placeholder="Select duration" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="">Permanent</SelectItem>
-                            <SelectItem value="1">1 Day</SelectItem>
-                            <SelectItem value="7">7 Days</SelectItem>
-                            <SelectItem value="30">30 Days</SelectItem>
-                            <SelectItem value="90">90 Days</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-
-                      <div className="flex space-x-2">
-                        <Button
-                          type="submit"
-                          className="minecraft-button bg-red-600 text-white"
-                        >
-                          Ban User
-                        </Button>
-                        <Button
-                          type="button"
-                          variant="outline"
-                          onClick={() => setShowBanDialog(null)}
-                          className="minecraft-border"
-                        >
-                          Cancel
-                        </Button>
-                      </div>
-                    </div>
-                  </form>
-                </CardContent>
-              </Card>
+                  ))}
+                </TableBody>
+              </Table>
             </div>
-          )}
-        </div>
+          </CardContent>
+        </Card>
       </div>
-    </MinecraftBackground>
+    </AdminLayout>
   );
 }
