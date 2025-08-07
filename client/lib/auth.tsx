@@ -205,7 +205,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   );
 }
 
-export function useAuth() {
+export const useAuth = () => {
   try {
     const context = useContext(AuthContext);
     if (context === undefined) {
@@ -248,9 +248,10 @@ export function useAuth() {
         refreshUser: async () => {
           console.warn("RefreshUser called before AuthProvider is ready");
         },
+        token: null,
       };
     }
-    return context;
+    return { ...context, token: tokenManager.get() };
   } catch (error) {
     console.error("useAuth: Critical error accessing AuthContext:", error);
     // Return safe fallback even if useContext fails
@@ -264,6 +265,7 @@ export function useAuth() {
       changePassword: async () => false,
       isAdmin: () => false,
       refreshUser: async () => {},
+      token: null,
     };
   }
-}
+};
