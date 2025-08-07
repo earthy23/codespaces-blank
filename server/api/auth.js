@@ -194,7 +194,10 @@ router.post(
       }
 
       // Verify password
+      const bcryptStart = Date.now();
       const validPassword = await bcrypt.compare(password, user.password);
+      console.log(`🔒 Password verification took: ${Date.now() - bcryptStart}ms`);
+
       if (!validPassword) {
         await logActivity({
           action: "login_failed",
