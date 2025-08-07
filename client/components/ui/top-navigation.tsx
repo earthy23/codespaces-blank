@@ -41,17 +41,34 @@ export function TopNavigation() {
                       variant="outline"
                       className="minecraft-border bg-card border-destructive/50 text-destructive hover:bg-destructive hover:text-destructive-foreground shadow-lg hover:shadow-destructive/20"
                     >
-                      <Shield className="w-4 h-4 mr-2" />
+                      <svg viewBox="0 0 24 24" fill="none" className="w-4 h-4 mr-2">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" fill="currentColor"/>
+                        <path d="m9 12 2 2 4-4" stroke="white" strokeWidth="2" fill="none"/>
+                      </svg>
                       Admin Panel
                     </Button>
                   </Link>
                 )}
-                <Badge
-                  variant="secondary"
-                  className="bg-primary/20 text-foreground"
-                >
-                  {user.username}
-                </Badge>
+                <div className="flex items-center space-x-2">
+                  <Badge
+                    variant="secondary"
+                    className="bg-primary/20 text-foreground"
+                  >
+                    {user.username}
+                  </Badge>
+                  <Link to="/profile">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="hover:bg-primary/20"
+                    >
+                      <svg viewBox="0 0 24 24" fill="none" className="w-5 h-5">
+                        <circle cx="12" cy="8" r="5" fill="currentColor"/>
+                        <path d="M20 21a8 8 0 1 0-16 0" fill="currentColor" opacity="0.7"/>
+                      </svg>
+                    </Button>
+                  </Link>
+                </div>
                 <Button
                   variant="ghost"
                   size="icon"
