@@ -401,8 +401,9 @@ router.put(
         return res.status(401).json({ error: "Invalid current password" });
       }
 
-      // Hash new password
-      const hashedPassword = await bcrypt.hash(newPassword, 12);
+      // Hash new password with optimized salt rounds
+      const saltRounds = process.env.NODE_ENV === 'production' ? 12 : 8;
+      const hashedPassword = await bcrypt.hash(newPassword, saltRounds);
       await updateUser(req.user.userId, {
         password: hashedPassword,
         mustChangePassword: false,
@@ -465,8 +466,9 @@ router.put(
         return res.status(400).json({ error: "Password change not required" });
       }
 
-      // Hash new password
-      const hashedPassword = await bcrypt.hash(newPassword, 12);
+      // Hash new password with optimized salt rounds
+      const saltRounds = process.env.NODE_ENV === 'production' ? 12 : 8;
+      const hashedPassword = await bcrypt.hash(newPassword, saltRounds);
       await updateUser(req.user.userId, {
         password: hashedPassword,
         mustChangePassword: false,
