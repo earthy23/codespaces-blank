@@ -235,7 +235,11 @@ export const WebSocketManagerProvider = ({
         break;
 
       case "auth_error":
-        console.error("❌ WebSocket auth error:", data.message);
+        console.error("❌ WebSocket auth error:", {
+          message: data?.message || "Unknown auth error",
+          data: data,
+          timestamp: new Date().toISOString()
+        });
         break;
 
       case "user_online":
