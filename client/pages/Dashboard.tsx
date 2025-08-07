@@ -102,13 +102,25 @@ export default function Dashboard() {
       const response = await fetch(`/api/clients/${selectedClient}/launch`, {
         method: "POST",
       });
-      const data = await response.json();
 
       if (response.ok) {
+        // Try to parse response data, but don't fail if it's not JSON
+        try {
+          const data = await response.json();
+          console.log("Launch response:", data);
+        } catch (parseError) {
+          console.warn("Response not JSON, continuing anyway");
+        }
         // Open client play URL
         window.open(`/api/clients/${selectedClient}/play`, "_blank");
       } else {
-        console.error("Failed to launch client:", data.error);
+        // Try to get error message, but handle cases where response is not JSON
+        try {
+          const data = await response.json();
+          console.error("Failed to launch client:", data.error || "Unknown error");
+        } catch (parseError) {
+          console.error("Failed to launch client: Response not readable");
+        }
       }
     } catch (error) {
       console.error("Error launching client:", error);
