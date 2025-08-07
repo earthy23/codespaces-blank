@@ -244,12 +244,25 @@ const makeRequest = async (endpoint: string, options: RequestInit = {}) => {
       }
     }
 
-    // Handle network connectivity issues
+    // Handle network connectivity issues with retry logic
     if (error instanceof TypeError && error.message?.includes("fetch")) {
       console.error("Network error details:");
       console.error(`  URL: ${url}`);
       console.error(`  Error: ${error.message}`);
-      console.error(`  Stack: ${error.stack}`);
+      console.error(`  Method: ${options.method || "GET"}`);
+
+      // Add retry for critical auth endpoints
+      if (endpoint.includes("/auth/profile") && !options._isRetry) {
+        console.log("🔄 Retrying profile request once...");
+        try {
+          // Wait a short moment and retry once
+          await new Promise(resolve => setTimeout(resolve, 1000));
+          return await makeRequest(endpoint, { ...options, _isRetry: true });
+        } catch (retryError) {
+          console.error("❌ Retry also failed:", retryError.message);
+        }
+      }
+
       throw new Error(
         "Network error - please check your connection and try again",
       );
