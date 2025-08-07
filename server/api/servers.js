@@ -55,6 +55,13 @@ let servers = [];
 // Likes data store
 let serverLikes = {};
 
+// Export data for public API access
+export const getServersData = () => ({ servers, serverLikes });
+export const updateServerData = (serverData, likesData) => {
+  if (serverData) servers = serverData;
+  if (likesData) serverLikes = likesData;
+};
+
 // Validation middleware
 const handleValidation = (req, res, next) => {
   const errors = validationResult(req);
