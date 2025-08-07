@@ -87,12 +87,11 @@ export default function SettingsAdmin() {
 
     try {
       setIsSaving(true);
-      
+
       // In a real app, this would send to the API
-      await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate API call
-      
+      await new Promise((resolve) => setTimeout(resolve, 1000)); // Simulate API call
+
       console.log("Settings saved:", settings);
-      
     } catch (error) {
       console.error("Failed to save settings:", error);
     } finally {
@@ -101,7 +100,7 @@ export default function SettingsAdmin() {
   };
 
   const updateSetting = (key: keyof SystemSettings, value: any) => {
-    setSettings(prev => ({ ...prev, [key]: value }));
+    setSettings((prev) => ({ ...prev, [key]: value }));
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -121,20 +120,24 @@ export default function SettingsAdmin() {
             </p>
           </div>
           <div className="flex space-x-2">
-            <Button 
-              onClick={loadSettings} 
+            <Button
+              onClick={loadSettings}
               className="bg-gray-700 text-white hover:bg-gray-600"
               disabled={isLoading}
             >
-              <RefreshCw className={`w-4 h-4 mr-2 ${isLoading ? "animate-spin" : ""}`} />
+              <RefreshCw
+                className={`w-4 h-4 mr-2 ${isLoading ? "animate-spin" : ""}`}
+              />
               Refresh
             </Button>
-            <Button 
-              onClick={saveSettings} 
+            <Button
+              onClick={saveSettings}
               className="bg-white text-black hover:bg-gray-200"
               disabled={isSaving}
             >
-              <Save className={`w-4 h-4 mr-2 ${isSaving ? "animate-spin" : ""}`} />
+              <Save
+                className={`w-4 h-4 mr-2 ${isSaving ? "animate-spin" : ""}`}
+              />
               Save Changes
             </Button>
           </div>
@@ -155,7 +158,9 @@ export default function SettingsAdmin() {
             <CardContent className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="text-sm font-medium text-gray-400">Site Name</label>
+                  <label className="text-sm font-medium text-gray-400">
+                    Site Name
+                  </label>
                   <Input
                     value={settings.siteName}
                     onChange={(e) => updateSetting("siteName", e.target.value)}
@@ -163,29 +168,41 @@ export default function SettingsAdmin() {
                   />
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-gray-400">Support Email</label>
+                  <label className="text-sm font-medium text-gray-400">
+                    Support Email
+                  </label>
                   <Input
                     type="email"
                     value={settings.supportEmail}
-                    onChange={(e) => updateSetting("supportEmail", e.target.value)}
+                    onChange={(e) =>
+                      updateSetting("supportEmail", e.target.value)
+                    }
                     className="bg-gray-800 border-gray-600 text-white"
                   />
                 </div>
               </div>
               <div>
-                <label className="text-sm font-medium text-gray-400">Site Description</label>
+                <label className="text-sm font-medium text-gray-400">
+                  Site Description
+                </label>
                 <Textarea
                   value={settings.siteDescription}
-                  onChange={(e) => updateSetting("siteDescription", e.target.value)}
+                  onChange={(e) =>
+                    updateSetting("siteDescription", e.target.value)
+                  }
                   className="bg-gray-800 border-gray-600 text-white"
                   rows={2}
                 />
               </div>
               <div>
-                <label className="text-sm font-medium text-gray-400">Server Message</label>
+                <label className="text-sm font-medium text-gray-400">
+                  Server Message
+                </label>
                 <Textarea
                   value={settings.serverMessage}
-                  onChange={(e) => updateSetting("serverMessage", e.target.value)}
+                  onChange={(e) =>
+                    updateSetting("serverMessage", e.target.value)
+                  }
                   className="bg-gray-800 border-gray-600 text-white"
                   rows={3}
                 />
@@ -208,41 +225,61 @@ export default function SettingsAdmin() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <label className="text-sm font-medium text-white">Registration Enabled</label>
-                    <p className="text-xs text-gray-400">Allow new user registrations</p>
+                    <label className="text-sm font-medium text-white">
+                      Registration Enabled
+                    </label>
+                    <p className="text-xs text-gray-400">
+                      Allow new user registrations
+                    </p>
                   </div>
                   <Switch
                     checked={settings.registrationEnabled}
-                    onCheckedChange={(checked) => updateSetting("registrationEnabled", checked)}
+                    onCheckedChange={(checked) =>
+                      updateSetting("registrationEnabled", checked)
+                    }
                   />
                 </div>
                 <div className="flex items-center justify-between">
                   <div>
-                    <label className="text-sm font-medium text-white">Maintenance Mode</label>
-                    <p className="text-xs text-gray-400">Disable site for maintenance</p>
+                    <label className="text-sm font-medium text-white">
+                      Maintenance Mode
+                    </label>
+                    <p className="text-xs text-gray-400">
+                      Disable site for maintenance
+                    </p>
                   </div>
                   <Switch
                     checked={settings.maintenanceMode}
-                    onCheckedChange={(checked) => updateSetting("maintenanceMode", checked)}
+                    onCheckedChange={(checked) =>
+                      updateSetting("maintenanceMode", checked)
+                    }
                   />
                 </div>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="text-sm font-medium text-gray-400">Max Users Online</label>
+                  <label className="text-sm font-medium text-gray-400">
+                    Max Users Online
+                  </label>
                   <Input
                     type="number"
                     value={settings.maxUsersOnline}
-                    onChange={(e) => updateSetting("maxUsersOnline", parseInt(e.target.value))}
+                    onChange={(e) =>
+                      updateSetting("maxUsersOnline", parseInt(e.target.value))
+                    }
                     className="bg-gray-800 border-gray-600 text-white"
                   />
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-gray-400">Session Timeout (hours)</label>
+                  <label className="text-sm font-medium text-gray-400">
+                    Session Timeout (hours)
+                  </label>
                   <Input
                     type="number"
                     value={settings.sessionTimeout}
-                    onChange={(e) => updateSetting("sessionTimeout", parseInt(e.target.value))}
+                    onChange={(e) =>
+                      updateSetting("sessionTimeout", parseInt(e.target.value))
+                    }
                     className="bg-gray-800 border-gray-600 text-white"
                   />
                 </div>
@@ -265,22 +302,34 @@ export default function SettingsAdmin() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <label className="text-sm font-medium text-white">Chat Enabled</label>
-                    <p className="text-xs text-gray-400">Enable global chat system</p>
+                    <label className="text-sm font-medium text-white">
+                      Chat Enabled
+                    </label>
+                    <p className="text-xs text-gray-400">
+                      Enable global chat system
+                    </p>
                   </div>
                   <Switch
                     checked={settings.chatEnabled}
-                    onCheckedChange={(checked) => updateSetting("chatEnabled", checked)}
+                    onCheckedChange={(checked) =>
+                      updateSetting("chatEnabled", checked)
+                    }
                   />
                 </div>
                 <div className="flex items-center justify-between">
                   <div>
-                    <label className="text-sm font-medium text-white">Email Notifications</label>
-                    <p className="text-xs text-gray-400">Send system email notifications</p>
+                    <label className="text-sm font-medium text-white">
+                      Email Notifications
+                    </label>
+                    <p className="text-xs text-gray-400">
+                      Send system email notifications
+                    </p>
                   </div>
                   <Switch
                     checked={settings.emailNotifications}
-                    onCheckedChange={(checked) => updateSetting("emailNotifications", checked)}
+                    onCheckedChange={(checked) =>
+                      updateSetting("emailNotifications", checked)
+                    }
                   />
                 </div>
               </div>
@@ -301,27 +350,37 @@ export default function SettingsAdmin() {
             <CardContent className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="text-sm font-medium text-gray-400">Rate Limit (requests/min)</label>
+                  <label className="text-sm font-medium text-gray-400">
+                    Rate Limit (requests/min)
+                  </label>
                   <Input
                     type="number"
                     value={settings.rateLimit}
-                    onChange={(e) => updateSetting("rateLimit", parseInt(e.target.value))}
+                    onChange={(e) =>
+                      updateSetting("rateLimit", parseInt(e.target.value))
+                    }
                     className="bg-gray-800 border-gray-600 text-white"
                   />
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-gray-400">Max File Size (MB)</label>
+                  <label className="text-sm font-medium text-gray-400">
+                    Max File Size (MB)
+                  </label>
                   <Input
                     type="number"
                     value={settings.maxFileSize}
-                    onChange={(e) => updateSetting("maxFileSize", parseInt(e.target.value))}
+                    onChange={(e) =>
+                      updateSetting("maxFileSize", parseInt(e.target.value))
+                    }
                     className="bg-gray-800 border-gray-600 text-white"
                   />
                 </div>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="text-sm font-medium text-gray-400">Log Level</label>
+                  <label className="text-sm font-medium text-gray-400">
+                    Log Level
+                  </label>
                   <select
                     value={settings.logLevel}
                     onChange={(e) => updateSetting("logLevel", e.target.value)}
@@ -334,23 +393,33 @@ export default function SettingsAdmin() {
                   </select>
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-gray-400">Backup Interval (hours)</label>
+                  <label className="text-sm font-medium text-gray-400">
+                    Backup Interval (hours)
+                  </label>
                   <Input
                     type="number"
                     value={settings.backupInterval}
-                    onChange={(e) => updateSetting("backupInterval", parseInt(e.target.value))}
+                    onChange={(e) =>
+                      updateSetting("backupInterval", parseInt(e.target.value))
+                    }
                     className="bg-gray-800 border-gray-600 text-white"
                   />
                 </div>
               </div>
               <div className="flex items-center justify-between">
                 <div>
-                  <label className="text-sm font-medium text-white">Automatic Backups</label>
-                  <p className="text-xs text-gray-400">Enable scheduled database backups</p>
+                  <label className="text-sm font-medium text-white">
+                    Automatic Backups
+                  </label>
+                  <p className="text-xs text-gray-400">
+                    Enable scheduled database backups
+                  </p>
                 </div>
                 <Switch
                   checked={settings.backupEnabled}
-                  onCheckedChange={(checked) => updateSetting("backupEnabled", checked)}
+                  onCheckedChange={(checked) =>
+                    updateSetting("backupEnabled", checked)
+                  }
                 />
               </div>
             </CardContent>

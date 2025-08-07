@@ -58,7 +58,9 @@ export default function NewsAdmin() {
   const [articles, setArticles] = useState<NewsArticle[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [editingArticle, setEditingArticle] = useState<NewsArticle | null>(null);
+  const [editingArticle, setEditingArticle] = useState<NewsArticle | null>(
+    null,
+  );
   const [stats, setStats] = useState({
     total: 0,
     published: 0,
@@ -83,37 +85,52 @@ export default function NewsAdmin() {
 
     try {
       setIsLoading(true);
-      
+
       // Generate mock articles data
       const mockArticles: NewsArticle[] = [
         {
           id: "1",
           title: "Server Maintenance Complete",
-          content: "We have successfully completed the scheduled maintenance on all game servers. All systems are now running optimally with improved performance and stability.",
+          content:
+            "We have successfully completed the scheduled maintenance on all game servers. All systems are now running optimally with improved performance and stability.",
           summary: "Scheduled maintenance completed, servers running optimally",
           author: "admin",
           status: "published",
-          createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 2).toISOString(),
-          updatedAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 2).toISOString(),
-          publishedAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 2).toISOString(),
+          createdAt: new Date(
+            Date.now() - 1000 * 60 * 60 * 24 * 2,
+          ).toISOString(),
+          updatedAt: new Date(
+            Date.now() - 1000 * 60 * 60 * 24 * 2,
+          ).toISOString(),
+          publishedAt: new Date(
+            Date.now() - 1000 * 60 * 60 * 24 * 2,
+          ).toISOString(),
           tags: ["maintenance", "servers", "performance"],
         },
         {
           id: "2",
           title: "New VIP Features Released",
-          content: "We're excited to announce new VIP features including exclusive chat commands, priority server access, and custom profile badges.",
+          content:
+            "We're excited to announce new VIP features including exclusive chat commands, priority server access, and custom profile badges.",
           summary: "New VIP features now available for subscribers",
           author: "admin",
           status: "published",
-          createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 5).toISOString(),
-          updatedAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 5).toISOString(),
-          publishedAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 5).toISOString(),
+          createdAt: new Date(
+            Date.now() - 1000 * 60 * 60 * 24 * 5,
+          ).toISOString(),
+          updatedAt: new Date(
+            Date.now() - 1000 * 60 * 60 * 24 * 5,
+          ).toISOString(),
+          publishedAt: new Date(
+            Date.now() - 1000 * 60 * 60 * 24 * 5,
+          ).toISOString(),
           tags: ["vip", "features", "announcement"],
         },
         {
           id: "3",
           title: "Community Event Planning",
-          content: "Draft article about upcoming community events and tournaments.",
+          content:
+            "Draft article about upcoming community events and tournaments.",
           summary: "Planning upcoming community events",
           author: user?.username || "admin",
           status: "draft",
@@ -128,25 +145,41 @@ export default function NewsAdmin() {
           content: `This is the content for sample article ${i + 4}. It contains detailed information about various topics.`,
           summary: `Summary for article ${i + 4}`,
           author: user?.username || "admin",
-          status: Math.random() > 0.3 ? "published" : Math.random() > 0.5 ? "draft" : "archived" as const,
-          createdAt: new Date(Date.now() - Math.random() * 1000 * 60 * 60 * 24 * 30).toISOString(),
-          updatedAt: new Date(Date.now() - Math.random() * 1000 * 60 * 60 * 24 * 30).toISOString(),
-          publishedAt: Math.random() > 0.3 ? new Date(Date.now() - Math.random() * 1000 * 60 * 60 * 24 * 30).toISOString() : undefined,
+          status:
+            Math.random() > 0.3
+              ? "published"
+              : Math.random() > 0.5
+                ? "draft"
+                : ("archived" as const),
+          createdAt: new Date(
+            Date.now() - Math.random() * 1000 * 60 * 60 * 24 * 30,
+          ).toISOString(),
+          updatedAt: new Date(
+            Date.now() - Math.random() * 1000 * 60 * 60 * 24 * 30,
+          ).toISOString(),
+          publishedAt:
+            Math.random() > 0.3
+              ? new Date(
+                  Date.now() - Math.random() * 1000 * 60 * 60 * 24 * 30,
+                ).toISOString()
+              : undefined,
           tags: ["sample", "article"],
-        }))
-      ].sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime());
+        })),
+      ].sort(
+        (a, b) =>
+          new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime(),
+      );
 
       setArticles(mockArticles);
-      
+
       // Calculate stats
       const newStats = {
         total: mockArticles.length,
-        published: mockArticles.filter(a => a.status === "published").length,
-        drafts: mockArticles.filter(a => a.status === "draft").length,
-        archived: mockArticles.filter(a => a.status === "archived").length,
+        published: mockArticles.filter((a) => a.status === "published").length,
+        drafts: mockArticles.filter((a) => a.status === "draft").length,
+        archived: mockArticles.filter((a) => a.status === "archived").length,
       };
       setStats(newStats);
-
     } catch (error) {
       console.error("Failed to load articles:", error);
     } finally {
@@ -156,27 +189,32 @@ export default function NewsAdmin() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     const articleData = {
       title: formData.title,
       content: formData.content,
       summary: formData.summary,
-      tags: formData.tags.split(',').map(tag => tag.trim()).filter(tag => tag),
+      tags: formData.tags
+        .split(",")
+        .map((tag) => tag.trim())
+        .filter((tag) => tag),
       author: user?.username || "admin",
       status: "draft" as const,
     };
 
     if (editingArticle) {
       // Update existing article
-      setArticles(prev => prev.map(article => 
-        article.id === editingArticle.id 
-          ? { 
-              ...article, 
-              ...articleData, 
-              updatedAt: new Date().toISOString() 
-            }
-          : article
-      ));
+      setArticles((prev) =>
+        prev.map((article) =>
+          article.id === editingArticle.id
+            ? {
+                ...article,
+                ...articleData,
+                updatedAt: new Date().toISOString(),
+              }
+            : article,
+        ),
+      );
     } else {
       // Create new article
       const newArticle: NewsArticle = {
@@ -185,7 +223,7 @@ export default function NewsAdmin() {
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       };
-      setArticles(prev => [newArticle, ...prev]);
+      setArticles((prev) => [newArticle, ...prev]);
     }
 
     // Reset form and close dialog
@@ -207,21 +245,29 @@ export default function NewsAdmin() {
 
   const handleDelete = (articleId: string) => {
     if (confirm("Are you sure you want to delete this article?")) {
-      setArticles(prev => prev.filter(article => article.id !== articleId));
+      setArticles((prev) => prev.filter((article) => article.id !== articleId));
     }
   };
 
-  const updateStatus = (articleId: string, newStatus: "draft" | "published" | "archived") => {
-    setArticles(prev => prev.map(article => 
-      article.id === articleId 
-        ? { 
-            ...article, 
-            status: newStatus, 
-            updatedAt: new Date().toISOString(),
-            publishedAt: newStatus === "published" ? new Date().toISOString() : article.publishedAt
-          }
-        : article
-    ));
+  const updateStatus = (
+    articleId: string,
+    newStatus: "draft" | "published" | "archived",
+  ) => {
+    setArticles((prev) =>
+      prev.map((article) =>
+        article.id === articleId
+          ? {
+              ...article,
+              status: newStatus,
+              updatedAt: new Date().toISOString(),
+              publishedAt:
+                newStatus === "published"
+                  ? new Date().toISOString()
+                  : article.publishedAt,
+            }
+          : article,
+      ),
+    );
   };
 
   const formatDate = (dateString: string) => {
@@ -230,10 +276,14 @@ export default function NewsAdmin() {
 
   const getStatusBadgeColor = (status: string) => {
     switch (status) {
-      case "published": return "bg-green-600 text-white";
-      case "draft": return "bg-yellow-600 text-white";
-      case "archived": return "bg-gray-600 text-white";
-      default: return "bg-gray-600 text-white";
+      case "published":
+        return "bg-green-600 text-white";
+      case "draft":
+        return "bg-yellow-600 text-white";
+      case "archived":
+        return "bg-gray-600 text-white";
+      default:
+        return "bg-gray-600 text-white";
     }
   };
 
@@ -251,11 +301,16 @@ export default function NewsAdmin() {
           <div className="flex space-x-2">
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
               <DialogTrigger asChild>
-                <Button 
+                <Button
                   className="bg-white text-black hover:bg-gray-200"
                   onClick={() => {
                     setEditingArticle(null);
-                    setFormData({ title: "", content: "", summary: "", tags: "" });
+                    setFormData({
+                      title: "",
+                      content: "",
+                      summary: "",
+                      tags: "",
+                    });
                   }}
                 >
                   <Plus className="w-4 h-4 mr-2" />
@@ -264,65 +319,102 @@ export default function NewsAdmin() {
               </DialogTrigger>
               <DialogContent className="bg-gray-900 border-gray-700 text-white max-w-2xl">
                 <DialogHeader>
-                  <DialogTitle>{editingArticle ? "Edit Article" : "Create New Article"}</DialogTitle>
+                  <DialogTitle>
+                    {editingArticle ? "Edit Article" : "Create New Article"}
+                  </DialogTitle>
                   <DialogDescription className="text-gray-400">
-                    {editingArticle ? "Update the article details" : "Create a new news article or announcement"}
+                    {editingArticle
+                      ? "Update the article details"
+                      : "Create a new news article or announcement"}
                   </DialogDescription>
                 </DialogHeader>
                 <form onSubmit={handleSubmit} className="space-y-4">
                   <div>
-                    <label className="text-sm font-medium text-gray-400">Title</label>
+                    <label className="text-sm font-medium text-gray-400">
+                      Title
+                    </label>
                     <Input
                       required
                       value={formData.title}
-                      onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
+                      onChange={(e) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          title: e.target.value,
+                        }))
+                      }
                       className="bg-gray-800 border-gray-600 text-white"
                       placeholder="Article title"
                     />
                   </div>
                   <div>
-                    <label className="text-sm font-medium text-gray-400">Summary</label>
+                    <label className="text-sm font-medium text-gray-400">
+                      Summary
+                    </label>
                     <Input
                       required
                       value={formData.summary}
-                      onChange={(e) => setFormData(prev => ({ ...prev, summary: e.target.value }))}
+                      onChange={(e) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          summary: e.target.value,
+                        }))
+                      }
                       className="bg-gray-800 border-gray-600 text-white"
                       placeholder="Brief summary"
                     />
                   </div>
                   <div>
-                    <label className="text-sm font-medium text-gray-400">Content</label>
+                    <label className="text-sm font-medium text-gray-400">
+                      Content
+                    </label>
                     <Textarea
                       required
                       value={formData.content}
-                      onChange={(e) => setFormData(prev => ({ ...prev, content: e.target.value }))}
+                      onChange={(e) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          content: e.target.value,
+                        }))
+                      }
                       className="bg-gray-800 border-gray-600 text-white min-h-[200px]"
                       placeholder="Article content"
                     />
                   </div>
                   <div>
-                    <label className="text-sm font-medium text-gray-400">Tags (comma-separated)</label>
+                    <label className="text-sm font-medium text-gray-400">
+                      Tags (comma-separated)
+                    </label>
                     <Input
                       value={formData.tags}
-                      onChange={(e) => setFormData(prev => ({ ...prev, tags: e.target.value }))}
+                      onChange={(e) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          tags: e.target.value,
+                        }))
+                      }
                       className="bg-gray-800 border-gray-600 text-white"
                       placeholder="news, announcement, update"
                     />
                   </div>
                   <DialogFooter>
-                    <Button type="submit" className="bg-white text-black hover:bg-gray-200">
+                    <Button
+                      type="submit"
+                      className="bg-white text-black hover:bg-gray-200"
+                    >
                       {editingArticle ? "Update Article" : "Create Article"}
                     </Button>
                   </DialogFooter>
                 </form>
               </DialogContent>
             </Dialog>
-            <Button 
-              onClick={loadArticles} 
+            <Button
+              onClick={loadArticles}
               className="bg-gray-700 text-white hover:bg-gray-600"
               disabled={isLoading}
             >
-              <RefreshCw className={`w-4 h-4 mr-2 ${isLoading ? "animate-spin" : ""}`} />
+              <RefreshCw
+                className={`w-4 h-4 mr-2 ${isLoading ? "animate-spin" : ""}`}
+              />
               Refresh
             </Button>
           </div>
@@ -332,7 +424,9 @@ export default function NewsAdmin() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           <Card className="bg-gray-900 border-gray-700">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-gray-400">Total Articles</CardTitle>
+              <CardTitle className="text-sm font-medium text-gray-400">
+                Total Articles
+              </CardTitle>
               <Newspaper className="h-4 w-4 text-gray-500" />
             </CardHeader>
             <CardContent>
@@ -342,31 +436,43 @@ export default function NewsAdmin() {
 
           <Card className="bg-gray-900 border-gray-700">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-gray-400">Published</CardTitle>
+              <CardTitle className="text-sm font-medium text-gray-400">
+                Published
+              </CardTitle>
               <Eye className="h-4 w-4 text-green-400" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-white">{stats.published}</div>
+              <div className="text-2xl font-bold text-white">
+                {stats.published}
+              </div>
             </CardContent>
           </Card>
 
           <Card className="bg-gray-900 border-gray-700">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-gray-400">Drafts</CardTitle>
+              <CardTitle className="text-sm font-medium text-gray-400">
+                Drafts
+              </CardTitle>
               <Edit className="h-4 w-4 text-yellow-400" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-white">{stats.drafts}</div>
+              <div className="text-2xl font-bold text-white">
+                {stats.drafts}
+              </div>
             </CardContent>
           </Card>
 
           <Card className="bg-gray-900 border-gray-700">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-gray-400">Archived</CardTitle>
+              <CardTitle className="text-sm font-medium text-gray-400">
+                Archived
+              </CardTitle>
               <Calendar className="h-4 w-4 text-gray-400" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-white">{stats.archived}</div>
+              <div className="text-2xl font-bold text-white">
+                {stats.archived}
+              </div>
             </CardContent>
           </Card>
         </div>
@@ -374,7 +480,9 @@ export default function NewsAdmin() {
         {/* Articles Table */}
         <Card className="bg-gray-900 border-gray-700">
           <CardHeader>
-            <CardTitle className="text-white">Articles ({articles.length})</CardTitle>
+            <CardTitle className="text-white">
+              Articles ({articles.length})
+            </CardTitle>
             <CardDescription className="text-gray-400">
               Manage news articles and announcements
             </CardDescription>
@@ -419,8 +527,11 @@ export default function NewsAdmin() {
                       </TableCell>
                       <TableCell className="text-gray-300">
                         <div className="flex flex-wrap gap-1">
-                          {article.tags.slice(0, 2).map(tag => (
-                            <Badge key={tag} className="bg-gray-700 text-white text-xs">
+                          {article.tags.slice(0, 2).map((tag) => (
+                            <Badge
+                              key={tag}
+                              className="bg-gray-700 text-white text-xs"
+                            >
                               {tag}
                             </Badge>
                           ))}
@@ -441,29 +552,33 @@ export default function NewsAdmin() {
                           >
                             <Edit className="w-4 h-4" />
                           </Button>
-                          
+
                           {article.status === "draft" && (
                             <Button
                               variant="ghost"
                               size="sm"
-                              onClick={() => updateStatus(article.id, "published")}
+                              onClick={() =>
+                                updateStatus(article.id, "published")
+                              }
                               className="text-green-400 hover:bg-gray-800"
                             >
                               Publish
                             </Button>
                           )}
-                          
+
                           {article.status === "published" && (
                             <Button
                               variant="ghost"
                               size="sm"
-                              onClick={() => updateStatus(article.id, "archived")}
+                              onClick={() =>
+                                updateStatus(article.id, "archived")
+                              }
                               className="text-yellow-400 hover:bg-gray-800"
                             >
                               Archive
                             </Button>
                           )}
-                          
+
                           <Button
                             variant="ghost"
                             size="sm"

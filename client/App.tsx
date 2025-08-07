@@ -95,9 +95,15 @@ function App() {
                           <Route path="/admin" element={<AdminDashboard />} />
                           <Route path="/admin/users" element={<UsersAdmin />} />
                           <Route path="/admin/logs" element={<LogsAdmin />} />
-                          <Route path="/admin/analytics" element={<AnalyticsAdmin />} />
+                          <Route
+                            path="/admin/analytics"
+                            element={<AnalyticsAdmin />}
+                          />
                           <Route path="/admin/news" element={<NewsAdmin />} />
-                          <Route path="/admin/settings" element={<SettingsAdmin />} />
+                          <Route
+                            path="/admin/settings"
+                            element={<SettingsAdmin />}
+                          />
 
                           {/* Catch-all route */}
                           <Route path="*" element={<NotFound />} />

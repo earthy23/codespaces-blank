@@ -76,7 +76,9 @@ export function AdminLayout({ children }: AdminLayoutProps) {
         <Card className="bg-gray-900 border border-gray-700">
           <CardContent className="p-8 text-center">
             <Shield className="w-16 h-16 mx-auto mb-4 text-gray-400" />
-            <h1 className="text-2xl font-bold mb-2 text-white">Access Denied</h1>
+            <h1 className="text-2xl font-bold mb-2 text-white">
+              Access Denied
+            </h1>
             <p className="text-gray-300 mb-4">
               You don't have permission to access the admin panel.
             </p>
@@ -152,7 +154,9 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                       }`}
                       title={sidebarCollapsed ? item.label : ""}
                     >
-                      <Icon className={`w-5 h-5 flex-shrink-0 ${active ? "text-black" : "text-gray-300"}`} />
+                      <Icon
+                        className={`w-5 h-5 flex-shrink-0 ${active ? "text-black" : "text-gray-300"}`}
+                      />
                       {!sidebarCollapsed && (
                         <span className="text-sm font-medium">
                           {item.label}
@@ -255,7 +259,9 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                               : "hover:bg-gray-800 text-gray-300 hover:text-white"
                           }`}
                         >
-                          <Icon className={`w-5 h-5 ${active ? "text-black" : "text-gray-300"}`} />
+                          <Icon
+                            className={`w-5 h-5 ${active ? "text-black" : "text-gray-300"}`}
+                          />
                           <span className="text-sm font-medium">
                             {item.label}
                           </span>

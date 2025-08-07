@@ -56,20 +56,28 @@ interface RecentActivity {
 }
 
 // Simple dark chart component
-const MiniChart = ({ data, height = 60, color = "white" }: { data: number[], height?: number, color?: string }) => {
+const MiniChart = ({
+  data,
+  height = 60,
+  color = "white",
+}: {
+  data: number[];
+  height?: number;
+  color?: string;
+}) => {
   const max = Math.max(...data);
   const min = Math.min(...data);
   const range = max - min;
-  
+
   return (
     <div className="flex items-end space-x-1" style={{ height }}>
       {data.map((value, index) => (
         <div
           key={index}
           className="bg-white flex-1 transition-all duration-300 rounded-sm"
-          style={{ 
+          style={{
             height: `${range > 0 ? ((value - min) / range) * height : height / 2}px`,
-            minHeight: '2px'
+            minHeight: "2px",
           }}
         />
       ))}
@@ -97,7 +105,7 @@ export default function AdminDashboard() {
         activeUsers: 312,
         newUsersToday: 23,
         totalRevenue: 15847.75,
-        monthlyRevenue: 2190.50,
+        monthlyRevenue: 2190.5,
         activeSessions: 89,
         totalMessages: 8547,
         flaggedMessages: 3,
@@ -135,7 +143,7 @@ export default function AdminDashboard() {
     if (isConnected) {
       const count = getOnlineUsers().length;
       setOnlineUsersCount(count);
-      setStats(prevStats => {
+      setStats((prevStats) => {
         if (prevStats) {
           return {
             ...prevStats,
@@ -179,7 +187,7 @@ export default function AdminDashboard() {
           activeUsers: Math.floor((statsData.stats?.totalUsers || 1247) * 0.25),
           newUsersToday: 23,
           totalRevenue: 15847.75,
-          monthlyRevenue: 2190.50,
+          monthlyRevenue: 2190.5,
           activeSessions: statsData.stats?.activeSessions || 89,
           totalMessages: 8547,
           flaggedMessages: statsData.stats?.flaggedMessages || 3,
@@ -242,9 +250,7 @@ export default function AdminDashboard() {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-white">
-              Admin Dashboard
-            </h1>
+            <h1 className="text-3xl font-bold text-white">Admin Dashboard</h1>
             <p className="text-gray-400">
               Welcome back, {user?.username}. System overview and controls.
             </p>
@@ -261,12 +267,14 @@ export default function AdminDashboard() {
               )}
             </div>
           </div>
-          <Button 
-            onClick={loadDashboardData} 
+          <Button
+            onClick={loadDashboardData}
             className="bg-white text-black hover:bg-gray-200"
             disabled={isLoading}
           >
-            <RefreshCw className={`w-4 h-4 mr-2 ${isLoading ? "animate-spin" : ""}`} />
+            <RefreshCw
+              className={`w-4 h-4 mr-2 ${isLoading ? "animate-spin" : ""}`}
+            />
             Refresh
           </Button>
         </div>
@@ -275,11 +283,15 @@ export default function AdminDashboard() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           <Card className="bg-gray-900 border-gray-700">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-gray-400">Total Users</CardTitle>
+              <CardTitle className="text-sm font-medium text-gray-400">
+                Total Users
+              </CardTitle>
               <Users className="h-4 w-4 text-gray-500" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-white">{stats?.totalUsers || 0}</div>
+              <div className="text-2xl font-bold text-white">
+                {stats?.totalUsers || 0}
+              </div>
               <p className="text-xs text-gray-400">
                 <span className="text-white font-medium">
                   +{stats?.newUsersToday || 0}
@@ -294,7 +306,9 @@ export default function AdminDashboard() {
 
           <Card className="bg-gray-900 border-gray-700">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-gray-400">Monthly Revenue</CardTitle>
+              <CardTitle className="text-sm font-medium text-gray-400">
+                Monthly Revenue
+              </CardTitle>
               <DollarSign className="h-4 w-4 text-gray-500" />
             </CardHeader>
             <CardContent>
@@ -302,7 +316,8 @@ export default function AdminDashboard() {
                 {formatCurrency(stats?.monthlyRevenue || 0)}
               </div>
               <p className="text-xs text-gray-400">
-                <span className="text-white font-medium">+18.0%</span> from last month
+                <span className="text-white font-medium">+18.0%</span> from last
+                month
               </p>
               <div className="mt-3">
                 <MiniChart data={revenueData} />
@@ -312,7 +327,9 @@ export default function AdminDashboard() {
 
           <Card className="bg-gray-900 border-gray-700">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-gray-400">Active Sessions</CardTitle>
+              <CardTitle className="text-sm font-medium text-gray-400">
+                Active Sessions
+              </CardTitle>
               <Activity className="h-4 w-4 text-gray-500" />
             </CardHeader>
             <CardContent>
@@ -330,16 +347,18 @@ export default function AdminDashboard() {
 
           <Card className="bg-gray-900 border-gray-700">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-gray-400">Server Uptime</CardTitle>
+              <CardTitle className="text-sm font-medium text-gray-400">
+                Server Uptime
+              </CardTitle>
               <Server className="h-4 w-4 text-gray-500" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-white">
                 {stats?.serverUptime || 0}%
               </div>
-              <Progress 
-                value={stats?.serverUptime || 0} 
-                className="mt-2 bg-gray-700" 
+              <Progress
+                value={stats?.serverUptime || 0}
+                className="mt-2 bg-gray-700"
               />
             </CardContent>
           </Card>
@@ -357,7 +376,9 @@ export default function AdminDashboard() {
             <CardContent className="space-y-4">
               <div className="flex items-center justify-between">
                 <span className="text-sm text-gray-400">Total Messages</span>
-                <span className="font-bold text-white">{stats?.totalMessages?.toLocaleString() || 0}</span>
+                <span className="font-bold text-white">
+                  {stats?.totalMessages?.toLocaleString() || 0}
+                </span>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-sm text-gray-400">Flagged Messages</span>
@@ -367,7 +388,9 @@ export default function AdminDashboard() {
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-sm text-gray-400">Forum Posts</span>
-                <span className="font-bold text-white">{stats?.forumPosts || 0}</span>
+                <span className="font-bold text-white">
+                  {stats?.forumPosts || 0}
+                </span>
               </div>
               <div className="pt-2">
                 <Link to="/admin/chat-review">
@@ -390,7 +413,9 @@ export default function AdminDashboard() {
             <CardContent className="space-y-4">
               <div className="flex items-center justify-between">
                 <span className="text-sm text-gray-400">Total Tickets</span>
-                <span className="font-bold text-white">{stats?.supportTickets || 0}</span>
+                <span className="font-bold text-white">
+                  {stats?.supportTickets || 0}
+                </span>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-sm text-gray-400">Pending Tickets</span>
@@ -421,15 +446,25 @@ export default function AdminDashboard() {
             <CardContent className="space-y-4">
               <div className="flex items-center justify-between">
                 <span className="text-sm text-gray-400">VIP Subscriptions</span>
-                <span className="font-bold text-white">{formatCurrency(1450.25)}</span>
+                <span className="font-bold text-white">
+                  {formatCurrency(1450.25)}
+                </span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-400">VIP++ Subscriptions</span>
-                <span className="font-bold text-white">{formatCurrency(520.75)}</span>
+                <span className="text-sm text-gray-400">
+                  VIP++ Subscriptions
+                </span>
+                <span className="font-bold text-white">
+                  {formatCurrency(520.75)}
+                </span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-400">Legend Subscriptions</span>
-                <span className="font-bold text-white">{formatCurrency(219.50)}</span>
+                <span className="text-sm text-gray-400">
+                  Legend Subscriptions
+                </span>
+                <span className="font-bold text-white">
+                  {formatCurrency(219.5)}
+                </span>
               </div>
               <div className="pt-2 border-t border-gray-700">
                 <div className="flex items-center justify-between font-bold">
@@ -452,7 +487,10 @@ export default function AdminDashboard() {
                 <span className="text-white">Recent Activity</span>
               </div>
               <Link to="/admin/logs">
-                <Button className="bg-white text-black hover:bg-gray-200" size="sm">
+                <Button
+                  className="bg-white text-black hover:bg-gray-200"
+                  size="sm"
+                >
                   View All Logs
                 </Button>
               </Link>

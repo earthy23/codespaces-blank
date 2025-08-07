@@ -73,7 +73,7 @@ export default function UsersAdmin() {
 
     try {
       setIsLoading(true);
-      
+
       // Generate mock users data for demonstration
       const mockUsers: User[] = [
         {
@@ -83,7 +83,9 @@ export default function UsersAdmin() {
           role: "admin",
           status: "active",
           lastLogin: new Date(Date.now() - 1000 * 60 * 30).toISOString(),
-          joinDate: new Date(Date.now() - 1000 * 60 * 60 * 24 * 365).toISOString(),
+          joinDate: new Date(
+            Date.now() - 1000 * 60 * 60 * 24 * 365,
+          ).toISOString(),
         },
         {
           id: "2",
@@ -92,7 +94,9 @@ export default function UsersAdmin() {
           role: "mod",
           status: "active",
           lastLogin: new Date(Date.now() - 1000 * 60 * 60 * 2).toISOString(),
-          joinDate: new Date(Date.now() - 1000 * 60 * 60 * 24 * 200).toISOString(),
+          joinDate: new Date(
+            Date.now() - 1000 * 60 * 60 * 24 * 200,
+          ).toISOString(),
         },
         {
           id: "3",
@@ -101,7 +105,9 @@ export default function UsersAdmin() {
           role: "user",
           status: "active",
           lastLogin: new Date(Date.now() - 1000 * 60 * 60 * 24).toISOString(),
-          joinDate: new Date(Date.now() - 1000 * 60 * 60 * 24 * 30).toISOString(),
+          joinDate: new Date(
+            Date.now() - 1000 * 60 * 60 * 24 * 30,
+          ).toISOString(),
         },
         {
           id: "4",
@@ -109,8 +115,12 @@ export default function UsersAdmin() {
           email: "banned@example.com",
           role: "user",
           status: "banned",
-          lastLogin: new Date(Date.now() - 1000 * 60 * 60 * 24 * 7).toISOString(),
-          joinDate: new Date(Date.now() - 1000 * 60 * 60 * 24 * 60).toISOString(),
+          lastLogin: new Date(
+            Date.now() - 1000 * 60 * 60 * 24 * 7,
+          ).toISOString(),
+          joinDate: new Date(
+            Date.now() - 1000 * 60 * 60 * 24 * 60,
+          ).toISOString(),
         },
         // Add more mock users...
         ...Array.from({ length: 20 }, (_, i) => ({
@@ -118,23 +128,27 @@ export default function UsersAdmin() {
           username: `user${i + 5}`,
           email: `user${i + 5}@example.com`,
           role: "user" as const,
-          status: Math.random() > 0.9 ? "banned" : "active" as const,
-          lastLogin: new Date(Date.now() - Math.random() * 1000 * 60 * 60 * 24 * 30).toISOString(),
-          joinDate: new Date(Date.now() - Math.random() * 1000 * 60 * 60 * 24 * 365).toISOString(),
+          status: Math.random() > 0.9 ? "banned" : ("active" as const),
+          lastLogin: new Date(
+            Date.now() - Math.random() * 1000 * 60 * 60 * 24 * 30,
+          ).toISOString(),
+          joinDate: new Date(
+            Date.now() - Math.random() * 1000 * 60 * 60 * 24 * 365,
+          ).toISOString(),
         })),
       ];
 
       setUsers(mockUsers);
-      
+
       // Calculate stats
       const newStats = {
         total: mockUsers.length,
-        active: mockUsers.filter(u => u.status === "active").length,
-        banned: mockUsers.filter(u => u.status === "banned").length,
-        admins: mockUsers.filter(u => u.role === "admin" || u.role === "mod").length,
+        active: mockUsers.filter((u) => u.status === "active").length,
+        banned: mockUsers.filter((u) => u.status === "banned").length,
+        admins: mockUsers.filter((u) => u.role === "admin" || u.role === "mod")
+          .length,
       };
       setStats(newStats);
-
     } catch (error) {
       console.error("Failed to load users:", error);
     } finally {
@@ -142,28 +156,36 @@ export default function UsersAdmin() {
     }
   };
 
-  const updateUserStatus = async (userId: string, newStatus: "active" | "banned" | "suspended") => {
-    setUsers(prevUsers => 
-      prevUsers.map(user => 
-        user.id === userId ? { ...user, status: newStatus } : user
-      )
+  const updateUserStatus = async (
+    userId: string,
+    newStatus: "active" | "banned" | "suspended",
+  ) => {
+    setUsers((prevUsers) =>
+      prevUsers.map((user) =>
+        user.id === userId ? { ...user, status: newStatus } : user,
+      ),
     );
   };
 
-  const updateUserRole = async (userId: string, newRole: "admin" | "mod" | "user") => {
-    setUsers(prevUsers => 
-      prevUsers.map(user => 
-        user.id === userId ? { ...user, role: newRole } : user
-      )
+  const updateUserRole = async (
+    userId: string,
+    newRole: "admin" | "mod" | "user",
+  ) => {
+    setUsers((prevUsers) =>
+      prevUsers.map((user) =>
+        user.id === userId ? { ...user, role: newRole } : user,
+      ),
     );
   };
 
-  const filteredUsers = users.filter(user => {
-    const matchesSearch = user.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         user.email.toLowerCase().includes(searchTerm.toLowerCase());
+  const filteredUsers = users.filter((user) => {
+    const matchesSearch =
+      user.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      user.email.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesRole = filterRole === "all" || user.role === filterRole;
-    const matchesStatus = filterStatus === "all" || user.status === filterStatus;
-    
+    const matchesStatus =
+      filterStatus === "all" || user.status === filterStatus;
+
     return matchesSearch && matchesRole && matchesStatus;
   });
 
@@ -174,8 +196,10 @@ export default function UsersAdmin() {
   const formatLastLogin = (dateString: string) => {
     const now = new Date();
     const loginDate = new Date(dateString);
-    const diffInMinutes = Math.floor((now.getTime() - loginDate.getTime()) / (1000 * 60));
-    
+    const diffInMinutes = Math.floor(
+      (now.getTime() - loginDate.getTime()) / (1000 * 60),
+    );
+
     if (diffInMinutes < 60) {
       return `${diffInMinutes}m ago`;
     } else if (diffInMinutes < 1440) {
@@ -187,18 +211,25 @@ export default function UsersAdmin() {
 
   const getRoleBadgeColor = (role: string) => {
     switch (role) {
-      case "admin": return "bg-red-600 text-white";
-      case "mod": return "bg-blue-600 text-white";
-      default: return "bg-gray-600 text-white";
+      case "admin":
+        return "bg-red-600 text-white";
+      case "mod":
+        return "bg-blue-600 text-white";
+      default:
+        return "bg-gray-600 text-white";
     }
   };
 
   const getStatusBadgeColor = (status: string) => {
     switch (status) {
-      case "active": return "bg-green-600 text-white";
-      case "banned": return "bg-red-600 text-white";
-      case "suspended": return "bg-yellow-600 text-white";
-      default: return "bg-gray-600 text-white";
+      case "active":
+        return "bg-green-600 text-white";
+      case "banned":
+        return "bg-red-600 text-white";
+      case "suspended":
+        return "bg-yellow-600 text-white";
+      default:
+        return "bg-gray-600 text-white";
     }
   };
 
@@ -213,12 +244,14 @@ export default function UsersAdmin() {
               Manage user accounts, roles, and permissions
             </p>
           </div>
-          <Button 
-            onClick={loadUsers} 
+          <Button
+            onClick={loadUsers}
             className="bg-white text-black hover:bg-gray-200"
             disabled={isLoading}
           >
-            <RefreshCw className={`w-4 h-4 mr-2 ${isLoading ? "animate-spin" : ""}`} />
+            <RefreshCw
+              className={`w-4 h-4 mr-2 ${isLoading ? "animate-spin" : ""}`}
+            />
             Refresh
           </Button>
         </div>
@@ -227,7 +260,9 @@ export default function UsersAdmin() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           <Card className="bg-gray-900 border-gray-700">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-gray-400">Total Users</CardTitle>
+              <CardTitle className="text-sm font-medium text-gray-400">
+                Total Users
+              </CardTitle>
               <Users className="h-4 w-4 text-gray-500" />
             </CardHeader>
             <CardContent>
@@ -237,31 +272,43 @@ export default function UsersAdmin() {
 
           <Card className="bg-gray-900 border-gray-700">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-gray-400">Active Users</CardTitle>
+              <CardTitle className="text-sm font-medium text-gray-400">
+                Active Users
+              </CardTitle>
               <Eye className="h-4 w-4 text-gray-500" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-white">{stats.active}</div>
+              <div className="text-2xl font-bold text-white">
+                {stats.active}
+              </div>
             </CardContent>
           </Card>
 
           <Card className="bg-gray-900 border-gray-700">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-gray-400">Banned Users</CardTitle>
+              <CardTitle className="text-sm font-medium text-gray-400">
+                Banned Users
+              </CardTitle>
               <Ban className="h-4 w-4 text-gray-500" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-white">{stats.banned}</div>
+              <div className="text-2xl font-bold text-white">
+                {stats.banned}
+              </div>
             </CardContent>
           </Card>
 
           <Card className="bg-gray-900 border-gray-700">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-gray-400">Staff Members</CardTitle>
+              <CardTitle className="text-sm font-medium text-gray-400">
+                Staff Members
+              </CardTitle>
               <Shield className="h-4 w-4 text-gray-500" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-white">{stats.admins}</div>
+              <div className="text-2xl font-bold text-white">
+                {stats.admins}
+              </div>
             </CardContent>
           </Card>
         </div>
@@ -309,7 +356,9 @@ export default function UsersAdmin() {
         {/* Users Table */}
         <Card className="bg-gray-900 border-gray-700">
           <CardHeader>
-            <CardTitle className="text-white">Users ({filteredUsers.length})</CardTitle>
+            <CardTitle className="text-white">
+              Users ({filteredUsers.length})
+            </CardTitle>
             <CardDescription className="text-gray-400">
               Manage user accounts and permissions
             </CardDescription>
@@ -333,7 +382,9 @@ export default function UsersAdmin() {
                       <TableCell className="text-white">
                         <div>
                           <div className="font-medium">{user.username}</div>
-                          <div className="text-sm text-gray-400">{user.email}</div>
+                          <div className="text-sm text-gray-400">
+                            {user.email}
+                          </div>
                         </div>
                       </TableCell>
                       <TableCell>
@@ -355,23 +406,33 @@ export default function UsersAdmin() {
                       <TableCell>
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" className="h-8 w-8 p-0 text-gray-300 hover:bg-gray-800">
+                            <Button
+                              variant="ghost"
+                              className="h-8 w-8 p-0 text-gray-300 hover:bg-gray-800"
+                            >
                               <MoreHorizontal className="h-4 w-4" />
                             </Button>
                           </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end" className="bg-gray-800 border-gray-700">
-                            <DropdownMenuLabel className="text-white">Actions</DropdownMenuLabel>
+                          <DropdownMenuContent
+                            align="end"
+                            className="bg-gray-800 border-gray-700"
+                          >
+                            <DropdownMenuLabel className="text-white">
+                              Actions
+                            </DropdownMenuLabel>
                             <DropdownMenuSeparator className="bg-gray-700" />
-                            
+
                             {user.role !== "admin" && (
                               <>
-                                <DropdownMenuItem 
-                                  onClick={() => updateUserRole(user.id, "admin")}
+                                <DropdownMenuItem
+                                  onClick={() =>
+                                    updateUserRole(user.id, "admin")
+                                  }
                                   className="text-gray-300 hover:bg-gray-700"
                                 >
                                   Make Admin
                                 </DropdownMenuItem>
-                                <DropdownMenuItem 
+                                <DropdownMenuItem
                                   onClick={() => updateUserRole(user.id, "mod")}
                                   className="text-gray-300 hover:bg-gray-700"
                                 >
@@ -379,38 +440,44 @@ export default function UsersAdmin() {
                                 </DropdownMenuItem>
                               </>
                             )}
-                            
+
                             {user.role !== "user" && (
-                              <DropdownMenuItem 
+                              <DropdownMenuItem
                                 onClick={() => updateUserRole(user.id, "user")}
                                 className="text-gray-300 hover:bg-gray-700"
                               >
                                 Remove Staff Role
                               </DropdownMenuItem>
                             )}
-                            
+
                             <DropdownMenuSeparator className="bg-gray-700" />
-                            
+
                             {user.status === "active" && (
                               <>
-                                <DropdownMenuItem 
-                                  onClick={() => updateUserStatus(user.id, "suspended")}
+                                <DropdownMenuItem
+                                  onClick={() =>
+                                    updateUserStatus(user.id, "suspended")
+                                  }
                                   className="text-yellow-400 hover:bg-gray-700"
                                 >
                                   Suspend User
                                 </DropdownMenuItem>
-                                <DropdownMenuItem 
-                                  onClick={() => updateUserStatus(user.id, "banned")}
+                                <DropdownMenuItem
+                                  onClick={() =>
+                                    updateUserStatus(user.id, "banned")
+                                  }
                                   className="text-red-400 hover:bg-gray-700"
                                 >
                                   Ban User
                                 </DropdownMenuItem>
                               </>
                             )}
-                            
+
                             {user.status !== "active" && (
-                              <DropdownMenuItem 
-                                onClick={() => updateUserStatus(user.id, "active")}
+                              <DropdownMenuItem
+                                onClick={() =>
+                                  updateUserStatus(user.id, "active")
+                                }
                                 className="text-green-400 hover:bg-gray-700"
                               >
                                 Unban/Unsuspend

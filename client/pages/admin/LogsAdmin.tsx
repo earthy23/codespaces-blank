@@ -65,7 +65,7 @@ export default function LogsAdmin() {
 
     try {
       setIsLoading(true);
-      
+
       // Generate mock logs data for demonstration
       const mockLogs: LogEntry[] = [
         {
@@ -83,7 +83,7 @@ export default function LogsAdmin() {
           level: "error",
           category: "database",
           message: "Database connection timeout",
-          details: { error: "Connection timeout after 30s" }
+          details: { error: "Connection timeout after 30s" },
         },
         {
           id: "3",
@@ -101,12 +101,24 @@ export default function LogsAdmin() {
           category: "admin",
           message: "User role updated successfully",
           username: "admin",
-          details: { targetUser: "user123", newRole: "moderator" }
+          details: { targetUser: "user123", newRole: "moderator" },
         },
         // Add more mock logs...
         ...Array.from({ length: 50 }, (_, i) => {
-          const levels: Array<"info" | "warning" | "error" | "success"> = ["info", "warning", "error", "success"];
-          const categories = ["auth", "database", "security", "admin", "api", "system"];
+          const levels: Array<"info" | "warning" | "error" | "success"> = [
+            "info",
+            "warning",
+            "error",
+            "success",
+          ];
+          const categories = [
+            "auth",
+            "database",
+            "security",
+            "admin",
+            "api",
+            "system",
+          ];
           const messages = [
             "User login successful",
             "Password changed",
@@ -115,36 +127,44 @@ export default function LogsAdmin() {
             "API request processed",
             "System backup completed",
             "Configuration updated",
-            "Cache cleared"
+            "Cache cleared",
           ];
-          
+
           const level = levels[Math.floor(Math.random() * levels.length)];
-          const category = categories[Math.floor(Math.random() * categories.length)];
+          const category =
+            categories[Math.floor(Math.random() * categories.length)];
           const message = messages[Math.floor(Math.random() * messages.length)];
-          
+
           return {
             id: `${i + 5}`,
-            timestamp: new Date(Date.now() - Math.random() * 1000 * 60 * 60 * 24).toISOString(),
+            timestamp: new Date(
+              Date.now() - Math.random() * 1000 * 60 * 60 * 24,
+            ).toISOString(),
             level,
             category,
             message,
-            username: Math.random() > 0.5 ? `user${Math.floor(Math.random() * 100)}` : undefined,
+            username:
+              Math.random() > 0.5
+                ? `user${Math.floor(Math.random() * 100)}`
+                : undefined,
             ip: `192.168.1.${Math.floor(Math.random() * 255)}`,
           };
-        })
-      ].sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+        }),
+      ].sort(
+        (a, b) =>
+          new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime(),
+      );
 
       setLogs(mockLogs);
-      
+
       // Calculate stats
       const newStats = {
         total: mockLogs.length,
-        errors: mockLogs.filter(l => l.level === "error").length,
-        warnings: mockLogs.filter(l => l.level === "warning").length,
-        info: mockLogs.filter(l => l.level === "info").length,
+        errors: mockLogs.filter((l) => l.level === "error").length,
+        warnings: mockLogs.filter((l) => l.level === "warning").length,
+        info: mockLogs.filter((l) => l.level === "info").length,
       };
       setStats(newStats);
-
     } catch (error) {
       console.error("Failed to load logs:", error);
     } finally {
@@ -155,27 +175,31 @@ export default function LogsAdmin() {
   const exportLogs = () => {
     const csvContent = [
       "Timestamp,Level,Category,Message,Username,IP",
-      ...filteredLogs.map(log => 
-        `"${log.timestamp}","${log.level}","${log.category}","${log.message}","${log.username || ''}","${log.ip || ''}"`
-      )
-    ].join('\n');
-    
-    const blob = new Blob([csvContent], { type: 'text/csv' });
+      ...filteredLogs.map(
+        (log) =>
+          `"${log.timestamp}","${log.level}","${log.category}","${log.message}","${log.username || ""}","${log.ip || ""}"`,
+      ),
+    ].join("\n");
+
+    const blob = new Blob([csvContent], { type: "text/csv" });
     const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
+    const a = document.createElement("a");
     a.href = url;
-    a.download = `system-logs-${new Date().toISOString().split('T')[0]}.csv`;
+    a.download = `system-logs-${new Date().toISOString().split("T")[0]}.csv`;
     a.click();
     window.URL.revokeObjectURL(url);
   };
 
-  const filteredLogs = logs.filter(log => {
-    const matchesSearch = log.message.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         log.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         (log.username && log.username.toLowerCase().includes(searchTerm.toLowerCase()));
+  const filteredLogs = logs.filter((log) => {
+    const matchesSearch =
+      log.message.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      log.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (log.username &&
+        log.username.toLowerCase().includes(searchTerm.toLowerCase()));
     const matchesLevel = filterLevel === "all" || log.level === filterLevel;
-    const matchesCategory = filterCategory === "all" || log.category === filterCategory;
-    
+    const matchesCategory =
+      filterCategory === "all" || log.category === filterCategory;
+
     return matchesSearch && matchesLevel && matchesCategory;
   });
 
@@ -185,23 +209,33 @@ export default function LogsAdmin() {
 
   const getLevelIcon = (level: string) => {
     switch (level) {
-      case "error": return <AlertCircle className="w-4 h-4 text-red-400" />;
-      case "warning": return <AlertTriangle className="w-4 h-4 text-yellow-400" />;
-      case "success": return <CheckCircle className="w-4 h-4 text-green-400" />;
-      default: return <Info className="w-4 h-4 text-blue-400" />;
+      case "error":
+        return <AlertCircle className="w-4 h-4 text-red-400" />;
+      case "warning":
+        return <AlertTriangle className="w-4 h-4 text-yellow-400" />;
+      case "success":
+        return <CheckCircle className="w-4 h-4 text-green-400" />;
+      default:
+        return <Info className="w-4 h-4 text-blue-400" />;
     }
   };
 
   const getLevelBadgeColor = (level: string) => {
     switch (level) {
-      case "error": return "bg-red-600 text-white";
-      case "warning": return "bg-yellow-600 text-white";
-      case "success": return "bg-green-600 text-white";
-      default: return "bg-blue-600 text-white";
+      case "error":
+        return "bg-red-600 text-white";
+      case "warning":
+        return "bg-yellow-600 text-white";
+      case "success":
+        return "bg-green-600 text-white";
+      default:
+        return "bg-blue-600 text-white";
     }
   };
 
-  const categories = Array.from(new Set(logs.map(log => log.category))).sort();
+  const categories = Array.from(
+    new Set(logs.map((log) => log.category)),
+  ).sort();
 
   return (
     <AdminLayout>
@@ -215,19 +249,21 @@ export default function LogsAdmin() {
             </p>
           </div>
           <div className="flex space-x-2">
-            <Button 
-              onClick={exportLogs} 
+            <Button
+              onClick={exportLogs}
               className="bg-gray-700 text-white hover:bg-gray-600"
             >
               <Download className="w-4 h-4 mr-2" />
               Export
             </Button>
-            <Button 
-              onClick={loadLogs} 
+            <Button
+              onClick={loadLogs}
               className="bg-white text-black hover:bg-gray-200"
               disabled={isLoading}
             >
-              <RefreshCw className={`w-4 h-4 mr-2 ${isLoading ? "animate-spin" : ""}`} />
+              <RefreshCw
+                className={`w-4 h-4 mr-2 ${isLoading ? "animate-spin" : ""}`}
+              />
               Refresh
             </Button>
           </div>
@@ -237,7 +273,9 @@ export default function LogsAdmin() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           <Card className="bg-gray-900 border-gray-700">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-gray-400">Total Logs</CardTitle>
+              <CardTitle className="text-sm font-medium text-gray-400">
+                Total Logs
+              </CardTitle>
               <FileText className="h-4 w-4 text-gray-500" />
             </CardHeader>
             <CardContent>
@@ -247,27 +285,37 @@ export default function LogsAdmin() {
 
           <Card className="bg-gray-900 border-gray-700">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-gray-400">Errors</CardTitle>
+              <CardTitle className="text-sm font-medium text-gray-400">
+                Errors
+              </CardTitle>
               <AlertCircle className="h-4 w-4 text-red-400" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-white">{stats.errors}</div>
+              <div className="text-2xl font-bold text-white">
+                {stats.errors}
+              </div>
             </CardContent>
           </Card>
 
           <Card className="bg-gray-900 border-gray-700">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-gray-400">Warnings</CardTitle>
+              <CardTitle className="text-sm font-medium text-gray-400">
+                Warnings
+              </CardTitle>
               <AlertTriangle className="h-4 w-4 text-yellow-400" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-white">{stats.warnings}</div>
+              <div className="text-2xl font-bold text-white">
+                {stats.warnings}
+              </div>
             </CardContent>
           </Card>
 
           <Card className="bg-gray-900 border-gray-700">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-gray-400">Info Logs</CardTitle>
+              <CardTitle className="text-sm font-medium text-gray-400">
+                Info Logs
+              </CardTitle>
               <Info className="h-4 w-4 text-blue-400" />
             </CardHeader>
             <CardContent>
@@ -309,8 +357,10 @@ export default function LogsAdmin() {
                 className="px-3 py-2 bg-gray-800 border border-gray-600 rounded-md text-white"
               >
                 <option value="all">All Categories</option>
-                {categories.map(category => (
-                  <option key={category} value={category}>{category}</option>
+                {categories.map((category) => (
+                  <option key={category} value={category}>
+                    {category}
+                  </option>
                 ))}
               </select>
             </div>
@@ -320,7 +370,9 @@ export default function LogsAdmin() {
         {/* Logs Table */}
         <Card className="bg-gray-900 border-gray-700">
           <CardHeader>
-            <CardTitle className="text-white">Recent Logs ({filteredLogs.length})</CardTitle>
+            <CardTitle className="text-white">
+              Recent Logs ({filteredLogs.length})
+            </CardTitle>
             <CardDescription className="text-gray-400">
               System activity and events log
             </CardDescription>
@@ -375,7 +427,8 @@ export default function LogsAdmin() {
             </div>
             {filteredLogs.length > 100 && (
               <div className="mt-4 text-center text-gray-400">
-                Showing first 100 results. Use filters to narrow down the search.
+                Showing first 100 results. Use filters to narrow down the
+                search.
               </div>
             )}
           </CardContent>

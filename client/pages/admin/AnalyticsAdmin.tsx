@@ -63,15 +63,29 @@ interface AnalyticsData {
 }
 
 // Dark theme chart components
-const BarChart = ({ data, height = 200, title }: { data: Array<{label: string, value: number}>, height?: number, title?: string }) => {
-  const validData = data.filter(d => !isNaN(d.value) && d.value >= 0);
-  const maxValue = validData.length > 0 ? Math.max(...validData.map(d => d.value)) : 1;
+const BarChart = ({
+  data,
+  height = 200,
+  title,
+}: {
+  data: Array<{ label: string; value: number }>;
+  height?: number;
+  title?: string;
+}) => {
+  const validData = data.filter((d) => !isNaN(d.value) && d.value >= 0);
+  const maxValue =
+    validData.length > 0 ? Math.max(...validData.map((d) => d.value)) : 1;
 
   if (validData.length === 0) {
     return (
       <div className="space-y-2">
-        {title && <h4 className="text-sm font-medium text-gray-400">{title}</h4>}
-        <div className="flex items-center justify-center text-gray-500" style={{ height: height }}>
+        {title && (
+          <h4 className="text-sm font-medium text-gray-400">{title}</h4>
+        )}
+        <div
+          className="flex items-center justify-center text-gray-500"
+          style={{ height: height }}
+        >
           <span className="text-sm">No data available</span>
         </div>
       </div>
@@ -84,7 +98,8 @@ const BarChart = ({ data, height = 200, title }: { data: Array<{label: string, v
       <div className="flex items-end space-x-1" style={{ height: height }}>
         {data.map((item, index) => {
           const safeValue = isNaN(item.value) ? 0 : Math.max(0, item.value);
-          const barHeight = maxValue > 0 ? (safeValue / maxValue) * (height - 40) : 0;
+          const barHeight =
+            maxValue > 0 ? (safeValue / maxValue) * (height - 40) : 0;
 
           return (
             <div key={index} className="flex-1 flex flex-col items-center">
@@ -92,15 +107,13 @@ const BarChart = ({ data, height = 200, title }: { data: Array<{label: string, v
                 className="bg-white w-full min-w-[8px] transition-all duration-300 rounded-sm"
                 style={{
                   height: `${Math.max(2, barHeight)}px`,
-                  minHeight: '2px'
+                  minHeight: "2px",
                 }}
               />
               <div className="text-xs text-gray-400 mt-1 text-center truncate w-full">
                 {item.label}
               </div>
-              <div className="text-xs font-medium text-white">
-                {safeValue}
-              </div>
+              <div className="text-xs font-medium text-white">{safeValue}</div>
             </div>
           );
         })}
@@ -109,22 +122,35 @@ const BarChart = ({ data, height = 200, title }: { data: Array<{label: string, v
   );
 };
 
-const LineChart = ({ data, height = 200, title }: { data: Array<{label: string, value: number}>, height?: number, title?: string }) => {
-  const validData = data.filter(d => !isNaN(d.value));
+const LineChart = ({
+  data,
+  height = 200,
+  title,
+}: {
+  data: Array<{ label: string; value: number }>;
+  height?: number;
+  title?: string;
+}) => {
+  const validData = data.filter((d) => !isNaN(d.value));
 
   if (validData.length === 0) {
     return (
       <div className="space-y-2">
-        {title && <h4 className="text-sm font-medium text-gray-400">{title}</h4>}
-        <div className="flex items-center justify-center text-gray-500" style={{ height: height }}>
+        {title && (
+          <h4 className="text-sm font-medium text-gray-400">{title}</h4>
+        )}
+        <div
+          className="flex items-center justify-center text-gray-500"
+          style={{ height: height }}
+        >
           <span className="text-sm">No data available</span>
         </div>
       </div>
     );
   }
 
-  const maxValue = Math.max(...validData.map(d => d.value));
-  const minValue = Math.min(...validData.map(d => d.value));
+  const maxValue = Math.max(...validData.map((d) => d.value));
+  const minValue = Math.min(...validData.map((d) => d.value));
   const range = maxValue - minValue || 1; // Avoid division by zero
 
   return (
@@ -136,14 +162,17 @@ const LineChart = ({ data, height = 200, title }: { data: Array<{label: string, 
             fill="none"
             stroke="white"
             strokeWidth="2"
-            points={data.map((item, index) => {
-              const safeValue = isNaN(item.value) ? minValue : item.value;
-              const x = data.length > 1 ? (index / (data.length - 1)) * 100 : 50;
-              const y = 100 - ((safeValue - minValue) / range) * 80;
-              const safeX = isNaN(x) ? 50 : x;
-              const safeY = isNaN(y) ? 50 : y;
-              return `${safeX},${safeY}`;
-            }).join(' ')}
+            points={data
+              .map((item, index) => {
+                const safeValue = isNaN(item.value) ? minValue : item.value;
+                const x =
+                  data.length > 1 ? (index / (data.length - 1)) * 100 : 50;
+                const y = 100 - ((safeValue - minValue) / range) * 80;
+                const safeX = isNaN(x) ? 50 : x;
+                const safeY = isNaN(y) ? 50 : y;
+                return `${safeX},${safeY}`;
+              })
+              .join(" ")}
             vectorEffect="non-scaling-stroke"
             transform="scale(1, 1.5)"
           />
@@ -170,7 +199,9 @@ const LineChart = ({ data, height = 200, title }: { data: Array<{label: string, 
           {data.map((item, index) => (
             <div key={index} className="text-center">
               <div>{item.label}</div>
-              <div className="font-medium text-white">{isNaN(item.value) ? 0 : item.value}</div>
+              <div className="font-medium text-white">
+                {isNaN(item.value) ? 0 : item.value}
+              </div>
             </div>
           ))}
         </div>
@@ -179,15 +210,26 @@ const LineChart = ({ data, height = 200, title }: { data: Array<{label: string, 
   );
 };
 
-const PieChartComponent = ({ data, title }: { data: Array<{label: string, value: number, color?: string}>, title?: string }) => {
-  const total = data.reduce((sum, item) => sum + (isNaN(item.value) ? 0 : item.value), 0);
+const PieChartComponent = ({
+  data,
+  title,
+}: {
+  data: Array<{ label: string; value: number; color?: string }>;
+  title?: string;
+}) => {
+  const total = data.reduce(
+    (sum, item) => sum + (isNaN(item.value) ? 0 : item.value),
+    0,
+  );
   let cumulativePercentage = 0;
 
   // Return empty state if no valid data
   if (total === 0 || data.length === 0) {
     return (
       <div className="space-y-4">
-        {title && <h4 className="text-sm font-medium text-gray-400">{title}</h4>}
+        {title && (
+          <h4 className="text-sm font-medium text-gray-400">{title}</h4>
+        )}
         <div className="flex items-center justify-center h-32 text-gray-500">
           <span className="text-sm">No data available</span>
         </div>
@@ -226,10 +268,18 @@ const PieChartComponent = ({ data, title }: { data: Array<{label: string, value:
                   cy="64"
                   r="56"
                   fill="none"
-                  stroke={index === 0 ? "#ffffff" : index === 1 ? "#d1d5db" : "#9ca3af"}
+                  stroke={
+                    index === 0
+                      ? "#ffffff"
+                      : index === 1
+                        ? "#d1d5db"
+                        : "#9ca3af"
+                  }
                   strokeWidth="16"
                   strokeDasharray={strokeDasharray}
-                  strokeDashoffset={isNaN(strokeDashoffset) ? 0 : strokeDashoffset}
+                  strokeDashoffset={
+                    isNaN(strokeDashoffset) ? 0 : strokeDashoffset
+                  }
                   className="transition-all duration-300"
                 />
               );
@@ -247,7 +297,12 @@ const PieChartComponent = ({ data, title }: { data: Array<{label: string, value:
                 <div
                   className="w-3 h-3 rounded-full"
                   style={{
-                    backgroundColor: index === 0 ? "#ffffff" : index === 1 ? "#d1d5db" : "#9ca3af"
+                    backgroundColor:
+                      index === 0
+                        ? "#ffffff"
+                        : index === 1
+                          ? "#d1d5db"
+                          : "#9ca3af",
                   }}
                 />
                 <span className="text-sm text-gray-400">{item.label}</span>
@@ -300,13 +355,13 @@ export default function AnalyticsAdmin() {
         },
         revenue: {
           total: 15847.75,
-          thisMonth: 2190.50,
+          thisMonth: 2190.5,
           lastMonth: 1856.25,
           growthRate: 18.0,
           breakdown: {
             vip: 1450.25,
             vipPlus: 520.75,
-            legend: 219.50,
+            legend: 219.5,
           },
           monthlyData: [
             { month: "Jan", revenue: 1654 },
@@ -371,9 +426,14 @@ export default function AnalyticsAdmin() {
         <Card className="bg-gray-900 border-gray-700">
           <CardContent className="p-8 text-center">
             <BarChart3 className="w-16 h-16 mx-auto mb-4 text-gray-400" />
-            <h2 className="text-xl font-bold mb-2 text-white">Error Loading Analytics</h2>
+            <h2 className="text-xl font-bold mb-2 text-white">
+              Error Loading Analytics
+            </h2>
             <p className="text-gray-400 mb-4">{error}</p>
-            <Button onClick={loadAnalytics} className="bg-white text-black hover:bg-gray-200">
+            <Button
+              onClick={loadAnalytics}
+              className="bg-white text-black hover:bg-gray-200"
+            >
               Retry
             </Button>
           </CardContent>
@@ -388,7 +448,9 @@ export default function AnalyticsAdmin() {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-white">Analytics Dashboard</h1>
+            <h1 className="text-3xl font-bold text-white">
+              Analytics Dashboard
+            </h1>
             <p className="text-gray-400">
               Comprehensive platform performance and user engagement insights
             </p>
@@ -403,7 +465,9 @@ export default function AnalyticsAdmin() {
               size="sm"
               disabled={isLoading}
             >
-              <RefreshCw className={`w-4 h-4 mr-2 ${isLoading ? "animate-spin" : ""}`} />
+              <RefreshCw
+                className={`w-4 h-4 mr-2 ${isLoading ? "animate-spin" : ""}`}
+              />
               Refresh
             </Button>
           </div>
@@ -411,10 +475,30 @@ export default function AnalyticsAdmin() {
 
         <Tabs defaultValue="overview" className="space-y-6">
           <TabsList className="grid w-full grid-cols-4 bg-gray-800 border-gray-700">
-            <TabsTrigger value="overview" className="data-[state=active]:bg-white data-[state=active]:text-black text-gray-300">Overview</TabsTrigger>
-            <TabsTrigger value="users" className="data-[state=active]:bg-white data-[state=active]:text-black text-gray-300">Users</TabsTrigger>
-            <TabsTrigger value="revenue" className="data-[state=active]:bg-white data-[state=active]:text-black text-gray-300">Revenue</TabsTrigger>
-            <TabsTrigger value="performance" className="data-[state=active]:bg-white data-[state=active]:text-black text-gray-300">Performance</TabsTrigger>
+            <TabsTrigger
+              value="overview"
+              className="data-[state=active]:bg-white data-[state=active]:text-black text-gray-300"
+            >
+              Overview
+            </TabsTrigger>
+            <TabsTrigger
+              value="users"
+              className="data-[state=active]:bg-white data-[state=active]:text-black text-gray-300"
+            >
+              Users
+            </TabsTrigger>
+            <TabsTrigger
+              value="revenue"
+              className="data-[state=active]:bg-white data-[state=active]:text-black text-gray-300"
+            >
+              Revenue
+            </TabsTrigger>
+            <TabsTrigger
+              value="performance"
+              className="data-[state=active]:bg-white data-[state=active]:text-black text-gray-300"
+            >
+              Performance
+            </TabsTrigger>
           </TabsList>
 
           {/* Overview Tab */}
@@ -423,11 +507,15 @@ export default function AnalyticsAdmin() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               <Card className="bg-gray-900 border-gray-700">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium text-gray-400">Total Users</CardTitle>
+                  <CardTitle className="text-sm font-medium text-gray-400">
+                    Total Users
+                  </CardTitle>
                   <Users className="h-4 w-4 text-gray-500" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold text-white">{analytics?.userGrowth.total}</div>
+                  <div className="text-2xl font-bold text-white">
+                    {analytics?.userGrowth.total}
+                  </div>
                   <p className="text-xs text-gray-400">
                     <span className="text-white font-medium">
                       {formatPercentage(analytics?.userGrowth.growthRate || 0)}
@@ -439,7 +527,9 @@ export default function AnalyticsAdmin() {
 
               <Card className="bg-gray-900 border-gray-700">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium text-gray-400">Monthly Revenue</CardTitle>
+                  <CardTitle className="text-sm font-medium text-gray-400">
+                    Monthly Revenue
+                  </CardTitle>
                   <DollarSign className="h-4 w-4 text-gray-500" />
                 </CardHeader>
                 <CardContent>
@@ -457,14 +547,23 @@ export default function AnalyticsAdmin() {
 
               <Card className="bg-gray-900 border-gray-700">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium text-gray-400">Active Users</CardTitle>
+                  <CardTitle className="text-sm font-medium text-gray-400">
+                    Active Users
+                  </CardTitle>
                   <Activity className="h-4 w-4 text-gray-500" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold text-white">{analytics?.activity.dailyActiveUsers}</div>
+                  <div className="text-2xl font-bold text-white">
+                    {analytics?.activity.dailyActiveUsers}
+                  </div>
                   <p className="text-xs text-gray-400">
                     <span className="text-white font-medium">
-                      {((analytics?.activity.dailyActiveUsers || 0) / (analytics?.userGrowth.total || 1) * 100).toFixed(1)}%
+                      {(
+                        ((analytics?.activity.dailyActiveUsers || 0) /
+                          (analytics?.userGrowth.total || 1)) *
+                        100
+                      ).toFixed(1)}
+                      %
                     </span>{" "}
                     of total users
                   </p>
@@ -473,12 +572,19 @@ export default function AnalyticsAdmin() {
 
               <Card className="bg-gray-900 border-gray-700">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium text-gray-400">Server Uptime</CardTitle>
+                  <CardTitle className="text-sm font-medium text-gray-400">
+                    Server Uptime
+                  </CardTitle>
                   <Server className="h-4 w-4 text-gray-500" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold text-white">{analytics?.performance.serverUptime}%</div>
-                  <Progress value={analytics?.performance.serverUptime || 0} className="mt-2 bg-gray-700" />
+                  <div className="text-2xl font-bold text-white">
+                    {analytics?.performance.serverUptime}%
+                  </div>
+                  <Progress
+                    value={analytics?.performance.serverUptime || 0}
+                    className="mt-2 bg-gray-700"
+                  />
                 </CardContent>
               </Card>
             </div>
@@ -493,8 +599,13 @@ export default function AnalyticsAdmin() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <BarChart 
-                    data={analytics?.userGrowth.dailyData?.map(d => ({ label: d.date, value: d.users })) || []}
+                  <BarChart
+                    data={
+                      analytics?.userGrowth.dailyData?.map((d) => ({
+                        label: d.date,
+                        value: d.users,
+                      })) || []
+                    }
                     height={200}
                   />
                 </CardContent>
@@ -508,8 +619,13 @@ export default function AnalyticsAdmin() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <LineChart 
-                    data={analytics?.revenue.monthlyData?.map(d => ({ label: d.month, value: d.revenue })) || []}
+                  <LineChart
+                    data={
+                      analytics?.revenue.monthlyData?.map((d) => ({
+                        label: d.month,
+                        value: d.revenue,
+                      })) || []
+                    }
                     height={200}
                   />
                 </CardContent>
@@ -534,11 +650,17 @@ export default function AnalyticsAdmin() {
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-sm text-gray-400">Forum Posts</span>
-                    <span className="font-bold text-white">{analytics?.activity.forumPosts}</span>
+                    <span className="font-bold text-white">
+                      {analytics?.activity.forumPosts}
+                    </span>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-gray-400">Support Tickets</span>
-                    <span className="font-bold text-white">{analytics?.activity.supportTickets}</span>
+                    <span className="text-sm text-gray-400">
+                      Support Tickets
+                    </span>
+                    <span className="font-bold text-white">
+                      {analytics?.activity.supportTickets}
+                    </span>
                   </div>
                 </CardContent>
               </Card>
@@ -551,11 +673,20 @@ export default function AnalyticsAdmin() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <PieChartComponent 
+                  <PieChartComponent
                     data={[
-                      { label: "VIP", value: analytics?.revenue.breakdown.vip || 0 },
-                      { label: "VIP++", value: analytics?.revenue.breakdown.vipPlus || 0 },
-                      { label: "Legend", value: analytics?.revenue.breakdown.legend || 0 },
+                      {
+                        label: "VIP",
+                        value: analytics?.revenue.breakdown.vip || 0,
+                      },
+                      {
+                        label: "VIP++",
+                        value: analytics?.revenue.breakdown.vipPlus || 0,
+                      },
+                      {
+                        label: "Legend",
+                        value: analytics?.revenue.breakdown.legend || 0,
+                      },
                     ]}
                   />
                 </CardContent>
@@ -571,15 +702,21 @@ export default function AnalyticsAdmin() {
                 <CardContent className="space-y-4">
                   <div className="flex items-center justify-between">
                     <span className="text-sm text-gray-400">Response Time</span>
-                    <span className="font-bold text-white">{analytics?.performance.responseTime}ms</span>
+                    <span className="font-bold text-white">
+                      {analytics?.performance.responseTime}ms
+                    </span>
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-sm text-gray-400">Error Rate</span>
-                    <span className="font-bold text-white">{analytics?.performance.errorRate}%</span>
+                    <span className="font-bold text-white">
+                      {analytics?.performance.errorRate}%
+                    </span>
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-sm text-gray-400">Peak Users</span>
-                    <span className="font-bold text-white">{analytics?.performance.peakConcurrentUsers}</span>
+                    <span className="font-bold text-white">
+                      {analytics?.performance.peakConcurrentUsers}
+                    </span>
                   </div>
                 </CardContent>
               </Card>
@@ -591,11 +728,18 @@ export default function AnalyticsAdmin() {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <Card className="bg-gray-900 border-gray-700">
                 <CardHeader>
-                  <CardTitle className="text-white">User Growth Over Time</CardTitle>
+                  <CardTitle className="text-white">
+                    User Growth Over Time
+                  </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <BarChart 
-                    data={analytics?.userGrowth.dailyData?.map(d => ({ label: d.date, value: d.newUsers })) || []}
+                  <BarChart
+                    data={
+                      analytics?.userGrowth.dailyData?.map((d) => ({
+                        label: d.date,
+                        value: d.newUsers,
+                      })) || []
+                    }
                     height={250}
                     title="New Users Per Day"
                   />
@@ -610,20 +754,34 @@ export default function AnalyticsAdmin() {
                   <div className="space-y-4">
                     <div className="flex items-center justify-between">
                       <span className="text-sm text-gray-400">Total Users</span>
-                      <span className="font-bold text-white text-lg">{analytics?.userGrowth.total}</span>
+                      <span className="font-bold text-white text-lg">
+                        {analytics?.userGrowth.total}
+                      </span>
                     </div>
                     <div className="flex items-center justify-between">
-                      <span className="text-sm text-gray-400">New This Month</span>
-                      <span className="font-bold text-white text-lg">{analytics?.userGrowth.thisMonth}</span>
+                      <span className="text-sm text-gray-400">
+                        New This Month
+                      </span>
+                      <span className="font-bold text-white text-lg">
+                        {analytics?.userGrowth.thisMonth}
+                      </span>
                     </div>
                     <div className="flex items-center justify-between">
-                      <span className="text-sm text-gray-400">Daily Active</span>
-                      <span className="font-bold text-white text-lg">{analytics?.activity.dailyActiveUsers}</span>
+                      <span className="text-sm text-gray-400">
+                        Daily Active
+                      </span>
+                      <span className="font-bold text-white text-lg">
+                        {analytics?.activity.dailyActiveUsers}
+                      </span>
                     </div>
                     <div className="flex items-center justify-between border-t border-gray-700 pt-4">
-                      <span className="text-sm font-medium text-gray-400">Growth Rate</span>
+                      <span className="text-sm font-medium text-gray-400">
+                        Growth Rate
+                      </span>
                       <Badge className="text-white bg-gray-700">
-                        {formatPercentage(analytics?.userGrowth.growthRate || 0)}
+                        {formatPercentage(
+                          analytics?.userGrowth.growthRate || 0,
+                        )}
                       </Badge>
                     </div>
                   </div>
@@ -637,11 +795,18 @@ export default function AnalyticsAdmin() {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <Card className="bg-gray-900 border-gray-700">
                 <CardHeader>
-                  <CardTitle className="text-white">Monthly Revenue Trend</CardTitle>
+                  <CardTitle className="text-white">
+                    Monthly Revenue Trend
+                  </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <LineChart 
-                    data={analytics?.revenue.monthlyData?.map(d => ({ label: d.month, value: d.revenue })) || []}
+                  <LineChart
+                    data={
+                      analytics?.revenue.monthlyData?.map((d) => ({
+                        label: d.month,
+                        value: d.revenue,
+                      })) || []
+                    }
                     height={250}
                     title="Revenue by Month"
                   />
@@ -654,22 +819,35 @@ export default function AnalyticsAdmin() {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-6">
-                    <PieChartComponent 
+                    <PieChartComponent
                       data={[
-                        { label: "VIP", value: analytics?.revenue.breakdown.vip || 0 },
-                        { label: "VIP++", value: analytics?.revenue.breakdown.vipPlus || 0 },
-                        { label: "Legend", value: analytics?.revenue.breakdown.legend || 0 },
+                        {
+                          label: "VIP",
+                          value: analytics?.revenue.breakdown.vip || 0,
+                        },
+                        {
+                          label: "VIP++",
+                          value: analytics?.revenue.breakdown.vipPlus || 0,
+                        },
+                        {
+                          label: "Legend",
+                          value: analytics?.revenue.breakdown.legend || 0,
+                        },
                       ]}
                     />
                     <div className="space-y-3 border-t border-gray-700 pt-4">
                       <div className="flex items-center justify-between">
-                        <span className="text-sm text-gray-400">Total Revenue</span>
+                        <span className="text-sm text-gray-400">
+                          Total Revenue
+                        </span>
                         <span className="font-bold text-white text-lg">
                           {formatCurrency(analytics?.revenue.total || 0)}
                         </span>
                       </div>
                       <div className="flex items-center justify-between">
-                        <span className="text-sm text-gray-400">This Month</span>
+                        <span className="text-sm text-gray-400">
+                          This Month
+                        </span>
                         <span className="font-bold text-white text-lg">
                           {formatCurrency(analytics?.revenue.thisMonth || 0)}
                         </span>
@@ -686,11 +864,18 @@ export default function AnalyticsAdmin() {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <Card className="bg-gray-900 border-gray-700">
                 <CardHeader>
-                  <CardTitle className="text-white">Server Uptime History</CardTitle>
+                  <CardTitle className="text-white">
+                    Server Uptime History
+                  </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <LineChart 
-                    data={analytics?.performance.uptimeHistory?.map(d => ({ label: d.date, value: d.uptime })) || []}
+                  <LineChart
+                    data={
+                      analytics?.performance.uptimeHistory?.map((d) => ({
+                        label: d.date,
+                        value: d.uptime,
+                      })) || []
+                    }
                     height={250}
                     title="Uptime Percentage by Week"
                   />
@@ -699,28 +884,47 @@ export default function AnalyticsAdmin() {
 
               <Card className="bg-gray-900 border-gray-700">
                 <CardHeader>
-                  <CardTitle className="text-white">System Performance</CardTitle>
+                  <CardTitle className="text-white">
+                    System Performance
+                  </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-6">
                   <div className="space-y-4">
                     <div className="space-y-2">
                       <div className="flex items-center justify-between">
-                        <span className="text-sm text-gray-400">Server Uptime</span>
-                        <span className="font-bold text-white text-lg">{analytics?.performance.serverUptime}%</span>
+                        <span className="text-sm text-gray-400">
+                          Server Uptime
+                        </span>
+                        <span className="font-bold text-white text-lg">
+                          {analytics?.performance.serverUptime}%
+                        </span>
                       </div>
-                      <Progress value={analytics?.performance.serverUptime || 0} className="bg-gray-700" />
+                      <Progress
+                        value={analytics?.performance.serverUptime || 0}
+                        className="bg-gray-700"
+                      />
                     </div>
                     <div className="flex items-center justify-between">
-                      <span className="text-sm text-gray-400">Response Time</span>
-                      <span className="font-bold text-white text-lg">{analytics?.performance.responseTime}ms</span>
+                      <span className="text-sm text-gray-400">
+                        Response Time
+                      </span>
+                      <span className="font-bold text-white text-lg">
+                        {analytics?.performance.responseTime}ms
+                      </span>
                     </div>
                     <div className="flex items-center justify-between">
                       <span className="text-sm text-gray-400">Error Rate</span>
-                      <span className="font-bold text-white text-lg">{analytics?.performance.errorRate}%</span>
+                      <span className="font-bold text-white text-lg">
+                        {analytics?.performance.errorRate}%
+                      </span>
                     </div>
                     <div className="flex items-center justify-between">
-                      <span className="text-sm text-gray-400">Peak Concurrent Users</span>
-                      <span className="font-bold text-white text-lg">{analytics?.performance.peakConcurrentUsers}</span>
+                      <span className="text-sm text-gray-400">
+                        Peak Concurrent Users
+                      </span>
+                      <span className="font-bold text-white text-lg">
+                        {analytics?.performance.peakConcurrentUsers}
+                      </span>
                     </div>
                   </div>
                 </CardContent>
