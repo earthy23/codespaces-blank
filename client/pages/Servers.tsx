@@ -91,6 +91,7 @@ export default function Servers() {
   const [serverToDelete, setServerToDelete] = useState<GameServer | null>(null);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const { toast } = useToast();
+  const fetchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     if (!user) {
