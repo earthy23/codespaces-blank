@@ -222,6 +222,9 @@ if (process.env.NODE_ENV !== "test") {
     // Create default admin user if none exists
     createDefaultAdmin();
 
+    // Start periodic server status checks (every 15 minutes)
+    startPeriodicStatusChecks(15);
+
     logActivity({
       action: "server_started",
       category: "system",
@@ -231,6 +234,7 @@ if (process.env.NODE_ENV !== "test") {
         environment: process.env.NODE_ENV || "development",
         nodeVersion: process.version,
         websocket: true,
+        serverStatusChecks: true,
       },
     });
   });
