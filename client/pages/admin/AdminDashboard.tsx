@@ -71,35 +71,43 @@ interface RecentActivity {
   level: string;
 }
 
-// Simple dark chart component
-const MiniChart = ({
-  data,
-  height = 60,
-  color = "white",
-}: {
-  data: number[];
-  height?: number;
-  color?: string;
-}) => {
-  const max = Math.max(...data);
-  const min = Math.min(...data);
-  const range = max - min;
+// Enhanced chart components using Recharts
+const MiniLineChart = ({ data, color = "#ffffff" }: { data: any[]; color?: string }) => (
+  <ResponsiveContainer width="100%" height={60}>
+    <LineChart data={data}>
+      <Line
+        type="monotone"
+        dataKey="value"
+        stroke={color}
+        strokeWidth={2}
+        dot={false}
+        activeDot={{ r: 4, fill: color }}
+      />
+    </LineChart>
+  </ResponsiveContainer>
+);
 
-  return (
-    <div className="flex items-end space-x-1" style={{ height }}>
-      {data.map((value, index) => (
-        <div
-          key={index}
-          className="bg-white flex-1 transition-all duration-300 rounded-sm"
-          style={{
-            height: `${range > 0 ? ((value - min) / range) * height : height / 2}px`,
-            minHeight: "2px",
-          }}
-        />
-      ))}
-    </div>
-  );
-};
+const MiniAreaChart = ({ data, color = "#ffffff" }: { data: any[]; color?: string }) => (
+  <ResponsiveContainer width="100%" height={60}>
+    <AreaChart data={data}>
+      <Area
+        type="monotone"
+        dataKey="value"
+        stroke={color}
+        fill={color}
+        fillOpacity={0.3}
+      />
+    </AreaChart>
+  </ResponsiveContainer>
+);
+
+const MiniBarChart = ({ data, color = "#ffffff" }: { data: any[]; color?: string }) => (
+  <ResponsiveContainer width="100%" height={60}>
+    <BarChart data={data}>
+      <Bar dataKey="value" fill={color} radius={[2, 2, 0, 0]} />
+    </BarChart>
+  </ResponsiveContainer>
+);
 
 export default function AdminDashboard() {
   const { user, token } = useAuth();
