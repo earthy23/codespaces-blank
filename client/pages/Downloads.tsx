@@ -82,7 +82,7 @@ const clientDownloads = [
     downloadUrl: "/downloads/creative-client.zip",
     webUrl: "/client/creative/",
     iconSvg: (
-      <svg viewBox="0 0 24 24" fill="none" className="w-6 h-6 text-primary drop-shadow-[0_0_4px_currentColor]">
+      <svg viewBox="0 0 24 24" fill="none" className="w-8 h-8 text-primary">
         <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" fill="currentColor" opacity="0.8"/>
         <circle cx="9" cy="7" r="4" fill="currentColor"/>
         <path d="M22 21v-2a4 4 0 0 0-3-3.87" stroke="currentColor" strokeWidth="2" fill="none"/>
