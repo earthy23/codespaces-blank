@@ -18,17 +18,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { AdminLayout } from "@/components/ui/admin-layout";
-import {
-  FileText,
-  Search,
-  AlertTriangle,
-  Info,
-  AlertCircle,
-  CheckCircle,
-  RefreshCw,
-  Download,
-  Filter,
-} from "lucide-react";
+// SVG icons removed as requested
 import { useAuth } from "@/lib/auth";
 
 interface LogEntry {
