@@ -126,6 +126,7 @@ export default function AdminDashboard() {
   const [dashboardData, setDashboardData] = useState<any>(null);
   const [systemMetrics, setSystemMetrics] = useState<any>(null);
   const [lastMetricsUpdate, setLastMetricsUpdate] = useState(Date.now());
+  const [timeRange, setTimeRange] = useState("24h");
 
   useEffect(() => {
     if (!stats) {
