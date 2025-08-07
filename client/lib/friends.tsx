@@ -259,37 +259,58 @@ export const FriendsProvider = ({ children }: { children: React.ReactNode }) => 
     if (!user || !token) return false;
 
     try {
-      const response = await fetch("/api/friends/request", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ username }),
-      });
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
 
-      if (response.ok) {
-        // Refresh sent requests
-        const sentRes = await fetch("/api/friends/requests/sent", {
+      try {
+        const response = await fetch("/api/friends/request", {
+          method: "POST",
           headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
           },
+          body: JSON.stringify({ username }),
+          signal: controller.signal,
         });
 
-        if (sentRes.ok) {
-          const sentData = await sentRes.json();
-          setSentRequests(sentData.requests || []);
-        }
+        clearTimeout(timeoutId);
 
-        return true;
-      } else {
-        const errorData = await response.json();
-        console.error("Friend request error:", errorData.error);
-        return false;
+        if (response.ok) {
+          // Refresh sent requests
+          try {
+            const sentRes = await fetch("/api/friends/requests/sent", {
+              headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
+              },
+            });
+
+            if (sentRes.ok) {
+              const sentData = await sentRes.json();
+              setSentRequests(sentData.requests || []);
+            }
+          } catch (refreshError) {
+            console.warn("Failed to refresh sent requests after sending friend request");
+          }
+
+          return true;
+        } else {
+          const errorData = await response.json().catch(() => ({ error: "Unknown error" }));
+          console.error("Friend request error:", errorData.error);
+          return false;
+        }
+      } catch (fetchError) {
+        clearTimeout(timeoutId);
+        throw fetchError;
       }
     } catch (error) {
-      console.error("Error sending friend request:", error);
+      if (error.name === 'AbortError') {
+        console.warn("Friend request timed out");
+      } else if (error.message?.includes('Failed to fetch')) {
+        console.warn("Network issue sending friend request");
+      } else {
+        console.error("Error sending friend request:", error);
+      }
       return false;
     }
   };
