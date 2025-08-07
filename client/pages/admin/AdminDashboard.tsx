@@ -398,7 +398,7 @@ export default function AdminDashboard() {
                 {stats?.activeUsers || 0} users online
               </p>
               <div className="mt-3">
-                <MiniChart data={activityData} />
+                <MiniBarChart data={activityData} color="#3b82f6" />
               </div>
             </CardContent>
           </Card>
