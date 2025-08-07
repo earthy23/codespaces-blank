@@ -67,49 +67,78 @@ export const FriendsProvider = ({ children }: { children: React.ReactNode }) => 
 
     try {
       setIsLoading(true);
-      const [friendsRes, requestsRes, sentRes] = await Promise.all([
-        fetch("/api/friends", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }),
-        fetch("/api/friends/requests", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }),
-        fetch("/api/friends/requests/sent", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }),
-      ]);
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 8000); // 8 second timeout
 
-      if (friendsRes.ok) {
-        const friendsData = await friendsRes.json();
-        setFriends(friendsData.friends || []);
+      try {
+        const [friendsRes, requestsRes, sentRes] = await Promise.allSettled([
+          fetch("/api/friends", {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+            signal: controller.signal,
+          }),
+          fetch("/api/friends/requests", {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+            signal: controller.signal,
+          }),
+          fetch("/api/friends/requests/sent", {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+            signal: controller.signal,
+          }),
+        ]);
 
-        // Filter online friends
-        const online = (friendsData.friends || []).filter(
-          (f: Friend) => f.status === "online" || f.status === "playing",
-        );
-        setOnlineFriends(online);
-      }
+        clearTimeout(timeoutId);
 
-      if (requestsRes.ok) {
-        const requestsData = await requestsRes.json();
-        setFriendRequests(requestsData.requests || []);
-      }
+        // Handle friends response
+        if (friendsRes.status === 'fulfilled' && friendsRes.value.ok) {
+          const friendsData = await friendsRes.value.json();
+          setFriends(friendsData.friends || []);
 
-      if (sentRes.ok) {
-        const sentData = await sentRes.json();
-        setSentRequests(sentData.requests || []);
+          // Filter online friends
+          const online = (friendsData.friends || []).filter(
+            (f: Friend) => f.status === "online" || f.status === "playing",
+          );
+          setOnlineFriends(online);
+        } else {
+          console.warn("Failed to load friends, keeping existing data");
+        }
+
+        // Handle friend requests response
+        if (requestsRes.status === 'fulfilled' && requestsRes.value.ok) {
+          const requestsData = await requestsRes.value.json();
+          setFriendRequests(requestsData.requests || []);
+        } else {
+          console.warn("Failed to load friend requests, keeping existing data");
+        }
+
+        // Handle sent requests response
+        if (sentRes.status === 'fulfilled' && sentRes.value.ok) {
+          const sentData = await sentRes.value.json();
+          setSentRequests(sentData.requests || []);
+        } else {
+          console.warn("Failed to load sent requests, keeping existing data");
+        }
+      } catch (fetchError) {
+        clearTimeout(timeoutId);
+        throw fetchError;
       }
     } catch (error) {
-      console.error("Error loading friends data:", error);
+      if (error.name === 'AbortError') {
+        console.warn("Friends data loading timed out, keeping existing data");
+      } else if (error.message?.includes('Failed to fetch')) {
+        console.warn("Network issue loading friends data, keeping existing data");
+      } else {
+        console.error("Error loading friends data:", error);
+      }
+      // Don't clear existing data on error
     } finally {
       setIsLoading(false);
     }
