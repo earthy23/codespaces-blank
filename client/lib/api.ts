@@ -115,9 +115,9 @@ const makeRequest = async (endpoint: string, options: RequestInit = {}) => {
         }));
 
         console.error(`❌ API Error for ${url}:`, errorData);
-        throw new Error(
-          errorData.error || `HTTP ${response.status}: ${response.statusText}`,
-        );
+        const errorMessage = errorData.error || errorData.message || `HTTP ${response.status}: ${response.statusText}`;
+        console.error(`🔍 Error message:`, errorMessage);
+        throw new Error(errorMessage);
       }
 
       const data = await response.json();
