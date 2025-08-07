@@ -162,6 +162,8 @@ const makeRequest = async (endpoint: string, options: RequestInit = {}) => {
         }
       };
 
+      let isManualAbort = false;
+
       xhr.onerror = () => {
         if (process.env.NODE_ENV === 'development') {
           console.warn('API XMLHttpRequest network error for:', url);
@@ -190,17 +192,25 @@ const makeRequest = async (endpoint: string, options: RequestInit = {}) => {
         } as Response);
       };
 
+      // Handle manual aborts
+      xhr.onabort = () => {
+        if (process.env.NODE_ENV === 'development') {
+          console.warn('API XMLHttpRequest manually aborted for:', url);
+        }
+        resolve({
+          ok: false,
+          status: 0,
+          statusText: isManualAbort ? 'Aborted' : 'Cancelled',
+          json: () => Promise.resolve({}),
+          text: () => Promise.resolve(''),
+          headers: new Headers(),
+        } as Response);
+      };
+
       if (config.signal) {
         config.signal.addEventListener('abort', () => {
+          isManualAbort = true;
           xhr.abort();
-          resolve({
-            ok: false,
-            status: 0,
-            statusText: 'Aborted',
-            json: () => Promise.resolve({}),
-            text: () => Promise.resolve(''),
-            headers: new Headers(),
-          } as Response);
         });
       }
 
