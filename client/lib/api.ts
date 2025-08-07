@@ -251,11 +251,16 @@ const isDevelopment = import.meta.env.DEV;
 // Auth API
 export const authApi = {
   login: async (username: string, password: string) => {
+    console.log("🔐 Starting login request...");
+    const startTime = Date.now();
+
     try {
       const response = await makeRequest("/auth/login", {
         method: "POST",
         body: JSON.stringify({ username, password }),
       });
+
+      console.log(`✅ Login request completed in ${Date.now() - startTime}ms`);
 
       if (response.token) {
         try {
@@ -267,6 +272,7 @@ export const authApi = {
 
       return response;
     } catch (error) {
+      console.error(`❌ Login request failed after ${Date.now() - startTime}ms:`, error);
       // Re-throw the original error to preserve the actual error message
       throw error;
     }
