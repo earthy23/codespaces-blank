@@ -515,7 +515,10 @@ export default function Friends() {
                           variant="outline"
                           className="flex items-center space-x-1"
                         >
-                          <Clock className="w-3 h-3" />
+                          <svg viewBox="0 0 24 24" fill="none" className="w-3 h-3">
+                            <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" fill="none"/>
+                            <polyline points="12,6 12,12 16,14" stroke="currentColor" strokeWidth="2" fill="none"/>
+                          </svg>
                           <span>Pending</span>
                         </Badge>
                       </div>
