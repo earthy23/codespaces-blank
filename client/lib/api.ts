@@ -1,6 +1,9 @@
 // API Base Configuration
 const API_BASE_URL = import.meta.env.VITE_API_URL || "/api";
 
+// Request deduplication to prevent identical simultaneous requests
+const pendingRequests = new Map<string, Promise<any>>();
+
 // Token management - always read from localStorage to ensure consistency
 const getAuthToken = () => {
   try {
