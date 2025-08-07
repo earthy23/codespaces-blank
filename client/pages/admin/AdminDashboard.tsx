@@ -546,43 +546,6 @@ export default function AdminDashboard() {
             </CardContent>
           </Card>
 
-          {/* Revenue Analytics */}
-          <Card className="bg-gray-900 border-gray-700">
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <DollarSign className="w-5 h-5 text-green-400" />
-                <span className="text-white">Revenue Analytics</span>
-              </CardTitle>
-              <CardDescription className="text-gray-400">
-                Monthly revenue breakdown by subscription tier
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <ResponsiveContainer width="100%" height={250}>
-                <BarChart data={[
-                  { month: "Jul", vip: 850, vipPlus: 420, legend: 180 },
-                  { month: "Aug", vip: 920, vipPlus: 480, legend: 220 },
-                  { month: "Sep", vip: 1100, vipPlus: 520, legend: 280 },
-                  { month: "Oct", vip: 950, vipPlus: 580, legend: 320 },
-                  { month: "Nov", vip: 1450, vipPlus: 520, legend: 220 },
-                ]}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-                  <XAxis dataKey="month" stroke="#9ca3af" />
-                  <YAxis stroke="#9ca3af" />
-                  <Tooltip
-                    contentStyle={{
-                      backgroundColor: "#1f2937",
-                      border: "1px solid #374151",
-                      borderRadius: "8px"
-                    }}
-                  />
-                  <Bar dataKey="vip" stackId="a" fill="#10b981" name="VIP" />
-                  <Bar dataKey="vipPlus" stackId="a" fill="#3b82f6" name="VIP+" />
-                  <Bar dataKey="legend" stackId="a" fill="#f59e0b" name="Legend" />
-                </BarChart>
-              </ResponsiveContainer>
-            </CardContent>
-          </Card>
         </div>
 
         {/* System Status Cards */}
