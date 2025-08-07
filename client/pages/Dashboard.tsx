@@ -109,7 +109,7 @@ export default function Dashboard() {
         </div>
 
         {/* Enhanced Client Launcher */}
-        <Card className="minecraft-panel mb-8 bg-card/50 border-2 border-primary/20 shadow-xl shadow-primary/10">
+        <Card className="minecraft-panel mb-8 bg-card border-2 border-primary/20 shadow-xl shadow-primary/10">
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
               <div className="w-10 h-10 rounded-lg bg-card border border-primary/50 flex items-center justify-center shadow-lg shadow-primary/30">
