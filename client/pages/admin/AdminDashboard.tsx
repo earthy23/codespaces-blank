@@ -263,10 +263,44 @@ export default function AdminDashboard() {
     }
   };
 
-  // Sample data for charts
-  const userGrowthData = [23, 19, 27, 31, 28, 35, 23];
-  const revenueData = [1654, 1789, 1923, 1856, 2190];
-  const activityData = [156, 143, 178, 165, 189, 201, 167];
+  // Enhanced chart data with proper structure for Recharts
+  const userGrowthData = [
+    { day: "Mon", value: 23 },
+    { day: "Tue", value: 19 },
+    { day: "Wed", value: 27 },
+    { day: "Thu", value: 31 },
+    { day: "Fri", value: 28 },
+    { day: "Sat", value: 35 },
+    { day: "Sun", value: 23 },
+  ];
+
+  const revenueData = [
+    { month: "Jul", value: 1654 },
+    { month: "Aug", value: 1789 },
+    { month: "Sep", value: 1923 },
+    { month: "Oct", value: 1856 },
+    { month: "Nov", value: 2190 },
+  ];
+
+  const activityData = [
+    { day: "Mon", value: 156 },
+    { day: "Tue", value: 143 },
+    { day: "Wed", value: 178 },
+    { day: "Thu", value: 165 },
+    { day: "Fri", value: 189 },
+    { day: "Sat", value: 201 },
+    { day: "Sun", value: 167 },
+  ];
+
+  const serverStatusData = [
+    { day: "Mon", value: 99.9 },
+    { day: "Tue", value: 99.8 },
+    { day: "Wed", value: 99.7 },
+    { day: "Thu", value: 99.9 },
+    { day: "Fri", value: 99.8 },
+    { day: "Sat", value: 99.9 },
+    { day: "Sun", value: 99.87 },
+  ];
 
   return (
     <AdminLayout>
