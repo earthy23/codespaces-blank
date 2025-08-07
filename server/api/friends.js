@@ -10,8 +10,9 @@ const __dirname = path.dirname(__filename);
 
 const router = express.Router();
 
-// Initialize database
-const dbPath = path.join(__dirname, "../data/uec.db");
+// Initialize database - use the same database as the auth system
+const dataDir = path.join(process.cwd(), "data");
+const dbPath = path.join(dataDir, "uec_launcher.db");
 const db = new Database(dbPath);
 
 // Create friends tables
