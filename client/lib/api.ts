@@ -171,6 +171,11 @@ const makeRequest = async (endpoint: string, options: RequestInit = {}) => {
         if (response.status === 429) {
           const retryAfter = errorData.retryAfter || "a few minutes";
           errorMessage = `Too many requests. Please wait ${retryAfter} before trying again.`;
+
+          // In development, add shorter retry advice
+          if (import.meta.env.DEV) {
+            errorMessage = `Rate limited. Please wait a moment before trying again.`;
+          }
         }
 
         // Include validation details if available
