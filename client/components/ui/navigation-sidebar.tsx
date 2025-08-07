@@ -18,7 +18,6 @@ const navigationSections = [
         ),
         label: "Dashboard",
         path: "/dashboard",
-        description: "Your command center",
         iconColor: "text-primary",
         glow: "shadow-primary/50",
       },
