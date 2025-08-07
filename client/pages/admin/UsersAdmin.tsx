@@ -26,17 +26,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { AdminLayout } from "@/components/ui/admin-layout";
-import {
-  Users,
-  Search,
-  MoreHorizontal,
-  UserPlus,
-  Shield,
-  Eye,
-  Ban,
-  RefreshCw,
-  Filter,
-} from "lucide-react";
+// SVG icons removed as requested
 import { useAuth } from "@/lib/auth";
 
 interface User {
