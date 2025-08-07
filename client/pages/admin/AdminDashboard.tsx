@@ -670,68 +670,6 @@ export default function AdminDashboard() {
             </CardContent>
           </Card>
 
-          {/* User Activity Distribution */}
-          <Card className="bg-gray-900 border-gray-700">
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <BarChart3 className="w-5 h-5 text-orange-400" />
-                <span className="text-white">User Activity Distribution</span>
-              </CardTitle>
-              <CardDescription className="text-gray-400">
-                Current user activity across different platform features
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                <ResponsiveContainer width="100%" height={200}>
-                  <PieChart>
-                    <Pie
-                      data={dashboardData?.userActivityDistribution || [
-                        { name: "Gaming", value: 45, fill: "#3b82f6" },
-                        { name: "Chat", value: 25, fill: "#10b981" },
-                        { name: "Forums", value: 15, fill: "#f59e0b" },
-                        { name: "Store", value: 10, fill: "#ef4444" },
-                        { name: "Profile", value: 5, fill: "#8b5cf6" },
-                      ]}
-                      cx="50%"
-                      cy="50%"
-                      outerRadius={80}
-                      dataKey="value"
-                      label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
-                    >
-                    </Pie>
-                    <Tooltip
-                      contentStyle={{
-                        backgroundColor: "#1f2937",
-                        border: "1px solid #374151",
-                        borderRadius: "8px"
-                      }}
-                    />
-                  </PieChart>
-                </ResponsiveContainer>
-
-                {/* Activity Legends */}
-                <div className="grid grid-cols-2 gap-2 text-xs">
-                  <div className="flex items-center space-x-2">
-                    <div className="w-3 h-3 bg-blue-500 rounded"></div>
-                    <span className="text-gray-400">Gaming (45%)</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <div className="w-3 h-3 bg-green-500 rounded"></div>
-                    <span className="text-gray-400">Chat (25%)</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <div className="w-3 h-3 bg-yellow-500 rounded"></div>
-                    <span className="text-gray-400">Forums (15%)</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <div className="w-3 h-3 bg-red-500 rounded"></div>
-                    <span className="text-gray-400">Store (10%)</span>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
         </div>
 
         {/* Recent Activity */}
