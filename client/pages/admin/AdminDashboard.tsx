@@ -50,7 +50,7 @@ interface RecentActivity {
 }
 
 // Enhanced chart components using Recharts
-const MiniLineChart = ({ data, color = "#6b7280" }: { data: any[]; color?: string }) => (
+const MiniLineChart = ({ data, color = "#000000" }: { data: any[]; color?: string }) => (
   <ResponsiveContainer width="100%" height={60}>
     <LineChart data={data}>
       <Line
@@ -65,7 +65,7 @@ const MiniLineChart = ({ data, color = "#6b7280" }: { data: any[]; color?: strin
   </ResponsiveContainer>
 );
 
-const MiniAreaChart = ({ data, color = "#6b7280" }: { data: any[]; color?: string }) => (
+const MiniAreaChart = ({ data, color = "#000000" }: { data: any[]; color?: string }) => (
   <ResponsiveContainer width="100%" height={60}>
     <AreaChart data={data}>
       <Area
@@ -79,7 +79,7 @@ const MiniAreaChart = ({ data, color = "#6b7280" }: { data: any[]; color?: strin
   </ResponsiveContainer>
 );
 
-const MiniBarChart = ({ data, color = "#6b7280" }: { data: any[]; color?: string }) => (
+const MiniBarChart = ({ data, color = "#000000" }: { data: any[]; color?: string }) => (
   <ResponsiveContainer width="100%" height={60}>
     <BarChart data={data}>
       <Bar dataKey="value" fill={color} radius={[2, 2, 0, 0]} />
@@ -479,43 +479,15 @@ export default function AdminDashboard() {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Admin Dashboard</h1>
-            <p className="text-gray-600">
+            <h1 className="text-3xl font-bold text-white">Admin Dashboard</h1>
+            <p className="text-gray-300">
               Welcome back, {user?.username}. System overview and controls.
             </p>
-            <div className="flex items-center mt-2 space-x-4">
-              <Badge className="text-xs bg-gray-600 text-white">
-                {isConnected ? "Connected" : "Offline"}
-              </Badge>
-              {onlineUsersCount > 0 && (
-                <Badge className="text-xs bg-gray-600 text-white">
-                  {onlineUsersCount} online
-                </Badge>
-              )}
-              <Badge className="text-xs bg-gray-600 text-white">
-                Auto-refresh: 15s
-              </Badge>
-              {realTimeData && (
-                <Badge className="text-xs bg-gray-600 text-white">
-                  {realTimeData.requestsPerMinute || 0} req/min
-                </Badge>
-              )}
-              <Badge className="text-xs bg-gray-600 text-white">
-                {connectionStatus === "connected"
-                  ? "API Connected"
-                  : connectionStatus === "degraded"
-                  ? "API Degraded"
-                  : "API Offline"}
-              </Badge>
-              <Badge className="text-xs bg-gray-600 text-white">
-                {isConnected ? "WS Connected" : "WS Offline"}
-              </Badge>
-            </div>
           </div>
           <div className="flex items-center space-x-3">
             {/* Time Range Filter */}
             <select
-              className="bg-white text-gray-900 border border-gray-300 rounded px-3 py-2 text-sm"
+              className="bg-white text-black border border-black rounded px-3 py-2 text-sm"
               value={timeRange}
               onChange={(e) => setTimeRange(e.target.value)}
             >
@@ -528,7 +500,7 @@ export default function AdminDashboard() {
             <div className="flex space-x-2">
               <Button
                 onClick={loadDashboardData}
-                className="bg-gray-900 text-white hover:bg-gray-800"
+                className="bg-white text-black hover:bg-gray-200"
                 disabled={isLoading}
                 size="sm"
               >
@@ -537,13 +509,13 @@ export default function AdminDashboard() {
                 </span>
                 Refresh All
               </Button>
-              
+
               <Button
                 onClick={() => {
                   setLiveActivity([]);
                   setLastActivityUpdate(Date.now());
                 }}
-                className="bg-gray-700 text-white hover:bg-gray-600"
+                className="bg-white text-black hover:bg-gray-200"
                 size="sm"
               >
                 Clear Feed
@@ -554,43 +526,43 @@ export default function AdminDashboard() {
 
         {/* Key Stats */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <Card className="bg-white border-gray-300">
+          <Card className="bg-white border-black">
             <CardHeader>
-              <CardTitle className="text-sm font-medium text-gray-700">
+              <CardTitle className="text-sm font-medium text-black">
                 Total Users
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-gray-900">
+              <div className="text-2xl font-bold text-black">
                 {stats?.totalUsers || 0}
               </div>
               <p className="text-xs text-gray-600">
-                <span className="text-gray-900 font-medium">
+                <span className="text-black font-medium">
                   +{stats?.newUsersToday || 0}
                 </span>{" "}
                 new today
               </p>
               <div className="mt-3">
-                <MiniLineChart data={userGrowthData} color="#6b7280" />
+                <MiniLineChart data={userGrowthData} color="#000000" />
               </div>
             </CardContent>
           </Card>
 
-          <Card className="bg-white border-gray-300">
+          <Card className="bg-white border-black">
             <CardHeader>
-              <CardTitle className="text-sm font-medium text-gray-700">
+              <CardTitle className="text-sm font-medium text-black">
                 Active Sessions
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-gray-900">
+              <div className="text-2xl font-bold text-black">
                 {stats?.activeSessions || 0}
               </div>
               <p className="text-xs text-gray-600">
                 {stats?.activeUsers || 0} users online
               </p>
               <div className="mt-3">
-                <MiniBarChart data={activityData} color="#6b7280" />
+                <MiniBarChart data={activityData} color="#000000" />
               </div>
             </CardContent>
           </Card>
