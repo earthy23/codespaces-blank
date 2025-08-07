@@ -170,7 +170,7 @@ export default function Downloads() {
                   >
                     <CardHeader>
                       <div className="flex items-center space-x-3 mb-2">
-                        <div className="w-12 h-12 rounded-lg bg-card border border-primary/50 flex items-center justify-center shadow-lg shadow-primary/20">
+                        <div className="w-12 h-12 flex items-center justify-center">
                           {client.iconSvg}
                         </div>
                         <div>
