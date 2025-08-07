@@ -73,7 +73,6 @@ const navigationSections = [
         ),
         label: "Friends",
         path: "/friends",
-        description: "Manage your friends",
         iconColor: "text-primary",
         glow: "shadow-primary/50",
       },
