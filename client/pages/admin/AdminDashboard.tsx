@@ -465,6 +465,21 @@ export default function AdminDashboard() {
               <Badge className="text-xs bg-blue-600 text-white">
                 Auto-refresh: 30s
               </Badge>
+              <Badge
+                className={`text-xs ${
+                  connectionStatus === "connected"
+                    ? "bg-green-600 text-white"
+                    : connectionStatus === "degraded"
+                    ? "bg-yellow-600 text-white"
+                    : "bg-red-600 text-white"
+                }`}
+              >
+                {connectionStatus === "connected"
+                  ? "● API Connected"
+                  : connectionStatus === "degraded"
+                  ? "⚠ API Degraded"
+                  : "● API Offline"}
+              </Badge>
             </div>
           </div>
           <div className="flex items-center space-x-3">
