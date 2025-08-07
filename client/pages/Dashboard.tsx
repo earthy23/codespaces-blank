@@ -192,13 +192,11 @@ export default function Dashboard() {
                     {onlineFriends.length}
                   </p>
                 </div>
-                <div className="w-12 h-12 rounded-lg bg-card border border-primary/50 flex items-center justify-center shadow-lg shadow-primary/20">
-                  <svg viewBox="0 0 24 24" fill="none" className="w-6 h-6 text-primary drop-shadow-[0_0_4px_currentColor]">
-                    <circle cx="9" cy="7" r="4" fill="currentColor"/>
-                    <path d="m3 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2" stroke="currentColor" strokeWidth="2" fill="none"/>
-                    <circle cx="16" cy="11" r="3" fill="currentColor" opacity="0.7"/>
-                  </svg>
-                </div>
+                <svg viewBox="0 0 24 24" fill="none" className="w-8 h-8 text-primary">
+                  <circle cx="9" cy="7" r="4" fill="currentColor"/>
+                  <path d="m3 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2" stroke="currentColor" strokeWidth="2" fill="none"/>
+                  <circle cx="16" cy="11" r="3" fill="currentColor" opacity="0.7"/>
+                </svg>
               </div>
             </CardContent>
           </Card>
