@@ -202,7 +202,12 @@ export const WebSocketManagerProvider = ({
         }
       };
     } catch (error) {
-      console.error("❌ WebSocket connection error:", error);
+      console.error("❌ WebSocket connection setup error:", {
+        message: error.message,
+        type: error.name,
+        timestamp: new Date().toISOString()
+      });
+      setIsConnected(false);
     }
   }, [user, token]);
 
