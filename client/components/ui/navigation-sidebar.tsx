@@ -10,7 +10,7 @@ const navigationSections = [
     title: "Main",
     items: [
       {
-        icon: Gamepad2,
+        iconUrl: "https://images.pexels.com/photos/4225229/pexels-photo-4225229.jpeg",
         label: "Dashboard",
         path: "/dashboard",
         description: "Your command center",
@@ -18,7 +18,7 @@ const navigationSections = [
         glow: "shadow-primary/50",
       },
       {
-        icon: Server,
+        iconUrl: "https://images.pexels.com/photos/343457/pexels-photo-343457.jpeg",
         label: "Servers",
         path: "/servers",
         description: "Browse & join servers",
@@ -26,7 +26,7 @@ const navigationSections = [
         glow: "shadow-primary/50",
       },
       {
-        icon: Download,
+        iconUrl: "https://images.pexels.com/photos/7794018/pexels-photo-7794018.jpeg",
         label: "Downloads",
         path: "/downloads",
         description: "Get clients & files",
@@ -39,7 +39,7 @@ const navigationSections = [
     title: "Social",
     items: [
       {
-        icon: Users,
+        iconUrl: "https://images.pexels.com/photos/9069288/pexels-photo-9069288.jpeg",
         label: "Friends",
         path: "/friends",
         description: "Manage your friends",
@@ -47,7 +47,7 @@ const navigationSections = [
         glow: "shadow-primary/50",
       },
       {
-        icon: MessageCircle,
+        iconUrl: "https://images.pexels.com/photos/7640773/pexels-photo-7640773.jpeg",
         label: "Chat",
         path: "/chat",
         description: "Chat with friends",
@@ -55,7 +55,7 @@ const navigationSections = [
         glow: "shadow-primary/50",
       },
       {
-        icon: MessageSquare,
+        iconUrl: "https://images.pexels.com/photos/19232289/pexels-photo-19232289.jpeg",
         label: "Forums",
         path: "/forums",
         description: "Community discussions",
@@ -68,7 +68,7 @@ const navigationSections = [
     title: "Content",
     items: [
       {
-        icon: Newspaper,
+        iconUrl: "https://images.pexels.com/photos/3057984/pexels-photo-3057984.jpeg",
         label: "News",
         path: "/news",
         description: "Latest updates",
@@ -76,7 +76,7 @@ const navigationSections = [
         glow: "shadow-primary/50",
       },
       {
-        icon: ShoppingBag,
+        iconUrl: "https://images.pexels.com/photos/3119215/pexels-photo-3119215.jpeg",
         label: "Store",
         path: "/store",
         description: "Premium content",
@@ -89,7 +89,7 @@ const navigationSections = [
     title: "Account",
     items: [
       {
-        icon: User,
+        iconUrl: "https://images.pexels.com/photos/33342192/pexels-photo-33342192.jpeg",
         label: "Profile",
         path: "/profile",
         description: "Your profile settings",
@@ -97,7 +97,7 @@ const navigationSections = [
         glow: "shadow-primary/50",
       },
       {
-        icon: HelpCircle,
+        iconUrl: "https://images.pexels.com/photos/7640773/pexels-photo-7640773.jpeg",
         label: "Support",
         path: "/support",
         description: "Get help & support",
