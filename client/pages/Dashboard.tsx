@@ -255,8 +255,13 @@ export default function Dashboard() {
           <Card className="minecraft-panel mb-8">
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
-                <div className="w-8 h-8 rounded-lg bg-card border border-primary/50 flex items-center justify-center shadow-lg shadow-primary/20 overflow-hidden">
-                  <img src="https://images.pexels.com/photos/343457/pexels-photo-343457.jpeg" alt="Servers" className="w-full h-full object-cover" />
+                <div className="w-8 h-8 rounded-lg bg-card border border-primary/50 flex items-center justify-center shadow-lg shadow-primary/20">
+                  <svg viewBox="0 0 24 24" fill="none" className="w-5 h-5 text-primary drop-shadow-[0_0_4px_currentColor]">
+                    <rect x="3" y="4" width="18" height="2" rx="1" fill="currentColor"/>
+                    <rect x="3" y="8" width="18" height="2" rx="1" fill="currentColor"/>
+                    <rect x="3" y="12" width="18" height="2" rx="1" fill="currentColor"/>
+                    <rect x="2" y="16" width="20" height="6" rx="2" fill="currentColor" opacity="0.6"/>
+                  </svg>
                 </div>
                 <span>Popular Servers</span>
               </CardTitle>
@@ -299,7 +304,10 @@ export default function Dashboard() {
                           size="sm"
                           className="w-full bg-primary text-primary-foreground hover:bg-primary/90 shadow-md hover:shadow-primary/20"
                         >
-                          <img src="https://images.pexels.com/photos/343457/pexels-photo-343457.jpeg" alt="Servers" className="w-4 h-4 mr-2 rounded object-cover" />
+                          <svg viewBox="0 0 24 24" fill="none" className="w-4 h-4 mr-2">
+                            <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" fill="none"/>
+                            <circle cx="12" cy="12" r="3" fill="currentColor"/>
+                          </svg>
                           View Servers
                         </Button>
                       </Link>
@@ -316,8 +324,11 @@ export default function Dashboard() {
           <Card className="minecraft-panel mb-8">
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
-                <div className="w-8 h-8 rounded-lg bg-card border border-primary/50 flex items-center justify-center shadow-lg shadow-primary/20 overflow-hidden">
-                  <img src="https://images.pexels.com/photos/10068851/pexels-photo-10068851.jpeg" alt="Partners" className="w-full h-full object-cover" />
+                <div className="w-8 h-8 rounded-lg bg-card border border-primary/50 flex items-center justify-center shadow-lg shadow-primary/20">
+                  <svg viewBox="0 0 24 24" fill="none" className="w-5 h-5 text-primary drop-shadow-[0_0_4px_currentColor]">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" fill="currentColor"/>
+                    <path d="m9 12 2 2 4-4" stroke="white" strokeWidth="2" fill="none"/>
+                  </svg>
                 </div>
                 <span>Our Partners</span>
               </CardTitle>
@@ -354,7 +365,11 @@ export default function Dashboard() {
                           className="inline-flex items-center text-xs text-primary hover:underline"
                         >
                           Visit
-                          <img src="https://images.pexels.com/photos/7794018/pexels-photo-7794018.jpeg" alt="External" className="w-3 h-3 ml-1 rounded object-cover" />
+                          <svg viewBox="0 0 24 24" fill="none" className="w-3 h-3 ml-1">
+                            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" stroke="currentColor" strokeWidth="2" fill="none"/>
+                            <polyline points="15,3 21,3 21,9" stroke="currentColor" strokeWidth="2" fill="none"/>
+                            <line x1="10" y1="14" x2="21" y2="3" stroke="currentColor" strokeWidth="2"/>
+                          </svg>
                         </a>
                       )}
                     </CardContent>
