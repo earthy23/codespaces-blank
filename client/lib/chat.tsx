@@ -63,7 +63,7 @@ interface ChatContextType {
 
 const ChatContext = createContext<ChatContextType | undefined>(undefined);
 
-export function ChatProvider({ children }: { children: React.ReactNode }) {
+export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
   const [chats, setChats] = useState<Chat[]>([]);
   const [messages, setMessages] = useState<{ [chatId: string]: Message[] }>({});
   const [typingUsers, setTypingUsers] = useState<{
@@ -573,7 +573,7 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
       {children}
     </ChatContext.Provider>
   );
-}
+};
 
 export const useChat = () => {
   const context = useContext(ChatContext);
