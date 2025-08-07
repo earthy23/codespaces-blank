@@ -12,8 +12,8 @@ const navigationSections = [
       {
         iconSvg: (
           <svg viewBox="0 0 24 24" fill="none" className="w-5 h-5">
-            <path d="M3 13h1v7c0 1.103.897 2 2 2h12c1.103 0 2-.897 2-2v-7h1a1 1 0 0 0 .707-1.707l-9-9a.999.999 0 0 0-1.414 0l-9 9A1 1 0 0 0 3 13z" fill="currentColor"/>
-            <rect x="8" y="15" width="8" height="6" fill="currentColor" opacity="0.7"/>
+            <path d="M3 12l9-9 9 9v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-8z" stroke="white" strokeWidth="2" fill="black"/>
+            <path d="M9 21V12h6v9" stroke="white" strokeWidth="2" fill="none"/>
           </svg>
         ),
         label: "Dashboard",
@@ -24,18 +24,15 @@ const navigationSections = [
       {
         iconSvg: (
           <svg viewBox="0 0 24 24" fill="none" className="w-5 h-5">
-            <rect x="3" y="3" width="18" height="6" rx="1" fill="currentColor" opacity="0.8"/>
-            <rect x="3" y="10" width="18" height="6" rx="1" fill="currentColor" opacity="0.8"/>
-            <rect x="3" y="17" width="18" height="4" rx="1" fill="currentColor" opacity="0.8"/>
+            <rect x="2" y="3" width="20" height="6" rx="2" stroke="white" strokeWidth="2" fill="black"/>
+            <rect x="2" y="9" width="20" height="6" rx="2" stroke="white" strokeWidth="2" fill="black"/>
+            <rect x="2" y="15" width="20" height="6" rx="2" stroke="white" strokeWidth="2" fill="black"/>
             <circle cx="6" cy="6" r="1" fill="white"/>
-            <circle cx="9" cy="6" r="1" fill="white"/>
-            <circle cx="6" cy="13" r="1" fill="white"/>
-            <circle cx="9" cy="13" r="1" fill="white"/>
-            <circle cx="6" cy="19" r="1" fill="white"/>
-            <circle cx="9" cy="19" r="1" fill="white"/>
-            <rect x="16" y="5" width="3" height="2" rx="0.5" fill="white" opacity="0.7"/>
-            <rect x="16" y="12" width="3" height="2" rx="0.5" fill="white" opacity="0.7"/>
-            <rect x="16" y="18" width="3" height="2" rx="0.5" fill="white" opacity="0.7"/>
+            <circle cx="6" cy="12" r="1" fill="white"/>
+            <circle cx="6" cy="18" r="1" fill="white"/>
+            <circle cx="18" cy="6" r="1" fill="white"/>
+            <circle cx="18" cy="12" r="1" fill="white"/>
+            <circle cx="18" cy="18" r="1" fill="white"/>
           </svg>
         ),
         label: "Servers",
@@ -46,10 +43,10 @@ const navigationSections = [
       {
         iconSvg: (
           <svg viewBox="0 0 24 24" fill="none" className="w-5 h-5">
-            <path d="M12 2L2 7l10 5 10-5-10-5z" fill="currentColor"/>
-            <path d="m2 17 10 5 10-5" stroke="currentColor" strokeWidth="2" fill="none"/>
-            <path d="m2 12 10 5 10-5" stroke="currentColor" strokeWidth="2" fill="none"/>
-            <circle cx="12" cy="12" r="2" fill="currentColor" opacity="0.8"/>
+            <path d="M3 7l9-4 9 4v10l-9 4-9-4V7z" stroke="white" strokeWidth="2" fill="black"/>
+            <path d="M3 7l9 4 9-4" stroke="white" strokeWidth="2"/>
+            <path d="M12 11v10" stroke="white" strokeWidth="2"/>
+            <circle cx="12" cy="7" r="2" stroke="white" strokeWidth="1.5" fill="none"/>
           </svg>
         ),
         label: "Downloads",
