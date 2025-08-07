@@ -75,7 +75,7 @@ const limiter = rateLimit({
 
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: process.env.NODE_ENV === "production" ? 10 : 1000, // Much more lenient in development
+  max: process.env.NODE_ENV === "production" ? 10 : 99999, // Effectively unlimited in development
   message: {
     error: "Too many authentication attempts, please try again later.",
     retryAfter: "15 minutes",
