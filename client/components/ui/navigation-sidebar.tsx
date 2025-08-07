@@ -234,14 +234,8 @@ export function NavigationSidebar() {
                     }`}
                   >
                     <div className="flex items-center space-x-3">
-                      <div
-                        className={`w-10 h-10 rounded-lg bg-card border border-border flex items-center justify-center shadow-lg group-hover:scale-110 group-hover:shadow-xl transition-all duration-300 ${isActive ? `shadow-lg ${item.glow}` : `group-hover:${item.glow} group-hover:shadow-primary/20`}`}
-                      >
-                        <div
-                          className={`${item.iconColor} ${isActive ? "drop-shadow-[0_0_4px_currentColor]" : ""}`}
-                        >
-                          {item.iconSvg}
-                        </div>
+                      <div className={`${item.iconColor} transition-colors duration-200`}>
+                        {item.iconSvg}
                       </div>
                       <div className="flex-1">
                         <p
