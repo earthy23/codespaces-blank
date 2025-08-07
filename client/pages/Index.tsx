@@ -55,13 +55,19 @@ export default function Index() {
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link to="/register">
                 <Button size="lg" className="minecraft-button bg-primary text-primary-foreground hover:bg-primary/90 px-8 py-6 text-lg">
-                  <img src="https://images.pexels.com/photos/4225229/pexels-photo-4225229.jpeg" alt="Gaming Setup" className="w-5 h-5 mr-2 rounded object-cover" />
+                  <svg viewBox="0 0 24 24" fill="none" className="w-5 h-5 mr-2">
+                    <polygon points="5,3 19,12 5,21" fill="currentColor"/>
+                  </svg>
                   Start Playing Now
                 </Button>
               </Link>
               <Link to="/downloads">
                 <Button size="lg" variant="outline" className="minecraft-button px-8 py-6 text-lg">
-                  <img src="https://images.pexels.com/photos/7794018/pexels-photo-7794018.jpeg" alt="Download" className="w-5 h-5 mr-2 rounded object-cover" />
+                  <svg viewBox="0 0 24 24" fill="none" className="w-5 h-5 mr-2">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" stroke="currentColor" strokeWidth="2" fill="none"/>
+                    <polyline points="7,10 12,15 17,10" stroke="currentColor" strokeWidth="2" fill="none"/>
+                    <line x1="12" y1="15" x2="12" y2="3" stroke="currentColor" strokeWidth="2"/>
+                  </svg>
                   Download Clients
                 </Button>
               </Link>
@@ -83,8 +89,11 @@ export default function Index() {
           <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
             <Card className="minecraft-panel">
               <CardContent className="p-6 text-center">
-                <div className="w-16 h-16 bg-primary/20 rounded-xl flex items-center justify-center mx-auto mb-4 overflow-hidden">
-                  <img src="https://images.pexels.com/photos/4225229/pexels-photo-4225229.jpeg" alt="Gaming Setup" className="w-full h-full object-cover rounded-lg" />
+                <div className="w-16 h-16 bg-primary/20 rounded-xl flex items-center justify-center mx-auto mb-4">
+                  <svg viewBox="0 0 24 24" fill="none" className="w-8 h-8 text-primary">
+                    <polygon points="5,3 19,12 5,21" fill="currentColor"/>
+                    <circle cx="12" cy="12" r="2" fill="white"/>
+                  </svg>
                 </div>
                 <h3 className="text-xl font-semibold mb-3">Instant Launch</h3>
                 <p className="text-muted-foreground">
@@ -95,8 +104,12 @@ export default function Index() {
 
             <Card className="minecraft-panel">
               <CardContent className="p-6 text-center">
-                <div className="w-16 h-16 bg-primary/20 rounded-xl flex items-center justify-center mx-auto mb-4 overflow-hidden">
-                  <img src="https://images.pexels.com/photos/9069288/pexels-photo-9069288.jpeg" alt="Friends Gaming" className="w-full h-full object-cover rounded-lg" />
+                <div className="w-16 h-16 bg-primary/20 rounded-xl flex items-center justify-center mx-auto mb-4">
+                  <svg viewBox="0 0 24 24" fill="none" className="w-8 h-8 text-primary">
+                    <circle cx="9" cy="7" r="4" fill="currentColor"/>
+                    <path d="m3 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2" stroke="currentColor" strokeWidth="2" fill="none"/>
+                    <circle cx="16" cy="11" r="3" fill="currentColor" opacity="0.7"/>
+                  </svg>
                 </div>
                 <h3 className="text-xl font-semibold mb-3">Social Hub</h3>
                 <p className="text-muted-foreground">
@@ -107,8 +120,11 @@ export default function Index() {
 
             <Card className="minecraft-panel">
               <CardContent className="p-6 text-center">
-                <div className="w-16 h-16 bg-primary/20 rounded-xl flex items-center justify-center mx-auto mb-4 overflow-hidden">
-                  <img src="https://images.pexels.com/photos/10068851/pexels-photo-10068851.jpeg" alt="Warrior Shield" className="w-full h-full object-cover rounded-lg" />
+                <div className="w-16 h-16 bg-primary/20 rounded-xl flex items-center justify-center mx-auto mb-4">
+                  <svg viewBox="0 0 24 24" fill="none" className="w-8 h-8 text-primary">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" fill="currentColor"/>
+                    <path d="m9 12 2 2 4-4" stroke="white" strokeWidth="2" fill="none"/>
+                  </svg>
                 </div>
                 <h3 className="text-xl font-semibold mb-3">Secure & Safe</h3>
                 <p className="text-muted-foreground">
@@ -133,26 +149,48 @@ export default function Index() {
                 </p>
                 <ul className="space-y-3 text-muted-foreground">
                   <li className="flex items-center">
-                    <img src="https://images.pexels.com/photos/7640773/pexels-photo-7640773.jpeg" alt="Chat" className="w-5 h-5 mr-3 rounded object-cover" />
+                    <svg viewBox="0 0 24 24" fill="none" className="w-5 h-5 mr-3 text-primary">
+                      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" fill="currentColor"/>
+                      <circle cx="8" cy="11" r="1" fill="white"/>
+                      <circle cx="12" cy="11" r="1" fill="white"/>
+                      <circle cx="16" cy="11" r="1" fill="white"/>
+                    </svg>
                     Real-time chat and voice communication
                   </li>
                   <li className="flex items-center">
-                    <img src="https://images.pexels.com/photos/9069288/pexels-photo-9069288.jpeg" alt="Friends" className="w-5 h-5 mr-3 rounded object-cover" />
+                    <svg viewBox="0 0 24 24" fill="none" className="w-5 h-5 mr-3 text-primary">
+                      <circle cx="9" cy="7" r="4" fill="currentColor"/>
+                      <path d="m3 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2" stroke="currentColor" strokeWidth="2" fill="none"/>
+                      <circle cx="16" cy="11" r="3" fill="currentColor" opacity="0.7"/>
+                    </svg>
                     Friend system and social features
                   </li>
                   <li className="flex items-center">
-                    <img src="https://images.pexels.com/photos/7794018/pexels-photo-7794018.jpeg" alt="Download" className="w-5 h-5 mr-3 rounded object-cover" />
+                    <svg viewBox="0 0 24 24" fill="none" className="w-5 h-5 mr-3 text-primary">
+                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" stroke="currentColor" strokeWidth="2" fill="none"/>
+                      <polyline points="7,10 12,15 17,10" stroke="currentColor" strokeWidth="2" fill="none"/>
+                      <line x1="12" y1="15" x2="12" y2="3" stroke="currentColor" strokeWidth="2"/>
+                    </svg>
                     Multiple client downloads and versions
                   </li>
                   <li className="flex items-center">
-                    <img src="https://images.pexels.com/photos/10068851/pexels-photo-10068851.jpeg" alt="Security" className="w-5 h-5 mr-3 rounded object-cover" />
+                    <svg viewBox="0 0 24 24" fill="none" className="w-5 h-5 mr-3 text-primary">
+                      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" fill="currentColor"/>
+                      <path d="m9 12 2 2 4-4" stroke="white" strokeWidth="2" fill="none"/>
+                    </svg>
                     Advanced moderation and safety tools
                   </li>
                 </ul>
               </div>
               <div className="minecraft-panel p-8">
-                <div className="w-full h-48 bg-primary/10 rounded-lg flex items-center justify-center overflow-hidden">
-                  <img src="https://images.pexels.com/photos/16070479/pexels-photo-16070479.jpeg" alt="Gaming Controller" className="w-full h-full object-cover rounded-lg" />
+                <div className="w-full h-48 bg-primary/10 rounded-lg flex items-center justify-center">
+                  <svg viewBox="0 0 24 24" fill="none" className="w-24 h-24 text-primary/50">
+                    <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" fill="currentColor"/>
+                    <circle cx="8" cy="12" r="2" fill="white"/>
+                    <circle cx="16" cy="12" r="2" fill="white"/>
+                    <rect x="11" y="8" width="2" height="8" rx="1" fill="white"/>
+                    <rect x="7" y="11" width="10" height="2" rx="1" fill="white"/>
+                  </svg>
                 </div>
               </div>
             </div>
@@ -169,7 +207,9 @@ export default function Index() {
           </p>
           <Link to="/register">
             <Button size="lg" className="minecraft-button bg-primary text-primary-foreground hover:bg-primary/90 px-8 py-6 text-lg">
-              <img src="https://images.pexels.com/photos/4225229/pexels-photo-4225229.jpeg" alt="Gaming Setup" className="w-5 h-5 mr-2 rounded object-cover" />
+              <svg viewBox="0 0 24 24" fill="none" className="w-5 h-5 mr-2">
+                <polygon points="5,3 19,12 5,21" fill="currentColor"/>
+              </svg>
               Join UEC Now
             </Button>
           </Link>
