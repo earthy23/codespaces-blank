@@ -541,11 +541,11 @@ const safeServerRequest = async (requestFn: () => Promise<any>, requestName: str
       attempt++;
 
       const isRetriableError =
-        error.message.includes("timed out") ||
-        error.message.includes("cancelled") ||
-        error.message.includes("aborted") ||
-        error.message.includes("Failed to fetch") ||
-        error.message.includes("Network error") ||
+        error.message?.includes("timed out") ||
+        error.message?.includes("cancelled") ||
+        error.message?.includes("aborted") ||
+        error.message?.includes("Failed to fetch") ||
+        error.message?.includes("Network error") ||
         error.name === "AbortError";
 
       if (isRetriableError && attempt <= maxRetries) {
