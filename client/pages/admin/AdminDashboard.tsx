@@ -379,7 +379,8 @@ export default function AdminDashboard() {
             {/* Time Range Filter */}
             <select
               className="bg-gray-800 text-white border border-gray-600 rounded px-3 py-2 text-sm"
-              defaultValue="24h"
+              value={timeRange}
+              onChange={(e) => setTimeRange(e.target.value)}
             >
               <option value="1h">Last Hour</option>
               <option value="24h">Last 24 Hours</option>
