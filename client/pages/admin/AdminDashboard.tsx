@@ -635,6 +635,143 @@ export default function AdminDashboard() {
           </Card>
         </div>
 
+        {/* Real-time System Performance */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* System Performance Metrics */}
+          <Card className="bg-gray-900 border-gray-700">
+            <CardHeader>
+              <CardTitle className="flex items-center space-x-2">
+                <Activity className="w-5 h-5 text-purple-400" />
+                <span className="text-white">System Performance</span>
+              </CardTitle>
+              <CardDescription className="text-gray-400">
+                Real-time server metrics and performance indicators
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-6">
+                {/* CPU Usage */}
+                <div>
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-sm text-gray-400">CPU Usage</span>
+                    <span className="text-sm font-medium text-white">23%</span>
+                  </div>
+                  <Progress value={23} className="bg-gray-700" />
+                </div>
+
+                {/* Memory Usage */}
+                <div>
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-sm text-gray-400">Memory Usage</span>
+                    <span className="text-sm font-medium text-white">67%</span>
+                  </div>
+                  <Progress value={67} className="bg-gray-700" />
+                </div>
+
+                {/* Network I/O */}
+                <div>
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-sm text-gray-400">Network I/O</span>
+                    <span className="text-sm font-medium text-white">34%</span>
+                  </div>
+                  <Progress value={34} className="bg-gray-700" />
+                </div>
+
+                {/* Performance Chart */}
+                <div className="mt-4">
+                  <ResponsiveContainer width="100%" height={150}>
+                    <LineChart data={[
+                      { time: "00:00", cpu: 15, memory: 45, network: 20 },
+                      { time: "04:00", cpu: 25, memory: 52, network: 35 },
+                      { time: "08:00", cpu: 45, memory: 68, network: 55 },
+                      { time: "12:00", cpu: 35, memory: 72, network: 40 },
+                      { time: "16:00", cpu: 28, memory: 65, network: 38 },
+                      { time: "20:00", cpu: 23, memory: 67, network: 34 },
+                    ]}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
+                      <XAxis dataKey="time" stroke="#9ca3af" />
+                      <YAxis stroke="#9ca3af" />
+                      <Tooltip
+                        contentStyle={{
+                          backgroundColor: "#1f2937",
+                          border: "1px solid #374151",
+                          borderRadius: "8px"
+                        }}
+                      />
+                      <Line type="monotone" dataKey="cpu" stroke="#ef4444" strokeWidth={2} name="CPU %" />
+                      <Line type="monotone" dataKey="memory" stroke="#3b82f6" strokeWidth={2} name="Memory %" />
+                      <Line type="monotone" dataKey="network" stroke="#10b981" strokeWidth={2} name="Network %" />
+                    </LineChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* User Activity Distribution */}
+          <Card className="bg-gray-900 border-gray-700">
+            <CardHeader>
+              <CardTitle className="flex items-center space-x-2">
+                <BarChart3 className="w-5 h-5 text-orange-400" />
+                <span className="text-white">User Activity Distribution</span>
+              </CardTitle>
+              <CardDescription className="text-gray-400">
+                Current user activity across different platform features
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <ResponsiveContainer width="100%" height={200}>
+                  <PieChart>
+                    <Pie
+                      data={[
+                        { name: "Gaming", value: 45, fill: "#3b82f6" },
+                        { name: "Chat", value: 25, fill: "#10b981" },
+                        { name: "Forums", value: 15, fill: "#f59e0b" },
+                        { name: "Store", value: 10, fill: "#ef4444" },
+                        { name: "Profile", value: 5, fill: "#8b5cf6" },
+                      ]}
+                      cx="50%"
+                      cy="50%"
+                      outerRadius={80}
+                      dataKey="value"
+                      label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                    >
+                    </Pie>
+                    <Tooltip
+                      contentStyle={{
+                        backgroundColor: "#1f2937",
+                        border: "1px solid #374151",
+                        borderRadius: "8px"
+                      }}
+                    />
+                  </PieChart>
+                </ResponsiveContainer>
+
+                {/* Activity Legends */}
+                <div className="grid grid-cols-2 gap-2 text-xs">
+                  <div className="flex items-center space-x-2">
+                    <div className="w-3 h-3 bg-blue-500 rounded"></div>
+                    <span className="text-gray-400">Gaming (45%)</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <div className="w-3 h-3 bg-green-500 rounded"></div>
+                    <span className="text-gray-400">Chat (25%)</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <div className="w-3 h-3 bg-yellow-500 rounded"></div>
+                    <span className="text-gray-400">Forums (15%)</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <div className="w-3 h-3 bg-red-500 rounded"></div>
+                    <span className="text-gray-400">Store (10%)</span>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
         {/* Recent Activity */}
         <Card className="bg-gray-900 border-gray-700">
           <CardHeader>
