@@ -52,8 +52,26 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   const refreshUser = async () => {
+    // Debounce rapid refresh calls (minimum 2 seconds between requests)
+    const now = Date.now();
+    const timeSinceLastRefresh = now - lastRefreshRef.current;
+    const minInterval = 2000; // 2 seconds
+
+    if (timeSinceLastRefresh < minInterval) {
+      // If a refresh was called recently, schedule a delayed refresh
+      if (refreshTimeoutRef.current) {
+        clearTimeout(refreshTimeoutRef.current);
+      }
+
+      refreshTimeoutRef.current = setTimeout(() => {
+        refreshUser();
+      }, minInterval - timeSinceLastRefresh);
+      return;
+    }
+
     try {
       setLoading(true);
+      lastRefreshRef.current = now;
 
       // Add timeout for auth response (increased for better reliability)
       const timeoutPromise = new Promise<never>((_, reject) =>
