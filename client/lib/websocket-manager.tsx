@@ -336,15 +336,30 @@ export const WebSocketManagerProvider = ({
   // Connect when user and token are available
   useEffect(() => {
     if (user && token) {
-      connect();
+      try {
+        connect();
+      } catch (error) {
+        console.error("❌ WebSocket connection initiation error:", {
+          message: error?.message || "Unknown error",
+          type: error?.name || "Unknown",
+          timestamp: new Date().toISOString()
+        });
+      }
     }
 
     return () => {
-      if (reconnectTimeoutRef.current) {
-        clearTimeout(reconnectTimeoutRef.current);
-      }
-      if (wsRef.current) {
-        wsRef.current.close();
+      try {
+        if (reconnectTimeoutRef.current) {
+          clearTimeout(reconnectTimeoutRef.current);
+        }
+        if (wsRef.current) {
+          wsRef.current.close();
+        }
+      } catch (error) {
+        // Silently handle cleanup errors
+        if (process.env.NODE_ENV === "development") {
+          console.warn("WebSocket cleanup error:", error?.message);
+        }
       }
     };
   }, [user, token, connect]);
