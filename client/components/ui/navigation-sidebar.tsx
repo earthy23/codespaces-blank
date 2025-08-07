@@ -94,22 +94,6 @@ const navigationSections = [
         iconColor: "text-primary",
         glow: "shadow-primary/50",
       },
-      {
-        iconSvg: (
-          <svg viewBox="0 0 24 24" fill="none" className="w-5 h-5">
-            <rect x="3" y="3" width="18" height="18" rx="2" fill="currentColor" opacity="0.6"/>
-            <path d="M8 7h8M8 11h8M8 15h6" stroke="currentColor" strokeWidth="2" fill="none"/>
-            <circle cx="6" cy="8" r="1" fill="currentColor"/>
-            <circle cx="6" cy="12" r="1" fill="currentColor"/>
-            <circle cx="6" cy="16" r="1" fill="currentColor"/>
-          </svg>
-        ),
-        label: "Forums",
-        path: "/forums",
-        description: "Community discussions",
-        iconColor: "text-primary",
-        glow: "shadow-primary/50",
-      },
     ],
   },
   {
