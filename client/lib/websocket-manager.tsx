@@ -109,7 +109,11 @@ export const WebSocketManagerProvider = ({
 
     try {
       const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
-      const wsUrl = `${protocol}//${window.location.host}/ws`;
+      // In development, connect to the API server port (3000)
+      const host = process.env.NODE_ENV === "development"
+        ? window.location.hostname + ":3000"
+        : window.location.host;
+      const wsUrl = `${protocol}//${host}/ws`;
 
       if (process.env.NODE_ENV === "development") {
         console.log("🔌 Connecting to WebSocket:", wsUrl);
