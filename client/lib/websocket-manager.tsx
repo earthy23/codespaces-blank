@@ -310,10 +310,10 @@ export function WebSocketManagerProvider({
   );
 }
 
-export function useWebSocket() {
+export const useWebSocket = () => {
   const context = useContext(WebSocketManagerContext);
   return context;
-}
+};
 
 // Utility hook for subscribing to specific events
 export function useWebSocketEvent<K extends keyof WebSocketEvents>(
