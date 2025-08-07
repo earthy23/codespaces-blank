@@ -37,27 +37,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Server,
-  Plus,
-  Heart,
-  MessageCircle,
-  Users,
-  Play,
-  Upload,
-  ExternalLink,
-  Crown,
-  Shield,
-  Clock,
-  Globe,
-  Zap,
-  Volume2,
-  Edit,
-  Trash2,
-  Settings,
-  Eye,
-  RefreshCw,
-} from "lucide-react";
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/lib/auth";
