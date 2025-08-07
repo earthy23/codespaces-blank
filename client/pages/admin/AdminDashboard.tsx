@@ -340,43 +340,50 @@ export default function AdminDashboard() {
           const statsData = await statsRes.value.json();
           const stats = statsData.stats;
 
-          // Set enhanced stats
+          // Set enhanced stats with better real data integration
           const enhancedStats: DashboardStats = {
-            totalUsers: stats?.totalUsers || 1247,
-            activeUsers: stats?.activeUsers || Math.floor((stats?.totalUsers || 1247) * 0.25),
-            newUsersToday: stats?.newUsersToday || 23,
-            totalRevenue: stats?.totalRevenue || 15847.75,
-            monthlyRevenue: stats?.monthlyRevenue || 2190.5,
-            activeSessions: stats?.activeSessions || 89,
-            totalMessages: stats?.totalMessages || 8547,
-            flaggedMessages: stats?.flaggedMessages || 3,
-            supportTickets: stats?.supportTickets || 67,
-            pendingTickets: stats?.pendingTickets || 8,
-            forumPosts: stats?.forumPosts || 456,
-            serverUptime: stats?.serverUptime || 99.87,
+            totalUsers: stats?.totalUsers || 0,
+            activeUsers: stats?.activeUsers || 0,
+            newUsersToday: stats?.newUsersToday || 0,
+            totalRevenue: stats?.totalRevenue || 0,
+            monthlyRevenue: stats?.monthlyRevenue || 0,
+            activeSessions: stats?.activeSessions || 0,
+            totalMessages: stats?.totalMessages || 0,
+            flaggedMessages: stats?.flaggedMessages || 0,
+            supportTickets: stats?.supportTickets || 0,
+            pendingTickets: stats?.pendingTickets || 0,
+            forumPosts: stats?.forumPosts || 0,
+            serverUptime: stats?.serverUptime || 0,
           };
           setStats(enhancedStats);
           setDashboardData(stats);
           cacheManager.set(CACHE_KEYS.ADMIN_STATS, enhancedStats);
+
+          console.log("Dashboard stats loaded successfully:", {
+            users: enhancedStats.totalUsers,
+            active: enhancedStats.activeUsers,
+            uptime: enhancedStats.serverUptime
+          });
         } else {
           console.warn("Failed to load dashboard stats, using cached/fallback data");
           // Use cached data if available, otherwise set minimal fallback
           if (!stats) {
             const fallbackStats: DashboardStats = {
-              totalUsers: 1247,
-              activeUsers: 312,
-              newUsersToday: 23,
-              totalRevenue: 15847.75,
-              monthlyRevenue: 2190.5,
-              activeSessions: 89,
-              totalMessages: 8547,
-              flaggedMessages: 3,
-              supportTickets: 67,
-              pendingTickets: 8,
-              forumPosts: 456,
-              serverUptime: 99.87,
+              totalUsers: 0,
+              activeUsers: 0,
+              newUsersToday: 0,
+              totalRevenue: 0,
+              monthlyRevenue: 0,
+              activeSessions: 0,
+              totalMessages: 0,
+              flaggedMessages: 0,
+              supportTickets: 0,
+              pendingTickets: 0,
+              forumPosts: 0,
+              serverUptime: 0,
             };
             setStats(fallbackStats);
+            console.warn("Using fallback stats due to API failure");
           }
         }
 
@@ -566,16 +573,31 @@ export default function AdminDashboard() {
               <option value="30d">Last 30 Days</option>
             </select>
 
-            <Button
-              onClick={loadDashboardData}
-              className="bg-white text-black hover:bg-gray-200"
-              disabled={isLoading}
-            >
-              <RefreshCw
-                className={`w-4 h-4 mr-2 ${isLoading ? "animate-spin" : ""}`}
-              />
-              Refresh
-            </Button>
+            <div className="flex space-x-2">
+              <Button
+                onClick={loadDashboardData}
+                className="bg-white text-black hover:bg-gray-200"
+                disabled={isLoading}
+                size="sm"
+              >
+                <RefreshCw
+                  className={`w-4 h-4 mr-2 ${isLoading ? "animate-spin" : ""}`}
+                />
+                Refresh All
+              </Button>
+
+              <Button
+                onClick={() => {
+                  setLiveActivity([]);
+                  setLastActivityUpdate(Date.now());
+                }}
+                className="bg-blue-600 text-white hover:bg-blue-700"
+                size="sm"
+              >
+                <Activity className="w-4 h-4 mr-2" />
+                Clear Feed
+              </Button>
+            </div>
           </div>
         </div>
 
