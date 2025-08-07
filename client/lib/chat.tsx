@@ -239,19 +239,39 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
 
     try {
       setIsLoading(true);
-      const response = await fetch("/api/chat", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      });
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 8000); // 8 second timeout
 
-      if (response.ok) {
-        const data = await response.json();
-        setChats(data.chats || []);
+      try {
+        const response = await fetch("/api/chat", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          signal: controller.signal,
+        });
+
+        clearTimeout(timeoutId);
+
+        if (response.ok) {
+          const data = await response.json();
+          setChats(data.chats || []);
+        } else {
+          console.warn("Failed to load chats, keeping existing data");
+        }
+      } catch (fetchError) {
+        clearTimeout(timeoutId);
+        throw fetchError;
       }
     } catch (error) {
-      console.error("Error loading chats:", error);
+      if (error.name === 'AbortError') {
+        console.warn("Chat loading timed out, keeping existing data");
+      } else if (error.message?.includes('Failed to fetch')) {
+        console.warn("Network issue loading chats, keeping existing data");
+      } else {
+        console.error("Error loading chats:", error);
+      }
+      // Don't clear existing chats on error, keep current state
     } finally {
       setIsLoading(false);
     }
