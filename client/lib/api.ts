@@ -62,10 +62,17 @@ const makeRequest = async (endpoint: string, options: RequestInit = {}) => {
 
   // Add timeout to requests
   const controller = new AbortController();
+
+  // Add a flag to track if the timeout was triggered by us
+  let isOurTimeout = false;
   const timeoutId = setTimeout(() => {
     console.warn(`⏰ Request timeout after ${timeoutMs}ms for ${url}`);
+    isOurTimeout = true;
     controller.abort("Request timeout");
   }, timeoutMs);
+
+  // Store timeout info for error handling
+  (controller as any)._isOurTimeout = () => isOurTimeout;
 
   // Use the timeout controller signal (ignore any existing signal to avoid conflicts)
   const config: RequestInit = {
