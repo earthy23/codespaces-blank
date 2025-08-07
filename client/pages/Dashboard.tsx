@@ -334,7 +334,7 @@ export default function Dashboard() {
                           className="inline-flex items-center text-xs text-primary hover:underline"
                         >
                           Visit
-                          <ExternalLink className="w-3 h-3 ml-1" />
+                          <img src="https://images.pexels.com/photos/7794018/pexels-photo-7794018.jpeg" alt="External" className="w-3 h-3 ml-1 rounded object-cover" />
                         </a>
                       )}
                     </CardContent>
