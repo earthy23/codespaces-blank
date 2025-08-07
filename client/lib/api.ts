@@ -238,7 +238,11 @@ const makeRequest = async (endpoint: string, options: RequestInit = {}) => {
       } else {
         response = await fetch(url, config);
       }
-      clearTimeout(timeoutId);
+
+      // Clear timeout if we're not using XHR (XHR handles its own timeout)
+      if (!isFullStoryBlocking()) {
+        clearTimeout(timeoutId);
+      }
 
       console.log(`📊 Response status: ${response.status} for ${url}`);
 
