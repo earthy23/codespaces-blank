@@ -346,8 +346,33 @@ export const authApi = {
 
   getProfile: async () => {
     try {
-      return await makeRequest("/auth/profile");
+      console.log("🔍 Attempting to fetch user profile...");
+      const result = await makeRequest("/auth/profile");
+      console.log("✅ User profile fetched successfully");
+      return result;
     } catch (error) {
+      console.error("❌ Failed to fetch user profile:", error);
+
+      // If it's a network error, try to provide more helpful error context
+      if (error instanceof TypeError && error.message === "Failed to fetch") {
+        console.error("🌐 Network connectivity issue detected for profile endpoint");
+
+        // Try a simple health check to see if the server is reachable
+        try {
+          const healthResponse = await fetch("/api/health", {
+            method: "GET",
+            signal: AbortSignal.timeout(3000)
+          });
+          if (healthResponse.ok) {
+            console.log("✅ Server health check passed - profile endpoint specific issue");
+          } else {
+            console.error("❌ Server health check failed:", healthResponse.status);
+          }
+        } catch (healthError) {
+          console.error("❌ Server completely unreachable:", healthError.message);
+        }
+      }
+
       throw error;
     }
   },
