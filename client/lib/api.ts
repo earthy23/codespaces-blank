@@ -74,46 +74,63 @@ const makeRequest = async (endpoint: string, options: RequestInit = {}) => {
     signal: controller.signal,
   };
 
+  // Create the actual request promise
+  const requestPromise = (async () => {
+    try {
+      console.log(`🔗 Making request to: ${url}`, { method: config.method || 'GET', hasAuth: !!authToken });
+      const response = await fetch(url, config);
+      clearTimeout(timeoutId);
+
+      console.log(`📊 Response status: ${response.status} for ${url}`);
+
+      // Handle authentication errors (but not for login/register endpoints)
+      if (
+        response.status === 401 &&
+        !endpoint.includes("/auth/login") &&
+        !endpoint.includes("/auth/register")
+      ) {
+        // Clear token and redirect for any 401 on protected endpoints
+        localStorage.removeItem("auth_token");
+        localStorage.removeItem("chat_data");
+        localStorage.removeItem("friends_data");
+
+        // Use setTimeout to avoid issues with multiple simultaneous requests
+        setTimeout(() => {
+          window.location.href = "/login";
+        }, 100);
+
+        throw new Error("Authentication required");
+      }
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({
+          error: `Request failed with status ${response.status}`,
+        }));
+
+        console.error(`❌ API Error for ${url}:`, errorData);
+        throw new Error(
+          errorData.error || `HTTP ${response.status}: ${response.statusText}`,
+        );
+      }
+
+      const data = await response.json();
+      console.log(`✅ Success for ${url}`);
+      return data;
+    } finally {
+      // Always clean up the pending request
+      if (requestKey) {
+        pendingRequests.delete(requestKey);
+      }
+    }
+  })();
+
+  // Store the promise for deduplication (only for GET requests)
+  if (requestKey) {
+    pendingRequests.set(requestKey, requestPromise);
+  }
+
   try {
-    console.log(`🔗 Making request to: ${url}`, { method: config.method || 'GET', hasAuth: !!authToken });
-    const response = await fetch(url, config);
-    clearTimeout(timeoutId);
-
-    console.log(`📊 Response status: ${response.status} for ${url}`);
-
-    // Handle authentication errors (but not for login/register endpoints)
-    if (
-      response.status === 401 &&
-      !endpoint.includes("/auth/login") &&
-      !endpoint.includes("/auth/register")
-    ) {
-      // Clear token and redirect for any 401 on protected endpoints
-      localStorage.removeItem("auth_token");
-      localStorage.removeItem("chat_data");
-      localStorage.removeItem("friends_data");
-
-      // Use setTimeout to avoid issues with multiple simultaneous requests
-      setTimeout(() => {
-        window.location.href = "/login";
-      }, 100);
-
-      throw new Error("Authentication required");
-    }
-
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({
-        error: `Request failed with status ${response.status}`,
-      }));
-
-      console.error(`❌ API Error for ${url}:`, errorData);
-      throw new Error(
-        errorData.error || `HTTP ${response.status}: ${response.statusText}`,
-      );
-    }
-
-    const data = await response.json();
-    console.log(`✅ Success for ${url}`);
-    return data;
+    return await requestPromise;
   } catch (error) {
     clearTimeout(timeoutId);
     console.error(`💥 Request failed for ${url}:`, error);
