@@ -185,8 +185,22 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
         }
       };
 
-      wsRef.current.onerror = (error) => {
-        console.error("WebSocket error:", error);
+      wsRef.current.onerror = (event) => {
+        // Extract meaningful error information instead of logging raw event
+        const errorInfo = {
+          type: event.type,
+          target: event.target?.readyState
+            ? `readyState: ${event.target.readyState}`
+            : "unknown",
+          timestamp: new Date().toISOString(),
+        };
+
+        if (process.env.NODE_ENV === "development") {
+          console.warn("⚠️ Chat WebSocket error (will attempt reconnect):", JSON.stringify(errorInfo));
+        } else {
+          console.warn("⚠️ Chat WebSocket connection error, attempting reconnect...");
+        }
+
         setIsConnected(false);
       };
     } catch (error) {
