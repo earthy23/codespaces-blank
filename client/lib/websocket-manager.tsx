@@ -159,8 +159,19 @@ export const WebSocketManagerProvider = ({
         }
       };
 
-      wsRef.current.onerror = (error) => {
-        console.error("❌ WebSocket error:", error);
+      wsRef.current.onerror = (event) => {
+        // Extract meaningful error information
+        const errorInfo = {
+          type: event.type,
+          target: event.target?.readyState ? `readyState: ${event.target.readyState}` : 'unknown',
+          timestamp: new Date().toISOString()
+        };
+
+        if (process.env.NODE_ENV === 'development') {
+          console.error("❌ WebSocket error:", errorInfo);
+        } else {
+          console.error("❌ WebSocket connection error occurred");
+        }
       };
     } catch (error) {
       console.error("❌ WebSocket connection error:", error);
