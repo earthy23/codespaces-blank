@@ -178,7 +178,7 @@ export default function Index() {
       </section>
 
       {/* Footer */}
-      <footer className="relative z-10 border-t border-border bg-card/50 backdrop-blur-sm">
+      <footer className="relative z-10 border-t border-border bg-card">
         <div className="container mx-auto px-6 py-8">
           <div className="grid md:grid-cols-4 gap-8">
             <div>
