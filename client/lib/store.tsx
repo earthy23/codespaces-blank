@@ -77,7 +77,7 @@ interface StoreContextType {
 
 const StoreContext = createContext<StoreContextType | undefined>(undefined);
 
-export function StoreProvider({ children }: { children: React.ReactNode }) {
+export const StoreProvider = ({ children }: { children: React.ReactNode }) => {
   const { user, token } = useAuth();
   const { subscribe } = useWebSocket();
 
@@ -506,7 +506,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
       {children}
     </StoreContext.Provider>
   );
-}
+};
 
 export const useStore = () => {
   const context = useContext(StoreContext);
