@@ -49,6 +49,13 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     } else {
       setLoading(false);
     }
+
+    // Cleanup on unmount
+    return () => {
+      if (refreshTimeoutRef.current) {
+        clearTimeout(refreshTimeoutRef.current);
+      }
+    };
   }, []);
 
   const refreshUser = async () => {
