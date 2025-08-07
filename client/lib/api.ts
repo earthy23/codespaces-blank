@@ -479,20 +479,42 @@ if (typeof window !== "undefined") {
     });
 }
 
-// Servers API with retry logic
-export const serversApi = {
-  getAll: async (retryCount = 0) => {
+// Helper function to safely execute server API calls with automatic retry
+const safeServerRequest = async (requestFn: () => Promise<any>, requestName: string, maxRetries = 2) => {
+  let attempt = 0;
+
+  while (attempt <= maxRetries) {
     try {
-      return await makeRequest("/servers");
+      return await requestFn();
     } catch (error) {
-      // Retry once if it's a timeout error and we haven't retried yet
-      if (retryCount === 0 && error.message.includes("timed out")) {
-        console.log("🔄 Retrying servers request due to timeout...");
-        await new Promise(resolve => setTimeout(resolve, 1000)); // Wait 1 second
-        return serversApi.getAll(1); // Retry once
+      attempt++;
+
+      const isRetriableError =
+        error.message.includes("timed out") ||
+        error.message.includes("cancelled") ||
+        error.message.includes("aborted") ||
+        error.name === "AbortError";
+
+      if (isRetriableError && attempt <= maxRetries) {
+        const delay = attempt * 1000; // Progressive delay: 1s, 2s
+        console.log(`🔄 Retrying ${requestName} (attempt ${attempt}/${maxRetries}) after ${delay}ms...`);
+        await new Promise(resolve => setTimeout(resolve, delay));
+        continue;
       }
+
+      // If not retriable or max retries reached, throw the error
       throw error;
     }
+  }
+};
+
+// Servers API with enhanced retry logic
+export const serversApi = {
+  getAll: async () => {
+    return safeServerRequest(
+      () => makeRequest("/servers"),
+      "getAll servers"
+    );
   },
 
   getMyServers: async (retryCount = 0) => {
