@@ -179,68 +179,6 @@ export default function Dashboard() {
           </CardContent>
         </Card>
 
-        {/* Enhanced Quick Stats */}
-        <div className="grid md:grid-cols-3 gap-6 mb-8">
-          <Card className="minecraft-panel bg-card border-2 border-border shadow-lg hover:shadow-primary/10">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-muted-foreground">
-                    Online Friends
-                  </p>
-                  <p className="text-3xl font-bold text-foreground">
-                    {onlineFriends.length}
-                  </p>
-                </div>
-                <svg viewBox="0 0 24 24" fill="none" className="w-8 h-8 text-primary">
-                  <circle cx="9" cy="7" r="4" fill="currentColor"/>
-                  <path d="m3 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2" stroke="currentColor" strokeWidth="2" fill="none"/>
-                  <circle cx="16" cy="11" r="3" fill="currentColor" opacity="0.7"/>
-                </svg>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="minecraft-panel bg-card border-2 border-border shadow-lg hover:shadow-primary/10">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-muted-foreground">
-                    Unread Messages
-                  </p>
-                  <p className="text-3xl font-bold text-foreground">
-                    {unreadTotal}
-                  </p>
-                </div>
-                <svg viewBox="0 0 24 24" fill="none" className="w-8 h-8 text-primary">
-                  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" fill="currentColor"/>
-                  <circle cx="8" cy="11" r="1" fill="white"/>
-                  <circle cx="12" cy="11" r="1" fill="white"/>
-                  <circle cx="16" cy="11" r="1" fill="white"/>
-                </svg>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="minecraft-panel bg-card border-2 border-border shadow-lg hover:shadow-primary/10">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-muted-foreground">
-                    Account Status
-                  </p>
-                  <p className="text-lg font-bold text-foreground">
-                    {user?.role === "admin" ? "Administrator" : "Member"}
-                  </p>
-                </div>
-                <svg viewBox="0 0 24 24" fill="none" className="w-8 h-8 text-primary">
-                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" fill="currentColor"/>
-                  <path d="m9 12 2 2 4-4" stroke="white" strokeWidth="2" fill="none"/>
-                </svg>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
 
         {/* Top Servers */}
         {topServers.length > 0 && (
