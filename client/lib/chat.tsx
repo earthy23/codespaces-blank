@@ -63,6 +63,56 @@ interface ChatContextType {
 
 const ChatContext = createContext<ChatContextType | undefined>(undefined);
 
+// FullStory detection utility
+const isFullStoryBlocking = () => {
+  try {
+    return window.fetch !== fetch ||
+           (window.fetch.toString().includes('fullstory') ||
+            document.querySelector('script[src*="fullstory"]') !== null);
+  } catch {
+    return false;
+  }
+};
+
+// XMLHttpRequest fallback for fetch
+const makeRequest = async (url: string, options: any = {}) => {
+  if (isFullStoryBlocking()) {
+    return new Promise<Response>((resolve, reject) => {
+      const xhr = new XMLHttpRequest();
+      xhr.open(options.method || 'GET', url);
+
+      if (options.headers) {
+        Object.entries(options.headers).forEach(([key, value]) => {
+          xhr.setRequestHeader(key, value as string);
+        });
+      }
+
+      xhr.onload = () => {
+        const response = {
+          ok: xhr.status >= 200 && xhr.status < 300,
+          status: xhr.status,
+          json: () => Promise.resolve(JSON.parse(xhr.responseText)),
+          text: () => Promise.resolve(xhr.responseText)
+        } as Response;
+        resolve(response);
+      };
+
+      xhr.onerror = () => reject(new Error('XMLHttpRequest failed'));
+      xhr.ontimeout = () => reject(new Error('XMLHttpRequest timeout'));
+
+      if (options.signal) {
+        options.signal.addEventListener('abort', () => {
+          xhr.abort();
+          reject(new Error('Request aborted'));
+        });
+      }
+
+      xhr.send(options.body || null);
+    });
+  }
+  return fetch(url, options);
+};
+
 export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
   const [chats, setChats] = useState<Chat[]>([]);
   const [messages, setMessages] = useState<{ [chatId: string]: Message[] }>({});
@@ -243,7 +293,7 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
       const timeoutId = setTimeout(() => controller.abort(), 8000); // 8 second timeout
 
       try {
-        const response = await fetch("/api/chat", {
+        const response = await makeRequest("/api/chat", {
           headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
@@ -286,7 +336,7 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
       const timeoutId = setTimeout(() => controller.abort(), 6000); // 6 second timeout
 
       try {
-        const response = await fetch(
+        const response = await makeRequest(
           `/api/chat/${chatId}/messages?limit=50&offset=${offset}`,
           {
             headers: {
@@ -383,7 +433,7 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
     if (!user || !token) return null;
 
     try {
-      const response = await fetch("/api/chat/dm", {
+      const response = await makeRequest("/api/chat/dm", {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -410,7 +460,7 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
     if (!user || !token || !content.trim()) return;
 
     try {
-      const response = await fetch(`/api/chat/${chatId}/messages`, {
+      const response = await makeRequest(`/api/chat/${chatId}/messages`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -439,7 +489,7 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
     if (!user || !token) return;
 
     try {
-      const response = await fetch(
+      const response = await makeRequest(
         `/api/chat/${chatId}/messages/${messageId}`,
         {
           method: "PUT",
@@ -467,7 +517,7 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
     if (!user || !token) return;
 
     try {
-      const response = await fetch(
+      const response = await makeRequest(
         `/api/chat/${chatId}/messages/${messageId}`,
         {
           method: "DELETE",
@@ -491,7 +541,7 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
     if (!user || !token) return;
 
     try {
-      await fetch(`/api/chat/${chatId}/read`, {
+      await makeRequest(`/api/chat/${chatId}/read`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
