@@ -148,7 +148,7 @@ export default function Servers() {
       });
 
       const token = localStorage.getItem("auth_token");
-      console.log("🔍 fetchMyServers: Auth token status:", {
+      console.log("��� fetchMyServers: Auth token status:", {
         hasToken: !!token,
         tokenLength: token?.length,
         tokenPreview: token?.substring(0, 20) + "...",
@@ -529,7 +529,7 @@ export default function Servers() {
     <UserLayout>
       <div className="min-h-screen bg-background">
         {/* Top Navigation */}
-        <nav className="border-b border-border bg-card/50 backdrop-blur-sm">
+        <nav className="border-b border-border bg-card">
           <div className="px-6 py-4">
             <div className="flex items-center justify-between">
               <Link
