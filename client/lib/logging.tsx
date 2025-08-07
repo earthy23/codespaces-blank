@@ -90,7 +90,7 @@ const defaultWebhooks: WebhookConfig[] = [
   }
 ];
 
-export function LoggingProvider({ children }: { children: React.ReactNode }) {
+export const LoggingProvider = ({ children }: { children: React.ReactNode }) => {
   const [logs, setLogs] = useState<LogEntry[]>([]);
   const [metrics, setMetrics] = useState<SystemMetrics>(generateMetrics());
   const [webhooks, setWebhooks] = useState<WebhookConfig[]>([]);
@@ -260,7 +260,7 @@ export function LoggingProvider({ children }: { children: React.ReactNode }) {
       {children}
     </LoggingContext.Provider>
   );
-}
+};
 
 export const useLogging = () => {
   const context = useContext(LoggingContext);
