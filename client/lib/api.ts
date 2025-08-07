@@ -71,6 +71,11 @@ const makeRequest = async (endpoint: string, options: RequestInit = {}) => {
     timeoutMs = 3000; // 3 seconds for health checks
   }
 
+  // Longer timeout for authentication operations (bcrypt can be slow)
+  if (endpoint.includes("/auth/")) {
+    timeoutMs = 10000; // 10 seconds for auth operations
+  }
+
   // Longer timeout for server operations that may involve connectivity tests
   if (endpoint.includes("/servers")) {
     timeoutMs = 20000; // 20 seconds for server operations (increased)
