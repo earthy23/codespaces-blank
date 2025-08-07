@@ -108,7 +108,8 @@ const navigationSections = [
       {
         iconSvg: (
           <svg viewBox="0 0 24 24" fill="none" className="w-5 h-5">
-            <text x="12" y="16" textAnchor="middle" fontSize="16" fontWeight="bold" fill="currentColor">$</text>
+            <circle cx="12" cy="12" r="9" stroke="white" strokeWidth="2" fill="black"/>
+            <text x="12" y="16" textAnchor="middle" fontSize="14" fontWeight="bold" fill="white">$</text>
           </svg>
         ),
         label: "Store",
@@ -124,8 +125,8 @@ const navigationSections = [
       {
         iconSvg: (
           <svg viewBox="0 0 24 24" fill="none" className="w-5 h-5">
-            <circle cx="12" cy="8" r="5" fill="currentColor"/>
-            <path d="M20 21a8 8 0 1 0-16 0" fill="currentColor" opacity="0.7"/>
+            <circle cx="12" cy="8" r="4" stroke="white" strokeWidth="2" fill="black"/>
+            <path d="M20 21a8 8 0 1 0-16 0" stroke="white" strokeWidth="2" fill="black"/>
           </svg>
         ),
         label: "Profile",
@@ -136,8 +137,9 @@ const navigationSections = [
       {
         iconSvg: (
           <svg viewBox="0 0 24 24" fill="none" className="w-5 h-5">
-            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" stroke="currentColor" strokeWidth="2" fill="none"/>
-            <circle cx="12" cy="17" r="1" fill="currentColor"/>
+            <circle cx="12" cy="12" r="9" stroke="white" strokeWidth="2" fill="black"/>
+            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" stroke="white" strokeWidth="2" fill="none"/>
+            <circle cx="12" cy="17" r="1" fill="white"/>
           </svg>
         ),
         label: "Support",
