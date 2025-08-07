@@ -52,7 +52,7 @@ const makeRequest = async (endpoint: string, options: RequestInit = {}) => {
 
   // Longer timeout for server operations that may involve connectivity tests
   if (endpoint.includes("/servers")) {
-    timeoutMs = 15000; // 15 seconds for server operations
+    timeoutMs = 20000; // 20 seconds for server operations (increased)
   }
 
   // Longer timeout for file uploads
