@@ -31,7 +31,7 @@ const clientDownloads = [
     downloadUrl: "/downloads/vanilla-client.zip",
     webUrl: "/client/vanilla/",
     iconSvg: (
-      <svg viewBox="0 0 24 24" fill="none" className="w-6 h-6 text-primary drop-shadow-[0_0_4px_currentColor]">
+      <svg viewBox="0 0 24 24" fill="none" className="w-8 h-8 text-primary">
         <rect x="6" y="4" width="12" height="16" rx="2" fill="currentColor" opacity="0.8"/>
         <rect x="8" y="6" width="8" height="2" rx="1" fill="white"/>
         <rect x="8" y="9" width="8" height="2" rx="1" fill="white"/>
