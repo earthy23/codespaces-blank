@@ -63,12 +63,13 @@ const limiter = rateLimit({
   legacyHeaders: false,
   // Skip rate limiting for localhost in development
   skip: (req) => {
-    return (
-      process.env.NODE_ENV !== "production" &&
-      (req.ip === "127.0.0.1" ||
-        req.ip === "::1" ||
-        req.ip === "::ffff:127.0.0.1")
-    );
+    const isProduction = process.env.NODE_ENV === "production";
+    const isLocalhost = req.ip === "127.0.0.1" || req.ip === "::1" || req.ip === "::ffff:127.0.0.1";
+    const shouldSkip = !isProduction && isLocalhost;
+    if (req.url.includes('/auth/')) {
+      console.log(`🔒 GeneralLimiter: NODE_ENV=${process.env.NODE_ENV}, production=${isProduction}, localhost=${isLocalhost}, skipping=${shouldSkip}, IP=${req.ip}, URL=${req.url}`);
+    }
+    return shouldSkip;
   },
 });
 
