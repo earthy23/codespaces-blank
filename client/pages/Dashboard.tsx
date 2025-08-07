@@ -114,12 +114,10 @@ export default function Dashboard() {
         <Card className="minecraft-panel mb-8 bg-card border-2 border-primary/20 shadow-xl shadow-primary/10">
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
-              <div className="w-10 h-10 rounded-lg bg-card border border-primary/50 flex items-center justify-center shadow-lg shadow-primary/30">
-                <svg viewBox="0 0 24 24" fill="none" className="w-6 h-6 text-primary drop-shadow-[0_0_4px_currentColor]">
-                  <polygon points="5,21 19,12 5,3" fill="currentColor"/>
-                  <circle cx="12" cy="12" r="2" fill="white"/>
-                </svg>
-              </div>
+                <svg viewBox="0 0 24 24" fill="none" className="w-8 h-8 text-primary">
+                <polygon points="5,21 19,12 5,3" fill="currentColor"/>
+                <circle cx="12" cy="12" r="2" fill="white"/>
+              </svg>
               <div>
                 <span className="text-xl">Launch Client</span>
                 <p className="text-sm font-normal text-muted-foreground">
