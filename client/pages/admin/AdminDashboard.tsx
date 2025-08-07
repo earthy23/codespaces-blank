@@ -122,6 +122,11 @@ export default function AdminDashboard() {
   const [isLoading, setIsLoading] = useState(false);
   const [onlineUsersCount, setOnlineUsersCount] = useState(0);
 
+  // Enhanced dashboard data
+  const [dashboardData, setDashboardData] = useState<any>(null);
+  const [systemMetrics, setSystemMetrics] = useState<any>(null);
+  const [lastMetricsUpdate, setLastMetricsUpdate] = useState(Date.now());
+
   useEffect(() => {
     if (!stats) {
       const fallbackStats: DashboardStats = {
