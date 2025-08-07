@@ -62,10 +62,10 @@ const navigationSections = [
       {
         iconSvg: (
           <svg viewBox="0 0 24 24" fill="none" className="w-5 h-5">
-            <circle cx="9" cy="7" r="4" fill="currentColor"/>
-            <path d="m3 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2" stroke="currentColor" strokeWidth="2" fill="none"/>
-            <circle cx="16" cy="11" r="3" fill="currentColor" opacity="0.7"/>
-            <path d="m22 21v-2a4 4 0 0 0-3-3.87" stroke="currentColor" strokeWidth="2" fill="none"/>
+            <circle cx="9" cy="7" r="3" stroke="white" strokeWidth="2" fill="black"/>
+            <path d="M3 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2" stroke="white" strokeWidth="2" fill="none"/>
+            <circle cx="16" cy="11" r="2" stroke="white" strokeWidth="2" fill="black"/>
+            <path d="M22 21v-2a4 4 0 0 0-3-3.87" stroke="white" strokeWidth="2" fill="none"/>
           </svg>
         ),
         label: "Friends",
@@ -76,7 +76,7 @@ const navigationSections = [
       {
         iconSvg: (
           <svg viewBox="0 0 24 24" fill="none" className="w-5 h-5">
-            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" fill="currentColor"/>
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" stroke="white" strokeWidth="2" fill="black"/>
             <circle cx="8" cy="11" r="1" fill="white"/>
             <circle cx="12" cy="11" r="1" fill="white"/>
             <circle cx="16" cy="11" r="1" fill="white"/>
@@ -95,11 +95,9 @@ const navigationSections = [
       {
         iconSvg: (
           <svg viewBox="0 0 24 24" fill="none" className="w-5 h-5">
-            <path d="M3 11v3a1 1 0 0 0 1 1h2l4 4V7L6 11H4a1 1 0 0 0-1 1z" fill="currentColor"/>
-            <path d="M13.5 8.5a5 5 0 0 1 0 7" stroke="currentColor" strokeWidth="2" fill="none"/>
-            <path d="M16.5 5.5a9 9 0 0 1 0 13" stroke="currentColor" strokeWidth="2" fill="none"/>
-            <path d="M18.5 3.5a13 13 0 0 1 0 17" stroke="currentColor" strokeWidth="1.5" fill="none"/>
-            <circle cx="12" cy="12" r="2" fill="currentColor" opacity="0.6"/>
+            <path d="M18 8a6 6 0 0 0-6-6 6 6 0 0 0-6 6c0 7 6 9 6 9s6-2 6-9" stroke="white" strokeWidth="2" fill="black"/>
+            <path d="M13.73 21a2 2 0 0 1-3.46 0" stroke="white" strokeWidth="2" fill="none"/>
+            <circle cx="16" cy="6" r="2" fill="white"/>
           </svg>
         ),
         label: "News",
