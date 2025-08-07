@@ -267,7 +267,12 @@ export const WebSocketManagerProvider = ({
       try {
         listener(data);
       } catch (error) {
-        console.error("❌ Event listener error:", error);
+        console.error("❌ Event listener error:", {
+          message: error?.message || "Unknown error",
+          type: error?.name || "Unknown",
+          listenerType: type,
+          timestamp: new Date().toISOString()
+        });
       }
     });
   }, []);
