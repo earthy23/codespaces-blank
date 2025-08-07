@@ -737,7 +737,7 @@ export default function AdminDashboard() {
                 {/* Performance Chart */}
                 <div className="mt-4">
                   <ResponsiveContainer width="100%" height={150}>
-                    <LineChart data={[
+                    <LineChart data={dashboardData?.systemPerformance?.performanceHistory || [
                       { time: "00:00", cpu: 15, memory: 45, network: 20 },
                       { time: "04:00", cpu: 25, memory: 52, network: 35 },
                       { time: "08:00", cpu: 45, memory: 68, network: 55 },
