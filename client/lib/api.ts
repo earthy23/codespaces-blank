@@ -104,10 +104,17 @@ const makeRequest = async (endpoint: string, options: RequestInit = {}) => {
   } catch (error) {
     clearTimeout(timeoutId);
     console.error(`💥 Request failed for ${url}:`, error);
+    console.error(`🔍 Error details:`, {
+      name: error.name,
+      message: error.message,
+      stack: error.stack,
+      timeout: timeoutMs
+    });
 
     // Handle AbortError (timeout or manual abort)
-    if (error.name === "AbortError") {
+    if (error.name === "AbortError" || error.message?.includes("aborted")) {
       const timeoutSeconds = Math.round(timeoutMs / 1000);
+      console.warn(`⚠️ Request aborted for ${url} after ${timeoutSeconds}s timeout`);
       throw new Error(`Request timed out after ${timeoutSeconds} seconds. Please try again.`);
     }
 
