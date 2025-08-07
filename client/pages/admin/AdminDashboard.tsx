@@ -357,7 +357,7 @@ export default function AdminDashboard() {
                 new today
               </p>
               <div className="mt-3">
-                <MiniChart data={userGrowthData} />
+                <MiniLineChart data={userGrowthData} color="#22c55e" />
               </div>
             </CardContent>
           </Card>
