@@ -437,7 +437,9 @@ export default function Friends() {
                             }
                             className="minecraft-button bg-green-500/20 text-green-500 hover:bg-green-500/30"
                           >
-                            <Check className="w-4 h-4 mr-2" />
+                            <svg viewBox="0 0 24 24" fill="none" className="w-4 h-4 mr-2">
+                              <polyline points="20,6 9,17 4,12" stroke="currentColor" strokeWidth="2" fill="none"/>
+                            </svg>
                             Accept
                           </Button>
                           <Button
