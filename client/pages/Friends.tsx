@@ -635,7 +635,11 @@ export default function Friends() {
                       >
                         <div className="flex items-center space-x-3">
                           <div className="w-8 h-8 rounded-lg bg-muted border border-border flex items-center justify-center">
-                            <Users className="w-4 h-4 text-muted-foreground" />
+                            <svg viewBox="0 0 24 24" fill="none" className="w-4 h-4 text-muted-foreground">
+                              <circle cx="9" cy="7" r="4" fill="currentColor"/>
+                              <path d="m3 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2" stroke="currentColor" strokeWidth="2" fill="none"/>
+                              <circle cx="16" cy="11" r="3" fill="currentColor" opacity="0.7"/>
+                            </svg>
                           </div>
                           <span className="font-medium">{user.username}</span>
                         </div>
