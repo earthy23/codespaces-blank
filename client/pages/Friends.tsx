@@ -620,7 +620,9 @@ export default function Friends() {
                     className="minecraft-input pl-10"
                   />
                   {isSearching && (
-                    <Loader2 className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 animate-spin" />
+                    <svg viewBox="0 0 24 24" fill="none" className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 animate-spin">
+                      <path d="M21 12a9 9 0 11-6.219-8.56" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                    </svg>
                   )}
                 </div>
 
