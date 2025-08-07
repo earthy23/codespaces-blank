@@ -1,0 +1,325 @@
+import React, {
+  createContext,
+  useContext,
+  useRef,
+  useCallback,
+  useEffect,
+  useState,
+} from "react";
+import { useAuth } from "./auth";
+
+interface WebSocketEvents {
+  // Store events
+  "store:subscription_updated": {
+    userId: string;
+    tier: string;
+    subscription: any;
+  };
+  "store:purchase_completed": {
+    userId: string;
+    productId: string;
+    tier: string;
+  };
+  "store:customization_updated": {
+    userId: string;
+    settingType: string;
+    settingValue: string;
+  };
+
+  // Admin events
+  "admin:stats_updated": { stats: any };
+  "admin:user_action": { action: string; userId: string; details: any };
+
+  // Friend events
+  "friends:status_updated": {
+    userId: string;
+    status: "online" | "offline" | "away";
+  };
+  "friends:request_received": { from: string; username: string };
+  "friends:request_accepted": { userId: string; username: string };
+
+  // Chat events
+  "chat:new_message": { chatId: string; message: any };
+  "chat:message_edited": { chatId: string; messageId: string; content: string };
+  "chat:message_deleted": { chatId: string; messageId: string };
+  "chat:typing_start": { chatId: string; userId: string; username: string };
+  "chat:typing_stop": { chatId: string; userId: string; username: string };
+
+  // System events
+  "system:notification": {
+    title: string;
+    message: string;
+    type: "info" | "success" | "warning" | "error";
+  };
+  "system:maintenance": {
+    message: string;
+    startTime: string;
+    duration: number;
+  };
+}
+
+type EventListener<T = any> = (data: T) => void;
+
+interface WebSocketManagerContextType {
+  isConnected: boolean;
+  send: (type: string, data?: any) => void;
+  subscribe: <K extends keyof WebSocketEvents>(
+    event: K,
+    listener: EventListener<WebSocketEvents[K]>,
+  ) => () => void;
+  broadcast: (event: keyof WebSocketEvents, data: any) => void;
+  getUserStatus: (userId: string) => "online" | "offline" | "away";
+  getOnlineUsers: () => string[];
+}
+
+const WebSocketManagerContext = createContext<
+  WebSocketManagerContextType | undefined
+>(undefined);
+
+export function WebSocketManagerProvider({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const [isConnected, setIsConnected] = useState(false);
+  const [onlineUsers, setOnlineUsers] = useState<Set<string>>(new Set());
+  const [userStatuses, setUserStatuses] = useState<
+    Map<string, "online" | "offline" | "away">
+  >(new Map());
+
+  const { user, token } = useAuth();
+  const wsRef = useRef<WebSocket | null>(null);
+  const eventListeners = useRef<Map<string, EventListener[]>>(new Map());
+  const reconnectTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const reconnectAttempts = useRef(0);
+  const maxReconnectAttempts = 5;
+
+  // Connect to WebSocket
+  const connect = useCallback(() => {
+    if (!user || !token || wsRef.current?.readyState === WebSocket.OPEN) return;
+
+    try {
+      const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
+      const wsUrl = `${protocol}//${window.location.host}/ws`;
+
+      if (process.env.NODE_ENV === 'development') {
+        console.log("🔌 Connecting to WebSocket:", wsUrl);
+      }
+      wsRef.current = new WebSocket(wsUrl);
+
+      wsRef.current.onopen = () => {
+        if (process.env.NODE_ENV === 'development') {
+          console.log("✅ WebSocket connected");
+        }
+        setIsConnected(true);
+        reconnectAttempts.current = 0;
+
+        // Authenticate immediately
+        send("authenticate", { token });
+      };
+
+      wsRef.current.onmessage = (event) => {
+        try {
+          const message = JSON.parse(event.data);
+          handleMessage(message);
+        } catch (error) {
+          console.error("❌ WebSocket message parse error:", error);
+        }
+      };
+
+      wsRef.current.onclose = (event) => {
+        if (process.env.NODE_ENV === 'development') {
+          console.log("🔌 WebSocket disconnected:", event.code, event.reason);
+        }
+        setIsConnected(false);
+
+        // Auto-reconnect with exponential backoff
+        if (reconnectAttempts.current < maxReconnectAttempts) {
+          const delay = Math.pow(2, reconnectAttempts.current) * 1000; // 1s, 2s, 4s, 8s, 16s
+          if (process.env.NODE_ENV === 'development') {
+            console.log(
+              `🔄 Reconnecting in ${delay}ms... (attempt ${reconnectAttempts.current + 1})`,
+            );
+          }
+
+          reconnectTimeoutRef.current = setTimeout(() => {
+            reconnectAttempts.current++;
+            connect();
+          }, delay);
+        }
+      };
+
+      wsRef.current.onerror = (error) => {
+        console.error("❌ WebSocket error:", error);
+      };
+    } catch (error) {
+      console.error("❌ WebSocket connection error:", error);
+    }
+  }, [user, token]);
+
+  // Handle incoming WebSocket messages
+  const handleMessage = useCallback((message: any) => {
+    const { type, data } = message;
+
+    // Handle system messages
+    switch (type) {
+      case "authenticated":
+        if (process.env.NODE_ENV === 'development') {
+          console.log("🔐 WebSocket authenticated:", data.user?.username);
+        }
+        break;
+
+      case "auth_error":
+        console.error("❌ WebSocket auth error:", data.message);
+        break;
+
+      case "user_online":
+        setOnlineUsers((prev) => new Set([...prev, data.userId]));
+        setUserStatuses((prev) => new Map(prev.set(data.userId, "online")));
+        break;
+
+      case "user_offline":
+        setOnlineUsers((prev) => {
+          const newSet = new Set(prev);
+          newSet.delete(data.userId);
+          return newSet;
+        });
+        setUserStatuses((prev) => new Map(prev.set(data.userId, "offline")));
+        break;
+
+      case "user_away":
+        setUserStatuses((prev) => new Map(prev.set(data.userId, "away")));
+        break;
+
+      case "online_users":
+        setOnlineUsers(new Set(data.userIds));
+        break;
+    }
+
+    // Emit to subscribers
+    const listeners = eventListeners.current.get(type) || [];
+    listeners.forEach((listener) => {
+      try {
+        listener(data);
+      } catch (error) {
+        console.error("❌ Event listener error:", error);
+      }
+    });
+  }, []);
+
+  // Send message to WebSocket
+  const send = useCallback((type: string, data?: any) => {
+    if (wsRef.current?.readyState === WebSocket.OPEN) {
+      wsRef.current.send(JSON.stringify({ type, data }));
+    } else {
+      console.warn("⚠️ WebSocket not connected, cannot send:", type);
+    }
+  }, []);
+
+  // Subscribe to events
+  const subscribe = useCallback(
+    <K extends keyof WebSocketEvents>(
+      event: K,
+      listener: EventListener<WebSocketEvents[K]>,
+    ) => {
+      const currentListeners = eventListeners.current.get(event) || [];
+      eventListeners.current.set(event, [...currentListeners, listener]);
+
+      // Return unsubscribe function
+      return () => {
+        const listeners = eventListeners.current.get(event) || [];
+        const index = listeners.indexOf(listener);
+        if (index > -1) {
+          listeners.splice(index, 1);
+          eventListeners.current.set(event, listeners);
+        }
+      };
+    },
+    [],
+  );
+
+  // Broadcast event (for admin users)
+  const broadcast = useCallback(
+    (event: keyof WebSocketEvents, data: any) => {
+      send("broadcast", { event, data });
+    },
+    [send],
+  );
+
+  // Get user status
+  const getUserStatus = useCallback(
+    (userId: string) => {
+      return userStatuses.get(userId) || "offline";
+    },
+    [userStatuses],
+  );
+
+  // Get online users list
+  const getOnlineUsers = useCallback(() => {
+    return Array.from(onlineUsers);
+  }, [onlineUsers]);
+
+  // Connect when user and token are available
+  useEffect(() => {
+    if (user && token) {
+      connect();
+    }
+
+    return () => {
+      if (reconnectTimeoutRef.current) {
+        clearTimeout(reconnectTimeoutRef.current);
+      }
+      if (wsRef.current) {
+        wsRef.current.close();
+      }
+    };
+  }, [user, token, connect]);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (wsRef.current) {
+        wsRef.current.close();
+      }
+    };
+  }, []);
+
+  const value = {
+    isConnected,
+    send,
+    subscribe,
+    broadcast,
+    getUserStatus,
+    getOnlineUsers,
+  };
+
+  return (
+    <WebSocketManagerContext.Provider value={value}>
+      {children}
+    </WebSocketManagerContext.Provider>
+  );
+}
+
+export function useWebSocket() {
+  const context = useContext(WebSocketManagerContext);
+  if (context === undefined) {
+    throw new Error(
+      "useWebSocket must be used within a WebSocketManagerProvider",
+    );
+  }
+  return context;
+}
+
+// Utility hook for subscribing to specific events
+export function useWebSocketEvent<K extends keyof WebSocketEvents>(
+  event: K,
+  listener: EventListener<WebSocketEvents[K]>,
+  deps: React.DependencyList = [],
+) {
+  const { subscribe } = useWebSocket();
+
+  useEffect(() => {
+    const unsubscribe = subscribe(event, listener);
+    return unsubscribe;
+  }, [subscribe, event, ...deps]);
+}

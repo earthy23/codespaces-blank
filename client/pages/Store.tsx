@@ -1,0 +1,604 @@
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import {
+  ShoppingBag,
+  Crown,
+  Star,
+  Check,
+  Palette,
+  Upload,
+  Loader2,
+  Globe,
+  Calendar,
+  Diamond,
+} from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/lib/auth";
+import { useStore } from "@/lib/store";
+import { useToast } from "@/hooks/use-toast";
+import { useEffect, useState } from "react";
+import { UserLayout } from "@/components/ui/user-layout";
+
+export default function Store() {
+  const { user } = useAuth();
+  const {
+    products,
+    currentTier,
+    purchases,
+    customizations,
+    isLoading,
+    purchaseProduct,
+    updateCustomization,
+    refreshData,
+  } = useStore();
+  const { toast } = useToast();
+  const navigate = useNavigate();
+
+  const [isPurchasing, setIsPurchasing] = useState<string | null>(null);
+  const [isCustomizing, setIsCustomizing] = useState(false);
+  const [customColor, setCustomColor] = useState(
+    customizations.website_color || "#8b5cf6",
+  );
+  const [customBackground, setCustomBackground] = useState(
+    customizations.website_background || "",
+  );
+  const [customTabTitle, setCustomTabTitle] = useState(
+    customizations.website_tab_title || "",
+  );
+  const [customFavicon, setCustomFavicon] = useState(
+    customizations.website_favicon || "",
+  );
+
+  useEffect(() => {
+    if (!user) {
+      navigate("/login");
+    }
+  }, [user, navigate]);
+
+  const handlePurchase = async (productId: string) => {
+    try {
+      setIsPurchasing(productId);
+      const success = await purchaseProduct(productId);
+      if (success) {
+        toast({
+          title: "Purchase Successful!",
+          description:
+            "Your subscription has been activated. Welcome to the VIP experience!",
+        });
+        // Refresh the page to show updated subscription status
+        setTimeout(() => {
+          window.location.reload();
+        }, 2000);
+      } else {
+        toast({
+          title: "Purchase Failed",
+          description:
+            "There was an error processing your purchase. Please try again.",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to process purchase",
+        variant: "destructive",
+      });
+    } finally {
+      setIsPurchasing(null);
+    }
+  };
+
+  const handleSaveCustomization = async (type: string, value: string) => {
+    try {
+      const success = await updateCustomization(type, value);
+      if (success) {
+        toast({
+          title: "Customization Saved",
+          description: "Your changes have been applied successfully!",
+        });
+      } else {
+        toast({
+          title: "Save Failed",
+          description: "You need a VIP subscription to use customizations.",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to save customization",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const getTierIcon = (tier: string) => {
+    switch (tier) {
+      case "vip":
+        return Crown;
+      case "vip_plus":
+        return Star;
+      case "legend":
+        return Diamond;
+      default:
+        return ShoppingBag;
+    }
+  };
+
+  const getTierColor = (tier: string) => {
+    switch (tier) {
+      case "vip":
+        return "text-yellow-500";
+      case "vip_plus":
+        return "text-purple-500";
+      case "legend":
+        return "text-orange-500";
+      default:
+        return "text-gray-500";
+    }
+  };
+
+  const formatFileSize = (bytes: number) => {
+    if (bytes >= 1024 * 1024) {
+      return `${(bytes / (1024 * 1024)).toFixed(0)}MB`;
+    }
+    return `${(bytes / 1024).toFixed(0)}KB`;
+  };
+
+  if (!user) {
+    return null;
+  }
+
+  // Data shows immediately from cache or fallback - no loading needed
+
+  return (
+    <UserLayout>
+      <div className="max-w-6xl">
+        {/* Store Header */}
+        <div className="text-center mb-8">
+          <h1 className="text-4xl font-bold mb-4 text-foreground">
+            UEC VIP Store
+          </h1>
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+            Unlock premium features and enhance your experience with VIP
+            subscriptions
+          </p>
+
+          {currentTier &&
+            (currentTier.tier !== "free" || currentTier.isStaff) && (
+              <div className="mt-4">
+                <Badge
+                  variant="outline"
+                  className={`text-lg px-4 py-2 ${getTierColor(currentTier.tier)}`}
+                >
+                  {currentTier.isStaff
+                    ? `${user?.role?.toUpperCase()} (Legend Features)`
+                    : `${currentTier.tier === "vip_plus" ? "VIP++" : currentTier.tier.toUpperCase()} Member`}
+                  {currentTier.subscription && !currentTier.isStaff && (
+                    <span className="ml-2 text-xs opacity-70">
+                      Until{" "}
+                      {new Date(
+                        currentTier.subscription.end_date,
+                      ).toLocaleDateString()}
+                    </span>
+                  )}
+                </Badge>
+              </div>
+            )}
+        </div>
+
+        <Tabs defaultValue="plans" className="w-full">
+          <TabsList className="grid w-full grid-cols-3">
+            <TabsTrigger value="plans">VIP Plans</TabsTrigger>
+            <TabsTrigger value="customize">Customization</TabsTrigger>
+            <TabsTrigger value="history">Purchase History</TabsTrigger>
+          </TabsList>
+
+          {/* VIP Plans */}
+          <TabsContent value="plans" className="mt-8">
+            {products.length === 0 ? (
+              <Card className="minecraft-panel bg-card/50 border-2 border-border shadow-lg">
+                <CardContent className="p-8 text-center">
+                  <ShoppingBag className="w-16 h-16 mx-auto mb-4 opacity-50" />
+                  <h3 className="text-xl font-semibold mb-2">
+                    Store Plans Loading...
+                  </h3>
+                  <p className="text-muted-foreground">
+                    VIP plans will appear here once loaded
+                  </p>
+                  <Button
+                    onClick={refreshData}
+                    className="mt-4 minecraft-button"
+                  >
+                    <Loader2 className="w-4 h-4 mr-2" />
+                    Retry Loading
+                  </Button>
+                </CardContent>
+              </Card>
+            ) : (
+              <div className="grid lg:grid-cols-3 gap-6">
+                {products.map((product) => {
+                  const TierIcon = getTierIcon(product.id);
+                  const isCurrentTier = currentTier?.tier === product.id;
+                  const isStaff = currentTier?.isStaff || false;
+
+                  return (
+                    <Card
+                      key={product.id}
+                      className={`minecraft-panel bg-card/50 border-2 shadow-lg hover:shadow-primary/10 relative ${
+                        product.id === "vip_plus"
+                          ? "ring-2 ring-primary/50"
+                          : ""
+                      } ${isCurrentTier ? "ring-2 ring-green-500/50" : ""}`}
+                    >
+                      {product.id === "vip_plus" && (
+                        <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+                          <Badge className="bg-primary text-primary-foreground shadow-lg">
+                            <Star className="w-3 h-3 mr-1" />
+                            Most Popular
+                          </Badge>
+                        </div>
+                      )}
+
+                      {isCurrentTier && (
+                        <div className="absolute -top-3 right-4">
+                          <Badge className="bg-green-500 text-white shadow-lg">
+                            <Check className="w-3 h-3 mr-1" />
+                            Active
+                          </Badge>
+                        </div>
+                      )}
+
+                      <CardHeader className="text-center">
+                        <div
+                          className={`w-16 h-16 rounded-full mx-auto mb-4 border-2 border-border flex items-center justify-center ${getTierColor(product.id)}`}
+                        >
+                          <TierIcon className="w-8 h-8" />
+                        </div>
+                        <CardTitle className="text-2xl">
+                          {product.name}
+                        </CardTitle>
+                        <CardDescription>{product.description}</CardDescription>
+                        <div className="text-3xl font-bold text-primary">
+                          ${product.price}
+                          <span className="text-sm text-muted-foreground">
+                            /month
+                          </span>
+                        </div>
+                      </CardHeader>
+
+                      <CardContent className="space-y-6">
+                        <div>
+                          <h4 className="font-semibold text-sm mb-3">
+                            Features included:
+                          </h4>
+                          <ul className="space-y-2">
+                            {product.features.map((feature, index) => (
+                              <li
+                                key={index}
+                                className="flex items-start text-sm text-muted-foreground"
+                              >
+                                <Check className="w-4 h-4 text-green-500 mr-2 flex-shrink-0 mt-0.5" />
+                                {feature}
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-4 text-sm">
+                          <div>
+                            <div className="font-medium">File Uploads</div>
+                            <div className="text-muted-foreground">
+                              {formatFileSize(product.limits.file_upload_size)}
+                            </div>
+                          </div>
+                          <div>
+                            <div className="font-medium">Group Chat</div>
+                            <div className="text-muted-foreground">
+                              {product.limits.group_chat_members} members
+                            </div>
+                          </div>
+                          <div className="col-span-2">
+                            <div className="font-medium">Server Ownership</div>
+                            <div className="text-muted-foreground">
+                              {product.limits.owned_servers} servers
+                            </div>
+                          </div>
+                        </div>
+
+                        <Button
+                          onClick={() => handlePurchase(product.id)}
+                          disabled={
+                            isCurrentTier ||
+                            isStaff ||
+                            isPurchasing === product.id
+                          }
+                          className="w-full minecraft-button bg-primary text-primary-foreground hover:bg-primary/90 shadow-lg hover:shadow-primary/30"
+                        >
+                          {isPurchasing === product.id ? (
+                            <>
+                              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                              Processing...
+                            </>
+                          ) : isStaff ? (
+                            <>
+                              <Check className="w-4 h-4 mr-2" />
+                              Staff Access
+                            </>
+                          ) : isCurrentTier ? (
+                            <>
+                              <Check className="w-4 h-4 mr-2" />
+                              Current Plan
+                            </>
+                          ) : (
+                            <>
+                              <ShoppingBag className="w-4 h-4 mr-2" />
+                              Upgrade Now
+                            </>
+                          )}
+                        </Button>
+                      </CardContent>
+                    </Card>
+                  );
+                })}
+              </div>
+            )}
+          </TabsContent>
+
+          {/* Customization */}
+          <TabsContent value="customize" className="mt-8">
+            {currentTier &&
+            (["vip", "vip_plus", "legend"].includes(currentTier.tier) ||
+              currentTier.isStaff) ? (
+              <div className="grid lg:grid-cols-2 gap-6">
+                {/* Website Colors */}
+                <Card className="minecraft-panel bg-card/50 border-2 border-border shadow-lg">
+                  <CardHeader>
+                    <CardTitle className="flex items-center space-x-2">
+                      <Palette className="w-5 h-5 text-primary" />
+                      <span>Website Colors</span>
+                    </CardTitle>
+                    <CardDescription>
+                      Customize the primary color scheme of the website
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div>
+                      <Label htmlFor="color">Primary Color</Label>
+                      <div className="flex gap-2 mt-2">
+                        <Input
+                          id="color"
+                          type="color"
+                          value={customColor}
+                          onChange={(e) => setCustomColor(e.target.value)}
+                          className="w-16 h-10"
+                        />
+                        <Input
+                          value={customColor}
+                          onChange={(e) => setCustomColor(e.target.value)}
+                          placeholder="#8b5cf6"
+                          className="flex-1"
+                        />
+                      </div>
+                    </div>
+                    <Button
+                      onClick={() =>
+                        handleSaveCustomization("website_color", customColor)
+                      }
+                      className="w-full minecraft-button"
+                    >
+                      Apply Color
+                    </Button>
+                  </CardContent>
+                </Card>
+
+                {/* Background Image */}
+                <Card className="minecraft-panel bg-card/50 border-2 border-border shadow-lg">
+                  <CardHeader>
+                    <CardTitle className="flex items-center space-x-2">
+                      <Upload className="w-5 h-5 text-primary" />
+                      <span>Background Image</span>
+                    </CardTitle>
+                    <CardDescription>
+                      Set a custom background image for the website
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div>
+                      <Label htmlFor="background">Image URL</Label>
+                      <Input
+                        id="background"
+                        value={customBackground}
+                        onChange={(e) => setCustomBackground(e.target.value)}
+                        placeholder="https://example.com/image.jpg"
+                        className="mt-2"
+                      />
+                    </div>
+                    <Button
+                      onClick={() =>
+                        handleSaveCustomization(
+                          "website_background",
+                          customBackground,
+                        )
+                      }
+                      className="w-full minecraft-button"
+                    >
+                      Apply Background
+                    </Button>
+                  </CardContent>
+                </Card>
+
+                {/* Legend-only features */}
+                {(currentTier.tier === "legend" || currentTier.isStaff) && (
+                  <>
+                    {/* Tab Title */}
+                    <Card className="minecraft-panel bg-card/50 border-2 border-border shadow-lg">
+                      <CardHeader>
+                        <CardTitle className="flex items-center space-x-2">
+                          <Globe className="w-5 h-5 text-orange-500" />
+                          <span>Tab Title</span>
+                          <Badge variant="outline" className="text-orange-500">
+                            {currentTier.isStaff
+                              ? "Staff Access"
+                              : "Legend Only"}
+                          </Badge>
+                        </CardTitle>
+                        <CardDescription>
+                          Customize the browser tab title
+                        </CardDescription>
+                      </CardHeader>
+                      <CardContent className="space-y-4">
+                        <div>
+                          <Label htmlFor="tab-title">Custom Tab Title</Label>
+                          <Input
+                            id="tab-title"
+                            value={customTabTitle}
+                            onChange={(e) => setCustomTabTitle(e.target.value)}
+                            placeholder="My Custom UEC Launcher"
+                            className="mt-2"
+                          />
+                        </div>
+                        <Button
+                          onClick={() =>
+                            handleSaveCustomization(
+                              "website_tab_title",
+                              customTabTitle,
+                            )
+                          }
+                          className="w-full minecraft-button"
+                        >
+                          Apply Title
+                        </Button>
+                      </CardContent>
+                    </Card>
+
+                    {/* Favicon */}
+                    <Card className="minecraft-panel bg-card/50 border-2 border-border shadow-lg">
+                      <CardHeader>
+                        <CardTitle className="flex items-center space-x-2">
+                          <Star className="w-5 h-5 text-orange-500" />
+                          <span>Custom Favicon</span>
+                          <Badge variant="outline" className="text-orange-500">
+                            {currentTier.isStaff
+                              ? "Staff Access"
+                              : "Legend Only"}
+                          </Badge>
+                        </CardTitle>
+                        <CardDescription>
+                          Set a custom favicon for the browser tab
+                        </CardDescription>
+                      </CardHeader>
+                      <CardContent className="space-y-4">
+                        <div>
+                          <Label htmlFor="favicon">Favicon URL</Label>
+                          <Input
+                            id="favicon"
+                            value={customFavicon}
+                            onChange={(e) => setCustomFavicon(e.target.value)}
+                            placeholder="https://example.com/favicon.ico"
+                            className="mt-2"
+                          />
+                        </div>
+                        <Button
+                          onClick={() =>
+                            handleSaveCustomization(
+                              "website_favicon",
+                              customFavicon,
+                            )
+                          }
+                          className="w-full minecraft-button"
+                        >
+                          Apply Favicon
+                        </Button>
+                      </CardContent>
+                    </Card>
+                  </>
+                )}
+              </div>
+            ) : (
+              <Alert>
+                <Crown className="h-4 w-4" />
+                <AlertDescription>
+                  VIP subscription required to access customization features.{" "}
+                  <Button
+                    variant="link"
+                    className="p-0 h-auto"
+                    onClick={() => navigate("/store")}
+                  >
+                    Upgrade now
+                  </Button>
+                </AlertDescription>
+              </Alert>
+            )}
+          </TabsContent>
+
+          {/* Purchase History */}
+          <TabsContent value="history" className="mt-8">
+            {purchases.length > 0 ? (
+              <div className="space-y-4">
+                {purchases.map((purchase) => (
+                  <Card
+                    key={purchase.id}
+                    className="minecraft-panel bg-card/50 border-2 border-border shadow-lg"
+                  >
+                    <CardContent className="p-4">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <h3 className="font-semibold">
+                            {purchase.product_name}
+                          </h3>
+                          <p className="text-sm text-muted-foreground">
+                            {new Date(purchase.created_at).toLocaleDateString()}
+                          </p>
+                        </div>
+                        <div className="text-right">
+                          <div className="text-lg font-bold">
+                            ${purchase.price}
+                          </div>
+                          <Badge
+                            variant={
+                              purchase.status === "completed"
+                                ? "default"
+                                : purchase.status === "pending"
+                                  ? "secondary"
+                                  : "destructive"
+                            }
+                          >
+                            {purchase.status}
+                          </Badge>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            ) : (
+              <Card className="minecraft-panel bg-card/50 border-2 border-border shadow-lg">
+                <CardContent className="p-8 text-center">
+                  <Calendar className="w-16 h-16 mx-auto mb-4 opacity-50" />
+                  <h3 className="text-xl font-semibold mb-2">
+                    No Purchases Yet
+                  </h3>
+                  <p className="text-muted-foreground">
+                    Your purchase history will appear here
+                  </p>
+                </CardContent>
+              </Card>
+            )}
+          </TabsContent>
+        </Tabs>
+      </div>
+    </UserLayout>
+  );
+}
