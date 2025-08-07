@@ -294,16 +294,102 @@ router.delete("/logs", requireAuth, requireAdmin, async (req, res) => {
   }
 });
 
+// Get real-time user activity feed
+router.get("/activity/live", requireAuth, requireAdmin, async (req, res) => {
+  try {
+    const limit = parseInt(req.query.limit) || 20;
+    const since = req.query.since;
+
+    let filters = { limit };
+    if (since) {
+      filters.startDate = new Date(parseInt(since)).toISOString();
+    }
+
+    const recentActivity = getLogs(filters);
+
+    // Add some real-time system events
+    const systemEvents = [
+      {
+        id: `system-${Date.now()}`,
+        action: "system_health_check",
+        username: "System",
+        timestamp: new Date().toISOString(),
+        category: "system",
+        level: "info",
+        details: {
+          uptime: Math.floor(process.uptime()),
+          memory: Math.floor(process.memoryUsage().heapUsed / 1024 / 1024),
+        }
+      }
+    ];
+
+    const combinedActivity = [...recentActivity, ...systemEvents]
+      .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
+      .slice(0, limit);
+
+    res.json({
+      activity: combinedActivity,
+      timestamp: Date.now()
+    });
+  } catch (error) {
+    console.error("Error fetching live activity:", error);
+    res.status(500).json({ error: "Failed to fetch live activity" });
+  }
+});
+
+// Get user registration analytics
+router.get("/analytics/registrations", requireAuth, requireAdmin, async (req, res) => {
+  try {
+    const days = parseInt(req.query.days) || 7;
+    const registrationLogs = getLogs({
+      category: "auth",
+      action: "user_registered",
+      limit: 1000
+    });
+
+    const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    const registrationData = [];
+
+    for (let i = days - 1; i >= 0; i--) {
+      const date = new Date();
+      date.setDate(date.getDate() - i);
+      date.setHours(0, 0, 0, 0);
+
+      const nextDate = new Date(date);
+      nextDate.setDate(nextDate.getDate() + 1);
+
+      const dayRegistrations = registrationLogs.filter(log => {
+        const logDate = new Date(log.timestamp);
+        return logDate >= date && logDate < nextDate;
+      });
+
+      registrationData.push({
+        day: dayNames[date.getDay()],
+        date: date.toISOString().split('T')[0],
+        registrations: dayRegistrations.length,
+        activeSessions: Math.floor(dayRegistrations.length * 1.5), // Estimated
+        logins: Math.floor(dayRegistrations.length * 3) // Estimated
+      });
+    }
+
+    res.json({ registrationData });
+  } catch (error) {
+    console.error("Error fetching registration analytics:", error);
+    res.status(500).json({ error: "Failed to fetch registration analytics" });
+  }
+});
+
 // Get system analytics (admin only)
 router.get("/analytics", requireAuth, requireAdmin, async (req, res) => {
   try {
     const userStats = User.getUserStats();
-    const recentLogs = getLogs({ limit: 100, level: "info" });
+    const recentLogs = getLogs({ limit: 1000, level: "info" });
 
     // Calculate activity metrics from logs
     const activityByHour = {};
     const activityByDay = {};
     const actionCounts = {};
+    const categoryStats = {};
 
     recentLogs.forEach((log) => {
       const date = new Date(log.timestamp);
@@ -313,6 +399,7 @@ router.get("/analytics", requireAuth, requireAdmin, async (req, res) => {
       activityByHour[hour] = (activityByHour[hour] || 0) + 1;
       activityByDay[day] = (activityByDay[day] || 0) + 1;
       actionCounts[log.action] = (actionCounts[log.action] || 0) + 1;
+      categoryStats[log.category] = (categoryStats[log.category] || 0) + 1;
     });
 
     const analytics = {
@@ -321,13 +408,21 @@ router.get("/analytics", requireAuth, requireAdmin, async (req, res) => {
         byHour: activityByHour,
         byDay: activityByDay,
         actions: actionCounts,
+        categories: categoryStats,
         total: recentLogs.length,
+        last24Hours: recentLogs.filter(log => {
+          const logTime = new Date(log.timestamp).getTime();
+          const yesterday = Date.now() - 24 * 60 * 60 * 1000;
+          return logTime > yesterday;
+        }).length
       },
       system: {
         uptime: process.uptime(),
         memory: process.memoryUsage(),
         nodeVersion: process.version,
         environment: process.env.NODE_ENV || "development",
+        pid: process.pid,
+        platform: process.platform
       },
     };
 
