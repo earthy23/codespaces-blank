@@ -72,9 +72,19 @@ interface WebSocketManagerContextType {
   getOnlineUsers: () => string[];
 }
 
-const WebSocketManagerContext = createContext<
-  WebSocketManagerContextType | undefined
->(undefined);
+// Default context value to prevent undefined errors
+const defaultContextValue: WebSocketManagerContextType = {
+  isConnected: false,
+  send: () => console.warn("WebSocket not initialized"),
+  subscribe: () => () => {}, // Return empty unsubscribe function
+  broadcast: () => console.warn("WebSocket not initialized"),
+  getUserStatus: () => "offline",
+  getOnlineUsers: () => [],
+};
+
+const WebSocketManagerContext = createContext<WebSocketManagerContextType>(
+  defaultContextValue
+);
 
 export function WebSocketManagerProvider({
   children,
