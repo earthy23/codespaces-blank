@@ -18,6 +18,22 @@ const getAuthToken = () => {
   }
 };
 
+// Simple network health check
+const checkNetworkHealth = async () => {
+  try {
+    // Try a simple fetch to the same origin to check connectivity
+    const response = await fetch(`${API_BASE_URL}/health`, {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json' },
+      signal: AbortSignal.timeout(2000) // 2 second timeout for health check
+    });
+    return response.ok;
+  } catch (error) {
+    console.warn("Network health check failed:", error.message);
+    return false;
+  }
+};
+
 // Request interceptor to add auth token with timeout and performance optimizations
 const makeRequest = async (endpoint: string, options: RequestInit = {}) => {
   const url = `${API_BASE_URL}${endpoint}`;
