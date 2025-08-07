@@ -138,13 +138,13 @@ export const WebSocketManagerProvider = ({
           const message = JSON.parse(event.data);
           handleMessage(message);
         } catch (error) {
-          console.error("❌ WebSocket message parse error:", {
+          console.error("❌ WebSocket message parse error:", JSON.stringify({
             error: error.message,
             rawData:
               event.data?.substring(0, 100) +
               (event.data?.length > 100 ? "..." : ""),
             timestamp: new Date().toISOString(),
-          });
+          }));
         }
       };
 
