@@ -437,10 +437,10 @@ export function FriendsProvider({ children }: { children: React.ReactNode }) {
   );
 }
 
-export function useFriends() {
+export const useFriends = () => {
   const context = useContext(FriendsContext);
   if (context === undefined) {
     throw new Error("useFriends must be used within a FriendsProvider");
   }
   return context;
-}
+};
