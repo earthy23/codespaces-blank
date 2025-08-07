@@ -11,29 +11,8 @@ router.use(cors({
   allowedHeaders: ['Content-Type']
 }));
 
-// In-memory server data (this would typically come from a database)
-// For now, we'll import from the main servers API
-let servers = [];
-let serverLikes = {};
-
-// Import server data from main API (this is a simplified approach)
-// In production, you'd want to use a shared database
-const getServersData = async () => {
-  try {
-    // This would typically be a database query
-    // For now, we'll use the same in-memory storage pattern
-    return { servers, serverLikes };
-  } catch (error) {
-    console.error('Error fetching servers data:', error);
-    return { servers: [], serverLikes: {} };
-  }
-};
-
-// Update servers data (to be called from main servers API)
-export const updatePublicServersData = (serversData, likesData) => {
-  servers = serversData || [];
-  serverLikes = likesData || {};
-};
+// Import server data from main servers API
+import { getServersData } from './servers.js';
 
 /**
  * Public API: Get all servers
