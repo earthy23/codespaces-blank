@@ -77,7 +77,7 @@ class ChatWebSocketServer {
     });
 
     ws.on("error", (error) => {
-      console.error("WebSocket error:", error);
+      console.error("WebSocket error:", error.message || error.toString() || error);
       this.handleDisconnection(ws);
     });
 
