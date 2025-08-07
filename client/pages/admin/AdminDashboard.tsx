@@ -584,46 +584,6 @@ export default function AdminDashboard() {
             </CardContent>
           </Card>
 
-          <Card className="bg-gray-900 border-gray-700">
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <DollarSign className="w-5 h-5 text-gray-400" />
-                <span className="text-white">Revenue Breakdown</span>
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-400">VIP Subscriptions</span>
-                <span className="font-bold text-white">
-                  {formatCurrency(1450.25)}
-                </span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-400">
-                  VIP++ Subscriptions
-                </span>
-                <span className="font-bold text-white">
-                  {formatCurrency(520.75)}
-                </span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-400">
-                  Legend Subscriptions
-                </span>
-                <span className="font-bold text-white">
-                  {formatCurrency(219.5)}
-                </span>
-              </div>
-              <div className="pt-2 border-t border-gray-700">
-                <div className="flex items-center justify-between font-bold">
-                  <span className="text-gray-400">Total This Month</span>
-                  <span className="text-white">
-                    {formatCurrency(stats?.monthlyRevenue || 0)}
-                  </span>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
         </div>
 
         {/* Real-time System Performance */}
