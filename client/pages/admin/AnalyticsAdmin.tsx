@@ -110,10 +110,23 @@ const BarChart = ({ data, height = 200, title }: { data: Array<{label: string, v
 };
 
 const LineChart = ({ data, height = 200, title }: { data: Array<{label: string, value: number}>, height?: number, title?: string }) => {
-  const maxValue = Math.max(...data.map(d => d.value));
-  const minValue = Math.min(...data.map(d => d.value));
-  const range = maxValue - minValue;
-  
+  const validData = data.filter(d => !isNaN(d.value));
+
+  if (validData.length === 0) {
+    return (
+      <div className="space-y-2">
+        {title && <h4 className="text-sm font-medium text-gray-400">{title}</h4>}
+        <div className="flex items-center justify-center text-gray-500" style={{ height: height }}>
+          <span className="text-sm">No data available</span>
+        </div>
+      </div>
+    );
+  }
+
+  const maxValue = Math.max(...validData.map(d => d.value));
+  const minValue = Math.min(...validData.map(d => d.value));
+  const range = maxValue - minValue || 1; // Avoid division by zero
+
   return (
     <div className="space-y-2">
       {title && <h4 className="text-sm font-medium text-gray-400">{title}</h4>}
@@ -124,21 +137,28 @@ const LineChart = ({ data, height = 200, title }: { data: Array<{label: string, 
             stroke="white"
             strokeWidth="2"
             points={data.map((item, index) => {
-              const x = (index / (data.length - 1)) * 100;
-              const y = 100 - ((item.value - minValue) / range) * 80;
-              return `${x},${y}`;
+              const safeValue = isNaN(item.value) ? minValue : item.value;
+              const x = data.length > 1 ? (index / (data.length - 1)) * 100 : 50;
+              const y = 100 - ((safeValue - minValue) / range) * 80;
+              const safeX = isNaN(x) ? 50 : x;
+              const safeY = isNaN(y) ? 50 : y;
+              return `${safeX},${safeY}`;
             }).join(' ')}
             vectorEffect="non-scaling-stroke"
             transform="scale(1, 1.5)"
           />
           {data.map((item, index) => {
-            const x = (index / (data.length - 1)) * 100;
-            const y = 100 - ((item.value - minValue) / range) * 80;
+            const safeValue = isNaN(item.value) ? minValue : item.value;
+            const x = data.length > 1 ? (index / (data.length - 1)) * 100 : 50;
+            const y = 100 - ((safeValue - minValue) / range) * 80;
+            const safeX = isNaN(x) ? 50 : x;
+            const safeY = isNaN(y) ? 50 : y;
+
             return (
               <circle
                 key={index}
-                cx={x}
-                cy={y * 1.5}
+                cx={safeX}
+                cy={safeY * 1.5}
                 r="3"
                 fill="white"
                 vectorEffect="non-scaling-stroke"
@@ -150,7 +170,7 @@ const LineChart = ({ data, height = 200, title }: { data: Array<{label: string, 
           {data.map((item, index) => (
             <div key={index} className="text-center">
               <div>{item.label}</div>
-              <div className="font-medium text-white">{item.value}</div>
+              <div className="font-medium text-white">{isNaN(item.value) ? 0 : item.value}</div>
             </div>
           ))}
         </div>
