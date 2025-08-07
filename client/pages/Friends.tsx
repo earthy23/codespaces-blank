@@ -596,7 +596,10 @@ export default function Friends() {
               <CardHeader>
                 <CardTitle className="flex items-center space-x-2">
                   <div className="w-8 h-8 rounded-lg bg-card border border-primary/50 flex items-center justify-center shadow-lg shadow-primary/20">
-                    <Search className="w-5 h-5 text-primary drop-shadow-[0_0_4px_currentColor]" />
+                    <svg viewBox="0 0 24 24" fill="none" className="w-5 h-5 text-primary drop-shadow-[0_0_4px_currentColor]">
+                      <circle cx="11" cy="11" r="8" stroke="currentColor" strokeWidth="2" fill="none"/>
+                      <path d="m21 21-4.35-4.35" stroke="currentColor" strokeWidth="2"/>
+                    </svg>
                   </div>
                   <span>Search Users</span>
                 </CardTitle>
