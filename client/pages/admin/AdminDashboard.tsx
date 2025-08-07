@@ -149,20 +149,35 @@ export default function AdminDashboard() {
     const metricsInterval = setInterval(async () => {
       if (token) {
         try {
+          const controller = new AbortController();
+          const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout for real-time updates
+
           const response = await fetch("/api/admin/metrics/realtime", {
             headers: {
               Authorization: `Bearer ${token}`,
               "Content-Type": "application/json",
             },
+            signal: controller.signal,
           });
+
+          clearTimeout(timeoutId);
 
           if (response.ok) {
             const data = await response.json();
             setSystemMetrics(data.metrics);
             setLastMetricsUpdate(Date.now());
+          } else {
+            console.warn("Metrics update failed, keeping previous data");
           }
         } catch (error) {
-          console.error("Error updating real-time metrics:", error);
+          if (error.name === 'AbortError') {
+            console.warn("Metrics update timed out");
+          } else if (error.message?.includes('Failed to fetch')) {
+            console.warn("Network issue during metrics update, skipping this cycle");
+          } else {
+            console.error("Error updating real-time metrics:", error);
+          }
+          // Don't update lastMetricsUpdate on error to show the data is stale
         }
       }
     }, 30000);
