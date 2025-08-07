@@ -26,7 +26,7 @@ router.get('/servers', async (req, res) => {
     const { limit, category, sort, status } = req.query;
     
     // Get servers data
-    const { servers: allServers } = await getServersData();
+    const { servers: allServers } = getServersData();
     
     // Filter servers
     let filteredServers = [...allServers];
