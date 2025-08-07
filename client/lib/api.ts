@@ -51,7 +51,7 @@ const makeRequest = async (endpoint: string, options: RequestInit = {}) => {
   const controller = new AbortController();
   const timeoutId = setTimeout(() => {
     console.warn(`⏰ Request timeout after ${timeoutMs}ms for ${url}`);
-    controller.abort();
+    controller.abort("Request timeout");
   }, timeoutMs);
 
   // Use the timeout controller signal (ignore any existing signal to avoid conflicts)
