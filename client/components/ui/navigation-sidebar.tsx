@@ -135,7 +135,6 @@ const navigationSections = [
         ),
         label: "Profile",
         path: "/profile",
-        description: "Your profile settings",
         iconColor: "text-primary",
         glow: "shadow-primary/50",
       },
