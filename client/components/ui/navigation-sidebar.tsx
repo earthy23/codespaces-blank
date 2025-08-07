@@ -147,7 +147,6 @@ const navigationSections = [
         ),
         label: "Support",
         path: "/support",
-        description: "Get help & support",
         iconColor: "text-primary",
         glow: "shadow-primary/50",
       },
