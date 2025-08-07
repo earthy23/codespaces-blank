@@ -112,8 +112,8 @@ export default function Dashboard() {
         <Card className="minecraft-panel mb-8 bg-card border-2 border-primary/20 shadow-xl shadow-primary/10">
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
-              <div className="w-10 h-10 rounded-lg bg-card border border-primary/50 flex items-center justify-center shadow-lg shadow-primary/30">
-                <Play className="w-6 h-6 text-primary drop-shadow-[0_0_4px_currentColor]" />
+              <div className="w-10 h-10 rounded-lg bg-card border border-primary/50 flex items-center justify-center shadow-lg shadow-primary/30 overflow-hidden">
+                <img src="https://images.pexels.com/photos/4225229/pexels-photo-4225229.jpeg" alt="Gaming Setup" className="w-full h-full object-cover" />
               </div>
               <div>
                 <span className="text-xl">Launch Client</span>
