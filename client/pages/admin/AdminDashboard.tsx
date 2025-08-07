@@ -550,42 +550,6 @@ export default function AdminDashboard() {
 
         {/* System Status Cards */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <Card className="bg-gray-900 border-gray-700">
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <MessageCircle className="w-5 h-5 text-gray-400" />
-                <span className="text-white">Platform Activity</span>
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-400">Total Messages</span>
-                <span className="font-bold text-white">
-                  {stats?.totalMessages?.toLocaleString() || 0}
-                </span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-400">Flagged Messages</span>
-                <Badge className="bg-red-600 text-white">
-                  {stats?.flaggedMessages || 0}
-                </Badge>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-400">Forum Posts</span>
-                <span className="font-bold text-white">
-                  {stats?.forumPosts || 0}
-                </span>
-              </div>
-              <div className="pt-2">
-                <Link to="/admin/chat-review">
-                  <Button className="w-full bg-white text-black hover:bg-gray-200">
-                    <Eye className="w-4 h-4 mr-2" />
-                    Review Messages
-                  </Button>
-                </Link>
-              </div>
-            </CardContent>
-          </Card>
 
           <Card className="bg-gray-900 border-gray-700">
             <CardHeader>
