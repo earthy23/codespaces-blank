@@ -414,6 +414,9 @@ export default function AdminDashboard() {
               <div className="text-2xl font-bold text-white">
                 {stats?.serverUptime || 0}%
               </div>
+              <div className="mt-3">
+                <MiniLineChart data={serverStatusData} color="#f59e0b" />
+              </div>
               <Progress
                 value={stats?.serverUptime || 0}
                 className="mt-2 bg-gray-700"
