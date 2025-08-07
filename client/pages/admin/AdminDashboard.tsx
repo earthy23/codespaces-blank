@@ -332,18 +332,20 @@ export default function AdminDashboard() {
           if (error.name === 'AbortError') {
             // Timeout is expected behavior, just log in dev mode
             if (process.env.NODE_ENV === 'development') {
-              console.warn("Live activity fetch timed out");
+              console.warn("Live activity fetch timed out, skipping update");
             }
           } else if (error.message?.includes('Failed to fetch') || error.message?.includes('fetch')) {
             if (process.env.NODE_ENV === 'development') {
               console.warn("FullStory or network interference during live activity update, skipping cycle");
             }
           } else {
-            console.warn("Failed to fetch live activity:", error.message);
+            if (process.env.NODE_ENV === 'development') {
+              console.warn("Failed to fetch live activity:", error.message || error);
+            }
           }
         }
       }
-    }, 10000);
+    }, 15000); // Increased interval to 15 seconds
 
     return () => {
       clearInterval(metricsInterval);
