@@ -15,6 +15,9 @@ const dataDir = path.join(process.cwd(), "data");
 const dbPath = path.join(dataDir, "uec_launcher.db");
 const db = new Database(dbPath);
 
+// Enable foreign keys for data integrity
+db.pragma("foreign_keys = ON");
+
 // Create friends tables
 db.exec(`
   CREATE TABLE IF NOT EXISTS friendships (
