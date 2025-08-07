@@ -262,11 +262,11 @@ export default function Downloads() {
         </Tabs>
 
         {/* Download Information */}
-        <Card className="minecraft-panel mt-8 bg-card/50 border-2 border-border shadow-lg">
+        <Card className="minecraft-panel mt-8 bg-card border-2 border-border shadow-lg">
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
-              <div className="w-8 h-8 rounded-lg bg-card border border-primary/50 flex items-center justify-center shadow-lg shadow-primary/20">
-                <Info className="w-5 h-5 text-primary drop-shadow-[0_0_4px_currentColor]" />
+              <div className="w-8 h-8 rounded-lg bg-card border border-primary/50 flex items-center justify-center shadow-lg shadow-primary/20 overflow-hidden">
+                <img src="https://images.pexels.com/photos/7640773/pexels-photo-7640773.jpeg" alt="Info" className="w-full h-full object-cover" />
               </div>
               <span>Download Information</span>
             </CardTitle>
@@ -275,7 +275,7 @@ export default function Downloads() {
             <div className="grid md:grid-cols-2 gap-6 text-sm">
               <div>
                 <h4 className="font-semibold mb-2 flex items-center">
-                  <Shield className="w-4 h-4 mr-2" />
+                  <img src="https://images.pexels.com/photos/10068851/pexels-photo-10068851.jpeg" alt="Security" className="w-4 h-4 mr-2 rounded object-cover" />
                   Security
                 </h4>
                 <ul className="space-y-1 text-muted-foreground">
