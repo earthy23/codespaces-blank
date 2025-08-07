@@ -226,22 +226,24 @@ export default function AdminDashboard() {
         } catch (error) {
           if (error.name === 'AbortError') {
             if (process.env.NODE_ENV === 'development') {
-              console.warn("Metrics update timed out");
+              console.warn("Metrics update timed out, keeping previous data");
             }
             setConnectionStatus("degraded");
           } else if (error.message?.includes('Failed to fetch') || error.message?.includes('fetch')) {
             if (process.env.NODE_ENV === 'development') {
-              console.warn("FullStory or network interference detected, degrading service");
+              console.warn("FullStory or network interference detected, keeping previous data");
             }
             setConnectionStatus("degraded");
           } else {
-            console.error("Error updating real-time metrics:", error);
+            if (process.env.NODE_ENV === 'development') {
+              console.warn("Error updating real-time metrics:", error.message || error);
+            }
             setConnectionStatus("degraded");
           }
           // Don't update lastMetricsUpdate on error to show the data is stale
         }
       }
-    }, 15000);
+    }, 20000); // Increased interval to 20 seconds
 
     // Set up live activity feed updates every 10 seconds
     const activityInterval = setInterval(async () => {
