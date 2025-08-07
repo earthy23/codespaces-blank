@@ -154,9 +154,16 @@ const makeRequest = async (endpoint: string, options: RequestInit = {}) => {
 
     // Handle AbortError (timeout or manual abort)
     if (error.name === "AbortError" || error.message?.includes("aborted")) {
-      const timeoutSeconds = Math.round(timeoutMs / 1000);
-      console.warn(`⚠️ Request aborted for ${url} after ${timeoutSeconds}s timeout`);
-      throw new Error(`Request timed out after ${timeoutSeconds} seconds. Please try again.`);
+      const isOurTimeout = (controller as any)._isOurTimeout?.() || false;
+
+      if (isOurTimeout) {
+        const timeoutSeconds = Math.round(timeoutMs / 1000);
+        console.warn(`⚠️ Request timeout for ${url} after ${timeoutSeconds}s`);
+        throw new Error(`Request timed out after ${timeoutSeconds} seconds. Please try again.`);
+      } else {
+        console.warn(`⚠️ Request cancelled for ${url} (not due to timeout)`);
+        throw new Error("Request was cancelled. Please try again.");
+      }
     }
 
     // Handle network connectivity issues
