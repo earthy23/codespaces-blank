@@ -212,7 +212,7 @@ export default function Dashboard() {
                   <polygon points="5,21 19,12 5,3" fill="currentColor"/>
                   <circle cx="12" cy="12" r="1" fill="white"/>
                 </svg>
-"Launch Game"
+                Launch Game
               </Button>
             </div>
           </CardContent>
