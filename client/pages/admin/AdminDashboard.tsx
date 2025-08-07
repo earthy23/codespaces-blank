@@ -192,7 +192,7 @@ export default function AdminDashboard() {
       setIsLoading(true);
       const controller = new AbortController();
 
-      const [statsRes, activityRes] = await Promise.all([
+      const [statsRes, activityRes, metricsRes] = await Promise.all([
         fetch("/api/admin/dashboard/stats", {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -207,25 +207,36 @@ export default function AdminDashboard() {
           },
           signal: controller.signal,
         }),
+        fetch("/api/admin/metrics/realtime", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          signal: controller.signal,
+        }),
       ]);
 
       if (statsRes.ok) {
         const statsData = await statsRes.json();
+        const stats = statsData.stats;
+
+        // Set enhanced stats
         const enhancedStats: DashboardStats = {
-          totalUsers: statsData.stats?.totalUsers || 1247,
-          activeUsers: Math.floor((statsData.stats?.totalUsers || 1247) * 0.25),
-          newUsersToday: 23,
-          totalRevenue: 15847.75,
-          monthlyRevenue: 2190.5,
-          activeSessions: statsData.stats?.activeSessions || 89,
-          totalMessages: 8547,
-          flaggedMessages: statsData.stats?.flaggedMessages || 3,
-          supportTickets: 67,
-          pendingTickets: 8,
-          forumPosts: 456,
-          serverUptime: 99.87,
+          totalUsers: stats?.totalUsers || 1247,
+          activeUsers: stats?.activeUsers || Math.floor((stats?.totalUsers || 1247) * 0.25),
+          newUsersToday: stats?.newUsersToday || 23,
+          totalRevenue: stats?.totalRevenue || 15847.75,
+          monthlyRevenue: stats?.monthlyRevenue || 2190.5,
+          activeSessions: stats?.activeSessions || 89,
+          totalMessages: stats?.totalMessages || 8547,
+          flaggedMessages: stats?.flaggedMessages || 3,
+          supportTickets: stats?.supportTickets || 67,
+          pendingTickets: stats?.pendingTickets || 8,
+          forumPosts: stats?.forumPosts || 456,
+          serverUptime: stats?.serverUptime || 99.87,
         };
         setStats(enhancedStats);
+        setDashboardData(stats);
         cacheManager.set(CACHE_KEYS.ADMIN_STATS, enhancedStats);
       }
 
@@ -234,6 +245,12 @@ export default function AdminDashboard() {
         const logs = activityData.logs || [];
         setRecentActivity(logs);
         cacheManager.set(CACHE_KEYS.ADMIN_LOGS, logs);
+      }
+
+      if (metricsRes.ok) {
+        const metricsData = await metricsRes.json();
+        setSystemMetrics(metricsData.metrics);
+        setLastMetricsUpdate(Date.now());
       }
     } catch (error) {
       console.error("Error loading dashboard data:", error);
