@@ -66,6 +66,11 @@ const makeRequest = async (endpoint: string, options: RequestInit = {}) => {
   // Dynamic timeout based on endpoint type
   let timeoutMs = 5000; // Default 5 seconds
 
+  // Shorter timeout for health checks to fail fast
+  if (endpoint.includes("/health")) {
+    timeoutMs = 3000; // 3 seconds for health checks
+  }
+
   // Longer timeout for server operations that may involve connectivity tests
   if (endpoint.includes("/servers")) {
     timeoutMs = 20000; // 20 seconds for server operations (increased)
