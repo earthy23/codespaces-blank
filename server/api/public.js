@@ -121,7 +121,7 @@ router.get('/servers', async (req, res) => {
 router.get('/servers/:id', async (req, res) => {
   try {
     const { id } = req.params;
-    const { servers: allServers } = await getServersData();
+    const { servers: allServers } = getServersData();
     
     const server = allServers.find(s => s.id === id);
     
