@@ -143,9 +143,21 @@ const LineChart = ({ data, height = 200, title }: { data: Array<{label: string, 
 };
 
 const PieChartComponent = ({ data, title }: { data: Array<{label: string, value: number, color?: string}>, title?: string }) => {
-  const total = data.reduce((sum, item) => sum + item.value, 0);
+  const total = data.reduce((sum, item) => sum + (isNaN(item.value) ? 0 : item.value), 0);
   let cumulativePercentage = 0;
-  
+
+  // Return empty state if no valid data
+  if (total === 0 || data.length === 0) {
+    return (
+      <div className="space-y-4">
+        {title && <h4 className="text-sm font-medium text-gray-400">{title}</h4>}
+        <div className="flex items-center justify-center h-32 text-gray-500">
+          <span className="text-sm">No data available</span>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-4">
       {title && <h4 className="text-sm font-medium text-gray-400">{title}</h4>}
@@ -161,11 +173,15 @@ const PieChartComponent = ({ data, title }: { data: Array<{label: string, value:
               strokeWidth="16"
             />
             {data.map((item, index) => {
-              const percentage = (item.value / total) * 100;
-              const strokeDasharray = `${percentage * 3.52} ${351.86 - percentage * 3.52}`;
-              const strokeDashoffset = -cumulativePercentage * 3.52;
-              cumulativePercentage += percentage;
-              
+              const safeValue = isNaN(item.value) ? 0 : item.value;
+              const percentage = total > 0 ? (safeValue / total) * 100 : 0;
+              const safePercentage = isNaN(percentage) ? 0 : percentage;
+              const dashLength = safePercentage * 3.52;
+              const dashGap = 351.86 - dashLength;
+              const strokeDasharray = `${dashLength} ${dashGap}`;
+              const strokeDashoffset = -(cumulativePercentage * 3.52);
+              cumulativePercentage += safePercentage;
+
               return (
                 <circle
                   key={index}
@@ -176,7 +192,7 @@ const PieChartComponent = ({ data, title }: { data: Array<{label: string, value:
                   stroke={index === 0 ? "#ffffff" : index === 1 ? "#d1d5db" : "#9ca3af"}
                   strokeWidth="16"
                   strokeDasharray={strokeDasharray}
-                  strokeDashoffset={strokeDashoffset}
+                  strokeDashoffset={isNaN(strokeDashoffset) ? 0 : strokeDashoffset}
                   className="transition-all duration-300"
                 />
               );
@@ -184,20 +200,26 @@ const PieChartComponent = ({ data, title }: { data: Array<{label: string, value:
           </svg>
         </div>
         <div className="space-y-2">
-          {data.map((item, index) => (
-            <div key={index} className="flex items-center space-x-2">
-              <div 
-                className="w-3 h-3 rounded-full" 
-                style={{ 
-                  backgroundColor: index === 0 ? "#ffffff" : index === 1 ? "#d1d5db" : "#9ca3af" 
-                }}
-              />
-              <span className="text-sm text-gray-400">{item.label}</span>
-              <span className="text-sm font-medium text-white">
-                {((item.value / total) * 100).toFixed(1)}%
-              </span>
-            </div>
-          ))}
+          {data.map((item, index) => {
+            const safeValue = isNaN(item.value) ? 0 : item.value;
+            const percentage = total > 0 ? (safeValue / total) * 100 : 0;
+            const safePercentage = isNaN(percentage) ? 0 : percentage;
+
+            return (
+              <div key={index} className="flex items-center space-x-2">
+                <div
+                  className="w-3 h-3 rounded-full"
+                  style={{
+                    backgroundColor: index === 0 ? "#ffffff" : index === 1 ? "#d1d5db" : "#9ca3af"
+                  }}
+                />
+                <span className="text-sm text-gray-400">{item.label}</span>
+                <span className="text-sm font-medium text-white">
+                  {safePercentage.toFixed(1)}%
+                </span>
+              </div>
+            );
+          })}
         </div>
       </div>
     </div>
