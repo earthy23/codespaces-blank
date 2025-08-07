@@ -146,7 +146,31 @@ export default function AdminDashboard() {
       setStats(fallbackStats);
     }
     loadDashboardData();
-  }, []);
+
+    // Set up real-time metrics updates every 30 seconds
+    const metricsInterval = setInterval(async () => {
+      if (token) {
+        try {
+          const response = await fetch("/api/admin/metrics/realtime", {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          });
+
+          if (response.ok) {
+            const data = await response.json();
+            setSystemMetrics(data.metrics);
+            setLastMetricsUpdate(Date.now());
+          }
+        } catch (error) {
+          console.error("Error updating real-time metrics:", error);
+        }
+      }
+    }, 30000);
+
+    return () => clearInterval(metricsInterval);
+  }, [token]);
 
   // Real-time updates
   useWebSocketEvent("admin:stats_updated", (data) => {
