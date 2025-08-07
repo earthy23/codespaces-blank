@@ -230,13 +230,13 @@ export function NavigationSidebar() {
                   >
                     <div className="flex items-center space-x-3">
                       <div
-                        className={`w-10 h-10 rounded-lg bg-card border border-border flex items-center justify-center shadow-lg group-hover:scale-110 group-hover:shadow-xl transition-all duration-300 overflow-hidden ${isActive ? `shadow-lg ${item.glow}` : `group-hover:${item.glow} group-hover:shadow-primary/20`}`}
+                        className={`w-10 h-10 rounded-lg bg-card border border-border flex items-center justify-center shadow-lg group-hover:scale-110 group-hover:shadow-xl transition-all duration-300 ${isActive ? `shadow-lg ${item.glow}` : `group-hover:${item.glow} group-hover:shadow-primary/20`}`}
                       >
-                        <img
-                          src={item.iconUrl}
-                          alt={item.label}
-                          className={`w-full h-full object-cover ${isActive ? "drop-shadow-[0_0_4px_currentColor]" : ""}`}
-                        />
+                        <div
+                          className={`${item.iconColor} ${isActive ? "drop-shadow-[0_0_4px_currentColor]" : ""}`}
+                        >
+                          {item.iconSvg}
+                        </div>
                       </div>
                       <div className="flex-1">
                         <p
