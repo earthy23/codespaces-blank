@@ -79,17 +79,17 @@ export function AdminLayout({ children }: AdminLayoutProps) {
     <div className="min-h-screen bg-black flex text-white">
       {/* Desktop Sidebar */}
       <aside
-        className={`hidden lg:flex flex-col bg-white border-r border-black transition-all duration-300 ${
+        className={`hidden lg:flex flex-col bg-black border-r border-white transition-all duration-300 ${
           sidebarCollapsed ? "w-16" : "w-72"
         }`}
       >
         {/* Sidebar Header */}
-        <div className="p-4 border-b border-black">
+        <div className="p-4 border-b border-white">
           <div className="flex items-center justify-between">
             {!sidebarCollapsed && (
               <div>
-                <h2 className="text-lg font-bold text-black">Admin Panel</h2>
-                <p className="text-xs text-gray-600">
+                <h2 className="text-lg font-bold text-white">Admin Panel</h2>
+                <p className="text-xs text-gray-400">
                   Welcome, {user?.username}
                 </p>
               </div>
@@ -98,7 +98,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
               variant="ghost"
               size="sm"
               onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
-              className="text-black hover:text-gray-600 hover:bg-gray-100"
+              className="text-white hover:text-gray-300 hover:bg-gray-800"
             >
               {sidebarCollapsed ? (
                 <span className="text-sm">»</span>
@@ -114,7 +114,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
           {adminNavItems.map((section) => (
             <div key={section.section}>
               {!sidebarCollapsed && (
-                <h3 className="text-xs font-semibold text-gray-600 uppercase tracking-wide mb-2 px-2">
+                <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2 px-2">
                   {section.section}
                 </h3>
               )}
@@ -128,8 +128,8 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                       to={item.path}
                       className={`flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors ${
                         active
-                          ? "bg-black text-white"
-                          : "hover:bg-gray-100 text-black hover:text-black"
+                          ? "bg-white text-black"
+                          : "hover:bg-gray-800 text-white hover:text-white"
                       }`}
                       title={sidebarCollapsed ? item.label : ""}
                     >
@@ -147,11 +147,11 @@ export function AdminLayout({ children }: AdminLayoutProps) {
         </nav>
 
         {/* Sidebar Footer */}
-        <div className="p-4 border-t border-black">
+        <div className="p-4 border-t border-white">
           <div className="space-y-2">
             <Link
               to="/dashboard"
-              className="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-gray-100 text-black hover:text-black transition-colors"
+              className="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-gray-800 text-white hover:text-white transition-colors"
               title={sidebarCollapsed ? "Back to Dashboard" : ""}
             >
               {!sidebarCollapsed && (
@@ -161,7 +161,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
             <Button
               variant="ghost"
               onClick={handleLogout}
-              className={`w-full justify-start space-x-3 px-3 py-2 hover:bg-gray-100 hover:text-black text-black ${
+              className={`w-full justify-start space-x-3 px-3 py-2 hover:bg-gray-800 hover:text-white text-white ${
                 sidebarCollapsed ? "px-2" : ""
               }`}
               title={sidebarCollapsed ? "Logout" : ""}
@@ -178,7 +178,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
           variant="outline"
           size="sm"
           onClick={() => setMobileMenuOpen(true)}
-          className="bg-white border-black text-black hover:bg-gray-100"
+          className="bg-black border-white text-white hover:bg-gray-800"
         >
           <span className="text-sm">☰</span>
         </Button>
@@ -191,12 +191,12 @@ export function AdminLayout({ children }: AdminLayoutProps) {
             className="fixed inset-0 bg-black/50"
             onClick={() => setMobileMenuOpen(false)}
           />
-          <aside className="relative w-72 bg-white border-r border-black">
+          <aside className="relative w-72 bg-black border-r border-white">
             {/* Mobile Header */}
-            <div className="p-4 border-b border-black flex items-center justify-between">
+            <div className="p-4 border-b border-white flex items-center justify-between">
               <div>
-                <h2 className="text-lg font-bold text-black">Admin Panel</h2>
-                <p className="text-xs text-gray-600">
+                <h2 className="text-lg font-bold text-white">Admin Panel</h2>
+                <p className="text-xs text-gray-400">
                   Welcome, {user?.username}
                 </p>
               </div>
@@ -204,7 +204,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                 variant="ghost"
                 size="sm"
                 onClick={() => setMobileMenuOpen(false)}
-                className="text-black hover:text-gray-600 hover:bg-gray-100"
+                className="text-white hover:text-gray-300 hover:bg-gray-800"
               >
                 <span className="text-sm">✕</span>
               </Button>
@@ -214,7 +214,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
             <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
               {adminNavItems.map((section) => (
                 <div key={section.section}>
-                  <h3 className="text-xs font-semibold text-gray-600 uppercase tracking-wide mb-2 px-2">
+                  <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2 px-2">
                     {section.section}
                   </h3>
                   <div className="space-y-1 mb-4">
@@ -228,8 +228,8 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                           onClick={() => setMobileMenuOpen(false)}
                           className={`flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors ${
                             active
-                              ? "bg-black text-white"
-                              : "hover:bg-gray-100 text-black hover:text-black"
+                              ? "bg-white text-black"
+                              : "hover:bg-gray-800 text-white hover:text-white"
                           }`}
                         >
                           <span className="text-sm font-medium">
@@ -244,18 +244,18 @@ export function AdminLayout({ children }: AdminLayoutProps) {
             </nav>
 
             {/* Mobile Footer */}
-            <div className="p-4 border-t border-black space-y-2">
+            <div className="p-4 border-t border-white space-y-2">
               <Link
                 to="/dashboard"
                 onClick={() => setMobileMenuOpen(false)}
-                className="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-gray-100 text-black hover:text-black transition-colors"
+                className="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-gray-800 text-white hover:text-white transition-colors"
               >
                 <span className="text-sm">Back to Dashboard</span>
               </Link>
               <Button
                 variant="ghost"
                 onClick={handleLogout}
-                className="w-full justify-start space-x-3 px-3 py-2 hover:bg-gray-100 hover:text-black text-black"
+                className="w-full justify-start space-x-3 px-3 py-2 hover:bg-gray-800 hover:text-white text-white"
               >
                 <span className="text-sm">Logout</span>
               </Button>
