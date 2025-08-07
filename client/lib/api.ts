@@ -201,7 +201,7 @@ const makeRequest = async (endpoint: string, options: RequestInit = {}) => {
     }
 
     // Handle network connectivity issues
-    if (error instanceof TypeError && error.message.includes("fetch")) {
+    if (error instanceof TypeError && error.message?.includes("fetch")) {
       console.error("Network error details:");
       console.error(`  URL: ${url}`);
       console.error(`  Error: ${error.message}`);
