@@ -126,6 +126,8 @@ export default function AdminDashboard() {
   const [timeRange, setTimeRange] = useState("24h");
   const [connectionStatus, setConnectionStatus] = useState<"connected" | "degraded" | "offline">("connected");
   const [realTimeData, setRealTimeData] = useState<any>(null);
+  const [liveActivity, setLiveActivity] = useState<RecentActivity[]>([]);
+  const [lastActivityUpdate, setLastActivityUpdate] = useState(Date.now());
 
   useEffect(() => {
     if (!stats) {
@@ -205,7 +207,45 @@ export default function AdminDashboard() {
       }
     }, 15000);
 
-    return () => clearInterval(metricsInterval);
+    // Set up live activity feed updates every 10 seconds
+    const activityInterval = setInterval(async () => {
+      if (token) {
+        try {
+          const controller = new AbortController();
+          const timeoutId = setTimeout(() => controller.abort(), 5000);
+
+          const response = await fetch(`/api/admin/activity/live?since=${lastActivityUpdate}&limit=10`, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+            signal: controller.signal,
+          });
+
+          clearTimeout(timeoutId);
+
+          if (response.ok) {
+            const data = await response.json();
+            if (data.activity && data.activity.length > 0) {
+              setLiveActivity(prev => {
+                const newActivity = data.activity.filter(activity =>
+                  !prev.some(existing => existing.id === activity.id)
+                );
+                return [...newActivity, ...prev].slice(0, 10);
+              });
+              setLastActivityUpdate(data.timestamp);
+            }
+          }
+        } catch (error) {
+          console.warn("Failed to fetch live activity:", error.message);
+        }
+      }
+    }, 10000);
+
+    return () => {
+      clearInterval(metricsInterval);
+      clearInterval(activityInterval);
+    };
   }, [token]);
 
   // Real-time updates
@@ -658,8 +698,11 @@ export default function AdminDashboard() {
                 </div>
               </CardTitle>
               <CardDescription className="text-gray-400">
-                Real-time user engagement metrics and registration trends
-              </CardDescription>
+              Real-time user engagement metrics and registration trends
+              {dashboardData?.userGrowthData && (
+                <span className="ml-2 text-green-400">• Live data</span>
+              )}
+            </CardDescription>
             </CardHeader>
             <CardContent>
               <ResponsiveContainer width="100%" height={350}>
@@ -878,9 +921,34 @@ export default function AdminDashboard() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            {recentActivity.length > 0 ? (
+            {(liveActivity.length > 0 || recentActivity.length > 0) ? (
               <div className="space-y-3">
-                {recentActivity.slice(0, 8).map((activity) => (
+                {/* Live Activity First */}
+                {liveActivity.slice(0, 4).map((activity) => (
+                  <div
+                    key={activity.id}
+                    className="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-800 border-l-2 border-green-500 bg-green-900/10"
+                  >
+                    <div className="flex-shrink-0 text-green-400">
+                      {getActivityIcon(activity.category, activity.action)}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium truncate text-white">
+                        {activity.username || "System"} -{" "}
+                        {activity.action.replace(/_/g, " ")}
+                      </p>
+                      <p className="text-xs text-green-400">
+                        {formatTime(activity.timestamp)} • LIVE
+                      </p>
+                    </div>
+                    <Badge className="text-xs bg-green-700 text-white">
+                      {activity.category}
+                    </Badge>
+                  </div>
+                ))}
+
+                {/* Recent Activity */}
+                {recentActivity.slice(0, Math.max(4, 8 - liveActivity.length)).map((activity) => (
                   <div
                     key={activity.id}
                     className="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-800"
@@ -907,6 +975,17 @@ export default function AdminDashboard() {
               <div className="text-center py-8 text-gray-400">
                 <Activity className="w-12 h-12 mx-auto mb-2 opacity-50" />
                 <p>No recent activity</p>
+                <p className="text-xs mt-1">Live feed will update automatically</p>
+              </div>
+            )}
+
+            {/* Live indicator */}
+            {liveActivity.length > 0 && (
+              <div className="flex items-center justify-center mt-4 pt-3 border-t border-gray-700">
+                <div className="flex items-center space-x-2 text-xs text-green-400">
+                  <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                  <span>Live activity feed active</span>
+                </div>
               </div>
             )}
           </CardContent>
