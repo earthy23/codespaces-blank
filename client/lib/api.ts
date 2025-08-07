@@ -246,6 +246,22 @@ const makeRequest = async (endpoint: string, options: RequestInit = {}) => {
 
       console.log(`📊 Response status: ${response.status} for ${url}`);
 
+      // Handle aborted requests gracefully (status 0 from XMLHttpRequest)
+      if (response.status === 0 && response.statusText === 'Aborted') {
+        if (process.env.NODE_ENV === 'development') {
+          console.warn(`⚠️ Request aborted for ${url}, likely due to navigation or cancellation`);
+        }
+        throw new Error("Request was cancelled. Please try again.");
+      }
+
+      // Handle network errors (status 0 but not aborted)
+      if (response.status === 0 && response.statusText !== 'Aborted') {
+        if (process.env.NODE_ENV === 'development') {
+          console.warn(`⚠️ Network error (status 0) for ${url}`);
+        }
+        throw new Error("Network error - please check your connection and try again.");
+      }
+
       // Handle authentication errors (but not for login/register endpoints)
       if (
         response.status === 401 &&
