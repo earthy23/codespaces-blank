@@ -149,6 +149,8 @@ const makeRequest = async (endpoint: string, options: RequestInit = {}) => {
         }));
 
         console.error(`❌ API Error for ${url}:`, errorData);
+        console.error(`📊 Response status: ${response.status} ${response.statusText}`);
+        console.error(`🗂️ Raw error data:`, JSON.stringify(errorData, null, 2));
 
         let errorMessage = errorData.error || errorData.message || `HTTP ${response.status}: ${response.statusText}`;
 
