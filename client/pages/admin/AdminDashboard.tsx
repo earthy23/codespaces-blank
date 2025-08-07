@@ -700,27 +700,38 @@ export default function AdminDashboard() {
                 <div>
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-sm text-gray-400">CPU Usage</span>
-                    <span className="text-sm font-medium text-white">23%</span>
+                    <span className="text-sm font-medium text-white">
+                      {systemMetrics?.system?.cpu || 23}%
+                    </span>
                   </div>
-                  <Progress value={23} className="bg-gray-700" />
+                  <Progress value={systemMetrics?.system?.cpu || 23} className="bg-gray-700" />
                 </div>
 
                 {/* Memory Usage */}
                 <div>
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-sm text-gray-400">Memory Usage</span>
-                    <span className="text-sm font-medium text-white">67%</span>
+                    <span className="text-sm font-medium text-white">
+                      {systemMetrics?.system?.memory || 67}%
+                    </span>
                   </div>
-                  <Progress value={67} className="bg-gray-700" />
+                  <Progress value={systemMetrics?.system?.memory || 67} className="bg-gray-700" />
                 </div>
 
                 {/* Network I/O */}
                 <div>
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-sm text-gray-400">Network I/O</span>
-                    <span className="text-sm font-medium text-white">34%</span>
+                    <span className="text-sm font-medium text-white">
+                      {systemMetrics?.system?.network || 34}%
+                    </span>
                   </div>
-                  <Progress value={34} className="bg-gray-700" />
+                  <Progress value={systemMetrics?.system?.network || 34} className="bg-gray-700" />
+                </div>
+
+                {/* Real-time Status */}
+                <div className="text-xs text-gray-500 mt-2">
+                  Last updated: {new Date(lastMetricsUpdate).toLocaleTimeString()}
                 </div>
 
                 {/* Performance Chart */}
