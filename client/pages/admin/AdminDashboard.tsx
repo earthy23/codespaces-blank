@@ -376,9 +376,12 @@ export default function AdminDashboard() {
           </div>
           <div className="flex items-center space-x-3">
             {/* Time Range Filter */}
-            <select className="bg-gray-800 text-white border border-gray-600 rounded px-3 py-2 text-sm">
+            <select
+              className="bg-gray-800 text-white border border-gray-600 rounded px-3 py-2 text-sm"
+              defaultValue="24h"
+            >
               <option value="1h">Last Hour</option>
-              <option value="24h" selected>Last 24 Hours</option>
+              <option value="24h">Last 24 Hours</option>
               <option value="7d">Last 7 Days</option>
               <option value="30d">Last 30 Days</option>
             </select>
