@@ -158,7 +158,7 @@ export default function Servers() {
 
     try {
       setLoading(true);
-      console.log("🔄 fetchServers: Starting API call...");
+      console.log("��� fetchServers: Starting API call...");
       const data = await serversApi.getAll();
       console.log("✅ fetchServers: Success, got", data.servers?.length || 0, "servers");
       setServers(data.servers || []);
@@ -338,9 +338,24 @@ export default function Servers() {
         description: "Server added successfully",
       });
     } catch (error: any) {
+      console.error("❌ Server submission error:", error);
+
+      let errorMessage = "Failed to add server";
+
+      if (typeof error === 'string') {
+        errorMessage = error;
+      } else if (error?.message) {
+        errorMessage = error.message;
+      } else if (error?.error) {
+        errorMessage = error.error;
+      } else if (typeof error === 'object') {
+        // Handle case where error is an object
+        errorMessage = JSON.stringify(error);
+      }
+
       toast({
         title: "Error",
-        description: error.message || "Failed to add server",
+        description: errorMessage,
         variant: "destructive",
       });
     }
