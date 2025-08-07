@@ -113,6 +113,112 @@ const makeRequest = async (endpoint: string, options: RequestInit = {}) => {
     signal: controller.signal,
   };
 
+  // FullStory detection utility
+  const isFullStoryBlocking = () => {
+    try {
+      return window.fetch !== fetch ||
+             (window.fetch.toString().includes('fullstory') ||
+              document.querySelector('script[src*="fullstory"]') !== null);
+    } catch {
+      return false;
+    }
+  };
+
+  // XMLHttpRequest fallback for fetch
+  const makeXHRRequest = async (url: string, config: RequestInit): Promise<Response> => {
+    return new Promise((resolve, reject) => {
+      const xhr = new XMLHttpRequest();
+      xhr.open(config.method || 'GET', url);
+
+      // Set headers
+      if (config.headers) {
+        Object.entries(config.headers).forEach(([key, value]) => {
+          xhr.setRequestHeader(key, value as string);
+        });
+      }
+
+      xhr.timeout = timeoutMs;
+
+      xhr.onload = () => {
+        try {
+          const response = {
+            ok: xhr.status >= 200 && xhr.status < 300,
+            status: xhr.status,
+            statusText: xhr.statusText,
+            json: () => Promise.resolve(JSON.parse(xhr.responseText)),
+            text: () => Promise.resolve(xhr.responseText),
+            headers: new Headers(),
+          } as Response;
+          resolve(response);
+        } catch (parseError) {
+          resolve({
+            ok: false,
+            status: xhr.status,
+            statusText: xhr.statusText,
+            json: () => Promise.resolve({}),
+            text: () => Promise.resolve(xhr.responseText || ''),
+            headers: new Headers(),
+          } as Response);
+        }
+      };
+
+      xhr.onerror = () => {
+        if (process.env.NODE_ENV === 'development') {
+          console.warn('API XMLHttpRequest network error for:', url);
+        }
+        resolve({
+          ok: false,
+          status: 0,
+          statusText: 'Network Error',
+          json: () => Promise.resolve({}),
+          text: () => Promise.resolve(''),
+          headers: new Headers(),
+        } as Response);
+      };
+
+      xhr.ontimeout = () => {
+        if (process.env.NODE_ENV === 'development') {
+          console.warn('API XMLHttpRequest timeout for:', url);
+        }
+        resolve({
+          ok: false,
+          status: 408,
+          statusText: 'Request Timeout',
+          json: () => Promise.resolve({}),
+          text: () => Promise.resolve(''),
+          headers: new Headers(),
+        } as Response);
+      };
+
+      if (config.signal) {
+        config.signal.addEventListener('abort', () => {
+          xhr.abort();
+          resolve({
+            ok: false,
+            status: 0,
+            statusText: 'Aborted',
+            json: () => Promise.resolve({}),
+            text: () => Promise.resolve(''),
+            headers: new Headers(),
+          } as Response);
+        });
+      }
+
+      try {
+        xhr.send(config.body || null);
+      } catch (sendError) {
+        resolve({
+          ok: false,
+          status: 0,
+          statusText: 'Send Error',
+          json: () => Promise.resolve({}),
+          text: () => Promise.resolve(''),
+          headers: new Headers(),
+        } as Response);
+      }
+    });
+  };
+
   // Create the actual request promise
   const requestPromise = (async () => {
     try {
@@ -121,17 +227,17 @@ const makeRequest = async (endpoint: string, options: RequestInit = {}) => {
         hasAuth: !!authToken,
       });
 
-      // Check if fetch has been modified by third-party scripts
-      if (
-        typeof window !== "undefined" &&
-        window.fetch.toString().includes("fullstory")
-      ) {
-        console.warn(
-          "⚠️ Detected modified fetch API, using alternative approach",
-        );
-      }
+      let response: Response;
 
-      const response = await fetch(url, config);
+      // Check for FullStory interference and use fallback if needed
+      if (isFullStoryBlocking()) {
+        if (process.env.NODE_ENV === 'development') {
+          console.warn("⚠️ FullStory detected, using XMLHttpRequest fallback for:", url);
+        }
+        response = await makeXHRRequest(url, config);
+      } else {
+        response = await fetch(url, config);
+      }
       clearTimeout(timeoutId);
 
       console.log(`📊 Response status: ${response.status} for ${url}`);
