@@ -369,20 +369,26 @@ const makeRequest = async (endpoint: string, options: RequestInit = {}) => {
 
     // Handle network connectivity issues with retry logic
     if (error instanceof TypeError && error.message?.includes("fetch")) {
-      console.error("Network error details:");
-      console.error(`  URL: ${url}`);
-      console.error(`  Error: ${error.message}`);
-      console.error(`  Method: ${options.method || "GET"}`);
+      if (process.env.NODE_ENV === 'development') {
+        console.warn("Network error details:");
+        console.warn(`  URL: ${url}`);
+        console.warn(`  Error: ${error.message}`);
+        console.warn(`  Method: ${options.method || "GET"}`);
+      }
 
-      // Add retry for critical auth endpoints
-      if (endpoint.includes("/auth/profile") && !options._isRetry) {
-        console.log("🔄 Retrying profile request once...");
+      // Add retry for critical auth endpoints (only if not using XHR fallback already)
+      if (endpoint.includes("/auth/profile") && !options._isRetry && !isFullStoryBlocking()) {
+        if (process.env.NODE_ENV === 'development') {
+          console.log("🔄 Retrying profile request once...");
+        }
         try {
           // Wait a short moment and retry once
           await new Promise(resolve => setTimeout(resolve, 1000));
           return await makeRequest(endpoint, { ...options, _isRetry: true });
         } catch (retryError) {
-          console.error("❌ Retry also failed:", retryError.message);
+          if (process.env.NODE_ENV === 'development') {
+            console.warn("❌ Retry also failed:", retryError.message);
+          }
         }
       }
 
@@ -391,18 +397,21 @@ const makeRequest = async (endpoint: string, options: RequestInit = {}) => {
       );
     }
 
-    // Handle other network errors
+    // Handle other network errors (but be more graceful with FullStory detection)
     if (error.message?.includes("Failed to fetch")) {
-      console.error("Fetch failure details:");
-      console.error(`  URL: ${url}`);
-      console.error(`  Error message: ${error.message}`);
-      console.error(`  Error stack: ${error.stack}`);
+      if (process.env.NODE_ENV === 'development') {
+        console.warn("Fetch failure details:");
+        console.warn(`  URL: ${url}`);
+        console.warn(`  Error message: ${error.message}`);
+      }
 
       // Check for FullStory or other third-party interference
-      if (error.stack?.includes("fullstory.com")) {
-        console.warn("⚠️ FullStory interference detected in fetch request");
+      if (error.stack?.includes("fullstory.com") || isFullStoryBlocking()) {
+        if (process.env.NODE_ENV === 'development') {
+          console.warn("⚠️ FullStory interference detected, should have used fallback");
+        }
         throw new Error(
-          "Network request blocked by tracking software. Please try refreshing the page.",
+          "Network request interference detected. Please try refreshing the page.",
         );
       }
 
@@ -491,7 +500,7 @@ export const authApi = {
 
       // If it's a network error, try to provide more helpful error context
       if (error instanceof TypeError && error.message === "Failed to fetch") {
-        console.error("🌐 Network connectivity issue detected for profile endpoint");
+        console.error("�� Network connectivity issue detected for profile endpoint");
 
         // Try a simple health check to see if the server is reachable
         try {
