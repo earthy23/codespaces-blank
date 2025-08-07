@@ -141,16 +141,15 @@ export default function Downloads() {
           <TabsContent value="clients" className="mt-8">
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
               {clientDownloads.map((client) => {
-                const IconComponent = client.icon;
                 return (
                   <Card
                     key={client.id}
-                    className="minecraft-panel bg-card/50 border-2 border-border shadow-lg hover:shadow-primary/10"
+                    className="minecraft-panel bg-card border-2 border-border shadow-lg hover:shadow-primary/10"
                   >
                     <CardHeader>
                       <div className="flex items-center space-x-3 mb-2">
-                        <div className="w-12 h-12 rounded-lg bg-card border border-primary/50 flex items-center justify-center shadow-lg shadow-primary/20">
-                          <IconComponent className="w-6 h-6 text-primary drop-shadow-[0_0_4px_currentColor]" />
+                        <div className="w-12 h-12 rounded-lg bg-card border border-primary/50 flex items-center justify-center shadow-lg shadow-primary/20 overflow-hidden">
+                          <img src={client.iconUrl} alt={client.name} className="w-full h-full object-cover" />
                         </div>
                         <div>
                           <CardTitle className="text-xl">
