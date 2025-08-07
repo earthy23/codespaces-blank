@@ -1,5 +1,6 @@
 // API Base Configuration
 const API_BASE_URL = import.meta.env.VITE_API_URL || "/api";
+console.log(`🔧 API_BASE_URL configured as: ${API_BASE_URL}`);
 
 // Request deduplication to prevent identical simultaneous requests
 const pendingRequests = new Map<string, Promise<any>>();
@@ -111,7 +112,7 @@ const makeRequest = async (endpoint: string, options: RequestInit = {}) => {
   // Create the actual request promise
   const requestPromise = (async () => {
     try {
-      console.log(`���� Making request to: ${url}`, { method: config.method || 'GET', hasAuth: !!authToken });
+      console.log(`🔗 Making request to: ${url}`, { method: config.method || 'GET', hasAuth: !!authToken });
 
       // Check if fetch has been modified by third-party scripts
       if (typeof window !== 'undefined' && window.fetch.toString().includes('fullstory')) {
