@@ -251,13 +251,11 @@ export default function Downloads() {
                 >
                   <CardHeader>
                     <CardTitle className="flex items-center space-x-2">
-                      <div className="w-8 h-8 rounded-lg bg-card border border-primary/50 flex items-center justify-center shadow-lg shadow-primary/20">
-                        <svg viewBox="0 0 24 24" fill="none" className="w-5 h-5 text-primary drop-shadow-[0_0_4px_currentColor]">
-                          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" stroke="currentColor" strokeWidth="2" fill="none"/>
-                          <polyline points="7,10 12,15 17,10" stroke="currentColor" strokeWidth="2" fill="none"/>
-                          <line x1="12" y1="15" x2="12" y2="3" stroke="currentColor" strokeWidth="2"/>
-                        </svg>
-                      </div>
+                      <svg viewBox="0 0 24 24" fill="none" className="w-6 h-6 text-primary">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" stroke="currentColor" strokeWidth="2" fill="none"/>
+                        <polyline points="7,10 12,15 17,10" stroke="currentColor" strokeWidth="2" fill="none"/>
+                        <line x1="12" y1="15" x2="12" y2="3" stroke="currentColor" strokeWidth="2"/>
+                      </svg>
                       <span>{tool.name}</span>
                     </CardTitle>
                     <CardDescription>{tool.description}</CardDescription>
