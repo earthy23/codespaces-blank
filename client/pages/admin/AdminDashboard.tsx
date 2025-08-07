@@ -490,31 +490,47 @@ export default function AdminDashboard() {
         </div>
 
         {/* Enhanced Analytics Section */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 gap-6">
           {/* User Growth Analytics */}
           <Card className="bg-gray-900 border-gray-700">
             <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <Users className="w-5 h-5 text-blue-400" />
-                <span className="text-white">User Growth Analytics</span>
+              <CardTitle className="flex items-center justify-between">
+                <div className="flex items-center space-x-2">
+                  <Users className="w-5 h-5 text-blue-400" />
+                  <span className="text-white">User Activity & Growth</span>
+                </div>
+                <div className="flex items-center space-x-4 text-sm">
+                  <div className="flex items-center space-x-2">
+                    <div className="w-3 h-3 bg-blue-500 rounded"></div>
+                    <span className="text-gray-400">Daily Registrations</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <div className="w-3 h-3 bg-green-500 rounded"></div>
+                    <span className="text-gray-400">Active Sessions</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <div className="w-3 h-3 bg-purple-500 rounded"></div>
+                    <span className="text-gray-400">Login Events</span>
+                  </div>
+                </div>
               </CardTitle>
               <CardDescription className="text-gray-400">
-                Daily user registrations over the past 30 days
+                Real-time user engagement metrics and registration trends
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <ResponsiveContainer width="100%" height={250}>
-                <AreaChart data={[
-                  { date: "Nov 1", users: 12, active: 8 },
-                  { date: "Nov 5", users: 19, active: 14 },
-                  { date: "Nov 10", users: 25, active: 18 },
-                  { date: "Nov 15", users: 31, active: 24 },
-                  { date: "Nov 20", users: 28, active: 22 },
-                  { date: "Nov 25", users: 35, active: 28 },
-                  { date: "Nov 30", users: 42, active: 34 },
+              <ResponsiveContainer width="100%" height={350}>
+                <AreaChart data={dashboardData?.userGrowthData || [
+                  { day: "Mon", registrations: 8, activeSessions: 45, logins: 127 },
+                  { day: "Tue", registrations: 12, activeSessions: 52, logins: 143 },
+                  { day: "Wed", registrations: 15, activeSessions: 48, logins: 156 },
+                  { day: "Thu", registrations: 11, activeSessions: 67, logins: 189 },
+                  { day: "Fri", registrations: 18, activeSessions: 71, logins: 201 },
+                  { day: "Sat", registrations: 22, activeSessions: 84, logins: 234 },
+                  { day: "Sun", registrations: 16, activeSessions: 62, logins: 178 },
                 ]}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-                  <XAxis dataKey="date" stroke="#9ca3af" />
+                  <XAxis dataKey="day" stroke="#9ca3af" />
                   <YAxis stroke="#9ca3af" />
                   <Tooltip
                     contentStyle={{
@@ -522,24 +538,35 @@ export default function AdminDashboard() {
                       border: "1px solid #374151",
                       borderRadius: "8px"
                     }}
+                    formatter={(value, name) => [value, name]}
+                    labelFormatter={(label) => `${label}`}
                   />
                   <Area
                     type="monotone"
-                    dataKey="users"
+                    dataKey="logins"
                     stackId="1"
-                    stroke="#3b82f6"
-                    fill="#3b82f6"
-                    fillOpacity={0.6}
-                    name="New Users"
+                    stroke="#8b5cf6"
+                    fill="#8b5cf6"
+                    fillOpacity={0.3}
+                    name="Login Events"
                   />
                   <Area
                     type="monotone"
-                    dataKey="active"
-                    stackId="1"
+                    dataKey="activeSessions"
+                    stackId="2"
                     stroke="#10b981"
                     fill="#10b981"
                     fillOpacity={0.6}
-                    name="Active Users"
+                    name="Active Sessions"
+                  />
+                  <Area
+                    type="monotone"
+                    dataKey="registrations"
+                    stackId="3"
+                    stroke="#3b82f6"
+                    fill="#3b82f6"
+                    fillOpacity={0.8}
+                    name="New Registrations"
                   />
                 </AreaChart>
               </ResponsiveContainer>
