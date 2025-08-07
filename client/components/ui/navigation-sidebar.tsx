@@ -25,18 +25,22 @@ const navigationSections = [
       {
         iconSvg: (
           <svg viewBox="0 0 24 24" fill="none" className="w-5 h-5">
-            <rect x="3" y="4" width="18" height="2" rx="1" fill="currentColor"/>
-            <rect x="3" y="8" width="18" height="2" rx="1" fill="currentColor"/>
-            <rect x="3" y="12" width="18" height="2" rx="1" fill="currentColor"/>
-            <circle cx="6" cy="5" r="1" fill="currentColor" opacity="0.8"/>
-            <circle cx="6" cy="9" r="1" fill="currentColor" opacity="0.8"/>
-            <circle cx="6" cy="13" r="1" fill="currentColor" opacity="0.8"/>
-            <rect x="2" y="16" width="20" height="6" rx="2" fill="currentColor" opacity="0.6"/>
+            <rect x="3" y="3" width="18" height="6" rx="1" fill="currentColor" opacity="0.8"/>
+            <rect x="3" y="10" width="18" height="6" rx="1" fill="currentColor" opacity="0.8"/>
+            <rect x="3" y="17" width="18" height="4" rx="1" fill="currentColor" opacity="0.8"/>
+            <circle cx="6" cy="6" r="1" fill="white"/>
+            <circle cx="9" cy="6" r="1" fill="white"/>
+            <circle cx="6" cy="13" r="1" fill="white"/>
+            <circle cx="9" cy="13" r="1" fill="white"/>
+            <circle cx="6" cy="19" r="1" fill="white"/>
+            <circle cx="9" cy="19" r="1" fill="white"/>
+            <rect x="16" y="5" width="3" height="2" rx="0.5" fill="white" opacity="0.7"/>
+            <rect x="16" y="12" width="3" height="2" rx="0.5" fill="white" opacity="0.7"/>
+            <rect x="16" y="18" width="3" height="2" rx="0.5" fill="white" opacity="0.7"/>
           </svg>
         ),
         label: "Servers",
         path: "/servers",
-        description: "Browse & join servers",
         iconColor: "text-primary",
         glow: "shadow-primary/50",
       },
