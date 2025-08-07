@@ -30,6 +30,22 @@ import { useWebSocket, useWebSocketEvent } from "@/lib/websocket-manager";
 import { cacheManager, CACHE_KEYS } from "@/lib/cache-manager";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import {
+  LineChart,
+  Line,
+  AreaChart,
+  Area,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  PieChart,
+  Pie,
+  Cell,
+} from "recharts";
 
 interface DashboardStats {
   totalUsers: number;
