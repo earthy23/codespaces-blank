@@ -108,21 +108,29 @@ export default function Servers() {
       hasToken,
     });
 
+    // Clear any existing timeout
+    if (fetchTimeoutRef.current) {
+      clearTimeout(fetchTimeoutRef.current);
+    }
+
     if (user && hasToken) {
       console.log(
-        "🔄 Servers useEffect: User and token exist, fetching servers...",
+        "🔄 Servers useEffect: User and token exist, scheduling server fetch...",
       );
 
-      // Fetch servers with a small delay to prevent race conditions
-      const fetchData = async () => {
-        await fetchServers();
-        // Small delay before second call
-        setTimeout(() => {
-          fetchMyServers();
-        }, 100);
-      };
-
-      fetchData();
+      // Debounce the fetch to prevent rapid successive calls
+      fetchTimeoutRef.current = setTimeout(async () => {
+        try {
+          console.log("🔄 Starting debounced server fetch...");
+          await fetchServers();
+          // Small delay before second call
+          setTimeout(() => {
+            fetchMyServers();
+          }, 200);
+        } catch (error) {
+          console.error("❌ Error in debounced fetch:", error);
+        }
+      }, 300);
     } else {
       console.log(
         "🔄 Servers useEffect: Missing user or token, skipping fetch:",
@@ -132,6 +140,13 @@ export default function Servers() {
         },
       );
     }
+
+    // Cleanup timeout on unmount
+    return () => {
+      if (fetchTimeoutRef.current) {
+        clearTimeout(fetchTimeoutRef.current);
+      }
+    };
   }, [user]);
 
   const fetchServers = async () => {
