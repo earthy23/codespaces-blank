@@ -384,6 +384,19 @@ export const healthApi = {
   },
 };
 
+// Test API connectivity on load
+if (typeof window !== "undefined") {
+  // Test the connection in development
+  healthApi.check()
+    .then((result) => {
+      console.log("🎯 API Health Check:", result);
+    })
+    .catch((error) => {
+      console.error("⚠️ API Health Check Failed:", error);
+      console.log("🔍 Check if the backend server is running on port 3000");
+    });
+}
+
 // Servers API
 export const serversApi = {
   getAll: async () => {
