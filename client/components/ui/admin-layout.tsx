@@ -39,16 +39,13 @@ const adminNavItems = [
     section: "Management",
     items: [
       { icon: Users, label: "Users", path: "/admin/users" },
-      { icon: MessageCircle, label: "Chat Review", path: "/admin/chat-review" },
       { icon: Newspaper, label: "News", path: "/admin/news" },
-      { icon: Calendar, label: "Events", path: "/admin/events" },
     ],
   },
   {
     section: "System",
     items: [
       { icon: FileText, label: "Logs", path: "/admin/logs" },
-      { icon: ShoppingBag, label: "Store", path: "/admin/store" },
       { icon: Settings, label: "Settings", path: "/admin/settings" },
     ],
   },
