@@ -145,6 +145,7 @@ router.post(
   "/login",
   [body("username").notEmpty(), body("password").notEmpty()],
   async (req, res) => {
+    const startTime = Date.now();
     try {
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
@@ -155,9 +156,12 @@ router.post(
       }
 
       const { username, password } = req.body;
+      console.log(`🔐 Login attempt for user: ${username}`);
 
       // Get user
+      const userLookupStart = Date.now();
       const user = getUserByUsername(username);
+      console.log(`📊 User lookup took: ${Date.now() - userLookupStart}ms`);
       if (!user) {
         await logActivity({
           action: "login_failed",
