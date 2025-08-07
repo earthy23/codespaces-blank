@@ -220,7 +220,7 @@ class ChatWebSocketServer {
         userId: user.id,
       });
     } catch (error) {
-      console.error("WebSocket authentication error:", error);
+      console.error("WebSocket authentication error:", error.message || error);
       ws.send(
         JSON.stringify({
           type: "auth_error",
@@ -240,7 +240,7 @@ class ChatWebSocketServer {
       const chatIds = new Set(chats.map((c) => c.chat_id));
       this.userChatRooms.set(userId, chatIds);
     } catch (error) {
-      console.error("Error loading user chat rooms:", error);
+      console.error("Error loading user chat rooms:", error.message || error);
     }
   }
 
@@ -384,7 +384,7 @@ class ChatWebSocketServer {
         }
       });
     } catch (error) {
-      console.error("Error broadcasting to chat:", error);
+      console.error("Error broadcasting to chat:", error.message || error);
     }
   }
 
@@ -469,7 +469,7 @@ class ChatWebSocketServer {
         }
       });
     } catch (error) {
-      console.error("Error getting online users in chat:", error);
+      console.error("Error getting online users in chat:", error.message || error);
     }
 
     return onlineUsers;
@@ -580,7 +580,7 @@ class ChatWebSocketServer {
           });
         }
       } catch (error) {
-        console.error("Error getting user info:", error);
+        console.error("Error getting user info:", error.message || error);
       }
     });
     return users;
