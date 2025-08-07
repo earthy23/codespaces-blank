@@ -193,11 +193,11 @@ export default function Servers() {
     } catch (error) {
       console.error("❌ fetchMyServers: Failed to fetch my servers:", error);
 
-      // Only show toast for non-authentication errors
-      if (!error.message.includes("Authentication required")) {
+      // Only show toast for non-authentication errors and non-timeout errors
+      if (!error.message.includes("Authentication required") && !error.message.includes("timed out")) {
         toast({
           title: "Error",
-          description: `Failed to fetch your servers: ${error.message}`,
+          description: error.message || "Failed to fetch your servers",
           variant: "destructive",
         });
       }
