@@ -377,6 +377,59 @@ export default function Chat() {
     setMessageContent((prev) => prev + pingMessage);
   };
 
+  const handleUserClick = (username: string, userId?: string) => {
+    // Mock user data for mini profile - in real app this would fetch from API
+    const mockUser = {
+      id: userId || username,
+      username: username,
+      bio: `${username} is an active member of the UEC community!`,
+      joinedAt: new Date(Date.now() - Math.random() * 31536000000).toISOString(),
+      followers: Math.floor(Math.random() * 1000) + 50,
+      following: Math.floor(Math.random() * 500) + 20,
+      totalVideos: Math.floor(Math.random() * 50) + 1,
+      isOnline: Math.random() > 0.5,
+      isFriend: false,
+      isBlocked: false,
+    };
+
+    setSelectedUser(mockUser);
+    setShowMiniProfile(true);
+  };
+
+  const handleAddFriend = async (username: string) => {
+    try {
+      // API call would go here
+      toast({
+        title: "Friend Request Sent",
+        description: `Friend request sent to ${username}`,
+      });
+      setShowMiniProfile(false);
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to send friend request",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleBlockUser = async (username: string) => {
+    try {
+      // API call would go here
+      toast({
+        title: "User Blocked",
+        description: `${username} has been blocked`,
+      });
+      setShowMiniProfile(false);
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to block user",
+        variant: "destructive",
+      });
+    }
+  };
+
   const formatMessageTime = (timestamp: string) => {
     const messageDate = new Date(timestamp);
     const now = new Date();
