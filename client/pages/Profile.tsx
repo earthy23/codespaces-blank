@@ -82,16 +82,111 @@ export default function Profile() {
   useEffect(() => {
     if (!user) {
       navigate("/login");
-    } else {
+      return;
+    }
+
+    const targetUserId = userId || user.id;
+    const isOwn = !userId || userId === user.id;
+    setIsOwnProfile(isOwn);
+
+    if (isOwn) {
       setFormData({
         username: user.username || "",
         email: user.email || "",
+        bio: user.bio || "",
         currentPassword: "",
         newPassword: "",
         confirmPassword: "",
       });
+      setProfileUser({
+        id: user.id,
+        username: user.username || "",
+        email: user.email || "",
+        bio: user.bio || "",
+        joinedAt: user.createdAt || new Date().toISOString(),
+        followers: 0,
+        following: 0,
+        totalVideos: 0,
+        totalViews: 0,
+        totalLikes: 0,
+        role: user.role,
+      });
+    } else {
+      loadUserProfile(targetUserId);
     }
-  }, [user, navigate]);
+
+    loadUserVideos(targetUserId);
+  }, [user, userId, navigate]);
+
+  const loadUserProfile = async (targetUserId: string) => {
+    try {
+      setIsLoadingProfile(true);
+
+      // Mock data for demonstration
+      const mockProfile: ProfileUser = {
+        id: targetUserId,
+        username: "ViewedUser",
+        bio: "Minecraft enthusiast and content creator. Love building epic structures and sharing tutorials!",
+        joinedAt: new Date(Date.now() - 31536000000).toISOString(), // 1 year ago
+        followers: 1250,
+        following: 89,
+        totalVideos: 23,
+        totalViews: 45600,
+        totalLikes: 2340,
+        isFollowing: false,
+      };
+
+      setProfileUser(mockProfile);
+    } catch (error) {
+      console.error("Failed to load profile:", error);
+      toast({
+        title: "Error",
+        description: "Failed to load user profile.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoadingProfile(false);
+    }
+  };
+
+  const loadUserVideos = async (targetUserId: string) => {
+    try {
+      // Mock videos for demonstration
+      const mockVideos: ProfileVideo[] = [
+        {
+          id: "1",
+          title: "How to Build a Modern House in Minecraft",
+          thumbnail: "https://via.placeholder.com/320x180/8b5cf6/ffffff?text=Modern+House",
+          views: 12400,
+          likes: 456,
+          createdAt: new Date(Date.now() - 86400000).toISOString(),
+          duration: "15:32",
+        },
+        {
+          id: "2",
+          title: "Redstone Tutorial: Automatic Farm",
+          thumbnail: "https://via.placeholder.com/320x180/10b981/ffffff?text=Auto+Farm",
+          views: 8900,
+          likes: 234,
+          createdAt: new Date(Date.now() - 172800000).toISOString(),
+          duration: "22:45",
+        },
+        {
+          id: "3",
+          title: "Epic Castle Build Timelapse",
+          thumbnail: "https://via.placeholder.com/320x180/f59e0b/ffffff?text=Castle+Build",
+          views: 23500,
+          likes: 1890,
+          createdAt: new Date(Date.now() - 259200000).toISOString(),
+          duration: "8:12",
+        },
+      ];
+
+      setUserVideos(mockVideos);
+    } catch (error) {
+      console.error("Failed to load user videos:", error);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
