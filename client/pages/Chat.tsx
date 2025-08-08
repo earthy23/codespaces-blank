@@ -564,9 +564,9 @@ export default function Chat() {
                           </div>
                           <div className="flex-1 min-w-0">
                             <p className="font-medium truncate">
-                              {chat.type === 'group' 
+                              {chat.type === 'group'
                                 ? chat.name || 'Group Chat'
-                                : chat.participants?.find(p => p.id !== user.id)?.username}
+                                : chat.participant_usernames?.find(username => username !== user.username)}
                             </p>
                             {chat.last_message && (
                               <p className="text-xs opacity-70 truncate">
