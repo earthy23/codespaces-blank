@@ -149,6 +149,8 @@ export default function Dashboard() {
       // Fetch partners with error handling
       try {
         const partnersResponse = await makeRequest("/api/admin/partners");
+        if (!partnersResponse) return; // Request was cancelled
+
         if (partnersResponse.ok) {
           const partnersData = await partnersResponse.json();
           setPartners(partnersData.partners || []);
@@ -161,10 +163,9 @@ export default function Dashboard() {
           setPartners([]);
         }
       } catch (error) {
-        console.warn(
-          "Failed to fetch partners:",
-          error.name === "AbortError" ? "Request timed out" : error.message,
-        );
+        if (error.name === "AbortError") return; // Component was unmounted
+
+        console.warn("Failed to fetch partners:", error.message);
         setPartners([]);
       }
 
