@@ -23,9 +23,7 @@ const SelectTrigger = React.forwardRef<
   >
     {children}
     <SelectPrimitive.Icon asChild>
-      <svg viewBox="0 0 24 24" fill="none" className="h-4 w-4 opacity-50">
-        <path d="m6 9 6 6 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
-      </svg>
+      <span className="h-4 w-4 opacity-50"></span>
     </SelectPrimitive.Icon>
   </SelectPrimitive.Trigger>
 ));
@@ -43,9 +41,7 @@ const SelectScrollUpButton = React.forwardRef<
     )}
     {...props}
   >
-    <svg viewBox="0 0 24 24" fill="none" className="h-4 w-4">
-      <path d="m18 15-6-6-6 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
-    </svg>
+    <span className="h-4 w-4"></span>
   </SelectPrimitive.ScrollUpButton>
 ));
 SelectScrollUpButton.displayName = SelectPrimitive.ScrollUpButton.displayName;
@@ -62,9 +58,7 @@ const SelectScrollDownButton = React.forwardRef<
     )}
     {...props}
   >
-    <svg viewBox="0 0 24 24" fill="none" className="h-4 w-4">
-      <path d="m6 9 6 6 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
-    </svg>
+    <span className="h-4 w-4"></span>
   </SelectPrimitive.ScrollDownButton>
 ));
 SelectScrollDownButton.displayName =
@@ -128,9 +122,7 @@ const SelectItem = React.forwardRef<
   >
     <span className="absolute left-2 flex h-3.5 w-3.5 items-center justify-center">
       <SelectPrimitive.ItemIndicator>
-        <svg viewBox="0 0 24 24" fill="none" className="h-4 w-4">
-          <polyline points="20,6 9,17 4,12" stroke="currentColor" strokeWidth="2" fill="none"/>
-        </svg>
+        <span className="h-4 w-4"></span>
       </SelectPrimitive.ItemIndicator>
     </span>
 
