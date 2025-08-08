@@ -330,19 +330,22 @@ export default function Community() {
 
   return (
     <UserLayout>
-      <div className="max-w-7xl">
+      <div className="max-w-7xl mx-auto px-4">
         {/* Header */}
-        <div className="flex items-center justify-between mb-8">
-          <div>
-            <h1 className="text-3xl font-bold text-foreground">Community</h1>
-            <p className="text-muted-foreground">
-              Discover amazing videos from the UEC community
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between mb-8 gap-4">
+          <div className="text-center lg:text-left">
+            <h1 className="text-4xl font-bold text-foreground mb-2">Community Hub</h1>
+            <p className="text-lg text-muted-foreground">
+              Discover, share, and connect with amazing content from our community
             </p>
           </div>
           <Dialog open={showUploadDialog} onOpenChange={setShowUploadDialog}>
             <DialogTrigger asChild>
-              <Button className="bg-primary text-primary-foreground hover:bg-primary/90">
-                Upload Video
+              <Button
+                size="lg"
+                className="bg-gradient-to-r from-primary to-primary/80 text-primary-foreground hover:from-primary/90 hover:to-primary/70 shadow-lg"
+              >
+                Create Content
               </Button>
             </DialogTrigger>
             <DialogContent className="minecraft-panel max-w-2xl">
