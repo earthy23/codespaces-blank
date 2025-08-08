@@ -40,59 +40,86 @@ export default function Dashboard() {
 
   useEffect(() => {
     const fetchDashboardData = async () => {
-      try {
-        // Fetch clients
+      if (!user) return;
+
+      setLoading(true);
+
+      // Helper function to make authenticated requests with timeout
+      const makeRequest = async (url, timeout = 10000) => {
+        const token = localStorage.getItem('auth_token');
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), timeout);
+
         try {
-          const clientsResponse = await fetch("/api/clients");
-          if (clientsResponse.ok) {
-            const clientsData = await clientsResponse.json();
-            setClients(clientsData.clients || []);
-          } else {
-            setClients([]);
-          }
+          const response = await fetch(url, {
+            headers: {
+              'Content-Type': 'application/json',
+              ...(token && { 'Authorization': `Bearer ${token}` })
+            },
+            signal: controller.signal
+          });
+          clearTimeout(timeoutId);
+          return response;
         } catch (error) {
-          console.warn("Failed to fetch clients:", error);
+          clearTimeout(timeoutId);
+          throw error;
+        }
+      };
+
+      // Fetch clients with error handling
+      try {
+        const clientsResponse = await makeRequest("/api/clients");
+        if (clientsResponse.ok) {
+          const clientsData = await clientsResponse.json();
+          setClients(clientsData.clients || []);
+        } else {
+          console.warn("Clients API returned:", clientsResponse.status, clientsResponse.statusText);
           setClients([]);
         }
+      } catch (error) {
+        console.warn("Failed to fetch clients:", error.name === 'AbortError' ? 'Request timed out' : error.message);
+        setClients([]);
+      }
 
-        // Fetch top servers
-        try {
-          const serversResponse = await fetch("/api/servers/top?limit=3");
-          if (serversResponse.ok) {
-            const serversData = await serversResponse.json();
-            setTopServers(serversData.servers || []);
-          } else {
-            setTopServers([]);
-          }
-        } catch (error) {
-          console.warn("Failed to fetch servers:", error);
+      // Fetch top servers with error handling
+      try {
+        const serversResponse = await makeRequest("/api/servers/top?limit=3");
+        if (serversResponse.ok) {
+          const serversData = await serversResponse.json();
+          setTopServers(serversData.servers || []);
+        } else {
+          console.warn("Servers API returned:", serversResponse.status, serversResponse.statusText);
           setTopServers([]);
         }
+      } catch (error) {
+        console.warn("Failed to fetch servers:", error.name === 'AbortError' ? 'Request timed out' : error.message);
+        setTopServers([]);
+      }
 
-        // Fetch partners
-        try {
-          const partnersResponse = await fetch("/api/admin/partners");
-          if (partnersResponse.ok) {
-            const partnersData = await partnersResponse.json();
-            setPartners(partnersData.partners || []);
-          } else {
-            setPartners([]);
-          }
-        } catch (error) {
-          console.warn("Failed to fetch partners:", error);
+      // Fetch partners with error handling
+      try {
+        const partnersResponse = await makeRequest("/api/admin/partners");
+        if (partnersResponse.ok) {
+          const partnersData = await partnersResponse.json();
+          setPartners(partnersData.partners || []);
+        } else {
+          console.warn("Partners API returned:", partnersResponse.status, partnersResponse.statusText);
           setPartners([]);
         }
       } catch (error) {
-        console.error("Failed to fetch dashboard data:", error);
-        setClients([]);
-        setTopServers([]);
+        console.warn("Failed to fetch partners:", error.name === 'AbortError' ? 'Request timed out' : error.message);
         setPartners([]);
       }
+
+      setLoading(false);
     };
 
-    if (user) {
+    // Debounce the fetch to prevent rapid calls
+    const timeoutId = setTimeout(() => {
       fetchDashboardData();
-    }
+    }, 100);
+
+    return () => clearTimeout(timeoutId);
   }, [user]);
 
   const launchClient = async () => {
