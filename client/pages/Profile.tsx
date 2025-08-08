@@ -325,6 +325,21 @@ export default function Profile() {
 
                 <div className="flex items-center justify-between">
                   <div className="space-y-0.5">
+                    <Label className="text-base">Ping Notifications</Label>
+                    <p className="text-sm text-muted-foreground">
+                      Get notified when someone mentions you with @
+                    </p>
+                  </div>
+                  <Switch
+                    checked={settings.pingNotifications}
+                    onCheckedChange={(checked) =>
+                      setSettings({ ...settings, pingNotifications: checked })
+                    }
+                  />
+                </div>
+
+                <div className="flex items-center justify-between">
+                  <div className="space-y-0.5">
                     <Label className="text-base">Voice Chat</Label>
                     <p className="text-sm text-muted-foreground">
                       Enable voice communication features
