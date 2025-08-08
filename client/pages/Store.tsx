@@ -132,14 +132,49 @@ export default function Store() {
     const file = event.target.files?.[0];
     if (!file) return;
 
-    // Check file size (max 10MB)
-    if (file.size > 10 * 1024 * 1024) {
-      toast({
-        title: "File too large",
-        description: "Please select a file smaller than 10MB",
-        variant: "destructive",
-      });
-      return;
+    // Check rank-based restrictions for resource files
+    if (type === 'resource') {
+      if (currentTier.tier === 'free') {
+        toast({
+          title: "VIP+ Required",
+          description: "You need a VIP+ subscription to upload personal files",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      const maxFileSize = currentTier.tier === 'vip' ? 10 * 1024 * 1024 : 50 * 1024 * 1024; // 10MB for VIP, 50MB for VIP+/Legend
+      const maxFiles = currentTier.tier === 'vip' ? 5 : 20; // 5 files for VIP, 20 for VIP+/Legend
+      const currentFileCount = uploadedFiles.filter(f => f.type === 'resource').length;
+
+      if (currentFileCount >= maxFiles) {
+        toast({
+          title: "File limit reached",
+          description: `You can only upload ${maxFiles} files with your ${currentTier.tier.toUpperCase()} subscription`,
+          variant: "destructive",
+        });
+        return;
+      }
+
+      if (file.size > maxFileSize) {
+        const maxSizeMB = maxFileSize / (1024 * 1024);
+        toast({
+          title: "File too large",
+          description: `Please select a file smaller than ${maxSizeMB}MB`,
+          variant: "destructive",
+        });
+        return;
+      }
+    } else {
+      // Check file size for background/avatar (max 10MB)
+      if (file.size > 10 * 1024 * 1024) {
+        toast({
+          title: "File too large",
+          description: "Please select a file smaller than 10MB",
+          variant: "destructive",
+        });
+        return;
+      }
     }
 
     // Check file type
