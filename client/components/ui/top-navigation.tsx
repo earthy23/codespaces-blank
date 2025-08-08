@@ -53,9 +53,9 @@ export function TopNavigation() {
           realNotifications.push({
             id: `message_${chat.id}`,
             type: 'message',
-            from: chat.last_message.sender_username,
+            from: chat.last_message.sender_username || 'Unknown',
             content: `sent ${chat.unread_count} new message${chat.unread_count > 1 ? 's' : ''}`,
-            timestamp: chat.last_message.created_at,
+            timestamp: chat.last_message.created_at || new Date().toISOString(),
             read: false
           });
         }
