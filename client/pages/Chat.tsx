@@ -112,22 +112,14 @@ export default function Chat() {
 
   const loadGeneralMessages = async () => {
     try {
-      const token = localStorage.getItem('auth_token');
-      if (!token) return;
-
-      const response = await fetch('/api/chat/general/messages', {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        setGeneralMessages(data.messages || []);
+      // Load from localStorage if available, otherwise start with welcome message
+      const storedMessages = localStorage.getItem('general_chat_messages');
+      if (storedMessages) {
+        const parsedMessages = JSON.parse(storedMessages);
+        setGeneralMessages(parsedMessages);
       } else {
-        // Start with welcome message if no messages exist
-        setGeneralMessages([
+        // Start with welcome message for new users
+        const welcomeMessages = [
           {
             id: "welcome",
             content: "Welcome to UEC Launcher community! 🎮",
@@ -135,12 +127,31 @@ export default function Chat() {
             senderUsername: "System",
             timestamp: new Date().toISOString(),
             type: "system"
+          },
+          {
+            id: "info",
+            content: "This is a local community chat. Messages are stored locally and will be visible to you across sessions.",
+            senderId: "system",
+            senderUsername: "System",
+            timestamp: new Date().toISOString(),
+            type: "system"
           }
-        ]);
+        ];
+        setGeneralMessages(welcomeMessages);
+        localStorage.setItem('general_chat_messages', JSON.stringify(welcomeMessages));
       }
     } catch (error) {
       console.error("Failed to load general messages:", error);
-      setGeneralMessages([]);
+      setGeneralMessages([
+        {
+          id: "fallback",
+          content: "Welcome to UEC Launcher community! 🎮",
+          senderId: "system",
+          senderUsername: "System",
+          timestamp: new Date().toISOString(),
+          type: "system"
+        }
+      ]);
     }
   };
 
