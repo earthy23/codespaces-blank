@@ -177,7 +177,10 @@ export default function Dashboard() {
       fetchDashboardData();
     }, 100);
 
-    return () => clearTimeout(timeoutId);
+    return () => {
+      clearTimeout(timeoutId);
+      abortController.abort();
+    };
   }, [user]);
 
   const launchClient = async () => {
