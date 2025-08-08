@@ -593,18 +593,6 @@ export default function Servers() {
         <nav className="border-b border-border bg-card">
           <div className="px-6 py-4">
             <div className="flex items-center justify-between">
-              <Link
-                to="/dashboard"
-                className="inline-flex items-center text-muted-foreground hover:text-primary transition-colors"
-              >
-                <svg viewBox="0 0 24 24" fill="none" className="w-4 h-4 mr-2">
-                  <rect x="3" y="4" width="18" height="2" rx="1" fill="currentColor"/>
-                  <rect x="3" y="8" width="18" height="2" rx="1" fill="currentColor"/>
-                  <rect x="3" y="12" width="18" height="2" rx="1" fill="currentColor"/>
-                  <rect x="2" y="16" width="20" height="6" rx="2" fill="currentColor" opacity="0.6"/>
-                </svg>
-                Back to Dashboard
-              </Link>
               <div className="flex items-center space-x-3">
                 <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
                   <svg viewBox="0 0 24 24" fill="none" className="w-6 h-6 text-primary-foreground">
