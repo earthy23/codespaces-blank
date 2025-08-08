@@ -112,35 +112,35 @@ export default function Chat() {
 
   const loadGeneralMessages = async () => {
     try {
-      const mockMessages = [
-        {
-          id: "1",
-          content: "Welcome to UEC Launcher general chat! 🎮",
-          senderId: "system",
-          senderUsername: "System",
-          timestamp: new Date(Date.now() - 3600000).toISOString(),
-          type: "system"
+      const token = localStorage.getItem('auth_token');
+      if (!token) return;
+
+      const response = await fetch('/api/chat/general/messages', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
         },
-        {
-          id: "2", 
-          content: "Hey everyone! How's everyone doing today?",
-          senderId: "user1",
-          senderUsername: "GameMaster",
-          timestamp: new Date(Date.now() - 1800000).toISOString(),
-          type: "message"
-        },
-        {
-          id: "3",
-          content: "Pretty good! Just got done setting up my server. Anyone want to join?",
-          senderId: "user2", 
-          senderUsername: "Builder123",
-          timestamp: new Date(Date.now() - 900000).toISOString(),
-          type: "message"
-        }
-      ];
-      setGeneralMessages(mockMessages);
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setGeneralMessages(data.messages || []);
+      } else {
+        // Start with welcome message if no messages exist
+        setGeneralMessages([
+          {
+            id: "welcome",
+            content: "Welcome to UEC Launcher community! 🎮",
+            senderId: "system",
+            senderUsername: "System",
+            timestamp: new Date().toISOString(),
+            type: "system"
+          }
+        ]);
+      }
     } catch (error) {
       console.error("Failed to load general messages:", error);
+      setGeneralMessages([]);
     }
   };
 
