@@ -42,10 +42,7 @@ const DialogContent = React.forwardRef<
     >
       {children}
       <DialogPrimitive.Close className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground">
-        <svg viewBox="0 0 24 24" fill="none" className="h-4 w-4">
-          <line x1="18" y1="6" x2="6" y2="18" stroke="currentColor" strokeWidth="2"/>
-          <line x1="6" y1="6" x2="18" y2="18" stroke="currentColor" strokeWidth="2"/>
-        </svg>
+        <span className="h-4 w-4"></span>
         <span className="sr-only">Close</span>
       </DialogPrimitive.Close>
     </DialogPrimitive.Content>
