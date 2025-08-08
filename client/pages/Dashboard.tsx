@@ -185,9 +185,17 @@ export default function Dashboard() {
         if (!partnersResponse || !isMounted) return; // Request was cancelled or component unmounted
 
         if (partnersResponse.ok) {
-          const partnersData = await partnersResponse.json();
-          if (isMounted) {
-            setPartners(partnersData.partners || []);
+          try {
+            const partnersData = await partnersResponse.json();
+            if (isMounted) {
+              setPartners(partnersData.partners || []);
+            }
+          } catch (error) {
+            if (!isMounted || error.name === "AbortError") return;
+            console.warn("Failed to parse partners response:", error);
+            if (isMounted) {
+              setPartners([]);
+            }
           }
         } else {
           console.warn(
