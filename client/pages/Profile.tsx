@@ -455,12 +455,12 @@ export default function Profile() {
               )}
             </div>
 
-            <CardContent className="p-6 -mt-12 relative">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-6">
+            <CardContent className="p-8 -mt-16 relative">
+              <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6">
+                <div className="flex flex-col lg:flex-row lg:items-center space-y-4 lg:space-y-0 lg:space-x-8">
                   {/* Profile Avatar */}
-                  <div className="relative">
-                    <div className="w-24 h-24 rounded-full bg-primary/20 border-4 border-background overflow-hidden">
+                  <div className="relative mx-auto lg:mx-0">
+                    <div className="w-32 h-32 rounded-full bg-gradient-to-br from-primary/30 to-primary/10 border-4 border-background overflow-hidden shadow-xl ring-4 ring-primary/20">
                       {formData.avatar ? (
                         <img
                           src={formData.avatar}
@@ -469,7 +469,7 @@ export default function Profile() {
                         />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center">
-                          <span className="text-3xl font-bold text-primary">
+                          <span className="text-4xl font-bold text-primary">
                             {profileUser.username.charAt(0).toUpperCase()}
                           </span>
                         </div>
@@ -481,7 +481,7 @@ export default function Profile() {
                           <Button
                             variant="secondary"
                             size="sm"
-                            className="absolute -bottom-2 -right-2 h-8 w-8 rounded-full p-0"
+                            className="absolute -bottom-2 -right-2 h-10 w-10 rounded-full p-0 bg-primary text-primary-foreground hover:bg-primary/90 shadow-lg"
                           >
                             ✏️
                           </Button>
