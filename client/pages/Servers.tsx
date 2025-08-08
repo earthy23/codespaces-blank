@@ -592,7 +592,7 @@ export default function Servers() {
         {/* Top Navigation */}
         <nav className="border-b border-border bg-card">
           <div className="px-6 py-4">
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-end">
               <div className="flex items-center space-x-2">
                 <Button
                   variant={currentView === "all" ? "default" : "outline"}
