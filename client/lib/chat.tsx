@@ -769,6 +769,7 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
         isConnected,
         isLoading,
         createDirectMessage,
+        createGroupChat,
         sendMessage,
         editMessage,
         deleteMessage,
