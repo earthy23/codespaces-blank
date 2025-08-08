@@ -458,9 +458,9 @@ export default function Community() {
           <div className="lg:col-span-3">
             <Tabs value={activeTab} onValueChange={setActiveTab}>
               <TabsList className="grid w-full grid-cols-3">
-                <TabsTrigger value="trending">🔥 Trending</TabsTrigger>
-                <TabsTrigger value="recent">📅 Recent</TabsTrigger>
-                <TabsTrigger value="following">👥 Following</TabsTrigger>
+                <TabsTrigger value="trending">Trending</TabsTrigger>
+                <TabsTrigger value="recent">Recent</TabsTrigger>
+                <TabsTrigger value="following">Following</TabsTrigger>
               </TabsList>
 
               <TabsContent value="trending" className="mt-6">
