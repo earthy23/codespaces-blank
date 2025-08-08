@@ -342,7 +342,7 @@ export default function Community() {
           <Dialog open={showUploadDialog} onOpenChange={setShowUploadDialog}>
             <DialogTrigger asChild>
               <Button className="bg-primary text-primary-foreground hover:bg-primary/90">
-                📹 Upload Video
+                Upload Video
               </Button>
             </DialogTrigger>
             <DialogContent className="minecraft-panel max-w-2xl">
