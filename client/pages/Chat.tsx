@@ -615,9 +615,9 @@ export default function Chat() {
                     <div>
                       <CardTitle className="flex items-center space-x-2">
                         <span>
-                          {currentChat.type === 'group' 
+                          {currentChat.type === 'group'
                             ? currentChat.name || 'Group Chat'
-                            : currentChat.participants?.find(p => p.id !== user.id)?.username}
+                            : currentChat.participant_usernames?.find(username => username !== user.username)}
                         </span>
                         {currentChat.type === 'group' && (
                           <Badge variant="outline">Group</Badge>
