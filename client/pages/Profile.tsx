@@ -76,6 +76,8 @@ export default function Profile() {
     currentPassword: "",
     newPassword: "",
     confirmPassword: "",
+    banner: "",
+    avatar: "",
   });
 
   const [settings, setSettings] = useState({
