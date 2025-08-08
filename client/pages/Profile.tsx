@@ -510,90 +510,102 @@ export default function Profile() {
                   </div>
 
                   {/* Profile Info */}
-                  <div className="space-y-2">
-                    <div className="flex items-center space-x-3">
-                      <h1 className="text-3xl font-bold">
+                  <div className="space-y-3 text-center lg:text-left">
+                    <div className="flex flex-col lg:flex-row lg:items-center lg:space-x-3 space-y-2 lg:space-y-0">
+                      <h1 className="text-4xl lg:text-5xl font-bold bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
                         {profileUser.username}
                       </h1>
                       {profileUser.role === "admin" && (
-                        <Badge variant="default" className="bg-yellow-500">
+                        <Badge variant="default" className="bg-gradient-to-r from-yellow-500 to-yellow-600 text-black border-0 mx-auto lg:mx-0 w-fit">
                           <Shield className="w-3 h-3 mr-1" />
                           Admin
                         </Badge>
                       )}
                     </div>
                     {profileUser.bio && (
-                      <p className="text-muted-foreground max-w-md">
+                      <p className="text-lg text-muted-foreground max-w-2xl leading-relaxed">
                         {profileUser.bio}
                       </p>
                     )}
-                    <div className="flex items-center space-x-6 text-sm text-muted-foreground">
-                      <div className="flex items-center space-x-1">
+                    <div className="flex flex-col lg:flex-row lg:items-center space-y-2 lg:space-y-0 lg:space-x-6 text-sm text-muted-foreground">
+                      <div className="flex items-center justify-center lg:justify-start space-x-2">
                         <Calendar className="w-4 h-4" />
                         <span>Joined {formatDate(profileUser.joinedAt)}</span>
+                      </div>
+                      <div className="flex items-center justify-center lg:justify-start space-x-2">
+                        <Users className="w-4 h-4" />
+                        <span>{formatNumber(profileUser.followers + profileUser.following)} connections</span>
                       </div>
                     </div>
                   </div>
                 </div>
 
                 {/* Actions */}
-                <div className="flex items-center space-x-3">
+                <div className="flex flex-col lg:flex-row items-center space-y-3 lg:space-y-0 lg:space-x-3">
                   {!isOwnProfile ? (
-                    <Button
-                      onClick={handleFollow}
-                      variant={profileUser.isFollowing ? "outline" : "default"}
-                      className="min-w-[100px]"
-                    >
-                      {profileUser.isFollowing ? "Following" : "Follow"}
-                    </Button>
+                    <>
+                      <Button
+                        onClick={handleFollow}
+                        size="lg"
+                        variant={profileUser.isFollowing ? "outline" : "default"}
+                        className="min-w-[140px] h-12 text-base"
+                      >
+                        {profileUser.isFollowing ? "✓ Following" : "➕ Follow"}
+                      </Button>
+                      <Button
+                        size="lg"
+                        variant="outline"
+                        className="min-w-[100px] h-12 text-base"
+                      >
+                        💬 Message
+                      </Button>
+                    </>
                   ) : (
                     <Button
                       onClick={() => setActiveTab("settings")}
+                      size="lg"
                       variant="outline"
+                      className="h-12 text-base"
                     >
                       <Settings className="w-4 h-4 mr-2" />
-                      Settings
+                      Edit Profile
                     </Button>
                   )}
                 </div>
               </div>
 
-              {/* Stats */}
-              <div className="mt-6 grid grid-cols-2 md:grid-cols-5 gap-4">
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-primary">
+              {/* Enhanced Stats */}
+              <div className="mt-8 grid grid-cols-2 lg:grid-cols-5 gap-6">
+                <Card className="bg-gradient-to-br from-blue-500/10 to-blue-600/10 border-blue-500/20 text-center p-4">
+                  <div className="text-3xl font-bold text-blue-400 mb-1">
                     {formatNumber(profileUser.followers)}
                   </div>
-                  <div className="text-sm text-muted-foreground">Followers</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-primary">
+                  <div className="text-sm text-blue-300/80">Followers</div>
+                </Card>
+                <Card className="bg-gradient-to-br from-green-500/10 to-green-600/10 border-green-500/20 text-center p-4">
+                  <div className="text-3xl font-bold text-green-400 mb-1">
                     {formatNumber(profileUser.following)}
                   </div>
-                  <div className="text-sm text-muted-foreground">Following</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-primary">
+                  <div className="text-sm text-green-300/80">Following</div>
+                </Card>
+                <Card className="bg-gradient-to-br from-purple-500/10 to-purple-600/10 border-purple-500/20 text-center p-4">
+                  <div className="text-3xl font-bold text-purple-400 mb-1">
                     {formatNumber(profileUser.totalVideos)}
                   </div>
-                  <div className="text-sm text-muted-foreground">Videos</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-primary">
+                  <div className="text-sm text-purple-300/80">Videos</div>
+                </Card>
+                <Card className="bg-gradient-to-br from-orange-500/10 to-orange-600/10 border-orange-500/20 text-center p-4">
+                  <div className="text-3xl font-bold text-orange-400 mb-1">
                     {formatNumber(profileUser.totalViews)}
                   </div>
-                  <div className="text-sm text-muted-foreground">
-                    Total Views
-                  </div>
-                </div>
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-primary">
+                  <div className="text-sm text-orange-300/80">Total Views</div>
+                </Card>
+                <Card className="bg-gradient-to-br from-red-500/10 to-red-600/10 border-red-500/20 text-center p-4">
+                  <div className="text-3xl font-bold text-red-400 mb-1">
                     {formatNumber(profileUser.totalLikes)}
                   </div>
-                  <div className="text-sm text-muted-foreground">
-                    Total Likes
-                  </div>
-                </div>
+                  <div className="text-sm text-red-300/80">Total Likes</div>
+                </Card>
               </div>
             </CardContent>
           </Card>
