@@ -620,9 +620,6 @@ export default function Chat() {
                       <span className="text-2xl">#</span>
                       <span>General Chat</span>
                     </CardTitle>
-                    <CardDescription>
-                      Community chat for all UEC Launcher users
-                    </CardDescription>
                   </div>
                 ) : currentChat ? (
                   <div className="flex items-center justify-between">
