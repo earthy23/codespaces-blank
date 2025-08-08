@@ -99,6 +99,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         console.warn("🌐 Network connectivity issue during user refresh - keeping current session");
         // Don't clear tokens on network errors, just log and continue
         // This prevents users from being logged out due to temporary connectivity issues
+      } else if (error instanceof Error && (error.message.includes("Auth timeout") || error.message.includes("Request was cancelled"))) {
+        console.warn("⏱️ Auth request timed out or was cancelled - keeping current session");
+        // Don't clear tokens on timeout/cancellation, just log and continue
+        // This prevents users from being logged out due to slow networks or navigation
       } else if (error instanceof Error && error.message.includes("Authentication required")) {
         console.log("🔐 Authentication required - clearing session");
         tokenManager.clear();
