@@ -438,7 +438,7 @@ export default function Chat() {
                                   </div>
                                   <Button
                                     size="sm"
-                                    onClick={() => handleCreateDM(friend.id)}
+                                    onClick={() => handleCreateDM(friend.username)}
                                   >
                                     Message
                                   </Button>
