@@ -89,6 +89,19 @@ export function TopNavigation() {
     setNotifications(prev => prev.filter(n => n.id !== notificationId));
   };
 
+  const handleNotificationItemClick = (notification: Notification) => {
+    markAsRead(notification.id);
+    setShowNotifications(false);
+
+    // Navigate based on notification type
+    if (notification.type === 'message') {
+      const chatId = notification.id.replace('message_', '');
+      navigate(`/chat/${chatId}`);
+    } else if (notification.type === 'follow') {
+      navigate('/friends');
+    }
+  };
+
   const formatTime = (timestamp: string) => {
     const date = new Date(timestamp);
     const now = new Date();
