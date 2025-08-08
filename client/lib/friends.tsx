@@ -53,6 +53,21 @@ export const FriendsProvider = ({ children }: { children: React.ReactNode }) => 
   const { user, token } = useAuth();
   const { isConnected, getOnlineUsers } = useWebSocket();
 
+  // Utility function for safe JSON parsing
+  const safeJsonParse = async (response: Response, fallback = {}) => {
+    try {
+      const text = await response.text();
+      if (!text.trim()) {
+        console.warn("Received empty response");
+        return fallback;
+      }
+      return JSON.parse(text);
+    } catch (error) {
+      console.warn("Failed to parse JSON response:", error);
+      return fallback;
+    }
+  };
+
   const [friends, setFriends] = useState<Friend[]>(() =>
     user ? cacheManager.get(CACHE_KEYS.USER_FRIENDS(user.id)) || [] : [],
   );
