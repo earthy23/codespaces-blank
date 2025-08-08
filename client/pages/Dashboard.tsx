@@ -60,7 +60,6 @@ export default function Dashboard() {
             },
             signal: abortController.signal,
           });
-          clearTimeout(timeoutId);
           console.log(
             `Response from ${url}:`,
             response.status,
@@ -68,8 +67,6 @@ export default function Dashboard() {
           );
           return response;
         } catch (error) {
-          clearTimeout(timeoutId);
-
           // Don't log error if it was intentionally aborted (component unmount)
           if (error.name === 'AbortError' && abortController.signal.aborted) {
             console.log(`Request to ${url} was cancelled (component unmounted)`);
