@@ -351,19 +351,8 @@ export const FriendsProvider = ({ children }: { children: React.ReactNode }) => 
             });
 
             if (sentRes.ok) {
-              try {
-                const responseText = await sentRes.text();
-                if (responseText.trim()) {
-                  const sentData = JSON.parse(responseText);
-                  setSentRequests(sentData.requests || []);
-                } else {
-                  console.warn("Sent requests refresh returned empty response");
-                  setSentRequests([]);
-                }
-              } catch (parseError) {
-                console.warn("Failed to parse sent requests refresh response:", parseError);
-                setSentRequests([]);
-              }
+              const sentData = await safeJsonParse(sentRes, { requests: [] });
+              setSentRequests(sentData.requests || []);
             }
           } catch (refreshError) {
             console.warn("Failed to refresh sent requests after sending friend request");
