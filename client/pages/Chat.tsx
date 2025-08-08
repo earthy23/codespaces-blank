@@ -557,9 +557,9 @@ export default function Chat() {
                         <div className="flex items-center space-x-3">
                           <div className="w-8 h-8 rounded-lg bg-muted border border-border flex items-center justify-center">
                             <span className="font-semibold text-sm">
-                              {chat.type === 'group' 
-                                ? '👥' 
-                                : chat.participants?.find(p => p.id !== user.id)?.username.charAt(0).toUpperCase()}
+                              {chat.type === 'group'
+                                ? '👥'
+                                : chat.participant_usernames?.find(username => username !== user.username)?.charAt(0).toUpperCase()}
                             </span>
                           </div>
                           <div className="flex-1 min-w-0">
