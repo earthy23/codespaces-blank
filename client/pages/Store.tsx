@@ -59,6 +59,8 @@ export default function Store() {
   const [customFavicon, setCustomFavicon] = useState(
     customizations.website_favicon || "",
   );
+  const [uploadingFile, setUploadingFile] = useState(false);
+  const [uploadedFiles, setUploadedFiles] = useState<any[]>([]);
 
   useEffect(() => {
     if (!user) {
