@@ -41,14 +41,20 @@ export default function Dashboard() {
 
   useEffect(() => {
     const abortController = new AbortController();
+    let isMounted = true;
 
     const fetchDashboardData = async () => {
-      if (!user) return;
+      if (!user || !isMounted) return;
 
       setLoading(true);
 
       // Helper function to make authenticated requests
       const makeRequest = async (url, timeout = 10000) => {
+        // Check if component is still mounted before making request
+        if (!isMounted || abortController.signal.aborted) {
+          return null;
+        }
+
         const token = localStorage.getItem("auth_token");
 
         try {
@@ -60,6 +66,12 @@ export default function Dashboard() {
             },
             signal: abortController.signal,
           });
+
+          // Check if component is still mounted after request
+          if (!isMounted) {
+            return null;
+          }
+
           console.log(
             `Response from ${url}:`,
             response.status,
@@ -67,9 +79,8 @@ export default function Dashboard() {
           );
           return response;
         } catch (error) {
-          // Don't log error if it was intentionally aborted (component unmount)
-          if (error.name === 'AbortError' && abortController.signal.aborted) {
-            console.log(`Request to ${url} was cancelled (component unmounted)`);
+          // Don't log error if component unmounted or request was intentionally aborted
+          if (!isMounted || error.name === 'AbortError') {
             return null;
           }
 
@@ -78,90 +89,112 @@ export default function Dashboard() {
         }
       };
 
-      // Reset error state
-      setFetchError(null);
+      // Reset error state only if component is still mounted
+      if (isMounted) {
+        setFetchError(null);
+      }
 
       // Fetch clients with error handling
       try {
         const clientsResponse = await makeRequest("/api/clients");
-        if (!clientsResponse) return; // Request was cancelled
+        if (!clientsResponse || !isMounted) return; // Request was cancelled or component unmounted
 
         if (clientsResponse.ok) {
           const clientsData = await clientsResponse.json();
-          setClients(clientsData.clients || []);
+          if (isMounted) {
+            setClients(clientsData.clients || []);
+          }
         } else {
           console.warn(
             "Clients API returned:",
             clientsResponse.status,
             clientsResponse.statusText,
           );
-          setClients([]);
-          if (clientsResponse.status >= 500) {
-            setFetchError(
-              "Server is experiencing issues. Some features may be unavailable.",
-            );
+          if (isMounted) {
+            setClients([]);
+            if (clientsResponse.status >= 500) {
+              setFetchError(
+                "Server is experiencing issues. Some features may be unavailable.",
+              );
+            }
           }
         }
       } catch (error) {
-        if (error.name === "AbortError") return; // Component was unmounted
+        if (!isMounted || error.name === "AbortError") return; // Component was unmounted
 
         const errorMsg = error.message;
         console.warn("Failed to fetch clients:", errorMsg);
-        setClients([]);
-        if (error.message.includes("fetch")) {
-          setFetchError(
-            "Unable to connect to server. Please check your internet connection.",
-          );
+        if (isMounted) {
+          setClients([]);
+          if (error.message.includes("fetch")) {
+            setFetchError(
+              "Unable to connect to server. Please check your internet connection.",
+            );
+          }
         }
       }
 
       // Fetch top servers with error handling
       try {
         const serversResponse = await makeRequest("/api/servers/top?limit=3");
-        if (!serversResponse) return; // Request was cancelled
+        if (!serversResponse || !isMounted) return; // Request was cancelled or component unmounted
 
         if (serversResponse.ok) {
           const serversData = await serversResponse.json();
-          setTopServers(serversData.servers || []);
+          if (isMounted) {
+            setTopServers(serversData.servers || []);
+          }
         } else {
           console.warn(
             "Servers API returned:",
             serversResponse.status,
             serversResponse.statusText,
           );
-          setTopServers([]);
+          if (isMounted) {
+            setTopServers([]);
+          }
         }
       } catch (error) {
-        if (error.name === "AbortError") return; // Component was unmounted
+        if (!isMounted || error.name === "AbortError") return; // Component was unmounted
 
         console.warn("Failed to fetch servers:", error.message);
-        setTopServers([]);
+        if (isMounted) {
+          setTopServers([]);
+        }
       }
 
       // Fetch partners with error handling
       try {
         const partnersResponse = await makeRequest("/api/admin/partners");
-        if (!partnersResponse) return; // Request was cancelled
+        if (!partnersResponse || !isMounted) return; // Request was cancelled or component unmounted
 
         if (partnersResponse.ok) {
           const partnersData = await partnersResponse.json();
-          setPartners(partnersData.partners || []);
+          if (isMounted) {
+            setPartners(partnersData.partners || []);
+          }
         } else {
           console.warn(
             "Partners API returned:",
             partnersResponse.status,
             partnersResponse.statusText,
           );
-          setPartners([]);
+          if (isMounted) {
+            setPartners([]);
+          }
         }
       } catch (error) {
-        if (error.name === "AbortError") return; // Component was unmounted
+        if (!isMounted || error.name === "AbortError") return; // Component was unmounted
 
         console.warn("Failed to fetch partners:", error.message);
-        setPartners([]);
+        if (isMounted) {
+          setPartners([]);
+        }
       }
 
-      setLoading(false);
+      if (isMounted) {
+        setLoading(false);
+      }
     };
 
     // Debounce the fetch to prevent rapid calls
@@ -170,8 +203,14 @@ export default function Dashboard() {
     }, 100);
 
     return () => {
+      isMounted = false;
       clearTimeout(timeoutId);
-      abortController.abort();
+      // Silently abort without errors
+      try {
+        abortController.abort();
+      } catch (error) {
+        // Ignore any errors during cleanup
+      }
     };
   }, [user]);
 
