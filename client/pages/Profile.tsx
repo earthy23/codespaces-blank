@@ -407,12 +407,12 @@ export default function Profile() {
 
   return (
     <UserLayout>
-      <div className="max-w-6xl">
+      <div className="max-w-7xl mx-auto px-4">
         {/* Profile Header */}
         <div className="mb-8">
-          <Card className="minecraft-panel overflow-hidden">
+          <Card className="minecraft-panel overflow-hidden bg-card/80 backdrop-blur-sm border-border/40">
             {/* Profile Banner */}
-            <div className="relative h-48 bg-gradient-to-r from-primary/20 to-primary/10">
+            <div className="relative h-64 lg:h-80 bg-gradient-to-br from-primary/30 via-primary/20 to-primary/10 overflow-hidden">
               {formData.banner && (
                 <img
                   src={formData.banner}
@@ -420,15 +420,16 @@ export default function Profile() {
                   className="w-full h-full object-cover"
                 />
               )}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
               {isOwnProfile && (
                 <Dialog open={showBannerDialog} onOpenChange={setShowBannerDialog}>
                   <DialogTrigger asChild>
                     <Button
                       variant="secondary"
                       size="sm"
-                      className="absolute top-4 right-4"
+                      className="absolute top-4 right-4 bg-black/20 backdrop-blur-sm border-white/20 hover:bg-black/30"
                     >
-                      Edit Banner
+                      ✏️ Edit Banner
                     </Button>
                   </DialogTrigger>
                   <DialogContent>
