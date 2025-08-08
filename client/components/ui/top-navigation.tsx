@@ -246,6 +246,19 @@ export function TopNavigation() {
               </DropdownMenuContent>
             </DropdownMenu>
 
+            {/* Admin button for admin users */}
+            {user.role === 'admin' && (
+              <Link to="/admin">
+                <Button
+                  variant="destructive"
+                  size="sm"
+                  className="bg-red-600 hover:bg-red-700 text-white"
+                >
+                  Admin
+                </Button>
+              </Link>
+            )}
+
             {/* Profile section */}
             <Link to="/profile">
               <Button
