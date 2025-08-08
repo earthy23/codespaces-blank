@@ -44,8 +44,15 @@ const navigationSections = [
       },
       {
         iconSvg: null,
-        label: "Chat",
+        label: "Connect with friends and community",
         path: "/chat",
+        iconColor: "text-primary",
+        glow: "shadow-primary/50",
+      },
+      {
+        iconSvg: null,
+        label: "Community",
+        path: "/community",
         iconColor: "text-primary",
         glow: "shadow-primary/50",
       },
