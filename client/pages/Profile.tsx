@@ -269,6 +269,96 @@ export default function Profile() {
     return "Just now";
   };
 
+  const handleBannerUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    // Validate file
+    if (!file.type.startsWith('image/')) {
+      toast({
+        title: "Invalid file type",
+        description: "Please select an image file",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) { // 5MB limit
+      toast({
+        title: "File too large",
+        description: "Please select an image smaller than 5MB",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      setUploadingBanner(true);
+      // In a real app, you'd upload to a server here
+      const fakeUrl = URL.createObjectURL(file);
+      setFormData(prev => ({ ...prev, banner: fakeUrl }));
+      setShowBannerDialog(false);
+
+      toast({
+        title: "Banner Updated",
+        description: "Your profile banner has been updated successfully",
+      });
+    } catch (error) {
+      toast({
+        title: "Upload Failed",
+        description: "Failed to upload banner image",
+        variant: "destructive",
+      });
+    } finally {
+      setUploadingBanner(false);
+    }
+  };
+
+  const handleAvatarUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    // Validate file
+    if (!file.type.startsWith('image/')) {
+      toast({
+        title: "Invalid file type",
+        description: "Please select an image file",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (file.size > 2 * 1024 * 1024) { // 2MB limit
+      toast({
+        title: "File too large",
+        description: "Please select an image smaller than 2MB",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      setUploadingAvatar(true);
+      // In a real app, you'd upload to a server here
+      const fakeUrl = URL.createObjectURL(file);
+      setFormData(prev => ({ ...prev, avatar: fakeUrl }));
+      setShowAvatarDialog(false);
+
+      toast({
+        title: "Avatar Updated",
+        description: "Your profile avatar has been updated successfully",
+      });
+    } catch (error) {
+      toast({
+        title: "Upload Failed",
+        description: "Failed to upload avatar image",
+        variant: "destructive",
+      });
+    } finally {
+      setUploadingAvatar(false);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
