@@ -509,7 +509,7 @@ export default function Community() {
                               onClick={() => handleLike(video.id, !video.liked)}
                               className="text-xs"
                             >
-                              👍 {formatNumber(video.likes)}
+                              Like {formatNumber(video.likes)}
                             </Button>
                             <Button
                               size="sm"
@@ -605,7 +605,7 @@ export default function Community() {
                                 }
                                 className="text-xs"
                               >
-                                👍 {formatNumber(video.likes)}
+                                Like {formatNumber(video.likes)}
                               </Button>
                               <Button
                                 size="sm"
