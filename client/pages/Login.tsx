@@ -126,8 +126,6 @@ export default function Login() {
                 </Button>
 
                 <div className="text-center pt-4 space-y-3">
-
-
                   <p className="text-sm text-muted-foreground">
                     Don't have an account?{" "}
                     <Link
@@ -139,9 +137,7 @@ export default function Login() {
                   </p>
                 </div>
 
-                <div className="text-center pt-4 border-t border-border">
-
-                </div>
+                <div className="text-center pt-4 border-t border-border"></div>
               </form>
             </CardContent>
           </Card>

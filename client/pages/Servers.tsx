@@ -104,7 +104,7 @@ export default function Servers() {
 
   useEffect(() => {
     const hasToken = !!localStorage.getItem("auth_token");
-    
+
     if (fetchTimeoutRef.current) {
       clearTimeout(fetchTimeoutRef.current);
     }
@@ -157,7 +157,10 @@ export default function Servers() {
       setMyServers(data.servers || []);
     } catch (error) {
       console.error("❌ fetchMyServers: Failed to fetch my servers:", error);
-      if (!error.message.includes("Authentication required") && !error.message.includes("timed out")) {
+      if (
+        !error.message.includes("Authentication required") &&
+        !error.message.includes("timed out")
+      ) {
         toast({
           title: "Error",
           description: error.message || "Failed to fetch your servers",
@@ -174,7 +177,7 @@ export default function Servers() {
     return maxServers === -1 || myServers.length < maxServers;
   };
 
-  // Check if user can upload banner based on tier  
+  // Check if user can upload banner based on tier
   const canUploadBanner = () => {
     if (!currentTier) return false;
     return currentTier.tier !== "free";
@@ -209,8 +212,10 @@ export default function Servers() {
 
   const validateServerInfo = (ip: string) => {
     if (!ip || ip.trim().length === 0) return false;
-    const hostnameRegex = /^([a-zA-Z0-9]([a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?\.)*(([a-zA-Z0-9]([a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?))$/;
-    const ipv4Regex = /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
+    const hostnameRegex =
+      /^([a-zA-Z0-9]([a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?\.)*(([a-zA-Z0-9]([a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?))$/;
+    const ipv4Regex =
+      /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
     return hostnameRegex.test(ip) || ipv4Regex.test(ip);
   };
 
@@ -220,7 +225,7 @@ export default function Servers() {
     if (!canAddServer()) {
       toast({
         title: "Server Limit Reached",
-        description: `Your ${currentTier?.tier || 'free'} tier allows ${currentTier?.limits.owned_servers || 0} servers. Upgrade for more!`,
+        description: `Your ${currentTier?.tier || "free"} tier allows ${currentTier?.limits.owned_servers || 0} servers. Upgrade for more!`,
         variant: "destructive",
       });
       return;
@@ -242,7 +247,7 @@ export default function Servers() {
       formData.append("ip", newServerData.ip);
       formData.append("category", newServerData.category);
       formData.append("version", newServerData.version);
-      
+
       if (bannerFile) {
         formData.append("banner", bannerFile);
       }
@@ -260,7 +265,7 @@ export default function Servers() {
     } catch (error: any) {
       console.error("❌ Server submission error:", error);
       let errorMessage = "Failed to add server";
-      if (typeof error === 'string') {
+      if (typeof error === "string") {
         errorMessage = error;
       } else if (error?.message) {
         errorMessage = error.message;
@@ -276,16 +281,20 @@ export default function Servers() {
   const handleLikeServer = async (serverId: string) => {
     try {
       const data = await serversApi.like(serverId);
-      setServers(servers.map((server) => 
-        server.id === serverId 
-          ? { ...server, likes: data.likes, hasLiked: data.hasLiked }
-          : server
-      ));
-      setMyServers(myServers.map((server) =>
-        server.id === serverId
-          ? { ...server, likes: data.likes, hasLiked: data.hasLiked }
-          : server
-      ));
+      setServers(
+        servers.map((server) =>
+          server.id === serverId
+            ? { ...server, likes: data.likes, hasLiked: data.hasLiked }
+            : server,
+        ),
+      );
+      setMyServers(
+        myServers.map((server) =>
+          server.id === serverId
+            ? { ...server, likes: data.likes, hasLiked: data.hasLiked }
+            : server,
+        ),
+      );
     } catch (error) {
       console.error("Failed to like server:", error);
       toast({
@@ -366,8 +375,9 @@ export default function Servers() {
     const sourceServers = currentView === "my" ? myServers : servers;
     return sourceServers
       .filter((server) => {
-        const matchesCategory = selectedCategory === "all" || server.category === selectedCategory;
-        const matchesSearch = 
+        const matchesCategory =
+          selectedCategory === "all" || server.category === selectedCategory;
+        const matchesSearch =
           server.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
           server.description.toLowerCase().includes(searchQuery.toLowerCase());
         return matchesCategory && matchesSearch;
@@ -379,7 +389,9 @@ export default function Servers() {
           case "name":
             return a.name.localeCompare(b.name);
           case "newest":
-            return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+            return (
+              new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+            );
           default:
             return 0;
         }
@@ -413,28 +425,37 @@ export default function Servers() {
               Discover and share Minecraft servers with the community
             </p>
           </div>
-          
+
           {/* Tier info and server limits */}
           <div className="text-right">
             <Badge variant="outline" className="mb-2">
-              {currentTier?.tier || 'Free'} Tier
+              {currentTier?.tier || "Free"} Tier
             </Badge>
             <p className="text-sm text-muted-foreground">
-              Servers: {myServers.length}/{currentTier?.limits.owned_servers === -1 ? '∞' : currentTier?.limits.owned_servers || 0}
+              Servers: {myServers.length}/
+              {currentTier?.limits.owned_servers === -1
+                ? "∞"
+                : currentTier?.limits.owned_servers || 0}
             </p>
           </div>
         </div>
 
-        <Tabs value={currentView} onValueChange={(value) => setCurrentView(value as "all" | "my")} className="w-full">
+        <Tabs
+          value={currentView}
+          onValueChange={(value) => setCurrentView(value as "all" | "my")}
+          className="w-full"
+        >
           <div className="flex items-center justify-between mb-6">
             <TabsList className="grid w-fit grid-cols-2">
               <TabsTrigger value="all">All Servers</TabsTrigger>
-              <TabsTrigger value="my">My Servers ({myServers.length})</TabsTrigger>
+              <TabsTrigger value="my">
+                My Servers ({myServers.length})
+              </TabsTrigger>
             </TabsList>
 
             <Dialog open={isAddServerOpen} onOpenChange={setIsAddServerOpen}>
               <DialogTrigger asChild>
-                <Button 
+                <Button
                   className="bg-primary text-primary-foreground"
                   disabled={!canAddServer()}
                 >
@@ -445,8 +466,9 @@ export default function Servers() {
                 <DialogHeader>
                   <DialogTitle>Add Your Server</DialogTitle>
                   <DialogDescription>
-                    Share your Minecraft server with the community. 
-                    {!canUploadBanner() && " Banner uploads available for VIP+ members."}
+                    Share your Minecraft server with the community.
+                    {!canUploadBanner() &&
+                      " Banner uploads available for VIP+ members."}
                   </DialogDescription>
                 </DialogHeader>
                 <form onSubmit={handleSubmitServer} className="space-y-4">
@@ -455,7 +477,12 @@ export default function Servers() {
                     <Input
                       id="serverName"
                       value={newServerData.name}
-                      onChange={(e) => setNewServerData({...newServerData, name: e.target.value})}
+                      onChange={(e) =>
+                        setNewServerData({
+                          ...newServerData,
+                          name: e.target.value,
+                        })
+                      }
                       placeholder="Enter server name"
                       required
                     />
@@ -466,7 +493,12 @@ export default function Servers() {
                     <Textarea
                       id="description"
                       value={newServerData.description}
-                      onChange={(e) => setNewServerData({...newServerData, description: e.target.value})}
+                      onChange={(e) =>
+                        setNewServerData({
+                          ...newServerData,
+                          description: e.target.value,
+                        })
+                      }
                       placeholder="Describe your server"
                       rows={3}
                       required
@@ -478,7 +510,12 @@ export default function Servers() {
                     <Input
                       id="ip"
                       value={newServerData.ip}
-                      onChange={(e) => setNewServerData({...newServerData, ip: e.target.value})}
+                      onChange={(e) =>
+                        setNewServerData({
+                          ...newServerData,
+                          ip: e.target.value,
+                        })
+                      }
                       placeholder="play.yourserver.com"
                       required
                     />
@@ -489,17 +526,27 @@ export default function Servers() {
                       <Label htmlFor="category">Category</Label>
                       <Select
                         value={newServerData.category}
-                        onValueChange={(value) => setNewServerData({...newServerData, category: value})}
+                        onValueChange={(value) =>
+                          setNewServerData({
+                            ...newServerData,
+                            category: value,
+                          })
+                        }
                       >
                         <SelectTrigger>
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
-                          {categories.filter((c) => c.value !== "all").map((category) => (
-                            <SelectItem key={category.value} value={category.value}>
-                              {category.label}
-                            </SelectItem>
-                          ))}
+                          {categories
+                            .filter((c) => c.value !== "all")
+                            .map((category) => (
+                              <SelectItem
+                                key={category.value}
+                                value={category.value}
+                              >
+                                {category.label}
+                              </SelectItem>
+                            ))}
                         </SelectContent>
                       </Select>
                     </div>
@@ -508,7 +555,12 @@ export default function Servers() {
                       <Input
                         id="version"
                         value={newServerData.version}
-                        onChange={(e) => setNewServerData({...newServerData, version: e.target.value})}
+                        onChange={(e) =>
+                          setNewServerData({
+                            ...newServerData,
+                            version: e.target.value,
+                          })
+                        }
                         placeholder="1.8.8"
                         required
                       />
@@ -526,7 +578,8 @@ export default function Servers() {
                           onChange={handleBannerUpload}
                         />
                         <p className="text-xs text-muted-foreground mt-1">
-                          Upload a banner image (max {(getMaxFileSize() / (1024 * 1024)).toFixed(1)}MB)
+                          Upload a banner image (max{" "}
+                          {(getMaxFileSize() / (1024 * 1024)).toFixed(1)}MB)
                         </p>
                         {bannerPreview && (
                           <div className="mt-3">
@@ -544,10 +597,15 @@ export default function Servers() {
                   {!canAddServer() && (
                     <Alert>
                       <AlertDescription>
-                        You've reached your server limit ({currentTier?.limits.owned_servers || 0} servers). 
-                        <Link to="/store" className="text-primary hover:underline ml-1">
+                        You've reached your server limit (
+                        {currentTier?.limits.owned_servers || 0} servers).
+                        <Link
+                          to="/store"
+                          className="text-primary hover:underline ml-1"
+                        >
                           Upgrade your tier
-                        </Link> to add more servers.
+                        </Link>{" "}
+                        to add more servers.
                       </AlertDescription>
                     </Alert>
                   )}
@@ -579,7 +637,10 @@ export default function Servers() {
                 className="w-full"
               />
             </div>
-            <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+            <Select
+              value={selectedCategory}
+              onValueChange={setSelectedCategory}
+            >
               <SelectTrigger className="w-48">
                 <SelectValue />
               </SelectTrigger>
@@ -609,7 +670,9 @@ export default function Servers() {
               <div className="text-center py-8">
                 <div className="inline-flex items-center space-x-2">
                   <span className="animate-spin h-5 w-5 text-primary"></span>
-                  <span className="text-muted-foreground">Loading servers...</span>
+                  <span className="text-muted-foreground">
+                    Loading servers...
+                  </span>
                 </div>
               </div>
             )}
@@ -617,7 +680,10 @@ export default function Servers() {
             {!loading && filteredServers.length > 0 ? (
               <div className="grid gap-6">
                 {filteredServers.map((server) => (
-                  <Card key={server.id} className="minecraft-panel overflow-hidden">
+                  <Card
+                    key={server.id}
+                    className="minecraft-panel overflow-hidden"
+                  >
                     {server.banner && (
                       <div className="h-48 overflow-hidden">
                         <img
@@ -634,13 +700,19 @@ export default function Servers() {
                           <div className="flex items-center space-x-3 mb-2">
                             <h3 className="text-xl font-bold">{server.name}</h3>
                             <Badge variant="outline">{server.version}</Badge>
-                            <Badge variant={server.isOnline ? "default" : "destructive"}>
+                            <Badge
+                              variant={
+                                server.isOnline ? "default" : "destructive"
+                              }
+                            >
                               {server.isOnline ? "Online" : "Offline"}
                             </Badge>
                             <Badge variant="secondary">{server.category}</Badge>
                           </div>
-                          <p className="text-muted-foreground mb-3">{server.description}</p>
-                          
+                          <p className="text-muted-foreground mb-3">
+                            {server.description}
+                          </p>
+
                           <div className="flex items-center space-x-6 text-sm text-muted-foreground">
                             <span>{server.likes} likes</span>
                             <span>by {server.ownerName}</span>
@@ -655,11 +727,15 @@ export default function Servers() {
                           >
                             {server.isOnline ? "Copy IP" : "Offline"}
                           </Button>
-                          
+
                           <Button
                             variant="outline"
                             onClick={() => handleLikeServer(server.id)}
-                            className={server.hasLiked ? "text-red-500 border-red-500" : ""}
+                            className={
+                              server.hasLiked
+                                ? "text-red-500 border-red-500"
+                                : ""
+                            }
                           >
                             {server.hasLiked ? "Liked" : "Like"}
                           </Button>
@@ -677,7 +753,10 @@ export default function Servers() {
                     ? "Try adjusting your search or filters"
                     : "Be the first to add a server to the community!"}
                 </p>
-                <Button onClick={() => setIsAddServerOpen(true)} disabled={!canAddServer()}>
+                <Button
+                  onClick={() => setIsAddServerOpen(true)}
+                  disabled={!canAddServer()}
+                >
                   Add Your Server
                 </Button>
               </div>
@@ -688,7 +767,10 @@ export default function Servers() {
             {myServers.length > 0 ? (
               <div className="grid gap-6">
                 {myServers.map((server) => (
-                  <Card key={server.id} className="minecraft-panel overflow-hidden">
+                  <Card
+                    key={server.id}
+                    className="minecraft-panel overflow-hidden"
+                  >
                     {server.banner && (
                       <div className="h-48 overflow-hidden">
                         <img
@@ -705,16 +787,24 @@ export default function Servers() {
                           <div className="flex items-center space-x-3 mb-2">
                             <h3 className="text-xl font-bold">{server.name}</h3>
                             <Badge variant="outline">{server.version}</Badge>
-                            <Badge variant={server.isOnline ? "default" : "destructive"}>
+                            <Badge
+                              variant={
+                                server.isOnline ? "default" : "destructive"
+                              }
+                            >
                               {server.isOnline ? "Online" : "Offline"}
                             </Badge>
                             <Badge variant="secondary">{server.category}</Badge>
                           </div>
-                          <p className="text-muted-foreground mb-3">{server.description}</p>
-                          
+                          <p className="text-muted-foreground mb-3">
+                            {server.description}
+                          </p>
+
                           <div className="flex items-center space-x-6 text-sm text-muted-foreground">
                             <span>{server.likes} likes</span>
-                            <span className="text-green-600">You own this server</span>
+                            <span className="text-green-600">
+                              You own this server
+                            </span>
                           </div>
                         </div>
 
@@ -726,7 +816,7 @@ export default function Servers() {
                           >
                             {server.isOnline ? "Copy IP" : "Offline"}
                           </Button>
-                          
+
                           <div className="flex space-x-2">
                             <Button
                               variant="outline"
@@ -750,9 +840,13 @@ export default function Servers() {
               <div className="text-center py-12">
                 <h3 className="text-lg font-semibold mb-2">No servers yet</h3>
                 <p className="text-muted-foreground mb-4">
-                  You haven't added any servers yet. Share your server with the community!
+                  You haven't added any servers yet. Share your server with the
+                  community!
                 </p>
-                <Button onClick={() => setIsAddServerOpen(true)} disabled={!canAddServer()}>
+                <Button
+                  onClick={() => setIsAddServerOpen(true)}
+                  disabled={!canAddServer()}
+                >
                   Add Your First Server
                 </Button>
               </div>
@@ -761,22 +855,27 @@ export default function Servers() {
         </Tabs>
 
         {/* Delete Confirmation Dialog */}
-        <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+        <AlertDialog
+          open={isDeleteDialogOpen}
+          onOpenChange={setIsDeleteDialogOpen}
+        >
           <AlertDialogContent>
             <AlertDialogHeader>
               <AlertDialogTitle className="flex items-center space-x-2">
                 <span>Delete Server</span>
               </AlertDialogTitle>
               <AlertDialogDescription>
-                Are you sure you want to permanently delete "{serverToDelete?.name}"? 
-                This action cannot be undone.
+                Are you sure you want to permanently delete "
+                {serverToDelete?.name}"? This action cannot be undone.
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
-              <AlertDialogCancel onClick={() => {
-                setIsDeleteDialogOpen(false);
-                setServerToDelete(null);
-              }}>
+              <AlertDialogCancel
+                onClick={() => {
+                  setIsDeleteDialogOpen(false);
+                  setServerToDelete(null);
+                }}
+              >
                 Cancel
               </AlertDialogCancel>
               <AlertDialogAction

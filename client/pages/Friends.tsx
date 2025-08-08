@@ -98,7 +98,10 @@ export default function Friends() {
     }
   };
 
-  const handleAcceptRequest = async (requestId: string, requesterUsername: string) => {
+  const handleAcceptRequest = async (
+    requestId: string,
+    requesterUsername: string,
+  ) => {
     try {
       const success = await acceptFriendRequest(requestId);
       if (success) {
@@ -134,7 +137,10 @@ export default function Friends() {
     }
   };
 
-  const handleRemoveFriend = async (friendshipId: string, friendUsername: string) => {
+  const handleRemoveFriend = async (
+    friendshipId: string,
+    friendUsername: string,
+  ) => {
     try {
       const success = await removeFriend(friendshipId);
       if (success) {
@@ -272,12 +278,8 @@ export default function Friends() {
             <TabsTrigger value="requests">
               Requests ({friendRequests.length})
             </TabsTrigger>
-            <TabsTrigger value="sent">
-              Sent ({sentRequests.length})
-            </TabsTrigger>
-            <TabsTrigger value="add">
-              Add Friends
-            </TabsTrigger>
+            <TabsTrigger value="sent">Sent ({sentRequests.length})</TabsTrigger>
+            <TabsTrigger value="add">Add Friends</TabsTrigger>
           </TabsList>
 
           {/* Friends List */}
@@ -294,7 +296,9 @@ export default function Friends() {
                         <div className="flex items-center space-x-4">
                           <div className="relative">
                             <div className="w-12 h-12 rounded-lg bg-muted border border-border flex items-center justify-center">
-                              <span className="font-semibold text-lg">{friend.username.charAt(0).toUpperCase()}</span>
+                              <span className="font-semibold text-lg">
+                                {friend.username.charAt(0).toUpperCase()}
+                              </span>
                             </div>
                             <div
                               className={`absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-2 border-background ${getStatusColor(friend.status)}`}
@@ -325,7 +329,9 @@ export default function Friends() {
                         <div className="flex items-center space-x-2">
                           <Button
                             size="sm"
-                            onClick={() => handleStartChat(friend.id, friend.username)}
+                            onClick={() =>
+                              handleStartChat(friend.id, friend.username)
+                            }
                             className="bg-primary text-primary-foreground hover:bg-primary/90"
                           >
                             Message
@@ -333,7 +339,12 @@ export default function Friends() {
                           <Button
                             size="sm"
                             variant="outline"
-                            onClick={() => handleRemoveFriend(friend.friendshipId, friend.username)}
+                            onClick={() =>
+                              handleRemoveFriend(
+                                friend.friendshipId,
+                                friend.username,
+                              )
+                            }
                             className="text-red-500 hover:bg-red-50 hover:text-red-600"
                           >
                             Remove
@@ -378,10 +389,16 @@ export default function Friends() {
                       <div className="flex items-center justify-between">
                         <div className="flex items-center space-x-4">
                           <div className="w-12 h-12 rounded-lg bg-muted border border-border flex items-center justify-center">
-                            <span className="font-semibold text-lg">{request.requesterUsername.charAt(0).toUpperCase()}</span>
+                            <span className="font-semibold text-lg">
+                              {request.requesterUsername
+                                .charAt(0)
+                                .toUpperCase()}
+                            </span>
                           </div>
                           <div>
-                            <h3 className="font-semibold">{request.requesterUsername}</h3>
+                            <h3 className="font-semibold">
+                              {request.requesterUsername}
+                            </h3>
                             <p className="text-sm text-muted-foreground">
                               Sent {formatLastSeen(request.createdAt)}
                             </p>
@@ -390,7 +407,12 @@ export default function Friends() {
                         <div className="flex items-center space-x-2">
                           <Button
                             size="sm"
-                            onClick={() => handleAcceptRequest(request.id, request.requesterUsername)}
+                            onClick={() =>
+                              handleAcceptRequest(
+                                request.id,
+                                request.requesterUsername,
+                              )
+                            }
                             className="bg-green-600 text-white hover:bg-green-700"
                           >
                             Accept
@@ -415,7 +437,9 @@ export default function Friends() {
                   <div className="w-16 h-16 mx-auto mb-4 opacity-50 bg-muted rounded-lg flex items-center justify-center">
                     <span className="text-2xl">📨</span>
                   </div>
-                  <h3 className="text-lg font-semibold mb-2">No friend requests</h3>
+                  <h3 className="text-lg font-semibold mb-2">
+                    No friend requests
+                  </h3>
                   <p className="text-muted-foreground">
                     You don't have any pending friend requests.
                   </p>
@@ -437,10 +461,16 @@ export default function Friends() {
                       <div className="flex items-center justify-between">
                         <div className="flex items-center space-x-4">
                           <div className="w-12 h-12 rounded-lg bg-muted border border-border flex items-center justify-center">
-                            <span className="font-semibold text-lg">{request.recipientUsername.charAt(0).toUpperCase()}</span>
+                            <span className="font-semibold text-lg">
+                              {request.recipientUsername
+                                .charAt(0)
+                                .toUpperCase()}
+                            </span>
                           </div>
                           <div>
-                            <h3 className="font-semibold">{request.recipientUsername}</h3>
+                            <h3 className="font-semibold">
+                              {request.recipientUsername}
+                            </h3>
                             <div className="flex items-center space-x-2">
                               <Badge variant="secondary">Pending</Badge>
                               <span className="text-xs text-muted-foreground">
@@ -460,7 +490,9 @@ export default function Friends() {
                   <div className="w-16 h-16 mx-auto mb-4 opacity-50 bg-muted rounded-lg flex items-center justify-center">
                     <span className="text-2xl">📤</span>
                   </div>
-                  <h3 className="text-lg font-semibold mb-2">No sent requests</h3>
+                  <h3 className="text-lg font-semibold mb-2">
+                    No sent requests
+                  </h3>
                   <p className="text-muted-foreground">
                     You haven't sent any friend requests yet.
                   </p>
@@ -539,7 +571,9 @@ export default function Friends() {
                       >
                         <div className="flex items-center space-x-3">
                           <div className="w-8 h-8 rounded-lg bg-muted border border-border flex items-center justify-center">
-                            <span className="font-semibold text-sm">{user.username.charAt(0).toUpperCase()}</span>
+                            <span className="font-semibold text-sm">
+                              {user.username.charAt(0).toUpperCase()}
+                            </span>
                           </div>
                           <div>
                             <p className="font-medium">{user.username}</p>
@@ -550,7 +584,9 @@ export default function Friends() {
                         </div>
                         <Button
                           size="sm"
-                          onClick={() => handleAddFriendFromSearch(user.username)}
+                          onClick={() =>
+                            handleAddFriendFromSearch(user.username)
+                          }
                           className="bg-primary text-primary-foreground hover:bg-primary/90"
                         >
                           Add Friend
@@ -560,13 +596,16 @@ export default function Friends() {
                   </div>
                 )}
 
-                {searchQuery.length >= 2 && !isSearching && searchResults.length === 0 && (
-                  <Alert className="mt-4">
-                    <AlertDescription>
-                      No users found matching "{searchQuery}". Try a different search term.
-                    </AlertDescription>
-                  </Alert>
-                )}
+                {searchQuery.length >= 2 &&
+                  !isSearching &&
+                  searchResults.length === 0 && (
+                    <Alert className="mt-4">
+                      <AlertDescription>
+                        No users found matching "{searchQuery}". Try a different
+                        search term.
+                      </AlertDescription>
+                    </Alert>
+                  )}
               </CardContent>
             </Card>
           </TabsContent>

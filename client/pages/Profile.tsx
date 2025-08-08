@@ -13,7 +13,19 @@ import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
-import { User, Save, Mail, Shield, Settings, Eye, EyeOff, Users, Video, Heart, Calendar } from "lucide-react";
+import {
+  User,
+  Save,
+  Mail,
+  Shield,
+  Settings,
+  Eye,
+  EyeOff,
+  Users,
+  Video,
+  Heart,
+  Calendar,
+} from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "@/lib/auth";
 import { useToast } from "@/hooks/use-toast";
@@ -50,7 +62,7 @@ export default function Profile() {
   const { toast } = useToast();
   const navigate = useNavigate();
   const { userId } = useParams();
-  
+
   const [profileUser, setProfileUser] = useState<ProfileUser | null>(null);
   const [userVideos, setUserVideos] = useState<ProfileVideo[]>([]);
   const [isOwnProfile, setIsOwnProfile] = useState(true);
@@ -85,11 +97,11 @@ export default function Profile() {
       navigate("/login");
       return;
     }
-    
+
     const targetUserId = userId || user.id;
     const isOwn = !userId || userId === user.id;
     setIsOwnProfile(isOwn);
-    
+
     if (isOwn) {
       setFormData({
         username: user.username || "",
@@ -115,14 +127,14 @@ export default function Profile() {
     } else {
       loadUserProfile(targetUserId);
     }
-    
+
     loadUserVideos(targetUserId);
   }, [user, userId, navigate]);
 
   const loadUserProfile = async (targetUserId: string) => {
     try {
       setIsLoadingProfile(true);
-      
+
       // Mock data for demonstration
       const mockProfile: ProfileUser = {
         id: targetUserId,
@@ -136,7 +148,7 @@ export default function Profile() {
         totalLikes: 2340,
         isFollowing: false,
       };
-      
+
       setProfileUser(mockProfile);
     } catch (error) {
       console.error("Failed to load profile:", error);
@@ -157,16 +169,18 @@ export default function Profile() {
         {
           id: "1",
           title: "How to Build a Modern House in Minecraft",
-          thumbnail: "https://via.placeholder.com/320x180/8b5cf6/ffffff?text=Modern+House",
+          thumbnail:
+            "https://via.placeholder.com/320x180/8b5cf6/ffffff?text=Modern+House",
           views: 12400,
           likes: 456,
           createdAt: new Date(Date.now() - 86400000).toISOString(),
           duration: "15:32",
         },
         {
-          id: "2", 
+          id: "2",
           title: "Redstone Tutorial: Automatic Farm",
-          thumbnail: "https://via.placeholder.com/320x180/10b981/ffffff?text=Auto+Farm",
+          thumbnail:
+            "https://via.placeholder.com/320x180/10b981/ffffff?text=Auto+Farm",
           views: 8900,
           likes: 234,
           createdAt: new Date(Date.now() - 172800000).toISOString(),
@@ -175,14 +189,15 @@ export default function Profile() {
         {
           id: "3",
           title: "Epic Castle Build Timelapse",
-          thumbnail: "https://via.placeholder.com/320x180/f59e0b/ffffff?text=Castle+Build",
+          thumbnail:
+            "https://via.placeholder.com/320x180/f59e0b/ffffff?text=Castle+Build",
           views: 23500,
           likes: 1890,
           createdAt: new Date(Date.now() - 259200000).toISOString(),
           duration: "8:12",
         },
       ];
-      
+
       setUserVideos(mockVideos);
     } catch (error) {
       console.error("Failed to load user videos:", error);
@@ -191,18 +206,24 @@ export default function Profile() {
 
   const handleFollow = async () => {
     if (!profileUser || isOwnProfile) return;
-    
+
     try {
       const newFollowState = !profileUser.isFollowing;
-      setProfileUser(prev => prev ? {
-        ...prev,
-        isFollowing: newFollowState,
-        followers: newFollowState ? prev.followers + 1 : prev.followers - 1,
-      } : null);
-      
+      setProfileUser((prev) =>
+        prev
+          ? {
+              ...prev,
+              isFollowing: newFollowState,
+              followers: newFollowState
+                ? prev.followers + 1
+                : prev.followers - 1,
+            }
+          : null,
+      );
+
       toast({
         title: newFollowState ? "Following!" : "Unfollowed",
-        description: `You ${newFollowState ? 'are now following' : 'unfollowed'} ${profileUser.username}`,
+        description: `You ${newFollowState ? "are now following" : "unfollowed"} ${profileUser.username}`,
       });
     } catch (error) {
       console.error("Failed to follow user:", error);
@@ -221,10 +242,10 @@ export default function Profile() {
   };
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
+    return new Date(dateString).toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
     });
   };
 
@@ -232,13 +253,13 @@ export default function Profile() {
     const date = new Date(dateString);
     const now = new Date();
     const diff = now.getTime() - date.getTime();
-    
+
     const days = Math.floor(diff / (1000 * 60 * 60 * 24));
     const hours = Math.floor(diff / (1000 * 60 * 60));
-    
-    if (days > 0) return `${days} day${days > 1 ? 's' : ''} ago`;
-    if (hours > 0) return `${hours} hour${hours > 1 ? 's' : ''} ago`;
-    return 'Just now';
+
+    if (days > 0) return `${days} day${days > 1 ? "s" : ""} ago`;
+    if (hours > 0) return `${hours} hour${hours > 1 ? "s" : ""} ago`;
+    return "Just now";
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -294,12 +315,14 @@ export default function Profile() {
                       {profileUser.username.charAt(0).toUpperCase()}
                     </span>
                   </div>
-                  
+
                   {/* Profile Info */}
                   <div className="space-y-2">
                     <div className="flex items-center space-x-3">
-                      <h1 className="text-3xl font-bold">{profileUser.username}</h1>
-                      {profileUser.role === 'admin' && (
+                      <h1 className="text-3xl font-bold">
+                        {profileUser.username}
+                      </h1>
+                      {profileUser.role === "admin" && (
                         <Badge variant="default" className="bg-yellow-500">
                           <Shield className="w-3 h-3 mr-1" />
                           Admin
@@ -307,7 +330,9 @@ export default function Profile() {
                       )}
                     </div>
                     {profileUser.bio && (
-                      <p className="text-muted-foreground max-w-md">{profileUser.bio}</p>
+                      <p className="text-muted-foreground max-w-md">
+                        {profileUser.bio}
+                      </p>
                     )}
                     <div className="flex items-center space-x-6 text-sm text-muted-foreground">
                       <div className="flex items-center space-x-1">
@@ -329,7 +354,10 @@ export default function Profile() {
                       {profileUser.isFollowing ? "Following" : "Follow"}
                     </Button>
                   ) : (
-                    <Button onClick={() => setActiveTab("settings")} variant="outline">
+                    <Button
+                      onClick={() => setActiveTab("settings")}
+                      variant="outline"
+                    >
                       <Settings className="w-4 h-4 mr-2" />
                       Settings
                     </Button>
@@ -340,24 +368,38 @@ export default function Profile() {
               {/* Stats */}
               <div className="mt-6 grid grid-cols-2 md:grid-cols-5 gap-4">
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-primary">{formatNumber(profileUser.followers)}</div>
+                  <div className="text-2xl font-bold text-primary">
+                    {formatNumber(profileUser.followers)}
+                  </div>
                   <div className="text-sm text-muted-foreground">Followers</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-primary">{formatNumber(profileUser.following)}</div>
+                  <div className="text-2xl font-bold text-primary">
+                    {formatNumber(profileUser.following)}
+                  </div>
                   <div className="text-sm text-muted-foreground">Following</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-primary">{formatNumber(profileUser.totalVideos)}</div>
+                  <div className="text-2xl font-bold text-primary">
+                    {formatNumber(profileUser.totalVideos)}
+                  </div>
                   <div className="text-sm text-muted-foreground">Videos</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-primary">{formatNumber(profileUser.totalViews)}</div>
-                  <div className="text-sm text-muted-foreground">Total Views</div>
+                  <div className="text-2xl font-bold text-primary">
+                    {formatNumber(profileUser.totalViews)}
+                  </div>
+                  <div className="text-sm text-muted-foreground">
+                    Total Views
+                  </div>
                 </div>
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-primary">{formatNumber(profileUser.totalLikes)}</div>
-                  <div className="text-sm text-muted-foreground">Total Likes</div>
+                  <div className="text-2xl font-bold text-primary">
+                    {formatNumber(profileUser.totalLikes)}
+                  </div>
+                  <div className="text-sm text-muted-foreground">
+                    Total Likes
+                  </div>
                 </div>
               </div>
             </CardContent>
@@ -388,7 +430,10 @@ export default function Profile() {
             {userVideos.length > 0 ? (
               <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                 {userVideos.map((video) => (
-                  <Card key={video.id} className="minecraft-panel hover:shadow-lg transition-shadow">
+                  <Card
+                    key={video.id}
+                    className="minecraft-panel hover:shadow-lg transition-shadow"
+                  >
                     <div className="relative">
                       <img
                         src={video.thumbnail}
@@ -422,8 +467,8 @@ export default function Profile() {
                 <Video className="w-16 h-16 mx-auto mb-4 text-muted-foreground" />
                 <h3 className="text-lg font-semibold mb-2">No videos yet</h3>
                 <p className="text-muted-foreground mb-4">
-                  {isOwnProfile 
-                    ? "Upload your first video to get started!" 
+                  {isOwnProfile
+                    ? "Upload your first video to get started!"
                     : `${profileUser.username} hasn't uploaded any videos yet.`}
                 </p>
                 {isOwnProfile && (
@@ -448,23 +493,35 @@ export default function Profile() {
                     <p className="text-muted-foreground">{profileUser.bio}</p>
                   </div>
                 ) : (
-                  <p className="text-muted-foreground italic">No bio available.</p>
+                  <p className="text-muted-foreground italic">
+                    No bio available.
+                  </p>
                 )}
-                
+
                 <div>
                   <h4 className="font-semibold mb-2">Stats</h4>
                   <div className="grid grid-cols-2 gap-4 text-sm">
                     <div>
                       <span className="text-muted-foreground">Joined:</span>
-                      <span className="ml-2">{formatDate(profileUser.joinedAt)}</span>
+                      <span className="ml-2">
+                        {formatDate(profileUser.joinedAt)}
+                      </span>
                     </div>
                     <div>
-                      <span className="text-muted-foreground">Total Views:</span>
-                      <span className="ml-2">{formatNumber(profileUser.totalViews)}</span>
+                      <span className="text-muted-foreground">
+                        Total Views:
+                      </span>
+                      <span className="ml-2">
+                        {formatNumber(profileUser.totalViews)}
+                      </span>
                     </div>
                     <div>
-                      <span className="text-muted-foreground">Total Likes:</span>
-                      <span className="ml-2">{formatNumber(profileUser.totalLikes)}</span>
+                      <span className="text-muted-foreground">
+                        Total Likes:
+                      </span>
+                      <span className="ml-2">
+                        {formatNumber(profileUser.totalLikes)}
+                      </span>
                     </div>
                     <div>
                       <span className="text-muted-foreground">Videos:</span>
@@ -496,7 +553,12 @@ export default function Profile() {
                           <Input
                             id="username"
                             value={formData.username}
-                            onChange={(e) => setFormData({ ...formData, username: e.target.value })}
+                            onChange={(e) =>
+                              setFormData({
+                                ...formData,
+                                username: e.target.value,
+                              })
+                            }
                           />
                         </div>
                         <div>
@@ -505,7 +567,12 @@ export default function Profile() {
                             id="email"
                             type="email"
                             value={formData.email}
-                            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                            onChange={(e) =>
+                              setFormData({
+                                ...formData,
+                                email: e.target.value,
+                              })
+                            }
                           />
                         </div>
                       </div>
@@ -514,7 +581,9 @@ export default function Profile() {
                         <Textarea
                           id="bio"
                           value={formData.bio}
-                          onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
+                          onChange={(e) =>
+                            setFormData({ ...formData, bio: e.target.value })
+                          }
                           placeholder="Tell others about yourself..."
                           rows={3}
                         />
@@ -546,7 +615,10 @@ export default function Profile() {
                       <Switch
                         checked={settings.emailNotifications}
                         onCheckedChange={(checked) =>
-                          setSettings({ ...settings, emailNotifications: checked })
+                          setSettings({
+                            ...settings,
+                            emailNotifications: checked,
+                          })
                         }
                       />
                     </div>
@@ -576,7 +648,10 @@ export default function Profile() {
                       <Switch
                         checked={settings.chatNotifications}
                         onCheckedChange={(checked) =>
-                          setSettings({ ...settings, chatNotifications: checked })
+                          setSettings({
+                            ...settings,
+                            chatNotifications: checked,
+                          })
                         }
                       />
                     </div>
@@ -591,7 +666,10 @@ export default function Profile() {
                       <Switch
                         checked={settings.pingNotifications}
                         onCheckedChange={(checked) =>
-                          setSettings({ ...settings, pingNotifications: checked })
+                          setSettings({
+                            ...settings,
+                            pingNotifications: checked,
+                          })
                         }
                       />
                     </div>
@@ -606,7 +684,10 @@ export default function Profile() {
                       <Switch
                         checked={settings.voiceChatEnabled}
                         onCheckedChange={(checked) =>
-                          setSettings({ ...settings, voiceChatEnabled: checked })
+                          setSettings({
+                            ...settings,
+                            voiceChatEnabled: checked,
+                          })
                         }
                       />
                     </div>

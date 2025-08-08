@@ -70,10 +70,10 @@ export default function Chat() {
   const [generalMessages, setGeneralMessages] = useState<any[]>([]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-  
+
   // New states for enhanced features
   const [showCreateChatDialog, setShowCreateChatDialog] = useState(false);
-  const [createChatType, setCreateChatType] = useState<'dm' | 'group'>('dm');
+  const [createChatType, setCreateChatType] = useState<"dm" | "group">("dm");
   const [selectedFriends, setSelectedFriends] = useState<string[]>([]);
   const [groupChatName, setGroupChatName] = useState("");
   const [isInCall, setIsInCall] = useState(false);
@@ -113,7 +113,7 @@ export default function Chat() {
   const loadGeneralMessages = async () => {
     try {
       // Load from localStorage if available, otherwise start with welcome message
-      const storedMessages = localStorage.getItem('general_chat_messages');
+      const storedMessages = localStorage.getItem("general_chat_messages");
       if (storedMessages) {
         const parsedMessages = JSON.parse(storedMessages);
         setGeneralMessages(parsedMessages);
@@ -126,19 +126,23 @@ export default function Chat() {
             senderId: "system",
             senderUsername: "System",
             timestamp: new Date().toISOString(),
-            type: "system"
+            type: "system",
           },
           {
             id: "info",
-            content: "This is a local community chat. Messages are stored locally and will be visible to you across sessions.",
+            content:
+              "This is a local community chat. Messages are stored locally and will be visible to you across sessions.",
             senderId: "system",
             senderUsername: "System",
             timestamp: new Date().toISOString(),
-            type: "system"
-          }
+            type: "system",
+          },
         ];
         setGeneralMessages(welcomeMessages);
-        localStorage.setItem('general_chat_messages', JSON.stringify(welcomeMessages));
+        localStorage.setItem(
+          "general_chat_messages",
+          JSON.stringify(welcomeMessages),
+        );
       }
     } catch (error) {
       console.error("Failed to load general messages:", error);
@@ -149,8 +153,8 @@ export default function Chat() {
           senderId: "system",
           senderUsername: "System",
           timestamp: new Date().toISOString(),
-          type: "system"
-        }
+          type: "system",
+        },
       ]);
     }
   };
@@ -169,7 +173,7 @@ export default function Chat() {
           senderId: user?.id || "",
           senderUsername: user?.username || "Unknown",
           timestamp: new Date().toISOString(),
-          type: "message"
+          type: "message",
         };
 
         const updatedMessages = [...generalMessages, newMessage];
@@ -177,9 +181,15 @@ export default function Chat() {
 
         // Save to localStorage for persistence
         try {
-          localStorage.setItem('general_chat_messages', JSON.stringify(updatedMessages));
+          localStorage.setItem(
+            "general_chat_messages",
+            JSON.stringify(updatedMessages),
+          );
         } catch (storageError) {
-          console.warn("Failed to save messages to localStorage:", storageError);
+          console.warn(
+            "Failed to save messages to localStorage:",
+            storageError,
+          );
         }
 
         setMessageContent("");
@@ -209,11 +219,11 @@ export default function Chat() {
   const handleTyping = () => {
     if (activeTab === "direct" && chatId) {
       startTyping(chatId);
-      
+
       if (typingTimeoutRef.current) {
         clearTimeout(typingTimeoutRef.current);
       }
-      
+
       typingTimeoutRef.current = setTimeout(() => {
         stopTyping(chatId);
       }, 3000);
@@ -285,11 +295,14 @@ export default function Chat() {
     }
 
     try {
-      const selectedUsernames = selectedFriends.map(friendId =>
-        friends.find(f => f.id === friendId)?.username
-      ).filter(Boolean) as string[];
+      const selectedUsernames = selectedFriends
+        .map((friendId) => friends.find((f) => f.id === friendId)?.username)
+        .filter(Boolean) as string[];
 
-      const chatId = await createGroupChat(groupChatName.trim(), selectedUsernames);
+      const chatId = await createGroupChat(
+        groupChatName.trim(),
+        selectedUsernames,
+      );
       if (chatId) {
         await refreshChats();
         navigate(`/chat/${chatId}`);
@@ -334,8 +347,8 @@ export default function Chat() {
   };
 
   const handleLeaveGroup = async () => {
-    if (!currentChat || currentChat.type !== 'group') return;
-    
+    if (!currentChat || currentChat.type !== "group") return;
+
     try {
       // This would leave the group via API
       toast({
@@ -355,16 +368,16 @@ export default function Chat() {
 
   const handlePingUser = (username: string) => {
     if (!chatId) return;
-    
+
     const pingMessage = `@${username} `;
-    setMessageContent(prev => prev + pingMessage);
+    setMessageContent((prev) => prev + pingMessage);
   };
 
   const formatMessageTime = (timestamp: string) => {
     const messageDate = new Date(timestamp);
     const now = new Date();
     const diff = now.getTime() - messageDate.getTime();
-    
+
     if (diff < 60000) return "Just now";
     if (diff < 3600000) return `${Math.floor(diff / 60000)}m ago`;
     if (diff < 86400000) return `${Math.floor(diff / 3600000)}h ago`;
@@ -375,12 +388,15 @@ export default function Chat() {
     const content = message.content;
     const mentionRegex = /@(\w+)/g;
     const parts = content.split(mentionRegex);
-    
+
     return parts.map((part: string, index: number) => {
       if (index % 2 === 1) {
         // This is a mention
         return (
-          <span key={index} className="bg-primary/20 text-primary px-1 rounded font-semibold">
+          <span
+            key={index}
+            className="bg-primary/20 text-primary px-1 rounded font-semibold"
+          >
             @{part}
           </span>
         );
@@ -404,9 +420,11 @@ export default function Chat() {
             <h1 className="text-3xl font-bold text-foreground">Chat</h1>
           </div>
           <div className="flex items-center space-x-4">
-            <div className={`w-3 h-3 rounded-full ${isConnected ? 'bg-green-500' : 'bg-red-500'}`}></div>
+            <div
+              className={`w-3 h-3 rounded-full ${isConnected ? "bg-green-500" : "bg-red-500"}`}
+            ></div>
             <span className="text-sm font-medium">
-              {isConnected ? 'Connected' : 'Disconnected'}
+              {isConnected ? "Connected" : "Disconnected"}
             </span>
             {isInCall && (
               <div className="flex items-center space-x-2 bg-green-100 dark:bg-green-900 px-3 py-1 rounded-full">
@@ -414,7 +432,12 @@ export default function Chat() {
                 <span className="text-sm font-medium text-green-700 dark:text-green-300">
                   In Call ({callParticipants.length})
                 </span>
-                <Button size="sm" variant="outline" onClick={handleEndCall} className="h-6 px-2">
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={handleEndCall}
+                  className="h-6 px-2"
+                >
                   End
                 </Button>
               </div>
@@ -429,9 +452,16 @@ export default function Chat() {
               <CardHeader className="pb-4">
                 <div className="flex items-center justify-between">
                   <CardTitle className="text-lg">Chats</CardTitle>
-                  <Dialog open={showCreateChatDialog} onOpenChange={setShowCreateChatDialog}>
+                  <Dialog
+                    open={showCreateChatDialog}
+                    onOpenChange={setShowCreateChatDialog}
+                  >
                     <DialogTrigger asChild>
-                      <Button size="sm" variant="outline" className="h-8 w-8 p-0">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="h-8 w-8 p-0"
+                      >
                         +
                       </Button>
                     </DialogTrigger>
@@ -439,30 +469,37 @@ export default function Chat() {
                       <DialogHeader>
                         <DialogTitle>Create New Chat</DialogTitle>
                         <DialogDescription>
-                          Start a direct message or create a group chat with your friends.
+                          Start a direct message or create a group chat with
+                          your friends.
                         </DialogDescription>
                       </DialogHeader>
                       <div className="space-y-4">
                         <div className="flex space-x-2">
                           <Button
-                            variant={createChatType === 'dm' ? 'default' : 'outline'}
-                            onClick={() => setCreateChatType('dm')}
+                            variant={
+                              createChatType === "dm" ? "default" : "outline"
+                            }
+                            onClick={() => setCreateChatType("dm")}
                             className="flex-1"
                           >
                             DM Friends
                           </Button>
                           <Button
-                            variant={createChatType === 'group' ? 'default' : 'outline'}
-                            onClick={() => setCreateChatType('group')}
+                            variant={
+                              createChatType === "group" ? "default" : "outline"
+                            }
+                            onClick={() => setCreateChatType("group")}
                             className="flex-1"
                           >
                             Group Chat
                           </Button>
                         </div>
 
-                        {createChatType === 'dm' ? (
+                        {createChatType === "dm" ? (
                           <div className="space-y-3">
-                            <h4 className="font-semibold">Select a friend to message:</h4>
+                            <h4 className="font-semibold">
+                              Select a friend to message:
+                            </h4>
                             <div className="max-h-60 overflow-y-auto space-y-2">
                               {friends.map((friend) => (
                                 <div
@@ -472,19 +509,27 @@ export default function Chat() {
                                   <div className="flex items-center space-x-3">
                                     <div className="w-8 h-8 rounded-lg bg-muted border border-border flex items-center justify-center">
                                       <span className="font-semibold text-sm">
-                                        {friend.username.charAt(0).toUpperCase()}
+                                        {friend.username
+                                          .charAt(0)
+                                          .toUpperCase()}
                                       </span>
                                     </div>
                                     <div>
-                                      <p className="font-medium">{friend.username}</p>
+                                      <p className="font-medium">
+                                        {friend.username}
+                                      </p>
                                       <p className="text-xs text-muted-foreground">
-                                        {friend.status === 'online' ? '🟢 Online' : '⚫ Offline'}
+                                        {friend.status === "online"
+                                          ? "🟢 Online"
+                                          : "⚫ Offline"}
                                       </p>
                                     </div>
                                   </div>
                                   <Button
                                     size="sm"
-                                    onClick={() => handleCreateDM(friend.username)}
+                                    onClick={() =>
+                                      handleCreateDM(friend.username)
+                                    }
                                   >
                                     Message
                                   </Button>
@@ -500,18 +545,25 @@ export default function Chat() {
                         ) : (
                           <div className="space-y-4">
                             <div>
-                              <label htmlFor="groupName" className="block text-sm font-medium mb-2">
+                              <label
+                                htmlFor="groupName"
+                                className="block text-sm font-medium mb-2"
+                              >
                                 Group Name
                               </label>
                               <Input
                                 id="groupName"
                                 value={groupChatName}
-                                onChange={(e) => setGroupChatName(e.target.value)}
+                                onChange={(e) =>
+                                  setGroupChatName(e.target.value)
+                                }
                                 placeholder="Enter group name..."
                               />
                             </div>
                             <div>
-                              <h4 className="font-semibold mb-3">Select friends to add:</h4>
+                              <h4 className="font-semibold mb-3">
+                                Select friends to add:
+                              </h4>
                               <div className="max-h-60 overflow-y-auto space-y-2">
                                 {friends.map((friend) => (
                                   <div
@@ -520,41 +572,64 @@ export default function Chat() {
                                   >
                                     <Checkbox
                                       id={friend.id}
-                                      checked={selectedFriends.includes(friend.id)}
+                                      checked={selectedFriends.includes(
+                                        friend.id,
+                                      )}
                                       onCheckedChange={(checked) => {
                                         if (checked) {
-                                          setSelectedFriends(prev => [...prev, friend.id]);
+                                          setSelectedFriends((prev) => [
+                                            ...prev,
+                                            friend.id,
+                                          ]);
                                         } else {
-                                          setSelectedFriends(prev => prev.filter(id => id !== friend.id));
+                                          setSelectedFriends((prev) =>
+                                            prev.filter(
+                                              (id) => id !== friend.id,
+                                            ),
+                                          );
                                         }
                                       }}
                                     />
                                     <div className="w-8 h-8 rounded-lg bg-muted border border-border flex items-center justify-center">
                                       <span className="font-semibold text-sm">
-                                        {friend.username.charAt(0).toUpperCase()}
+                                        {friend.username
+                                          .charAt(0)
+                                          .toUpperCase()}
                                       </span>
                                     </div>
-                                    <label htmlFor={friend.id} className="flex-1 cursor-pointer">
-                                      <p className="font-medium">{friend.username}</p>
+                                    <label
+                                      htmlFor={friend.id}
+                                      className="flex-1 cursor-pointer"
+                                    >
+                                      <p className="font-medium">
+                                        {friend.username}
+                                      </p>
                                       <p className="text-xs text-muted-foreground">
-                                        {friend.status === 'online' ? '🟢 Online' : '⚫ Offline'}
+                                        {friend.status === "online"
+                                          ? "🟢 Online"
+                                          : "⚫ Offline"}
                                       </p>
                                     </label>
                                   </div>
                                 ))}
                                 {friends.length === 0 && (
                                   <div className="text-center py-4 text-muted-foreground">
-                                    No friends available. Add some friends first!
+                                    No friends available. Add some friends
+                                    first!
                                   </div>
                                 )}
                               </div>
                             </div>
                             <Button
                               onClick={handleCreateGroupChat}
-                              disabled={selectedFriends.length === 0 || !groupChatName.trim()}
+                              disabled={
+                                selectedFriends.length === 0 ||
+                                !groupChatName.trim()
+                              }
                               className="w-full"
                             >
-                              Create Group Chat ({selectedFriends.length} friends)
+                              Create Group Chat ({selectedFriends.length}{" "}
+                              friends)
                             </Button>
                           </div>
                         )}
@@ -573,14 +648,16 @@ export default function Chat() {
                         navigate("/chat");
                       }}
                       className={`w-full text-left p-3 rounded-lg border transition-colors ${
-                        activeTab === "general" 
-                          ? 'bg-primary text-primary-foreground border-primary' 
-                          : 'bg-muted border-border hover:bg-muted/80'
+                        activeTab === "general"
+                          ? "bg-primary text-primary-foreground border-primary"
+                          : "bg-muted border-border hover:bg-muted/80"
                       }`}
                     >
                       <div className="flex items-center space-x-3">
                         <div className="w-8 h-8 rounded-lg bg-gradient-to-r from-blue-500 to-purple-500 flex items-center justify-center">
-                          <span className="text-white text-sm font-bold">#</span>
+                          <span className="text-white text-sm font-bold">
+                            #
+                          </span>
                         </div>
                         <div>
                           <p className="font-medium">General Chat</p>
@@ -595,24 +672,31 @@ export default function Chat() {
                         key={chat.id}
                         to={`/chat/${chat.id}`}
                         className={`block p-3 rounded-lg border transition-colors ${
-                          chatId === chat.id 
-                            ? 'bg-primary text-primary-foreground border-primary' 
-                            : 'bg-muted border-border hover:bg-muted/80'
+                          chatId === chat.id
+                            ? "bg-primary text-primary-foreground border-primary"
+                            : "bg-muted border-border hover:bg-muted/80"
                         }`}
                       >
                         <div className="flex items-center space-x-3">
                           <div className="w-8 h-8 rounded-lg bg-muted border border-border flex items-center justify-center">
                             <span className="font-semibold text-sm">
-                              {chat.type === 'group'
-                                ? '👥'
-                                : chat.participant_usernames?.find(username => username !== user.username)?.charAt(0).toUpperCase()}
+                              {chat.type === "group"
+                                ? "👥"
+                                : chat.participant_usernames
+                                    ?.find(
+                                      (username) => username !== user.username,
+                                    )
+                                    ?.charAt(0)
+                                    .toUpperCase()}
                             </span>
                           </div>
                           <div className="flex-1 min-w-0">
                             <p className="font-medium truncate">
-                              {chat.type === 'group'
-                                ? chat.name || 'Group Chat'
-                                : chat.participant_usernames?.find(username => username !== user.username)}
+                              {chat.type === "group"
+                                ? chat.name || "Group Chat"
+                                : chat.participant_usernames?.find(
+                                    (username) => username !== user.username,
+                                  )}
                             </p>
                             {chat.last_message && (
                               <p className="text-xs opacity-70 truncate">
@@ -632,7 +716,8 @@ export default function Chat() {
                     {chats.length === 0 && (
                       <div className="text-center py-4">
                         <p className="text-sm text-muted-foreground">
-                          No chats yet. Click the + button to start a conversation!
+                          No chats yet. Click the + button to start a
+                          conversation!
                         </p>
                       </div>
                     )}
@@ -658,31 +743,41 @@ export default function Chat() {
                     <div>
                       <CardTitle className="flex items-center space-x-2">
                         <span>
-                          {currentChat.type === 'group'
-                            ? currentChat.name || 'Group Chat'
-                            : currentChat.participant_usernames?.find(username => username !== user.username)}
+                          {currentChat.type === "group"
+                            ? currentChat.name || "Group Chat"
+                            : currentChat.participant_usernames?.find(
+                                (username) => username !== user.username,
+                              )}
                         </span>
-                        {currentChat.type === 'group' && (
+                        {currentChat.type === "group" && (
                           <Badge variant="outline">Group</Badge>
                         )}
                       </CardTitle>
                       <CardDescription>
-                        {currentChat.type === 'group'
+                        {currentChat.type === "group"
                           ? `${currentChat.participant_usernames?.length || 0} members`
-                          : 'Direct message conversation'}
+                          : "Direct message conversation"}
                       </CardDescription>
                     </div>
                     <div className="flex items-center space-x-2">
                       {!isInCall ? (
-                        <Button size="sm" variant="outline" onClick={handleStartCall}>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={handleStartCall}
+                        >
                           📞 Call
                         </Button>
                       ) : (
-                        <Button size="sm" variant="destructive" onClick={handleEndCall}>
+                        <Button
+                          size="sm"
+                          variant="destructive"
+                          onClick={handleEndCall}
+                        >
                           📞 End Call
                         </Button>
                       )}
-                      {currentChat.type === 'group' && (
+                      {currentChat.type === "group" && (
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
                             <Button size="sm" variant="outline">
@@ -690,7 +785,10 @@ export default function Chat() {
                             </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent>
-                            <DropdownMenuItem onClick={handleLeaveGroup} className="text-red-600">
+                            <DropdownMenuItem
+                              onClick={handleLeaveGroup}
+                              className="text-red-600"
+                            >
                               Leave Group
                             </DropdownMenuItem>
                           </DropdownMenuContent>
@@ -714,7 +812,10 @@ export default function Chat() {
                   <div className="space-y-4">
                     {activeTab === "general" ? (
                       generalMessages.map((message) => (
-                        <div key={message.id} className="flex items-start space-x-3">
+                        <div
+                          key={message.id}
+                          className="flex items-start space-x-3"
+                        >
                           <div className="w-8 h-8 rounded-lg bg-muted border border-border flex items-center justify-center flex-shrink-0">
                             <span className="font-semibold text-sm">
                               {message.senderUsername.charAt(0).toUpperCase()}
@@ -740,7 +841,10 @@ export default function Chat() {
                       ))
                     ) : messages.length > 0 ? (
                       messages.map((message) => (
-                        <div key={message.id} className="flex items-start space-x-3">
+                        <div
+                          key={message.id}
+                          className="flex items-start space-x-3"
+                        >
                           <div className="w-8 h-8 rounded-lg bg-muted border border-border flex items-center justify-center flex-shrink-0">
                             <span className="font-semibold text-sm">
                               {message.sender_username.charAt(0).toUpperCase()}
@@ -760,7 +864,9 @@ export default function Chat() {
                                 </Badge>
                               )}
                               <button
-                                onClick={() => handlePingUser(message.sender_username)}
+                                onClick={() =>
+                                  handlePingUser(message.sender_username)
+                                }
                                 className="text-xs text-muted-foreground hover:text-primary transition-colors"
                                 title="Ping this user"
                               >
@@ -771,13 +877,20 @@ export default function Chat() {
                               <div className="flex items-center space-x-2">
                                 <Input
                                   value={editingContent}
-                                  onChange={(e) => setEditingContent(e.target.value)}
+                                  onChange={(e) =>
+                                    setEditingContent(e.target.value)
+                                  }
                                   className="flex-1"
                                   autoFocus
                                 />
                                 <Button
                                   size="sm"
-                                  onClick={() => handleEditMessage(message.id, editingContent)}
+                                  onClick={() =>
+                                    handleEditMessage(
+                                      message.id,
+                                      editingContent,
+                                    )
+                                  }
                                 >
                                   Save
                                 </Button>
@@ -794,7 +907,9 @@ export default function Chat() {
                               </div>
                             ) : (
                               <div className="flex items-center justify-between group">
-                                <p className="text-sm">{renderMessage(message)}</p>
+                                <p className="text-sm">
+                                  {renderMessage(message)}
+                                </p>
                                 {message.sender_id === user.id && (
                                   <DropdownMenu>
                                     <DropdownMenuTrigger asChild>
@@ -816,7 +931,9 @@ export default function Chat() {
                                         Edit
                                       </DropdownMenuItem>
                                       <DropdownMenuItem
-                                        onClick={() => handleDeleteMessage(message.id)}
+                                        onClick={() =>
+                                          handleDeleteMessage(message.id)
+                                        }
                                         className="text-red-600"
                                       >
                                         Delete
@@ -838,26 +955,42 @@ export default function Chat() {
                     ) : null}
 
                     {/* Typing Indicators */}
-                    {typingUsers[chatId || '']?.length > 0 && activeTab === "direct" && (
-                      <div className="flex items-center space-x-2 text-sm text-muted-foreground">
-                        <div className="flex space-x-1">
-                          <div className="w-1 h-1 bg-current rounded-full animate-bounce"></div>
-                          <div className="w-1 h-1 bg-current rounded-full animate-bounce" style={{animationDelay: '0.1s'}}></div>
-                          <div className="w-1 h-1 bg-current rounded-full animate-bounce" style={{animationDelay: '0.2s'}}></div>
+                    {typingUsers[chatId || ""]?.length > 0 &&
+                      activeTab === "direct" && (
+                        <div className="flex items-center space-x-2 text-sm text-muted-foreground">
+                          <div className="flex space-x-1">
+                            <div className="w-1 h-1 bg-current rounded-full animate-bounce"></div>
+                            <div
+                              className="w-1 h-1 bg-current rounded-full animate-bounce"
+                              style={{ animationDelay: "0.1s" }}
+                            ></div>
+                            <div
+                              className="w-1 h-1 bg-current rounded-full animate-bounce"
+                              style={{ animationDelay: "0.2s" }}
+                            ></div>
+                          </div>
+                          <span>
+                            {typingUsers[chatId || ""]
+                              ?.map((u) => u.username)
+                              .join(", ")}{" "}
+                            {typingUsers[chatId || ""]?.length === 1
+                              ? "is"
+                              : "are"}{" "}
+                            typing...
+                          </span>
                         </div>
-                        <span>
-                          {typingUsers[chatId || '']?.map(u => u.username).join(', ')} {typingUsers[chatId || '']?.length === 1 ? 'is' : 'are'} typing...
-                        </span>
-                      </div>
-                    )}
-                    
+                      )}
+
                     <div ref={messagesEndRef} />
                   </div>
                 </ScrollArea>
 
                 {/* Message Input */}
                 <div className="border-t p-4">
-                  <form onSubmit={handleSendMessage} className="flex items-center space-x-2">
+                  <form
+                    onSubmit={handleSendMessage}
+                    className="flex items-center space-x-2"
+                  >
                     <Input
                       value={messageContent}
                       onChange={(e) => {
@@ -865,7 +998,7 @@ export default function Chat() {
                         handleTyping();
                       }}
                       onKeyDown={(e) => {
-                        if (e.key === 'Enter' && !e.shiftKey) {
+                        if (e.key === "Enter" && !e.shiftKey) {
                           e.preventDefault();
                           handleSendMessage(e);
                         }
@@ -874,7 +1007,7 @@ export default function Chat() {
                         activeTab === "general"
                           ? "Message the community... (Use @username to ping someone)"
                           : currentChat
-                            ? `Message ${currentChat.type === 'group' ? 'the group' : currentChat.participant_usernames?.find(username => username !== user.username)}... (Use @username to ping)`
+                            ? `Message ${currentChat.type === "group" ? "the group" : currentChat.participant_usernames?.find((username) => username !== user.username)}... (Use @username to ping)`
                             : "Select a chat to start messaging..."
                       }
                       disabled={!currentChat && activeTab === "direct"}
@@ -883,7 +1016,10 @@ export default function Chat() {
                     />
                     <Button
                       type="submit"
-                      disabled={!messageContent.trim() || (!currentChat && activeTab === "direct")}
+                      disabled={
+                        !messageContent.trim() ||
+                        (!currentChat && activeTab === "direct")
+                      }
                       className="bg-primary text-primary-foreground hover:bg-primary/90 min-w-[60px]"
                     >
                       Send
@@ -891,7 +1027,8 @@ export default function Chat() {
                   </form>
                   {isInCall && (
                     <div className="mt-2 text-xs text-muted-foreground text-center">
-                      🎧 Voice call active • {callParticipants.length} participants
+                      🎧 Voice call active • {callParticipants.length}{" "}
+                      participants
                     </div>
                   )}
                 </div>

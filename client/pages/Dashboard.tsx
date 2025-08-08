@@ -47,7 +47,7 @@ export default function Dashboard() {
 
       // Helper function to make authenticated requests with timeout
       const makeRequest = async (url, timeout = 10000) => {
-        const token = localStorage.getItem('auth_token');
+        const token = localStorage.getItem("auth_token");
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), timeout);
 
@@ -55,13 +55,17 @@ export default function Dashboard() {
           console.log(`Making request to: ${url}`);
           const response = await fetch(url, {
             headers: {
-              'Content-Type': 'application/json',
-              ...(token && { 'Authorization': `Bearer ${token}` })
+              "Content-Type": "application/json",
+              ...(token && { Authorization: `Bearer ${token}` }),
             },
-            signal: controller.signal
+            signal: controller.signal,
           });
           clearTimeout(timeoutId);
-          console.log(`Response from ${url}:`, response.status, response.statusText);
+          console.log(
+            `Response from ${url}:`,
+            response.status,
+            response.statusText,
+          );
           return response;
         } catch (error) {
           clearTimeout(timeoutId);
@@ -69,7 +73,6 @@ export default function Dashboard() {
           throw error;
         }
       };
-
 
       // Reset error state
       setFetchError(null);
@@ -81,18 +84,27 @@ export default function Dashboard() {
           const clientsData = await clientsResponse.json();
           setClients(clientsData.clients || []);
         } else {
-          console.warn("Clients API returned:", clientsResponse.status, clientsResponse.statusText);
+          console.warn(
+            "Clients API returned:",
+            clientsResponse.status,
+            clientsResponse.statusText,
+          );
           setClients([]);
           if (clientsResponse.status >= 500) {
-            setFetchError('Server is experiencing issues. Some features may be unavailable.');
+            setFetchError(
+              "Server is experiencing issues. Some features may be unavailable.",
+            );
           }
         }
       } catch (error) {
-        const errorMsg = error.name === 'AbortError' ? 'Request timed out' : error.message;
+        const errorMsg =
+          error.name === "AbortError" ? "Request timed out" : error.message;
         console.warn("Failed to fetch clients:", errorMsg);
         setClients([]);
-        if (error.name === 'AbortError' || error.message.includes('fetch')) {
-          setFetchError('Unable to connect to server. Please check your internet connection.');
+        if (error.name === "AbortError" || error.message.includes("fetch")) {
+          setFetchError(
+            "Unable to connect to server. Please check your internet connection.",
+          );
         }
       }
 
@@ -103,11 +115,18 @@ export default function Dashboard() {
           const serversData = await serversResponse.json();
           setTopServers(serversData.servers || []);
         } else {
-          console.warn("Servers API returned:", serversResponse.status, serversResponse.statusText);
+          console.warn(
+            "Servers API returned:",
+            serversResponse.status,
+            serversResponse.statusText,
+          );
           setTopServers([]);
         }
       } catch (error) {
-        console.warn("Failed to fetch servers:", error.name === 'AbortError' ? 'Request timed out' : error.message);
+        console.warn(
+          "Failed to fetch servers:",
+          error.name === "AbortError" ? "Request timed out" : error.message,
+        );
         setTopServers([]);
       }
 
@@ -118,11 +137,18 @@ export default function Dashboard() {
           const partnersData = await partnersResponse.json();
           setPartners(partnersData.partners || []);
         } else {
-          console.warn("Partners API returned:", partnersResponse.status, partnersResponse.statusText);
+          console.warn(
+            "Partners API returned:",
+            partnersResponse.status,
+            partnersResponse.statusText,
+          );
           setPartners([]);
         }
       } catch (error) {
-        console.warn("Failed to fetch partners:", error.name === 'AbortError' ? 'Request timed out' : error.message);
+        console.warn(
+          "Failed to fetch partners:",
+          error.name === "AbortError" ? "Request timed out" : error.message,
+        );
         setPartners([]);
       }
 
@@ -142,7 +168,7 @@ export default function Dashboard() {
 
     setLoading(true);
     try {
-      const token = localStorage.getItem('auth_token');
+      const token = localStorage.getItem("auth_token");
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 second timeout
 
@@ -150,10 +176,10 @@ export default function Dashboard() {
       const response = await fetch(`/api/clients/${selectedClient}/launch`, {
         method: "POST",
         headers: {
-          'Content-Type': 'application/json',
-          ...(token && { 'Authorization': `Bearer ${token}` })
+          "Content-Type": "application/json",
+          ...(token && { Authorization: `Bearer ${token}` }),
         },
-        signal: controller.signal
+        signal: controller.signal,
       });
 
       clearTimeout(timeoutId);
@@ -177,11 +203,15 @@ export default function Dashboard() {
             data.error || "Unknown error",
           );
         } catch (parseError) {
-          console.error("Failed to launch client: Response not readable", response.status, response.statusText);
+          console.error(
+            "Failed to launch client: Response not readable",
+            response.status,
+            response.statusText,
+          );
         }
       }
     } catch (error) {
-      if (error.name === 'AbortError') {
+      if (error.name === "AbortError") {
         console.error("Launch request timed out");
       } else {
         console.error("Error launching client:", error.message || error);
@@ -213,9 +243,7 @@ export default function Dashboard() {
         {/* Error message */}
         {fetchError && (
           <div className="mb-6 p-4 bg-destructive/10 border border-destructive/20 rounded-lg">
-            <p className="text-sm text-destructive">
-              {fetchError}
-            </p>
+            <p className="text-sm text-destructive">{fetchError}</p>
           </div>
         )}
 
@@ -240,7 +268,11 @@ export default function Dashboard() {
                   disabled={false}
                 >
                   <SelectTrigger className="minecraft-input h-12 text-base border-2">
-                    <SelectValue placeholder={loading ? "Loading clients..." : "Choose a client..."} />
+                    <SelectValue
+                      placeholder={
+                        loading ? "Loading clients..." : "Choose a client..."
+                      }
+                    />
                   </SelectTrigger>
                   <SelectContent>
                     {loading ? (
@@ -270,7 +302,9 @@ export default function Dashboard() {
               </div>
               <Button
                 onClick={launchClient}
-                disabled={!selectedClient || selectedClient === "no-clients" || loading}
+                disabled={
+                  !selectedClient || selectedClient === "no-clients" || loading
+                }
                 size="lg"
                 className="h-12 px-8 minecraft-button bg-primary text-primary-foreground border-none hover:bg-primary/90 shadow-lg hover:shadow-primary/30"
               >

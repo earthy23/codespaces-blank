@@ -150,8 +150,9 @@ export function NavigationSidebar() {
                     }`}
                   >
                     <div className="flex items-center space-x-3 ml-px">
-                      <div className={`${item.iconColor} transition-colors duration-200`}>
-                      </div>
+                      <div
+                        className={`${item.iconColor} transition-colors duration-200`}
+                      ></div>
                       <div className="flex-1">
                         <p
                           className={`font-semibold ${isActive ? "text-primary" : "text-sidebar-foreground"} group-hover:text-primary transition-colors`}
@@ -242,8 +243,7 @@ export function NavigationSidebar() {
               // Toggle sidebar functionality can be implemented here
               console.log("Toggle sidebar");
             }}
-          >
-          </Button>
+          ></Button>
         </div>
       </div>
     </aside>

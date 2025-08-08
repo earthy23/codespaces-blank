@@ -16,7 +16,7 @@ import { useState, useEffect } from "react";
 
 interface Notification {
   id: string;
-  type: 'ping' | 'message' | 'follow' | 'like';
+  type: "ping" | "message" | "follow" | "like";
   from: string;
   content: string;
   timestamp: string;
@@ -40,11 +40,11 @@ export function TopNavigation() {
       friendRequests.forEach((request) => {
         realNotifications.push({
           id: `friend_${request.id}`,
-          type: 'follow',
-          from: request.requesterUsername || 'Unknown',
-          content: 'sent you a friend request',
+          type: "follow",
+          from: request.requesterUsername || "Unknown",
+          content: "sent you a friend request",
           timestamp: request.createdAt,
-          read: false
+          read: false,
         });
       });
 
@@ -53,40 +53,43 @@ export function TopNavigation() {
         if (chat.unread_count > 0 && chat.last_message) {
           realNotifications.push({
             id: `message_${chat.id}`,
-            type: 'message',
-            from: chat.last_message.sender_username || 'Unknown',
-            content: `sent ${chat.unread_count} new message${chat.unread_count > 1 ? 's' : ''}`,
+            type: "message",
+            from: chat.last_message.sender_username || "Unknown",
+            content: `sent ${chat.unread_count} new message${chat.unread_count > 1 ? "s" : ""}`,
             timestamp: chat.last_message.created_at || new Date().toISOString(),
-            read: false
+            read: false,
           });
         }
       });
 
       // Sort by timestamp (newest first)
-      realNotifications.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+      realNotifications.sort(
+        (a, b) =>
+          new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime(),
+      );
 
       setNotifications(realNotifications);
     }
   }, [user, friendRequests, chats, unreadTotal]);
 
-  const unreadCount = notifications.filter(n => !n.read).length;
+  const unreadCount = notifications.filter((n) => !n.read).length;
 
   const handleNotificationClick = () => {
     setShowNotifications(!showNotifications);
     // Mark all notifications as read when opened
     if (!showNotifications) {
-      setNotifications(prev => prev.map(n => ({ ...n, read: true })));
+      setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
     }
   };
 
   const markAsRead = (notificationId: string) => {
-    setNotifications(prev => 
-      prev.map(n => n.id === notificationId ? { ...n, read: true } : n)
+    setNotifications((prev) =>
+      prev.map((n) => (n.id === notificationId ? { ...n, read: true } : n)),
     );
   };
 
   const clearNotification = (notificationId: string) => {
-    setNotifications(prev => prev.filter(n => n.id !== notificationId));
+    setNotifications((prev) => prev.filter((n) => n.id !== notificationId));
   };
 
   const handleNotificationItemClick = (notification: Notification) => {
@@ -94,11 +97,11 @@ export function TopNavigation() {
     setShowNotifications(false);
 
     // Navigate based on notification type
-    if (notification.type === 'message') {
-      const chatId = notification.id.replace('message_', '');
+    if (notification.type === "message") {
+      const chatId = notification.id.replace("message_", "");
       navigate(`/chat/${chatId}`);
-    } else if (notification.type === 'follow') {
-      navigate('/friends');
+    } else if (notification.type === "follow") {
+      navigate("/friends");
     }
   };
 
@@ -106,8 +109,8 @@ export function TopNavigation() {
     const date = new Date(timestamp);
     const now = new Date();
     const diff = now.getTime() - date.getTime();
-    
-    if (diff < 60000) return 'just now';
+
+    if (diff < 60000) return "just now";
     if (diff < 3600000) return `${Math.floor(diff / 60000)}m ago`;
     if (diff < 86400000) return `${Math.floor(diff / 3600000)}h ago`;
     return `${Math.floor(diff / 86400000)}d ago`;
@@ -115,11 +118,16 @@ export function TopNavigation() {
 
   const getNotificationIcon = (type: string) => {
     switch (type) {
-      case 'ping': return '🔔';
-      case 'message': return '💬';
-      case 'follow': return '👤';
-      case 'like': return '❤️';
-      default: return '🔔';
+      case "ping":
+        return "🔔";
+      case "message":
+        return "💬";
+      case "follow":
+        return "👤";
+      case "like":
+        return "❤️";
+      default:
+        return "🔔";
     }
   };
 
@@ -135,7 +143,10 @@ export function TopNavigation() {
         {user && (
           <div className="flex items-center space-x-4">
             {/* Notification Bell */}
-            <DropdownMenu open={showNotifications} onOpenChange={setShowNotifications}>
+            <DropdownMenu
+              open={showNotifications}
+              onOpenChange={setShowNotifications}
+            >
               <DropdownMenuTrigger asChild>
                 <Button
                   variant="ghost"
@@ -149,16 +160,19 @@ export function TopNavigation() {
                     className="w-5 h-5"
                   />
                   {unreadCount > 0 && (
-                    <Badge 
-                      variant="destructive" 
+                    <Badge
+                      variant="destructive"
                       className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-xs"
                     >
-                      {unreadCount > 9 ? '9+' : unreadCount}
+                      {unreadCount > 9 ? "9+" : unreadCount}
                     </Badge>
                   )}
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-80 max-h-96 overflow-y-auto">
+              <DropdownMenuContent
+                align="end"
+                className="w-80 max-h-96 overflow-y-auto"
+              >
                 <div className="p-2">
                   <div className="flex items-center justify-between mb-2">
                     <h3 className="font-semibold">Notifications</h3>
@@ -184,11 +198,13 @@ export function TopNavigation() {
                         <div
                           key={notification.id}
                           className={`p-3 rounded-lg border cursor-pointer transition-colors ${
-                            notification.read 
-                              ? 'bg-muted/50 border-border/50' 
-                              : 'bg-primary/5 border-primary/20 hover:bg-primary/10'
+                            notification.read
+                              ? "bg-muted/50 border-border/50"
+                              : "bg-primary/5 border-primary/20 hover:bg-primary/10"
                           }`}
-                          onClick={() => handleNotificationItemClick(notification)}
+                          onClick={() =>
+                            handleNotificationItemClick(notification)
+                          }
                         >
                           <div className="flex items-start space-x-3">
                             <span className="text-lg flex-shrink-0">
@@ -232,11 +248,14 @@ export function TopNavigation() {
 
             {/* Profile section */}
             <Link to="/profile">
-              <Button variant="ghost" className="flex items-center space-x-3 hover:bg-primary/10 rounded-full px-4 py-2">
+              <Button
+                variant="ghost"
+                className="flex items-center space-x-3 hover:bg-primary/10 rounded-full px-4 py-2"
+              >
                 {/* Circular profile avatar */}
                 <div className="w-8 h-8 bg-primary/20 rounded-full flex items-center justify-center border-2 border-primary/30">
                   <span className="text-sm font-semibold text-primary">
-                    {user.username?.charAt(0).toUpperCase() || 'U'}
+                    {user.username?.charAt(0).toUpperCase() || "U"}
                   </span>
                 </div>
                 {/* Username */}

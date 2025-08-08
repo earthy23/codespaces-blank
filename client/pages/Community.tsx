@@ -64,7 +64,7 @@ export default function Community() {
   const { user } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
-  
+
   const [videos, setVideos] = useState<Video[]>([]);
   const [featuredCreators, setFeaturedCreators] = useState<User[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -72,7 +72,7 @@ export default function Community() {
   const [activeTab, setActiveTab] = useState("trending");
   const [showUploadDialog, setShowUploadDialog] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
-  
+
   // Upload form state
   const [uploadForm, setUploadForm] = useState({
     title: "",
@@ -93,14 +93,16 @@ export default function Community() {
   const loadCommunityData = async () => {
     try {
       setIsLoading(true);
-      
+
       // Mock data for demonstration
       const mockVideos: Video[] = [
         {
           id: "1",
           title: "Epic Minecraft Castle Build Tutorial",
-          description: "Learn how to build an amazing medieval castle in Minecraft! This tutorial covers everything from foundation to decoration.",
-          thumbnail: "https://via.placeholder.com/320x180/8b5cf6/ffffff?text=Castle+Build",
+          description:
+            "Learn how to build an amazing medieval castle in Minecraft! This tutorial covers everything from foundation to decoration.",
+          thumbnail:
+            "https://via.placeholder.com/320x180/8b5cf6/ffffff?text=Castle+Build",
           videoUrl: "#",
           author: "BuildMaster",
           authorId: "user1",
@@ -115,8 +117,10 @@ export default function Community() {
         {
           id: "2",
           title: "Top 10 Minecraft Mods for 2024",
-          description: "Check out the best Minecraft mods that will enhance your gameplay experience this year!",
-          thumbnail: "https://via.placeholder.com/320x180/10b981/ffffff?text=Top+Mods",
+          description:
+            "Check out the best Minecraft mods that will enhance your gameplay experience this year!",
+          thumbnail:
+            "https://via.placeholder.com/320x180/10b981/ffffff?text=Top+Mods",
           videoUrl: "#",
           author: "ModGuru",
           authorId: "user2",
@@ -131,8 +135,10 @@ export default function Community() {
         {
           id: "3",
           title: "Redstone Computer Build - Part 1",
-          description: "Building a functional computer inside Minecraft using only redstone! This is the first part of a 5-part series.",
-          thumbnail: "https://via.placeholder.com/320x180/f59e0b/ffffff?text=Redstone+PC",
+          description:
+            "Building a functional computer inside Minecraft using only redstone! This is the first part of a 5-part series.",
+          thumbnail:
+            "https://via.placeholder.com/320x180/f59e0b/ffffff?text=Redstone+PC",
           videoUrl: "#",
           author: "RedstoneWiz",
           authorId: "user3",
@@ -190,25 +196,28 @@ export default function Community() {
   const handleLike = async (videoId: string, isLiked: boolean) => {
     try {
       // Update local state optimistically
-      setVideos(prev => prev.map(video => {
-        if (video.id === videoId) {
-          return {
-            ...video,
-            liked: isLiked,
-            disliked: false,
-            likes: isLiked ? video.likes + 1 : video.likes - 1,
-            dislikes: video.disliked && isLiked ? video.dislikes - 1 : video.dislikes,
-          };
-        }
-        return video;
-      }));
+      setVideos((prev) =>
+        prev.map((video) => {
+          if (video.id === videoId) {
+            return {
+              ...video,
+              liked: isLiked,
+              disliked: false,
+              likes: isLiked ? video.likes + 1 : video.likes - 1,
+              dislikes:
+                video.disliked && isLiked ? video.dislikes - 1 : video.dislikes,
+            };
+          }
+          return video;
+        }),
+      );
 
       // Here you would make an API call
       // await fetch(`/api/videos/${videoId}/like`, { method: 'POST' });
-      
+
       toast({
         title: isLiked ? "Liked!" : "Like removed",
-        description: `You ${isLiked ? 'liked' : 'removed your like from'} this video.`,
+        description: `You ${isLiked ? "liked" : "removed your like from"} this video.`,
       });
     } catch (error) {
       console.error("Failed to like video:", error);
@@ -217,20 +226,24 @@ export default function Community() {
 
   const handleFollow = async (userId: string, isFollowing: boolean) => {
     try {
-      setFeaturedCreators(prev => prev.map(creator => {
-        if (creator.id === userId) {
-          return {
-            ...creator,
-            isFollowing: isFollowing,
-            followers: isFollowing ? creator.followers + 1 : creator.followers - 1,
-          };
-        }
-        return creator;
-      }));
+      setFeaturedCreators((prev) =>
+        prev.map((creator) => {
+          if (creator.id === userId) {
+            return {
+              ...creator,
+              isFollowing: isFollowing,
+              followers: isFollowing
+                ? creator.followers + 1
+                : creator.followers - 1,
+            };
+          }
+          return creator;
+        }),
+      );
 
       toast({
         title: isFollowing ? "Following!" : "Unfollowed",
-        description: `You are ${isFollowing ? 'now following' : 'no longer following'} this creator.`,
+        description: `You are ${isFollowing ? "now following" : "no longer following"} this creator.`,
       });
     } catch (error) {
       console.error("Failed to follow user:", error);
@@ -239,7 +252,7 @@ export default function Community() {
 
   const handleVideoUpload = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!uploadForm.title || !uploadForm.video) {
       toast({
         title: "Missing Information",
@@ -251,7 +264,7 @@ export default function Community() {
 
     try {
       setIsUploading(true);
-      
+
       // Here you would upload the video
       // const formData = new FormData();
       // formData.append('video', uploadForm.video);
@@ -263,7 +276,7 @@ export default function Community() {
         title: "Upload Successful",
         description: "Your video has been uploaded and is being processed!",
       });
-      
+
       setShowUploadDialog(false);
       setUploadForm({
         title: "",
@@ -293,21 +306,24 @@ export default function Community() {
     const date = new Date(dateString);
     const now = new Date();
     const diff = now.getTime() - date.getTime();
-    
+
     const days = Math.floor(diff / (1000 * 60 * 60 * 24));
     const hours = Math.floor(diff / (1000 * 60 * 60));
     const minutes = Math.floor(diff / (1000 * 60));
-    
-    if (days > 0) return `${days} day${days > 1 ? 's' : ''} ago`;
-    if (hours > 0) return `${hours} hour${hours > 1 ? 's' : ''} ago`;
-    if (minutes > 0) return `${minutes} minute${minutes > 1 ? 's' : ''} ago`;
-    return 'Just now';
+
+    if (days > 0) return `${days} day${days > 1 ? "s" : ""} ago`;
+    if (hours > 0) return `${hours} hour${hours > 1 ? "s" : ""} ago`;
+    if (minutes > 0) return `${minutes} minute${minutes > 1 ? "s" : ""} ago`;
+    return "Just now";
   };
 
-  const filteredVideos = videos.filter(video =>
-    video.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    video.author.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    video.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()))
+  const filteredVideos = videos.filter(
+    (video) =>
+      video.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      video.author.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      video.tags.some((tag) =>
+        tag.toLowerCase().includes(searchQuery.toLowerCase()),
+      ),
   );
 
   if (!user) return null;
@@ -342,7 +358,12 @@ export default function Community() {
                   <Input
                     id="title"
                     value={uploadForm.title}
-                    onChange={(e) => setUploadForm(prev => ({ ...prev, title: e.target.value }))}
+                    onChange={(e) =>
+                      setUploadForm((prev) => ({
+                        ...prev,
+                        title: e.target.value,
+                      }))
+                    }
                     placeholder="Enter your video title..."
                     required
                   />
@@ -352,7 +373,12 @@ export default function Community() {
                   <Textarea
                     id="description"
                     value={uploadForm.description}
-                    onChange={(e) => setUploadForm(prev => ({ ...prev, description: e.target.value }))}
+                    onChange={(e) =>
+                      setUploadForm((prev) => ({
+                        ...prev,
+                        description: e.target.value,
+                      }))
+                    }
                     placeholder="Describe your video..."
                     rows={3}
                   />
@@ -362,7 +388,12 @@ export default function Community() {
                   <Input
                     id="tags"
                     value={uploadForm.tags}
-                    onChange={(e) => setUploadForm(prev => ({ ...prev, tags: e.target.value }))}
+                    onChange={(e) =>
+                      setUploadForm((prev) => ({
+                        ...prev,
+                        tags: e.target.value,
+                      }))
+                    }
                     placeholder="tutorial, building, redstone..."
                   />
                 </div>
@@ -372,7 +403,12 @@ export default function Community() {
                     id="video-file"
                     type="file"
                     accept="video/*"
-                    onChange={(e) => setUploadForm(prev => ({ ...prev, video: e.target.files?.[0] || null }))}
+                    onChange={(e) =>
+                      setUploadForm((prev) => ({
+                        ...prev,
+                        video: e.target.files?.[0] || null,
+                      }))
+                    }
                     required
                   />
                 </div>
@@ -382,11 +418,20 @@ export default function Community() {
                     id="thumbnail-file"
                     type="file"
                     accept="image/*"
-                    onChange={(e) => setUploadForm(prev => ({ ...prev, thumbnail: e.target.files?.[0] || null }))}
+                    onChange={(e) =>
+                      setUploadForm((prev) => ({
+                        ...prev,
+                        thumbnail: e.target.files?.[0] || null,
+                      }))
+                    }
                   />
                 </div>
                 <div className="flex justify-end space-x-2">
-                  <Button type="button" variant="outline" onClick={() => setShowUploadDialog(false)}>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => setShowUploadDialog(false)}
+                  >
                     Cancel
                   </Button>
                   <Button type="submit" disabled={isUploading}>
@@ -421,7 +466,10 @@ export default function Community() {
               <TabsContent value="trending" className="mt-6">
                 <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-4">
                   {filteredVideos.map((video) => (
-                    <Card key={video.id} className="minecraft-panel hover:shadow-lg transition-shadow">
+                    <Card
+                      key={video.id}
+                      className="minecraft-panel hover:shadow-lg transition-shadow"
+                    >
                       <div className="relative">
                         <img
                           src={video.thumbnail}
@@ -442,7 +490,7 @@ export default function Community() {
                               {video.author.charAt(0).toUpperCase()}
                             </span>
                           </div>
-                          <Link 
+                          <Link
                             to={`/profile/${video.authorId}`}
                             className="text-sm font-medium hover:text-primary transition-colors"
                           >
@@ -463,13 +511,19 @@ export default function Community() {
                             >
                               👍 {formatNumber(video.likes)}
                             </Button>
-                            <Button size="sm" variant="outline" className="text-xs">
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              className="text-xs"
+                            >
                               👎 {formatNumber(video.dislikes)}
                             </Button>
                           </div>
                           <DropdownMenu>
                             <DropdownMenuTrigger asChild>
-                              <Button size="sm" variant="ghost">•••</Button>
+                              <Button size="sm" variant="ghost">
+                                •••
+                              </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent>
                               <DropdownMenuItem>Watch Later</DropdownMenuItem>
@@ -481,7 +535,11 @@ export default function Community() {
                         <div className="mt-3">
                           <div className="flex flex-wrap gap-1">
                             {video.tags.slice(0, 3).map((tag) => (
-                              <Badge key={tag} variant="secondary" className="text-xs">
+                              <Badge
+                                key={tag}
+                                variant="secondary"
+                                className="text-xs"
+                              >
                                 #{tag}
                               </Badge>
                             ))}
@@ -495,59 +553,72 @@ export default function Community() {
 
               <TabsContent value="recent" className="mt-6">
                 <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-4">
-                  {[...filteredVideos].sort((a, b) => 
-                    new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-                  ).map((video) => (
-                    <Card key={video.id} className="minecraft-panel hover:shadow-lg transition-shadow">
-                      <div className="relative">
-                        <img
-                          src={video.thumbnail}
-                          alt={video.title}
-                          className="w-full h-40 object-cover rounded-t-lg"
-                        />
-                        <Badge className="absolute bottom-2 right-2 bg-black/70 text-white">
-                          {video.duration}
-                        </Badge>
-                      </div>
-                      <CardContent className="p-4">
-                        <h3 className="font-semibold text-lg mb-2 line-clamp-2">
-                          {video.title}
-                        </h3>
-                        <div className="flex items-center space-x-2 mb-2">
-                          <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center">
-                            <span className="text-sm font-semibold">
-                              {video.author.charAt(0).toUpperCase()}
-                            </span>
-                          </div>
-                          <Link 
-                            to={`/profile/${video.authorId}`}
-                            className="text-sm font-medium hover:text-primary transition-colors"
-                          >
-                            {video.author}
-                          </Link>
+                  {[...filteredVideos]
+                    .sort(
+                      (a, b) =>
+                        new Date(b.createdAt).getTime() -
+                        new Date(a.createdAt).getTime(),
+                    )
+                    .map((video) => (
+                      <Card
+                        key={video.id}
+                        className="minecraft-panel hover:shadow-lg transition-shadow"
+                      >
+                        <div className="relative">
+                          <img
+                            src={video.thumbnail}
+                            alt={video.title}
+                            className="w-full h-40 object-cover rounded-t-lg"
+                          />
+                          <Badge className="absolute bottom-2 right-2 bg-black/70 text-white">
+                            {video.duration}
+                          </Badge>
                         </div>
-                        <div className="flex items-center justify-between text-sm text-muted-foreground mb-3">
-                          <span>{formatNumber(video.views)} views</span>
-                          <span>{formatTimeAgo(video.createdAt)}</span>
-                        </div>
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center space-x-2">
-                            <Button
-                              size="sm"
-                              variant={video.liked ? "default" : "outline"}
-                              onClick={() => handleLike(video.id, !video.liked)}
-                              className="text-xs"
+                        <CardContent className="p-4">
+                          <h3 className="font-semibold text-lg mb-2 line-clamp-2">
+                            {video.title}
+                          </h3>
+                          <div className="flex items-center space-x-2 mb-2">
+                            <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center">
+                              <span className="text-sm font-semibold">
+                                {video.author.charAt(0).toUpperCase()}
+                              </span>
+                            </div>
+                            <Link
+                              to={`/profile/${video.authorId}`}
+                              className="text-sm font-medium hover:text-primary transition-colors"
                             >
-                              👍 {formatNumber(video.likes)}
-                            </Button>
-                            <Button size="sm" variant="outline" className="text-xs">
-                              👎 {formatNumber(video.dislikes)}
-                            </Button>
+                              {video.author}
+                            </Link>
                           </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ))}
+                          <div className="flex items-center justify-between text-sm text-muted-foreground mb-3">
+                            <span>{formatNumber(video.views)} views</span>
+                            <span>{formatTimeAgo(video.createdAt)}</span>
+                          </div>
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center space-x-2">
+                              <Button
+                                size="sm"
+                                variant={video.liked ? "default" : "outline"}
+                                onClick={() =>
+                                  handleLike(video.id, !video.liked)
+                                }
+                                className="text-xs"
+                              >
+                                👍 {formatNumber(video.likes)}
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                className="text-xs"
+                              >
+                                👎 {formatNumber(video.dislikes)}
+                              </Button>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
                 </div>
               </TabsContent>
 
@@ -576,7 +647,10 @@ export default function Community() {
               <CardContent>
                 <div className="space-y-4">
                   {featuredCreators.map((creator) => (
-                    <div key={creator.id} className="flex items-center justify-between">
+                    <div
+                      key={creator.id}
+                      className="flex items-center justify-between"
+                    >
                       <div className="flex items-center space-x-3">
                         <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
                           <span className="font-semibold">
@@ -584,7 +658,7 @@ export default function Community() {
                           </span>
                         </div>
                         <div>
-                          <Link 
+                          <Link
                             to={`/profile/${creator.id}`}
                             className="font-medium hover:text-primary transition-colors"
                           >
@@ -598,7 +672,9 @@ export default function Community() {
                       <Button
                         size="sm"
                         variant={creator.isFollowing ? "outline" : "default"}
-                        onClick={() => handleFollow(creator.id, !creator.isFollowing)}
+                        onClick={() =>
+                          handleFollow(creator.id, !creator.isFollowing)
+                        }
                       >
                         {creator.isFollowing ? "Following" : "Follow"}
                       </Button>
