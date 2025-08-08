@@ -124,11 +124,24 @@ export default function Dashboard() {
 
   const launchClient = async () => {
     if (!selectedClient || selectedClient === "no-clients") return;
+
+    setLoading(true);
     try {
+      const token = localStorage.getItem('auth_token');
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 second timeout
+
       // Launch client and get URLs
       const response = await fetch(`/api/clients/${selectedClient}/launch`, {
         method: "POST",
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token && { 'Authorization': `Bearer ${token}` })
+        },
+        signal: controller.signal
       });
+
+      clearTimeout(timeoutId);
 
       if (response.ok) {
         // Try to parse response data, but don't fail if it's not JSON
