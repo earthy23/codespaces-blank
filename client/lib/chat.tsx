@@ -45,6 +45,7 @@ interface ChatContextType {
   isConnected: boolean;
   isLoading: boolean;
   createDirectMessage: (username: string) => Promise<string | null>;
+  createGroupChat: (name: string, usernames: string[]) => Promise<string | null>;
   sendMessage: (chatId: string, content: string) => Promise<void>;
   editMessage: (
     chatId: string,
