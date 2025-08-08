@@ -20,10 +20,41 @@ import { useToast } from "@/hooks/use-toast";
 import { useEffect, useState } from "react";
 import { UserLayout } from "@/components/ui/user-layout";
 
+interface ProfileVideo {
+  id: string;
+  title: string;
+  thumbnail: string;
+  views: number;
+  likes: number;
+  createdAt: string;
+  duration: string;
+}
+
+interface ProfileUser {
+  id: string;
+  username: string;
+  email?: string;
+  bio?: string;
+  joinedAt: string;
+  followers: number;
+  following: number;
+  totalVideos: number;
+  totalViews: number;
+  totalLikes: number;
+  isFollowing?: boolean;
+  role?: string;
+}
+
 export default function Profile() {
   const { user } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
+  const { userId } = useParams();
+
+  const [profileUser, setProfileUser] = useState<ProfileUser | null>(null);
+  const [userVideos, setUserVideos] = useState<ProfileVideo[]>([]);
+  const [isOwnProfile, setIsOwnProfile] = useState(true);
+  const [isLoadingProfile, setIsLoadingProfile] = useState(false);
 
   const [formData, setFormData] = useState({
     username: "",
