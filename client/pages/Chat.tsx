@@ -160,28 +160,37 @@ export default function Chat() {
     if (!messageContent.trim()) return;
 
     if (activeTab === "general") {
-      // For now, use local general chat functionality
-      // This can be replaced with real API integration later
-      const newMessage = {
-        id: Date.now().toString(),
-        content: messageContent.trim(),
-        senderId: user?.id || "",
-        senderUsername: user?.username || "Unknown",
-        timestamp: new Date().toISOString(),
-        type: "message"
-      };
-
-      const updatedMessages = [...generalMessages, newMessage];
-      setGeneralMessages(updatedMessages);
-
-      // Save to localStorage for persistence
       try {
-        localStorage.setItem('general_chat_messages', JSON.stringify(updatedMessages));
-      } catch (error) {
-        console.warn("Failed to save messages to localStorage:", error);
-      }
+        // For now, use local general chat functionality
+        // This can be replaced with real API integration later
+        const newMessage = {
+          id: Date.now().toString(),
+          content: messageContent.trim(),
+          senderId: user?.id || "",
+          senderUsername: user?.username || "Unknown",
+          timestamp: new Date().toISOString(),
+          type: "message"
+        };
 
-      setMessageContent("");
+        const updatedMessages = [...generalMessages, newMessage];
+        setGeneralMessages(updatedMessages);
+
+        // Save to localStorage for persistence
+        try {
+          localStorage.setItem('general_chat_messages', JSON.stringify(updatedMessages));
+        } catch (storageError) {
+          console.warn("Failed to save messages to localStorage:", storageError);
+        }
+
+        setMessageContent("");
+      } catch (error) {
+        console.error("Failed to send general message:", error);
+        toast({
+          title: "Error",
+          description: "Failed to send message. Please try again.",
+          variant: "destructive",
+        });
+      }
     } else if (chatId) {
       try {
         await sendMessage(chatId, messageContent);
