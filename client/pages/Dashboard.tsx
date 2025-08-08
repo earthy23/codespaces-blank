@@ -219,7 +219,11 @@ export default function Dashboard() {
                     <SelectValue placeholder={loading ? "Loading clients..." : "Choose a client..."} />
                   </SelectTrigger>
                   <SelectContent>
-                    {clients.length > 0 ? (
+                    {loading ? (
+                      <SelectItem value="loading" disabled>
+                        Loading clients...
+                      </SelectItem>
+                    ) : clients.length > 0 ? (
                       clients.map((client) => (
                         <SelectItem key={client.id} value={client.id}>
                           <div className="py-1">
