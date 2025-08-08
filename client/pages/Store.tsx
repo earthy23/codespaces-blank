@@ -640,12 +640,17 @@ export default function Store() {
                           accept=".zip,.png,.jpg,.jpeg,.mcpack,.mcworld"
                           onChange={(e) => handleFileUpload(e, "resource")}
                           className="hidden"
+                          disabled={currentTier.tier === 'free'}
                         />
                         <div
-                          className="flex flex-col items-center justify-center cursor-pointer"
-                          onClick={() =>
-                            document.getElementById("resource-file")?.click()
-                          }
+                          className={`flex flex-col items-center justify-center ${
+                            currentTier.tier === 'free' ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'
+                          }`}
+                          onClick={() => {
+                            if (currentTier.tier !== 'free') {
+                              document.getElementById("resource-file")?.click()
+                            }
+                          }}
                         >
                           {uploadingFile ? (
                             <Loader2 className="w-8 h-8 animate-spin text-primary" />
