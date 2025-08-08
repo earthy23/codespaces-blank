@@ -598,6 +598,12 @@ export const authApi = {
     } catch (error) {
       console.error("❌ Failed to fetch user profile:", error);
 
+      // Handle cancellation gracefully for auth requests
+      if (error instanceof Error && (error.message.includes("cancelled") || error.message.includes("aborted"))) {
+        console.warn("🔐 Profile request was cancelled - this is normal during navigation");
+        throw new Error("Profile request cancelled");
+      }
+
       // If it's a network error, try to provide more helpful error context
       if (error instanceof TypeError && error.message === "Failed to fetch") {
         console.error(
