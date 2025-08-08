@@ -482,10 +482,43 @@ export default function Store() {
                       <span>Background Image</span>
                     </CardTitle>
                     <CardDescription>
-                      Set a custom background image for the website
+                      Upload or set a custom background image for the website
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-4">
+                    <div>
+                      <Label htmlFor="background-file">Upload Background Image</Label>
+                      <div className="mt-2 border-2 border-dashed border-border rounded-lg p-4">
+                        <input
+                          id="background-file"
+                          type="file"
+                          accept="image/*"
+                          onChange={(e) => handleFileUpload(e, 'background')}
+                          className="hidden"
+                        />
+                        <div
+                          className="flex flex-col items-center justify-center cursor-pointer"
+                          onClick={() => document.getElementById('background-file')?.click()}
+                        >
+                          {uploadingFile ? (
+                            <Loader2 className="w-8 h-8 animate-spin text-primary" />
+                          ) : (
+                            <Upload className="w-8 h-8 text-muted-foreground" />
+                          )}
+                          <p className="text-sm text-muted-foreground mt-2">
+                            {uploadingFile ? 'Uploading...' : 'Click to upload image (Max 10MB)'}
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            Supports: JPG, PNG, GIF, WebP
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex items-center my-4">
+                      <div className="flex-grow border-t border-border"></div>
+                      <span className="px-3 text-sm text-muted-foreground">or</span>
+                      <div className="flex-grow border-t border-border"></div>
+                    </div>
                     <div>
                       <Label htmlFor="background">Image URL</Label>
                       <Input
@@ -504,6 +537,7 @@ export default function Store() {
                         )
                       }
                       className="w-full minecraft-button"
+                      disabled={uploadingFile}
                     >
                       Apply Background
                     </Button>
