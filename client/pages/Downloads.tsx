@@ -30,14 +30,7 @@ const clientDownloads = [
     ],
     downloadUrl: "/downloads/vanilla-client.zip",
     webUrl: "/client/vanilla/",
-    iconSvg: (
-      <svg viewBox="0 0 24 24" fill="none" className="w-8 h-8 text-primary">
-        <rect x="6" y="4" width="12" height="16" rx="2" fill="currentColor" opacity="0.8"/>
-        <rect x="8" y="6" width="8" height="2" rx="1" fill="white"/>
-        <rect x="8" y="9" width="8" height="2" rx="1" fill="white"/>
-        <rect x="8" y="12" width="6" height="2" rx="1" fill="white"/>
-      </svg>
-    ),
+    iconSvg: null,
   },
   {
     id: "pvp",
@@ -55,15 +48,7 @@ const clientDownloads = [
     ],
     downloadUrl: "/downloads/pvp-client.zip",
     webUrl: "/client/pvp/",
-    iconSvg: (
-      <svg viewBox="0 0 24 24" fill="none" className="w-8 h-8 text-primary">
-        <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" fill="currentColor"/>
-        <polyline points="7.5,4.21 12,6.81 16.5,4.21" stroke="white" strokeWidth="2" fill="none"/>
-        <polyline points="7.5,19.79 7.5,14.6 3,12" stroke="white" strokeWidth="2" fill="none"/>
-        <polyline points="21,12 16.5,14.6 16.5,19.79" stroke="white" strokeWidth="2" fill="none"/>
-        <polyline points="12,22.08 12,17" stroke="white" strokeWidth="2" fill="none"/>
-      </svg>
-    ),
+    iconSvg: null,
   },
   {
     id: "creative",
@@ -81,14 +66,7 @@ const clientDownloads = [
     ],
     downloadUrl: "/downloads/creative-client.zip",
     webUrl: "/client/creative/",
-    iconSvg: (
-      <svg viewBox="0 0 24 24" fill="none" className="w-8 h-8 text-primary">
-        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" fill="currentColor" opacity="0.8"/>
-        <circle cx="9" cy="7" r="4" fill="currentColor"/>
-        <path d="M22 21v-2a4 4 0 0 0-3-3.87" stroke="currentColor" strokeWidth="2" fill="none"/>
-        <path d="M16 3.13a4 4 0 0 1 0 7.75" stroke="currentColor" strokeWidth="2" fill="none"/>
-      </svg>
-    ),
+    iconSvg: null,
   },
 ];
 
@@ -171,7 +149,6 @@ export default function Downloads() {
                     <CardHeader>
                       <div className="flex items-center space-x-3 mb-2">
                         <div className="w-12 h-12 flex items-center justify-center">
-                          {client.iconSvg}
                         </div>
                         <div>
                           <CardTitle className="text-xl">
@@ -196,10 +173,6 @@ export default function Downloads() {
                               key={index}
                               className="flex items-center text-sm text-muted-foreground"
                             >
-                              <svg viewBox="0 0 24 24" fill="none" className="w-3 h-3 mr-2 flex-shrink-0 text-primary">
-                                <circle cx="12" cy="12" r="10" fill="currentColor" opacity="0.8"/>
-                                <path d="m9 12 2 2 4-4" stroke="white" strokeWidth="2" fill="none"/>
-                              </svg>
                               {feature}
                             </li>
                           ))}
@@ -215,9 +188,6 @@ export default function Downloads() {
                           className="w-full minecraft-button bg-primary text-primary-foreground hover:bg-primary/90 shadow-lg hover:shadow-primary/30"
                           onClick={() => handlePlayOnline(client.webUrl)}
                         >
-                          <svg viewBox="0 0 24 24" fill="none" className="w-4 h-4 mr-2">
-                            <polygon points="5,3 19,12 5,21" fill="currentColor"/>
-                          </svg>
                           Play Online
                         </Button>
                         <Button
@@ -227,11 +197,6 @@ export default function Downloads() {
                             handleDownload(client.id, client.downloadUrl)
                           }
                         >
-                          <svg viewBox="0 0 24 24" fill="none" className="w-4 h-4 mr-2">
-                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" stroke="currentColor" strokeWidth="2" fill="none"/>
-                            <polyline points="7,10 12,15 17,10" stroke="currentColor" strokeWidth="2" fill="none"/>
-                            <line x1="12" y1="15" x2="12" y2="3" stroke="currentColor" strokeWidth="2"/>
-                          </svg>
                           Download Client
                         </Button>
                       </div>
@@ -251,11 +216,6 @@ export default function Downloads() {
                 >
                   <CardHeader>
                     <CardTitle className="flex items-center space-x-2">
-                      <svg viewBox="0 0 24 24" fill="none" className="w-6 h-6 text-primary">
-                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" stroke="currentColor" strokeWidth="2" fill="none"/>
-                        <polyline points="7,10 12,15 17,10" stroke="currentColor" strokeWidth="2" fill="none"/>
-                        <line x1="12" y1="15" x2="12" y2="3" stroke="currentColor" strokeWidth="2"/>
-                      </svg>
                       <span>{tool.name}</span>
                     </CardTitle>
                     <CardDescription>{tool.description}</CardDescription>
@@ -283,11 +243,6 @@ export default function Downloads() {
                           handleDownload(tool.name, tool.downloadUrl)
                         }
                       >
-                        <svg viewBox="0 0 24 24" fill="none" className="w-4 h-4 mr-2">
-                          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" stroke="currentColor" strokeWidth="2" fill="none"/>
-                          <polyline points="7,10 12,15 17,10" stroke="currentColor" strokeWidth="2" fill="none"/>
-                          <line x1="12" y1="15" x2="12" y2="3" stroke="currentColor" strokeWidth="2"/>
-                        </svg>
                         Download
                       </Button>
                     </div>
@@ -302,11 +257,6 @@ export default function Downloads() {
         <Card className="minecraft-panel mt-8 bg-card border-2 border-border shadow-lg">
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
-              <svg viewBox="0 0 24 24" fill="none" className="w-6 h-6 text-primary">
-                <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" fill="none"/>
-                <path d="M12 16v-4" stroke="currentColor" strokeWidth="2" fill="none"/>
-                <path d="M12 8h.01" stroke="currentColor" strokeWidth="2" fill="none"/>
-              </svg>
               <span>Download Information</span>
             </CardTitle>
           </CardHeader>
@@ -314,10 +264,6 @@ export default function Downloads() {
             <div className="grid md:grid-cols-2 gap-6 text-sm">
               <div>
                 <h4 className="font-semibold mb-2 flex items-center">
-                  <svg viewBox="0 0 24 24" fill="none" className="w-4 h-4 mr-2 text-primary">
-                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" fill="currentColor"/>
-                    <path d="m9 12 2 2 4-4" stroke="white" strokeWidth="2" fill="none"/>
-                  </svg>
                   Security
                 </h4>
                 <ul className="space-y-1 text-muted-foreground">
