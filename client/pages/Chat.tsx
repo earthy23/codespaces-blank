@@ -1099,6 +1099,85 @@ export default function Chat() {
             </Card>
           </div>
         </div>
+
+        {/* Mini Profile Popup */}
+        <Dialog open={showMiniProfile} onOpenChange={setShowMiniProfile}>
+          <DialogContent className="minecraft-panel max-w-md">
+            <DialogHeader>
+              <DialogTitle className="flex items-center space-x-3">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary/30 to-primary/10 flex items-center justify-center ring-2 ring-primary/20">
+                  <span className="font-bold text-primary">
+                    {selectedUser?.username?.charAt(0).toUpperCase()}
+                  </span>
+                </div>
+                <div>
+                  <p className="text-lg font-semibold">{selectedUser?.username}</p>
+                  <div className="flex items-center space-x-2 text-sm">
+                    <div className={`w-2 h-2 rounded-full ${selectedUser?.isOnline ? 'bg-green-500' : 'bg-gray-500'}`}></div>
+                    <span className="text-muted-foreground">
+                      {selectedUser?.isOnline ? 'Online' : 'Offline'}
+                    </span>
+                  </div>
+                </div>
+              </DialogTitle>
+            </DialogHeader>
+
+            {selectedUser && (
+              <div className="space-y-4">
+                {selectedUser.bio && (
+                  <div>
+                    <h4 className="font-semibold mb-1">About</h4>
+                    <p className="text-sm text-muted-foreground">{selectedUser.bio}</p>
+                  </div>
+                )}
+
+                <div className="grid grid-cols-3 gap-4 text-center">
+                  <div>
+                    <div className="text-lg font-bold text-primary">{selectedUser.followers}</div>
+                    <div className="text-xs text-muted-foreground">Followers</div>
+                  </div>
+                  <div>
+                    <div className="text-lg font-bold text-primary">{selectedUser.following}</div>
+                    <div className="text-xs text-muted-foreground">Following</div>
+                  </div>
+                  <div>
+                    <div className="text-lg font-bold text-primary">{selectedUser.totalVideos}</div>
+                    <div className="text-xs text-muted-foreground">Videos</div>
+                  </div>
+                </div>
+
+                <div className="flex items-center space-x-2">
+                  <Button
+                    onClick={() => handleAddFriend(selectedUser.username)}
+                    disabled={selectedUser.isFriend}
+                    className="flex-1"
+                    variant={selectedUser.isFriend ? "outline" : "default"}
+                  >
+                    {selectedUser.isFriend ? "✓ Friends" : "➕ Add Friend"}
+                  </Button>
+                  <Button
+                    onClick={() => handleBlockUser(selectedUser.username)}
+                    variant="destructive"
+                    className="flex-1"
+                  >
+                    🚫 Block
+                  </Button>
+                </div>
+
+                <div className="flex items-center justify-center">
+                  <Link
+                    to={`/profile/${selectedUser.id}`}
+                    onClick={() => setShowMiniProfile(false)}
+                  >
+                    <Button variant="outline" size="sm">
+                      👤 View Full Profile
+                    </Button>
+                  </Link>
+                </div>
+              </div>
+            )}
+          </DialogContent>
+        </Dialog>
       </div>
     </UserLayout>
   );
