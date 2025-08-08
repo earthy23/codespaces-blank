@@ -57,6 +57,7 @@ export default function Chat() {
     editMessage,
     deleteMessage,
     createDirectMessage,
+    createGroupChat,
     refreshChats,
   } = useChat();
   const { friends } = useFriends();
