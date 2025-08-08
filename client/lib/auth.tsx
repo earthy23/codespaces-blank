@@ -82,7 +82,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
       // Add timeout for auth response (increased for better reliability)
       const timeoutPromise = new Promise<never>((_, reject) =>
-        setTimeout(() => reject(new Error("Auth timeout")), 10000),
+        setTimeout(() => reject(new Error("Auth timeout")), 15000),
       );
 
       const response = await Promise.race([
