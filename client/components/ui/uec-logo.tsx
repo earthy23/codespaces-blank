@@ -23,18 +23,14 @@ const textSizeClasses = {
 export function UECLogo({ size = "md", className, showText = true }: UECLogoProps) {
   return (
     <div className={cn("flex items-center space-x-3", className)}>
-      <div className={cn("rounded-lg bg-primary p-1 flex items-center justify-center", sizeClasses[size])}>
-        <img 
-          src="https://cdn.builder.io/api/v1/image/assets%2F1b395d19798c42b290cad33382fe9140%2F274abb1d54544fee85eb21dbc2ee0ff6?format=webp&width=200"
-          alt="UEC Logo"
-          className="w-full h-full object-contain"
-        />
-      </div>
-      {showText && (
-        <span className={cn("font-bold text-primary", textSizeClasses[size])}>
-          UEC Launcher
-        </span>
-      )}
+      <img 
+        src="https://cdn.builder.io/api/v1/image/assets%2F1b395d19798c42b290cad33382fe9140%2F274abb1d54544fee85eb21dbc2ee0ff6?format=webp&width=200"
+        alt="UEC Logo"
+        className={cn("object-contain", sizeClasses[size])}
+      />
+      <span className={cn("font-bold text-primary", textSizeClasses[size])}>
+        UEC Launcher
+      </span>
     </div>
   );
 }
