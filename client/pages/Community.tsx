@@ -660,38 +660,52 @@ export default function Community() {
             </Tabs>
           </div>
 
-          {/* Sidebar */}
-          <div className="lg:col-span-1">
-            <Card className="minecraft-panel">
-              <CardHeader>
-                <CardTitle>Featured Creators</CardTitle>
+          {/* Enhanced Sidebar */}
+          <div className="lg:col-span-1 space-y-6">
+            <Card className="minecraft-panel bg-card/80 backdrop-blur-sm border-border/40">
+              <CardHeader className="pb-4">
+                <CardTitle className="flex items-center gap-2">
+                  ⭐ Featured Creators
+                </CardTitle>
                 <CardDescription>
-                  Popular content creators in the community
+                  Top content creators in our community
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {featuredCreators.map((creator) => (
+                  {featuredCreators.map((creator, index) => (
                     <div
                       key={creator.id}
-                      className="flex items-center justify-between"
+                      className="group p-3 rounded-lg bg-muted/30 hover:bg-muted/50 transition-all duration-200 border border-border/30"
                     >
-                      <div className="flex items-center space-x-3">
-                        <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
-                          <span className="font-semibold">
-                            {creator.username.charAt(0).toUpperCase()}
-                          </span>
-                        </div>
-                        <div>
-                          <Link
-                            to={`/profile/${creator.id}`}
-                            className="font-medium hover:text-primary transition-colors"
-                          >
-                            {creator.username}
-                          </Link>
-                          <p className="text-xs text-muted-foreground">
-                            {formatNumber(creator.followers)} followers
-                          </p>
+                      <div className="flex items-center justify-between mb-2">
+                        <div className="flex items-center space-x-3">
+                          <div className="relative">
+                            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary/30 to-primary/10 flex items-center justify-center ring-2 ring-primary/20">
+                              <span className="font-bold text-primary">
+                                {creator.username.charAt(0).toUpperCase()}
+                              </span>
+                            </div>
+                            {index < 3 && (
+                              <div className="absolute -top-1 -right-1 w-5 h-5 bg-yellow-500 rounded-full flex items-center justify-center text-xs font-bold text-black">
+                                {index + 1}
+                              </div>
+                            )}
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <Link
+                              to={`/profile/${creator.id}`}
+                              className="font-medium hover:text-primary transition-colors block truncate"
+                            >
+                              {creator.username}
+                            </Link>
+                            <p className="text-xs text-muted-foreground">
+                              {formatNumber(creator.followers)} followers
+                            </p>
+                            <p className="text-xs text-muted-foreground">
+                              {creator.videos} videos
+                            </p>
+                          </div>
                         </div>
                       </div>
                       <Button
@@ -700,11 +714,41 @@ export default function Community() {
                         onClick={() =>
                           handleFollow(creator.id, !creator.isFollowing)
                         }
+                        className="w-full h-8 text-xs"
                       >
-                        {creator.isFollowing ? "Following" : "Follow"}
+                        {creator.isFollowing ? "✓ Following" : "➕ Follow"}
                       </Button>
                     </div>
                   ))}
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Community Stats */}
+            <Card className="minecraft-panel bg-card/80 backdrop-blur-sm border-border/40">
+              <CardHeader className="pb-4">
+                <CardTitle className="flex items-center gap-2">
+                  📊 Community Stats
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-muted-foreground">Total Videos</span>
+                    <span className="font-semibold">1,247</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-muted-foreground">Active Creators</span>
+                    <span className="font-semibold">89</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-muted-foreground">Total Views</span>
+                    <span className="font-semibold">2.4M</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-muted-foreground">This Week</span>
+                    <span className="font-semibold text-green-500">+157</span>
+                  </div>
                 </div>
               </CardContent>
             </Card>
