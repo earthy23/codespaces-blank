@@ -599,11 +599,6 @@ export default function Servers() {
                   onClick={() => setCurrentView("all")}
                   size="sm"
                 >
-                  <svg viewBox="0 0 24 24" fill="none" className="w-4 h-4 mr-2">
-                    <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" fill="none"/>
-                    <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20" stroke="currentColor" strokeWidth="2" fill="none"/>
-                    <path d="M2 12h20" stroke="currentColor" strokeWidth="2"/>
-                  </svg>
                   All Servers
                 </Button>
                 <Button
@@ -611,11 +606,6 @@ export default function Servers() {
                   onClick={() => setCurrentView("my")}
                   size="sm"
                 >
-                  <svg viewBox="0 0 24 24" fill="none" className="w-4 h-4 mr-2">
-                    <circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="2" fill="none"/>
-                    <path d="M12 1v6m0 6v6" stroke="currentColor" strokeWidth="2"/>
-                    <path d="m21 12-6-6-6 6 6 6 6-6Z" stroke="currentColor" strokeWidth="2" fill="none"/>
-                  </svg>
                   My Servers ({myServers.length})
                 </Button>
                 <Dialog
