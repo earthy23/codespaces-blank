@@ -624,8 +624,8 @@ export default function Chat() {
                         )}
                       </CardTitle>
                       <CardDescription>
-                        {currentChat.type === 'group' 
-                          ? `${currentChat.participants?.length || 0} members`
+                        {currentChat.type === 'group'
+                          ? `${currentChat.participant_usernames?.length || 0} members`
                           : 'Direct message conversation'}
                       </CardDescription>
                     </div>
