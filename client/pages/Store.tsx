@@ -453,7 +453,7 @@ export default function Store() {
                       <span>Website Colors</span>
                     </CardTitle>
                     <CardDescription>
-                      Customize the primary color scheme of the website
+                      Customize the primary color scheme for your personal view
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-4">
