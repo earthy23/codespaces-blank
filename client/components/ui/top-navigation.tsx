@@ -188,7 +188,7 @@ export function TopNavigation() {
                               ? 'bg-muted/50 border-border/50' 
                               : 'bg-primary/5 border-primary/20 hover:bg-primary/10'
                           }`}
-                          onClick={() => markAsRead(notification.id)}
+                          onClick={() => handleNotificationItemClick(notification)}
                         >
                           <div className="flex items-start space-x-3">
                             <span className="text-lg flex-shrink-0">
