@@ -494,7 +494,7 @@ export default function Store() {
                       <span>Background Image</span>
                     </CardTitle>
                     <CardDescription>
-                      Upload or set a custom background image for the website
+                      Upload or set a custom background image for your personal view (only you will see this)
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-4">
