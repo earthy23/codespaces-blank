@@ -178,19 +178,8 @@ export const FriendsProvider = ({ children }: { children: React.ReactNode }) => 
 
         // Handle friend requests response
         if (requestsRes.status === 'fulfilled' && requestsRes.value.ok) {
-          try {
-            const responseText = await requestsRes.value.text();
-            if (responseText.trim()) {
-              const requestsData = JSON.parse(responseText);
-              setFriendRequests(requestsData.requests || []);
-            } else {
-              console.warn("Friend requests API returned empty response, keeping existing data");
-              setFriendRequests([]);
-            }
-          } catch (parseError) {
-            console.warn("Failed to parse friend requests response:", parseError);
-            setFriendRequests([]);
-          }
+          const requestsData = await safeJsonParse(requestsRes.value, { requests: [] });
+          setFriendRequests(requestsData.requests || []);
         } else {
           console.warn("Failed to load friend requests, keeping existing data");
         }
