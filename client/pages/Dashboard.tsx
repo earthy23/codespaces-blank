@@ -206,6 +206,15 @@ export default function Dashboard() {
           </div>
         </div>
 
+        {/* Error message */}
+        {fetchError && (
+          <div className="mb-6 p-4 bg-destructive/10 border border-destructive/20 rounded-lg">
+            <p className="text-sm text-destructive">
+              {fetchError}
+            </p>
+          </div>
+        )}
+
         {/* Enhanced Client Launcher */}
         <Card className="minecraft-panel mb-8 bg-card border-2 border-primary/20 shadow-xl shadow-primary/10">
           <CardHeader>
