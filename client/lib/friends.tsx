@@ -164,27 +164,14 @@ export const FriendsProvider = ({ children }: { children: React.ReactNode }) => 
 
         // Handle friends response
         if (friendsRes.status === 'fulfilled' && friendsRes.value.ok) {
-          try {
-            const responseText = await friendsRes.value.text();
-            if (responseText.trim()) {
-              const friendsData = JSON.parse(responseText);
-              setFriends(friendsData.friends || []);
+          const friendsData = await safeJsonParse(friendsRes.value, { friends: [] });
+          setFriends(friendsData.friends || []);
 
-              // Filter online friends
-              const online = (friendsData.friends || []).filter(
-                (f: Friend) => f.status === "online" || f.status === "playing",
-              );
-              setOnlineFriends(online);
-            } else {
-              console.warn("Friends API returned empty response, keeping existing data");
-              setFriends([]);
-              setOnlineFriends([]);
-            }
-          } catch (parseError) {
-            console.warn("Failed to parse friends response:", parseError);
-            setFriends([]);
-            setOnlineFriends([]);
-          }
+          // Filter online friends
+          const online = (friendsData.friends || []).filter(
+            (f: Friend) => f.status === "online" || f.status === "playing",
+          );
+          setOnlineFriends(online);
         } else {
           console.warn("Failed to load friends, keeping existing data");
         }
