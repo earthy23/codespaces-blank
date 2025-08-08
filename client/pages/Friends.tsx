@@ -98,13 +98,15 @@ export default function Friends() {
     }
   };
 
-  const handleAcceptRequest = async (requestId: string, username: string) => {
+  const handleAcceptRequest = async (requestId: string, requesterUsername: string) => {
     try {
-      await acceptFriendRequest(requestId);
-      toast({
-        title: "Friend Request Accepted",
-        description: `You are now friends with ${username}!`,
-      });
+      const success = await acceptFriendRequest(requestId);
+      if (success) {
+        toast({
+          title: "Friend Added",
+          description: `You are now friends with ${requesterUsername}`,
+        });
+      }
     } catch (error) {
       toast({
         title: "Error",
@@ -114,13 +116,15 @@ export default function Friends() {
     }
   };
 
-  const handleDeclineRequest = async (requestId: string, username: string) => {
+  const handleDeclineRequest = async (requestId: string) => {
     try {
-      await declineFriendRequest(requestId);
-      toast({
-        title: "Friend Request Declined",
-        description: `Request from ${username} has been declined`,
-      });
+      const success = await declineFriendRequest(requestId);
+      if (success) {
+        toast({
+          title: "Request Declined",
+          description: "Friend request declined",
+        });
+      }
     } catch (error) {
       toast({
         title: "Error",
@@ -130,40 +134,60 @@ export default function Friends() {
     }
   };
 
-  const handleRemoveFriend = async (friendId: string, username: string) => {
-    if (confirm(`Remove ${username} from your friends list?`)) {
-      try {
-        await removeFriend(friendId);
+  const handleRemoveFriend = async (friendshipId: string, friendUsername: string) => {
+    try {
+      const success = await removeFriend(friendshipId);
+      if (success) {
         toast({
           title: "Friend Removed",
-          description: `${username} has been removed from your friends list`,
-        });
-      } catch (error) {
-        toast({
-          title: "Error",
-          description: "Failed to remove friend",
-          variant: "destructive",
+          description: `Removed ${friendUsername} from your friends list`,
         });
       }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to remove friend",
+        variant: "destructive",
+      });
     }
   };
 
-  const handleStartChat = async (username: string) => {
+  const handleStartChat = async (friendId: string, friendUsername: string) => {
     try {
-      const chatId = await createDirectMessage(username);
+      const chatId = await createDirectMessage(friendId);
       if (chatId) {
         navigate(`/chat/${chatId}`);
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to start chat",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleAddFriendFromSearch = async (username: string) => {
+    try {
+      const success = await sendFriendRequest(username);
+      if (success) {
+        toast({
+          title: "Friend Request Sent",
+          description: `Friend request sent to ${username}`,
+        });
+        setSearchQuery("");
+        setSearchResults([]);
       } else {
         toast({
-          title: "Error",
-          description: "Failed to create chat",
+          title: "Failed to Send Request",
+          description: "User not found or request already exists",
           variant: "destructive",
         });
       }
     } catch (error) {
       toast({
         title: "Error",
-        description: "Failed to start chat",
+        description: "Failed to send friend request",
         variant: "destructive",
       });
     }
@@ -175,6 +199,8 @@ export default function Friends() {
         return "bg-green-500";
       case "playing":
         return "bg-yellow-500";
+      case "away":
+        return "bg-orange-500";
       default:
         return "bg-gray-500";
     }
@@ -186,15 +212,17 @@ export default function Friends() {
         return "Online";
       case "playing":
         return "Playing";
+      case "away":
+        return "Away";
       default:
         return "Offline";
     }
   };
 
   const formatLastSeen = (lastSeen: string) => {
-    const date = new Date(lastSeen);
     const now = new Date();
-    const diff = now.getTime() - date.getTime();
+    const lastSeenDate = new Date(lastSeen);
+    const diff = now.getTime() - lastSeenDate.getTime();
 
     if (diff < 60000) return "Just now";
     if (diff < 3600000) return `${Math.floor(diff / 60000)}m ago`;
@@ -224,7 +252,7 @@ export default function Friends() {
               </span>
             </div>
             <div className="flex items-center space-x-2">
-              <img src="https://images.pexels.com/photos/9069288/pexels-photo-9069288.jpeg" alt="Friends" className="w-5 h-5 rounded object-cover" />
+              <div className="w-3 h-3 bg-primary rounded-full"></div>
               <span className="text-sm font-medium">
                 {friends.length} Friends
               </span>
@@ -238,27 +266,17 @@ export default function Friends() {
           className="space-y-6"
         >
           <TabsList className="grid w-full grid-cols-4">
-            <TabsTrigger
-              value="friends"
-              className="flex items-center space-x-2"
-            >
-              <span className="w-4 h-4"></span>
-              <span>Friends ({friends.length})</span>
+            <TabsTrigger value="friends">
+              Friends ({friends.length})
             </TabsTrigger>
-            <TabsTrigger
-              value="requests"
-              className="flex items-center space-x-2"
-            >
-              <span className="w-4 h-4"></span>
-              <span>Requests ({friendRequests.length})</span>
+            <TabsTrigger value="requests">
+              Requests ({friendRequests.length})
             </TabsTrigger>
-            <TabsTrigger value="sent" className="flex items-center space-x-2">
-              <span className="w-4 h-4"></span>
-              <span>Sent ({sentRequests.length})</span>
+            <TabsTrigger value="sent">
+              Sent ({sentRequests.length})
             </TabsTrigger>
-            <TabsTrigger value="add" className="flex items-center space-x-2">
-              <span className="w-4 h-4"></span>
-              <span>Add Friends</span>
+            <TabsTrigger value="add">
+              Add Friends
             </TabsTrigger>
           </TabsList>
 
@@ -276,7 +294,7 @@ export default function Friends() {
                         <div className="flex items-center space-x-4">
                           <div className="relative">
                             <div className="w-12 h-12 rounded-lg bg-muted border border-border flex items-center justify-center">
-                              <span className="w-6 h-6 text-muted-foreground"></span>
+                              <span className="font-semibold text-lg">{friend.username.charAt(0).toUpperCase()}</span>
                             </div>
                             <div
                               className={`absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-2 border-background ${getStatusColor(friend.status)}`}
@@ -294,42 +312,31 @@ export default function Friends() {
                                       : "outline"
                                 }
                               >
-                                {friend.status === "playing" && (
-                                  <span className="w-3 h-3 mr-1"></span>
-                                )}
                                 {getStatusText(friend.status)}
                               </Badge>
-                              {friend.status === "playing" &&
-                                friend.playingServer && (
-                                  <span className="text-xs text-muted-foreground">
-                                    on {friend.playingServer}
-                                  </span>
-                                )}
-                              {friend.status === "offline" && (
-                                <span className="text-xs text-muted-foreground">
-                                  Last seen {formatLastSeen(friend.lastSeen)}
-                                </span>
-                              )}
+                              <span className="text-xs text-muted-foreground">
+                                {friend.status === "offline"
+                                  ? `Last seen ${formatLastSeen(friend.lastSeen)}`
+                                  : "Active now"}
+                              </span>
                             </div>
                           </div>
                         </div>
                         <div className="flex items-center space-x-2">
                           <Button
                             size="sm"
-                            onClick={() => handleStartChat(friend.username)}
-                            className="minecraft-button bg-primary/20 text-primary hover:bg-primary/30"
+                            onClick={() => handleStartChat(friend.id, friend.username)}
+                            className="bg-primary text-primary-foreground hover:bg-primary/90"
                           >
-                            <span className="w-4 h-4"></span>
+                            Message
                           </Button>
                           <Button
                             size="sm"
                             variant="outline"
-                            onClick={() =>
-                              handleRemoveFriend(friend.id, friend.username)
-                            }
-                            className="minecraft-button border-red-500/50 text-red-500 hover:bg-red-500/20"
+                            onClick={() => handleRemoveFriend(friend.friendshipId, friend.username)}
+                            className="text-red-500 hover:bg-red-50 hover:text-red-600"
                           >
-                            <span className="w-4 h-4"></span>
+                            Remove
                           </Button>
                         </div>
                       </div>
@@ -338,18 +345,19 @@ export default function Friends() {
                 ))}
               </div>
             ) : (
-              <Card className="minecraft-panel bg-card/50 border-2 border-border shadow-lg">
+              <Card className="minecraft-panel">
                 <CardContent className="p-8 text-center">
-                  <div className="w-16 h-16 mx-auto mb-4 opacity-50"></div>
-                  <h3 className="text-xl font-semibold mb-2">No Friends Yet</h3>
+                  <div className="w-16 h-16 mx-auto mb-4 opacity-50 bg-muted rounded-lg flex items-center justify-center">
+                    <span className="text-2xl">👥</span>
+                  </div>
+                  <h3 className="text-lg font-semibold mb-2">No friends yet</h3>
                   <p className="text-muted-foreground mb-4">
-                    Start building your network by adding friends!
+                    Start building your friend network by adding some friends!
                   </p>
                   <Button
                     onClick={() => setActiveTab("add")}
-                    className="minecraft-button bg-primary text-primary-foreground hover:bg-primary/90"
+                    className="bg-primary text-primary-foreground hover:bg-primary/90"
                   >
-                    <span className="w-4 h-4 mr-2"></span>
                     Add Friends
                   </Button>
                 </CardContent>
@@ -370,12 +378,10 @@ export default function Friends() {
                       <div className="flex items-center justify-between">
                         <div className="flex items-center space-x-4">
                           <div className="w-12 h-12 rounded-lg bg-muted border border-border flex items-center justify-center">
-                            <span className="w-6 h-6 text-muted-foreground"></span>
+                            <span className="font-semibold text-lg">{request.requesterUsername.charAt(0).toUpperCase()}</span>
                           </div>
                           <div>
-                            <h3 className="font-semibold">
-                              {request.fromUsername}
-                            </h3>
+                            <h3 className="font-semibold">{request.requesterUsername}</h3>
                             <p className="text-sm text-muted-foreground">
                               Sent {formatLastSeen(request.createdAt)}
                             </p>
@@ -384,29 +390,17 @@ export default function Friends() {
                         <div className="flex items-center space-x-2">
                           <Button
                             size="sm"
-                            onClick={() =>
-                              handleAcceptRequest(
-                                request.id,
-                                request.fromUsername || "Unknown",
-                              )
-                            }
-                            className="minecraft-button bg-green-500/20 text-green-500 hover:bg-green-500/30"
+                            onClick={() => handleAcceptRequest(request.id, request.requesterUsername)}
+                            className="bg-green-600 text-white hover:bg-green-700"
                           >
-                            <span className="w-4 h-4 mr-2"></span>
                             Accept
                           </Button>
                           <Button
                             size="sm"
                             variant="outline"
-                            onClick={() =>
-                              handleDeclineRequest(
-                                request.id,
-                                request.fromUsername || "Unknown",
-                              )
-                            }
-                            className="minecraft-button border-red-500/50 text-red-500 hover:bg-red-500/20"
+                            onClick={() => handleDeclineRequest(request.id)}
+                            className="text-red-500 hover:bg-red-50 hover:text-red-600"
                           >
-                            <span className="w-4 h-4 mr-2"></span>
                             Decline
                           </Button>
                         </div>
@@ -416,14 +410,14 @@ export default function Friends() {
                 ))}
               </div>
             ) : (
-              <Card className="minecraft-panel bg-card/50 border-2 border-border shadow-lg">
+              <Card className="minecraft-panel">
                 <CardContent className="p-8 text-center">
-                  <div className="w-16 h-16 mx-auto mb-4 opacity-50"></div>
-                  <h3 className="text-xl font-semibold mb-2">
-                    No Pending Requests
-                  </h3>
+                  <div className="w-16 h-16 mx-auto mb-4 opacity-50 bg-muted rounded-lg flex items-center justify-center">
+                    <span className="text-2xl">📨</span>
+                  </div>
+                  <h3 className="text-lg font-semibold mb-2">No friend requests</h3>
                   <p className="text-muted-foreground">
-                    You don't have any incoming friend requests
+                    You don't have any pending friend requests.
                   </p>
                 </CardContent>
               </Card>
@@ -443,38 +437,32 @@ export default function Friends() {
                       <div className="flex items-center justify-between">
                         <div className="flex items-center space-x-4">
                           <div className="w-12 h-12 rounded-lg bg-muted border border-border flex items-center justify-center">
-                            <span className="w-6 h-6 text-muted-foreground"></span>
+                            <span className="font-semibold text-lg">{request.recipientUsername.charAt(0).toUpperCase()}</span>
                           </div>
                           <div>
-                            <h3 className="font-semibold">
-                              {request.toUsername}
-                            </h3>
-                            <p className="text-sm text-muted-foreground">
-                              Sent {formatLastSeen(request.createdAt)}
-                            </p>
+                            <h3 className="font-semibold">{request.recipientUsername}</h3>
+                            <div className="flex items-center space-x-2">
+                              <Badge variant="secondary">Pending</Badge>
+                              <span className="text-xs text-muted-foreground">
+                                Sent {formatLastSeen(request.createdAt)}
+                              </span>
+                            </div>
                           </div>
                         </div>
-                        <Badge
-                          variant="outline"
-                          className="flex items-center space-x-1"
-                        >
-                          <span className="w-3 h-3"></span>
-                          <span>Pending</span>
-                        </Badge>
                       </div>
                     </CardContent>
                   </Card>
                 ))}
               </div>
             ) : (
-              <Card className="minecraft-panel bg-card/50 border-2 border-border shadow-lg">
+              <Card className="minecraft-panel">
                 <CardContent className="p-8 text-center">
-                  <div className="w-16 h-16 mx-auto mb-4 opacity-50"></div>
-                  <h3 className="text-xl font-semibold mb-2">
-                    No Sent Requests
-                  </h3>
+                  <div className="w-16 h-16 mx-auto mb-4 opacity-50 bg-muted rounded-lg flex items-center justify-center">
+                    <span className="text-2xl">📤</span>
+                  </div>
+                  <h3 className="text-lg font-semibold mb-2">No sent requests</h3>
                   <p className="text-muted-foreground">
-                    You haven't sent any friend requests yet
+                    You haven't sent any friend requests yet.
                   </p>
                 </CardContent>
               </Card>
@@ -483,102 +471,102 @@ export default function Friends() {
 
           {/* Add Friends */}
           <TabsContent value="add" className="space-y-6">
-            {/* Direct Username Add */}
-            <Card className="minecraft-panel bg-card/50 border-2 border-border shadow-lg">
+            <Card className="minecraft-panel bg-card border-2 border-primary/20 shadow-xl shadow-primary/10">
               <CardHeader>
                 <CardTitle className="flex items-center space-x-2">
                   <div className="w-8 h-8 rounded-lg bg-card border border-primary/50 flex items-center justify-center shadow-lg shadow-primary/20">
-                    <span className="w-5 h-5 text-primary drop-shadow-[0_0_4px_currentColor]"></span>
+                    <span className="text-xl">👤</span>
                   </div>
-                  <span>Add Friend by Username</span>
+                  <div>
+                    <span className="text-xl">Add Friend</span>
+                    <p className="text-sm font-normal text-muted-foreground">
+                      Send a friend request by username
+                    </p>
+                  </div>
                 </CardTitle>
-                <CardDescription>
-                  Send a friend request by entering their exact username
-                </CardDescription>
               </CardHeader>
               <CardContent>
                 <form onSubmit={handleAddFriend} className="flex gap-4">
                   <Input
+                    type="text"
+                    placeholder="Enter username..."
                     value={addFriendUsername}
                     onChange={(e) => setAddFriendUsername(e.target.value)}
-                    placeholder="Enter username..."
-                    className="minecraft-input"
+                    className="flex-1"
                   />
                   <Button
                     type="submit"
                     disabled={!addFriendUsername.trim()}
-                    className="minecraft-button bg-primary text-primary-foreground hover:bg-primary/90"
+                    className="bg-primary text-primary-foreground hover:bg-primary/90"
                   >
-                    <span className="w-4 h-4 mr-2"></span>
                     Send Request
                   </Button>
                 </form>
               </CardContent>
             </Card>
 
-            {/* Search Users */}
-            <Card className="minecraft-panel bg-card/50 border-2 border-border shadow-lg">
+            <Card className="minecraft-panel bg-card border-2 border-primary/20 shadow-xl shadow-primary/10">
               <CardHeader>
                 <CardTitle className="flex items-center space-x-2">
                   <div className="w-8 h-8 rounded-lg bg-card border border-primary/50 flex items-center justify-center shadow-lg shadow-primary/20">
-                    <span className="w-5 h-5 text-primary drop-shadow-[0_0_4px_currentColor]"></span>
+                    <span className="text-xl">🔍</span>
                   </div>
                   <span>Search Users</span>
                 </CardTitle>
-                <CardDescription>
-                  Search for users to add as friends
-                </CardDescription>
               </CardHeader>
-              <CardContent className="space-y-4">
+              <CardContent>
                 <div className="relative">
-                  <span className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground"></span>
                   <Input
+                    type="text"
+                    placeholder="Search users..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="Search usernames..."
-                    className="minecraft-input pl-10"
+                    className="w-full"
                   />
                   {isSearching && (
-                    <span className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 animate-spin"></span>
+                    <div className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 animate-spin">
+                      <div className="w-full h-full border-2 border-primary border-t-transparent rounded-full"></div>
+                    </div>
                   )}
                 </div>
 
                 {searchResults.length > 0 && (
-                  <div className="space-y-2">
+                  <div className="mt-4 space-y-2">
                     {searchResults.map((user) => (
                       <div
                         key={user.id}
-                        className="flex items-center justify-between p-3 rounded-lg border border-border hover:bg-muted/50"
+                        className="flex items-center justify-between p-3 bg-muted/50 rounded-lg border border-border"
                       >
                         <div className="flex items-center space-x-3">
                           <div className="w-8 h-8 rounded-lg bg-muted border border-border flex items-center justify-center">
-                            <span className="w-4 h-4 text-muted-foreground"></span>
+                            <span className="font-semibold text-sm">{user.username.charAt(0).toUpperCase()}</span>
                           </div>
-                          <span className="font-medium">{user.username}</span>
+                          <div>
+                            <p className="font-medium">{user.username}</p>
+                            <p className="text-xs text-muted-foreground">
+                              {user.status || "Offline"}
+                            </p>
+                          </div>
                         </div>
                         <Button
                           size="sm"
-                          onClick={() => sendFriendRequest(user.username)}
-                          className="minecraft-button bg-primary/20 text-primary hover:bg-primary/30"
+                          onClick={() => handleAddFriendFromSearch(user.username)}
+                          className="bg-primary text-primary-foreground hover:bg-primary/90"
                         >
-                          <span className="w-4 h-4 mr-2"></span>
-                          Add
+                          Add Friend
                         </Button>
                       </div>
                     ))}
                   </div>
                 )}
 
-                {searchQuery.length >= 2 &&
-                  !isSearching &&
-                  searchResults.length === 0 && (
-                    <Alert>
-                      <span className="h-4 w-4"></span>
-                      <AlertDescription>
-                        No users found matching "{searchQuery}"
-                      </AlertDescription>
-                    </Alert>
-                  )}
+                {searchQuery.length >= 2 && !isSearching && searchResults.length === 0 && (
+                  <Alert className="mt-4">
+                    <AlertDescription>
+                      No users found matching "{searchQuery}". Try a different search term.
+                    </AlertDescription>
+                  </Alert>
+                )}
               </CardContent>
             </Card>
           </TabsContent>
