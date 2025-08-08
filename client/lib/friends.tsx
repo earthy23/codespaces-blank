@@ -49,7 +49,11 @@ interface FriendsContextType {
 
 const FriendsContext = createContext<FriendsContextType | undefined>(undefined);
 
-export const FriendsProvider = ({ children }: { children: React.ReactNode }) => {
+export const FriendsProvider = ({
+  children,
+}: {
+  children: React.ReactNode;
+}) => {
   const { user, token } = useAuth();
   const { isConnected, getOnlineUsers } = useWebSocket();
 
@@ -79,9 +83,11 @@ export const FriendsProvider = ({ children }: { children: React.ReactNode }) => 
   // FullStory detection utility
   const isFullStoryBlocking = () => {
     try {
-      return window.fetch !== fetch ||
-             (window.fetch.toString().includes('fullstory') ||
-              document.querySelector('script[src*="fullstory"]') !== null);
+      return (
+        window.fetch !== fetch ||
+        window.fetch.toString().includes("fullstory") ||
+        document.querySelector('script[src*="fullstory"]') !== null
+      );
     } catch {
       return false;
     }
@@ -92,7 +98,7 @@ export const FriendsProvider = ({ children }: { children: React.ReactNode }) => 
     if (isFullStoryBlocking()) {
       return new Promise<Response>((resolve, reject) => {
         const xhr = new XMLHttpRequest();
-        xhr.open(options.method || 'GET', url);
+        xhr.open(options.method || "GET", url);
 
         if (options.headers) {
           Object.entries(options.headers).forEach(([key, value]) => {
@@ -105,18 +111,18 @@ export const FriendsProvider = ({ children }: { children: React.ReactNode }) => 
             ok: xhr.status >= 200 && xhr.status < 300,
             status: xhr.status,
             json: () => Promise.resolve(JSON.parse(xhr.responseText)),
-            text: () => Promise.resolve(xhr.responseText)
+            text: () => Promise.resolve(xhr.responseText),
           } as Response;
           resolve(response);
         };
 
-        xhr.onerror = () => reject(new Error('XMLHttpRequest failed'));
-        xhr.ontimeout = () => reject(new Error('XMLHttpRequest timeout'));
+        xhr.onerror = () => reject(new Error("XMLHttpRequest failed"));
+        xhr.ontimeout = () => reject(new Error("XMLHttpRequest timeout"));
 
         if (options.signal) {
-          options.signal.addEventListener('abort', () => {
+          options.signal.addEventListener("abort", () => {
             xhr.abort();
-            reject(new Error('Request aborted'));
+            reject(new Error("Request aborted"));
           });
         }
 
@@ -163,8 +169,10 @@ export const FriendsProvider = ({ children }: { children: React.ReactNode }) => 
         clearTimeout(timeoutId);
 
         // Handle friends response
-        if (friendsRes.status === 'fulfilled' && friendsRes.value.ok) {
-          const friendsData = await safeJsonParse(friendsRes.value, { friends: [] });
+        if (friendsRes.status === "fulfilled" && friendsRes.value.ok) {
+          const friendsData = await safeJsonParse(friendsRes.value, {
+            friends: [],
+          });
           setFriends(friendsData.friends || []);
 
           // Filter online friends
@@ -177,15 +185,17 @@ export const FriendsProvider = ({ children }: { children: React.ReactNode }) => 
         }
 
         // Handle friend requests response
-        if (requestsRes.status === 'fulfilled' && requestsRes.value.ok) {
-          const requestsData = await safeJsonParse(requestsRes.value, { requests: [] });
+        if (requestsRes.status === "fulfilled" && requestsRes.value.ok) {
+          const requestsData = await safeJsonParse(requestsRes.value, {
+            requests: [],
+          });
           setFriendRequests(requestsData.requests || []);
         } else {
           console.warn("Failed to load friend requests, keeping existing data");
         }
 
         // Handle sent requests response
-        if (sentRes.status === 'fulfilled' && sentRes.value.ok) {
+        if (sentRes.status === "fulfilled" && sentRes.value.ok) {
           const sentData = await safeJsonParse(sentRes.value, { requests: [] });
           setSentRequests(sentData.requests || []);
         } else {
@@ -196,10 +206,12 @@ export const FriendsProvider = ({ children }: { children: React.ReactNode }) => 
         throw fetchError;
       }
     } catch (error) {
-      if (error.name === 'AbortError') {
+      if (error.name === "AbortError") {
         console.warn("Friends data loading timed out, keeping existing data");
-      } else if (error.message?.includes('Failed to fetch')) {
-        console.warn("Network issue loading friends data, keeping existing data");
+      } else if (error.message?.includes("Failed to fetch")) {
+        console.warn(
+          "Network issue loading friends data, keeping existing data",
+        );
       } else {
         console.error("Error loading friends data:", error);
       }
@@ -238,61 +250,79 @@ export const FriendsProvider = ({ children }: { children: React.ReactNode }) => 
   }, [user, token, loadFriendsData]);
 
   // Subscribe to WebSocket friend events for real-time updates
-  useWebSocketEvent("friends:status_updated", useCallback((data) => {
-    if (!user) return;
+  useWebSocketEvent(
+    "friends:status_updated",
+    useCallback(
+      (data) => {
+        if (!user) return;
 
-    setFriends((prev) =>
-      prev.map((friend) =>
-        friend.id === data.userId
-          ? {
-              ...friend,
-              status: data.status,
-              lastSeen: new Date().toISOString(),
+        setFriends((prev) =>
+          prev.map((friend) =>
+            friend.id === data.userId
+              ? {
+                  ...friend,
+                  status: data.status,
+                  lastSeen: new Date().toISOString(),
+                }
+              : friend,
+          ),
+        );
+
+        // Update online friends list - simplified logic
+        setOnlineFriends((prev) => {
+          const filtered = prev.filter((f) => f.id !== data.userId);
+          if (data.status === "online" || data.status === "playing") {
+            // Get updated friend from the state we just set
+            const updatedFriend = friends.find((f) => f.id === data.userId);
+            if (updatedFriend) {
+              return [...filtered, { ...updatedFriend, status: data.status }];
             }
-          : friend,
-      ),
-    );
-
-    // Update online friends list - simplified logic
-    setOnlineFriends((prev) => {
-      const filtered = prev.filter((f) => f.id !== data.userId);
-      if (data.status === "online" || data.status === "playing") {
-        // Get updated friend from the state we just set
-        const updatedFriend = friends.find((f) => f.id === data.userId);
-        if (updatedFriend) {
-          return [...filtered, { ...updatedFriend, status: data.status }];
-        }
-      }
-      return filtered;
-    });
-  }, [user]));
-
-  useWebSocketEvent("friends:request_received", useCallback((data) => {
-    if (!user || data.to !== user.id) return;
-
-    setFriendRequests((prev) => [
-      ...prev,
-      {
-        id: `${Date.now()}`,
-        from: data.from,
-        fromUsername: data.username,
-        to: user.id,
-        toUsername: user.username,
-        status: "pending",
-        createdAt: new Date().toISOString(),
+          }
+          return filtered;
+        });
       },
-    ]);
-  }, [user]));
+      [user],
+    ),
+  );
 
-  useWebSocketEvent("friends:request_accepted", useCallback((data) => {
-    if (!user) return;
+  useWebSocketEvent(
+    "friends:request_received",
+    useCallback(
+      (data) => {
+        if (!user || data.to !== user.id) return;
 
-    // Remove from sent requests and add to friends
-    setSentRequests((prev) => prev.filter((req) => req.to !== data.userId));
+        setFriendRequests((prev) => [
+          ...prev,
+          {
+            id: `${Date.now()}`,
+            from: data.from,
+            fromUsername: data.username,
+            to: user.id,
+            toUsername: user.username,
+            status: "pending",
+            createdAt: new Date().toISOString(),
+          },
+        ]);
+      },
+      [user],
+    ),
+  );
 
-    // Refresh friends list to get the new friend
-    loadFriendsData();
-  }, [user, loadFriendsData]));
+  useWebSocketEvent(
+    "friends:request_accepted",
+    useCallback(
+      (data) => {
+        if (!user) return;
+
+        // Remove from sent requests and add to friends
+        setSentRequests((prev) => prev.filter((req) => req.to !== data.userId));
+
+        // Refresh friends list to get the new friend
+        loadFriendsData();
+      },
+      [user, loadFriendsData],
+    ),
+  );
 
   // Update friend statuses based on WebSocket online users
   useEffect(() => {
@@ -313,7 +343,7 @@ export const FriendsProvider = ({ children }: { children: React.ReactNode }) => 
       setOnlineFriends(
         updated
           .filter((friend) => onlineUserIds.includes(friend.id))
-          .map((friend) => ({ ...friend, status: "online" as const }))
+          .map((friend) => ({ ...friend, status: "online" as const })),
       );
 
       return updated;
@@ -355,12 +385,16 @@ export const FriendsProvider = ({ children }: { children: React.ReactNode }) => 
               setSentRequests(sentData.requests || []);
             }
           } catch (refreshError) {
-            console.warn("Failed to refresh sent requests after sending friend request");
+            console.warn(
+              "Failed to refresh sent requests after sending friend request",
+            );
           }
 
           return true;
         } else {
-          const errorData = await response.json().catch(() => ({ error: "Unknown error" }));
+          const errorData = await response
+            .json()
+            .catch(() => ({ error: "Unknown error" }));
           console.error("Friend request error:", errorData.error);
           return false;
         }
@@ -369,9 +403,9 @@ export const FriendsProvider = ({ children }: { children: React.ReactNode }) => 
         throw fetchError;
       }
     } catch (error) {
-      if (error.name === 'AbortError') {
+      if (error.name === "AbortError") {
         console.warn("Friend request timed out");
-      } else if (error.message?.includes('Failed to fetch')) {
+      } else if (error.message?.includes("Failed to fetch")) {
         console.warn("Network issue sending friend request");
       } else {
         console.error("Error sending friend request:", error);
@@ -384,13 +418,16 @@ export const FriendsProvider = ({ children }: { children: React.ReactNode }) => 
     if (!user || !token) return;
 
     try {
-      const response = await makeRequest(`/api/friends/request/${requestId}/accept`, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
+      const response = await makeRequest(
+        `/api/friends/request/${requestId}/accept`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
         },
-      });
+      );
 
       if (response.ok) {
         // Refresh all friends data

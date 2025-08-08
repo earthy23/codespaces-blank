@@ -114,7 +114,10 @@ export default function Profile() {
     }
 
     // Determine if this is the user's own profile
-    const isOwn = (!userId && !username) || userId === user.id || username === user.username;
+    const isOwn =
+      (!userId && !username) ||
+      userId === user.id ||
+      username === user.username;
     setIsOwnProfile(isOwn);
 
     if (isOwn) {
@@ -161,8 +164,12 @@ export default function Profile() {
       // The API would handle both userId and username lookups
 
       // Mock data for demonstration - determine if it's a username or userId
-      const isUsername = targetIdentifier.includes('/user/') || !targetIdentifier.match(/^[0-9]+$/);
-      const actualUsername = isUsername ? targetIdentifier.replace('/user/', '') : `User${targetIdentifier}`;
+      const isUsername =
+        targetIdentifier.includes("/user/") ||
+        !targetIdentifier.match(/^[0-9]+$/);
+      const actualUsername = isUsername
+        ? targetIdentifier.replace("/user/", "")
+        : `User${targetIdentifier}`;
 
       const mockProfile: ProfileUser = {
         id: isUsername ? `user_${actualUsername}` : targetIdentifier,
@@ -290,12 +297,14 @@ export default function Profile() {
     return "Just now";
   };
 
-  const handleBannerUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleBannerUpload = async (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
     const file = event.target.files?.[0];
     if (!file) return;
 
     // Validate file
-    if (!file.type.startsWith('image/')) {
+    if (!file.type.startsWith("image/")) {
       toast({
         title: "Invalid file type",
         description: "Please select an image file",
@@ -304,7 +313,8 @@ export default function Profile() {
       return;
     }
 
-    if (file.size > 5 * 1024 * 1024) { // 5MB limit
+    if (file.size > 5 * 1024 * 1024) {
+      // 5MB limit
       toast({
         title: "File too large",
         description: "Please select an image smaller than 5MB",
@@ -317,7 +327,7 @@ export default function Profile() {
       setUploadingBanner(true);
       // In a real app, you'd upload to a server here
       const fakeUrl = URL.createObjectURL(file);
-      setFormData(prev => ({ ...prev, banner: fakeUrl }));
+      setFormData((prev) => ({ ...prev, banner: fakeUrl }));
       setShowBannerDialog(false);
 
       toast({
@@ -335,12 +345,14 @@ export default function Profile() {
     }
   };
 
-  const handleAvatarUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleAvatarUpload = async (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
     const file = event.target.files?.[0];
     if (!file) return;
 
     // Validate file
-    if (!file.type.startsWith('image/')) {
+    if (!file.type.startsWith("image/")) {
       toast({
         title: "Invalid file type",
         description: "Please select an image file",
@@ -349,7 +361,8 @@ export default function Profile() {
       return;
     }
 
-    if (file.size > 2 * 1024 * 1024) { // 2MB limit
+    if (file.size > 2 * 1024 * 1024) {
+      // 2MB limit
       toast({
         title: "File too large",
         description: "Please select an image smaller than 2MB",
@@ -362,7 +375,7 @@ export default function Profile() {
       setUploadingAvatar(true);
       // In a real app, you'd upload to a server here
       const fakeUrl = URL.createObjectURL(file);
-      setFormData(prev => ({ ...prev, avatar: fakeUrl }));
+      setFormData((prev) => ({ ...prev, avatar: fakeUrl }));
       setShowAvatarDialog(false);
 
       toast({
@@ -435,7 +448,10 @@ export default function Profile() {
               )}
               <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
               {isOwnProfile && (
-                <Dialog open={showBannerDialog} onOpenChange={setShowBannerDialog}>
+                <Dialog
+                  open={showBannerDialog}
+                  onOpenChange={setShowBannerDialog}
+                >
                   <DialogTrigger asChild>
                     <Button
                       variant="secondary"
@@ -489,7 +505,10 @@ export default function Profile() {
                       )}
                     </div>
                     {isOwnProfile && (
-                      <Dialog open={showAvatarDialog} onOpenChange={setShowAvatarDialog}>
+                      <Dialog
+                        open={showAvatarDialog}
+                        onOpenChange={setShowAvatarDialog}
+                      >
                         <DialogTrigger asChild>
                           <Button
                             variant="secondary"
@@ -529,7 +548,10 @@ export default function Profile() {
                         {profileUser.username}
                       </h1>
                       {profileUser.role === "admin" && (
-                        <Badge variant="default" className="bg-gradient-to-r from-yellow-500 to-yellow-600 text-black border-0 mx-auto lg:mx-0 w-fit">
+                        <Badge
+                          variant="default"
+                          className="bg-gradient-to-r from-yellow-500 to-yellow-600 text-black border-0 mx-auto lg:mx-0 w-fit"
+                        >
                           <Shield className="w-3 h-3 mr-1" />
                           Admin
                         </Badge>
@@ -547,7 +569,12 @@ export default function Profile() {
                       </div>
                       <div className="flex items-center justify-center lg:justify-start space-x-2">
                         <Users className="w-4 h-4" />
-                        <span>{formatNumber(profileUser.followers + profileUser.following)} connections</span>
+                        <span>
+                          {formatNumber(
+                            profileUser.followers + profileUser.following,
+                          )}{" "}
+                          connections
+                        </span>
                       </div>
                     </div>
                   </div>
@@ -560,7 +587,9 @@ export default function Profile() {
                       <Button
                         onClick={handleFollow}
                         size="lg"
-                        variant={profileUser.isFollowing ? "outline" : "default"}
+                        variant={
+                          profileUser.isFollowing ? "outline" : "default"
+                        }
                         className="min-w-[140px] h-12 text-base"
                       >
                         {profileUser.isFollowing ? "✓ Following" : "➕ Follow"}
@@ -663,7 +692,10 @@ export default function Profile() {
                         {video.duration}
                       </Badge>
                       <div className="absolute top-3 left-3">
-                        <Badge variant="secondary" className="bg-primary/20 text-primary border-0">
+                        <Badge
+                          variant="secondary"
+                          className="bg-primary/20 text-primary border-0"
+                        >
                           HD
                         </Badge>
                       </div>
@@ -681,9 +713,15 @@ export default function Profile() {
                       <div className="flex items-center justify-between">
                         <div className="flex items-center space-x-2 text-sm">
                           <Heart className="w-4 h-4 text-red-500" />
-                          <span className="font-medium">{formatNumber(video.likes)}</span>
+                          <span className="font-medium">
+                            {formatNumber(video.likes)}
+                          </span>
                         </div>
-                        <Button size="sm" variant="ghost" className="h-8 w-8 p-0">
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          className="h-8 w-8 p-0"
+                        >
                           ▶️
                         </Button>
                       </div>
@@ -845,14 +883,19 @@ export default function Profile() {
                     <div className="space-y-4">
                       <h4 className="font-semibold">Change Password</h4>
                       <div>
-                        <Label htmlFor="currentPassword">Current Password</Label>
+                        <Label htmlFor="currentPassword">
+                          Current Password
+                        </Label>
                         <div className="relative">
                           <Input
                             id="currentPassword"
                             type={showPasswords.current ? "text" : "password"}
                             value={formData.currentPassword}
                             onChange={(e) =>
-                              setFormData({ ...formData, currentPassword: e.target.value })
+                              setFormData({
+                                ...formData,
+                                currentPassword: e.target.value,
+                              })
                             }
                             className="pr-10"
                           />
@@ -885,7 +928,10 @@ export default function Profile() {
                               type={showPasswords.new ? "text" : "password"}
                               value={formData.newPassword}
                               onChange={(e) =>
-                                setFormData({ ...formData, newPassword: e.target.value })
+                                setFormData({
+                                  ...formData,
+                                  newPassword: e.target.value,
+                                })
                               }
                               className="pr-10"
                             />
@@ -910,14 +956,19 @@ export default function Profile() {
                           </div>
                         </div>
                         <div>
-                          <Label htmlFor="confirmPassword">Confirm New Password</Label>
+                          <Label htmlFor="confirmPassword">
+                            Confirm New Password
+                          </Label>
                           <div className="relative">
                             <Input
                               id="confirmPassword"
                               type={showPasswords.confirm ? "text" : "password"}
                               value={formData.confirmPassword}
                               onChange={(e) =>
-                                setFormData({ ...formData, confirmPassword: e.target.value })
+                                setFormData({
+                                  ...formData,
+                                  confirmPassword: e.target.value,
+                                })
                               }
                               className="pr-10"
                             />
@@ -942,9 +993,7 @@ export default function Profile() {
                           </div>
                         </div>
                       </div>
-                      <Button variant="outline">
-                        Update Password
-                      </Button>
+                      <Button variant="outline">Update Password</Button>
                     </div>
 
                     <Separator />
@@ -955,7 +1004,9 @@ export default function Profile() {
                         <div>
                           <p className="font-medium">Email Verification</p>
                           <p className="text-sm text-muted-foreground">
-                            {user.emailVerified ? 'Your email is verified' : 'Your email is not verified'}
+                            {user.emailVerified
+                              ? "Your email is verified"
+                              : "Your email is not verified"}
                           </p>
                         </div>
                         {!user.emailVerified && (
@@ -969,7 +1020,9 @@ export default function Profile() {
                     <Separator />
 
                     <div className="space-y-4">
-                      <h4 className="font-semibold">Two-Factor Authentication</h4>
+                      <h4 className="font-semibold">
+                        Two-Factor Authentication
+                      </h4>
                       <div className="flex items-center justify-between">
                         <div>
                           <p className="font-medium">2FA Status</p>

@@ -80,7 +80,7 @@ export default function Dashboard() {
           return response;
         } catch (error) {
           // Don't log error if component unmounted or request was intentionally aborted
-          if (!isMounted || error.name === 'AbortError') {
+          if (!isMounted || error.name === "AbortError") {
             return null;
           }
 

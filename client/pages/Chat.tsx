@@ -383,7 +383,9 @@ export default function Chat() {
       id: userId || username,
       username: username,
       bio: `${username} is an active member of the UEC community!`,
-      joinedAt: new Date(Date.now() - Math.random() * 31536000000).toISOString(),
+      joinedAt: new Date(
+        Date.now() - Math.random() * 31536000000,
+      ).toISOString(),
       followers: Math.floor(Math.random() * 1000) + 50,
       following: Math.floor(Math.random() * 500) + 20,
       totalVideos: Math.floor(Math.random() * 50) + 1,
@@ -881,7 +883,12 @@ export default function Chat() {
                           <div className="flex-1">
                             <div className="flex items-center space-x-2 mb-1">
                               <button
-                                onClick={() => handleUserClick(message.senderUsername, message.senderId)}
+                                onClick={() =>
+                                  handleUserClick(
+                                    message.senderUsername,
+                                    message.senderId,
+                                  )
+                                }
                                 className="font-semibold text-sm hover:text-primary transition-colors cursor-pointer"
                               >
                                 {message.senderUsername}
@@ -913,7 +920,12 @@ export default function Chat() {
                           <div className="flex-1">
                             <div className="flex items-center space-x-2 mb-1">
                               <button
-                                onClick={() => handleUserClick(message.sender_username, message.sender_id)}
+                                onClick={() =>
+                                  handleUserClick(
+                                    message.sender_username,
+                                    message.sender_id,
+                                  )
+                                }
                                 className="font-semibold text-sm hover:text-primary transition-colors cursor-pointer"
                               >
                                 {message.sender_username}
@@ -1111,11 +1123,15 @@ export default function Chat() {
                   </span>
                 </div>
                 <div>
-                  <p className="text-lg font-semibold">{selectedUser?.username}</p>
+                  <p className="text-lg font-semibold">
+                    {selectedUser?.username}
+                  </p>
                   <div className="flex items-center space-x-2 text-sm">
-                    <div className={`w-2 h-2 rounded-full ${selectedUser?.isOnline ? 'bg-green-500' : 'bg-gray-500'}`}></div>
+                    <div
+                      className={`w-2 h-2 rounded-full ${selectedUser?.isOnline ? "bg-green-500" : "bg-gray-500"}`}
+                    ></div>
                     <span className="text-muted-foreground">
-                      {selectedUser?.isOnline ? 'Online' : 'Offline'}
+                      {selectedUser?.isOnline ? "Online" : "Offline"}
                     </span>
                   </div>
                 </div>
@@ -1127,21 +1143,33 @@ export default function Chat() {
                 {selectedUser.bio && (
                   <div>
                     <h4 className="font-semibold mb-1">About</h4>
-                    <p className="text-sm text-muted-foreground">{selectedUser.bio}</p>
+                    <p className="text-sm text-muted-foreground">
+                      {selectedUser.bio}
+                    </p>
                   </div>
                 )}
 
                 <div className="grid grid-cols-3 gap-4 text-center">
                   <div>
-                    <div className="text-lg font-bold text-primary">{selectedUser.followers}</div>
-                    <div className="text-xs text-muted-foreground">Followers</div>
+                    <div className="text-lg font-bold text-primary">
+                      {selectedUser.followers}
+                    </div>
+                    <div className="text-xs text-muted-foreground">
+                      Followers
+                    </div>
                   </div>
                   <div>
-                    <div className="text-lg font-bold text-primary">{selectedUser.following}</div>
-                    <div className="text-xs text-muted-foreground">Following</div>
+                    <div className="text-lg font-bold text-primary">
+                      {selectedUser.following}
+                    </div>
+                    <div className="text-xs text-muted-foreground">
+                      Following
+                    </div>
                   </div>
                   <div>
-                    <div className="text-lg font-bold text-primary">{selectedUser.totalVideos}</div>
+                    <div className="text-lg font-bold text-primary">
+                      {selectedUser.totalVideos}
+                    </div>
                     <div className="text-xs text-muted-foreground">Videos</div>
                   </div>
                 </div>

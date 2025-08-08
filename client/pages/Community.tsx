@@ -334,9 +334,12 @@ export default function Community() {
         {/* Header */}
         <div className="flex flex-col lg:flex-row lg:items-center justify-between mb-8 gap-4">
           <div className="text-center lg:text-left">
-            <h1 className="text-4xl font-bold text-foreground mb-2">Community Hub</h1>
+            <h1 className="text-4xl font-bold text-foreground mb-2">
+              Community Hub
+            </h1>
             <p className="text-lg text-muted-foreground">
-              Discover, share, and connect with amazing content from our community
+              Discover, share, and connect with amazing content from our
+              community
             </p>
           </div>
           <Dialog open={showUploadDialog} onOpenChange={setShowUploadDialog}>
@@ -497,7 +500,10 @@ export default function Community() {
                           {video.duration}
                         </Badge>
                         <div className="absolute top-3 left-3">
-                          <Badge variant="secondary" className="bg-primary/20 text-primary border-0">
+                          <Badge
+                            variant="secondary"
+                            className="bg-primary/20 text-primary border-0"
+                          >
                             HD
                           </Badge>
                         </div>
@@ -514,12 +520,14 @@ export default function Community() {
                           </div>
                           <div>
                             <Link
-                            to={`/profile/user/${video.author}`}
-                            className="text-sm font-medium hover:text-primary transition-colors block"
-                          >
-                            {video.author}
-                          </Link>
-                            <p className="text-xs text-muted-foreground">Content Creator</p>
+                              to={`/profile/user/${video.author}`}
+                              className="text-sm font-medium hover:text-primary transition-colors block"
+                            >
+                              {video.author}
+                            </Link>
+                            <p className="text-xs text-muted-foreground">
+                              Content Creator
+                            </p>
                           </div>
                         </div>
                         <div className="flex items-center justify-between text-sm text-muted-foreground mb-4">
@@ -548,14 +556,22 @@ export default function Community() {
                           </div>
                           <DropdownMenu>
                             <DropdownMenuTrigger asChild>
-                              <Button size="sm" variant="ghost" className="h-8 w-8 p-0">
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                className="h-8 w-8 p-0"
+                              >
                                 ⋯
                               </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent>
-                              <DropdownMenuItem>📚 Watch Later</DropdownMenuItem>
+                              <DropdownMenuItem>
+                                📚 Watch Later
+                              </DropdownMenuItem>
                               <DropdownMenuItem>📤 Share</DropdownMenuItem>
-                              <DropdownMenuItem className="text-red-600">🚨 Report</DropdownMenuItem>
+                              <DropdownMenuItem className="text-red-600">
+                                🚨 Report
+                              </DropdownMenuItem>
                             </DropdownMenuContent>
                           </DropdownMenu>
                         </div>
@@ -734,19 +750,27 @@ export default function Community() {
               <CardContent>
                 <div className="space-y-3">
                   <div className="flex justify-between items-center">
-                    <span className="text-sm text-muted-foreground">Total Videos</span>
+                    <span className="text-sm text-muted-foreground">
+                      Total Videos
+                    </span>
                     <span className="font-semibold">1,247</span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="text-sm text-muted-foreground">Active Creators</span>
+                    <span className="text-sm text-muted-foreground">
+                      Active Creators
+                    </span>
                     <span className="font-semibold">89</span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="text-sm text-muted-foreground">Total Views</span>
+                    <span className="text-sm text-muted-foreground">
+                      Total Views
+                    </span>
                     <span className="font-semibold">2.4M</span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="text-sm text-muted-foreground">This Week</span>
+                    <span className="text-sm text-muted-foreground">
+                      This Week
+                    </span>
                     <span className="font-semibold text-green-500">+157</span>
                   </div>
                 </div>
