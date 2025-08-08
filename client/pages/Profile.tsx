@@ -34,6 +34,7 @@ export default function Profile() {
     emailNotifications: true,
     friendRequests: true,
     chatNotifications: true,
+    pingNotifications: true,
     voiceChatEnabled: true,
   });
 
