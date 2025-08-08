@@ -11,7 +11,7 @@ export function TopNavigation() {
       <div className="flex items-center justify-between">
         {/* Logo on the left */}
         <Link to="/" className="flex items-center">
-          <UECLogo size="md" showText={false} />
+          <UECLogo size="md" />
         </Link>
 
         {/* Profile section on the right */}
