@@ -129,7 +129,11 @@ export function TopNavigation() {
                   className="relative p-2 hover:bg-primary/10"
                   onClick={handleNotificationClick}
                 >
-                  <span className="text-lg">🔔</span>
+                  <img
+                    src="https://cdn.builder.io/api/v1/image/assets%2F595a5390b6e641358fa1c0bbbed72804%2F5fb4309422964587854cb14b9b131597?format=webp&width=800"
+                    alt="Notifications"
+                    className="w-5 h-5"
+                  />
                   {unreadCount > 0 && (
                     <Badge 
                       variant="destructive" 
