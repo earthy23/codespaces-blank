@@ -171,13 +171,17 @@ export default function Chat() {
         type: "message"
       };
 
-      setGeneralMessages(prev => [...prev, newMessage]);
-      setMessageContent("");
+      const updatedMessages = [...generalMessages, newMessage];
+      setGeneralMessages(updatedMessages);
 
-      toast({
-        title: "Message sent",
-        description: "Your message has been added to the community chat!",
-      });
+      // Save to localStorage for persistence
+      try {
+        localStorage.setItem('general_chat_messages', JSON.stringify(updatedMessages));
+      } catch (error) {
+        console.warn("Failed to save messages to localStorage:", error);
+      }
+
+      setMessageContent("");
     } else if (chatId) {
       try {
         await sendMessage(chatId, messageContent);
