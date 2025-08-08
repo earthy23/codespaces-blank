@@ -516,7 +516,7 @@ export default function Community() {
                               variant="outline"
                               className="text-xs"
                             >
-                              👎 {formatNumber(video.dislikes)}
+                              Dislike {formatNumber(video.dislikes)}
                             </Button>
                           </div>
                           <DropdownMenu>
@@ -612,7 +612,7 @@ export default function Community() {
                                 variant="outline"
                                 className="text-xs"
                               >
-                                👎 {formatNumber(video.dislikes)}
+                                Dislike {formatNumber(video.dislikes)}
                               </Button>
                             </div>
                           </div>
