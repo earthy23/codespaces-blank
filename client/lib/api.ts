@@ -273,13 +273,13 @@ const makeRequest = async (endpoint: string, options: RequestInit = {}) => {
         }
         // For auth-related requests, don't throw error - just return a fallback
         if (url.includes('/auth/profile') || url.includes('/auth/')) {
-          console.warn("🔐 Auth request was cancelled - returning null to prevent logout");
+          console.warn("🔐 Auth request was cancelled - returning graceful fallback");
           return {
             ok: false,
-            status: 0,
+            status: 499, // Client closed request
             statusText: "Auth request cancelled",
-            json: () => Promise.resolve(null),
-            text: () => Promise.resolve(""),
+            json: () => Promise.resolve({ error: "Request cancelled", temporary: true }),
+            text: () => Promise.resolve("Request cancelled"),
             headers: new Headers(),
           } as Response;
         }
