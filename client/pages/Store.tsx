@@ -660,10 +660,14 @@ export default function Store() {
                           <p className="text-sm text-muted-foreground mt-2">
                             {uploadingFile
                               ? "Uploading..."
-                              : "Click to upload files (Max 10MB)"}
+                              : currentTier.tier === 'free'
+                                ? 'VIP+ subscription required'
+                                : `Click to upload files (Max ${currentTier.tier === 'vip' ? '10MB' : '50MB'})`}
                           </p>
                           <p className="text-xs text-muted-foreground">
-                            Supports: ZIP, PNG, JPG, MCPACK, MCWORLD
+                            {currentTier.tier === 'free'
+                              ? 'Upgrade to VIP+ to upload personal files'
+                              : 'Supports: ZIP, PNG, JPG, MCPACK, MCWORLD'}
                           </p>
                         </div>
                       </div>
