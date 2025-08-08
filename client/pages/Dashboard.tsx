@@ -52,6 +52,7 @@ export default function Dashboard() {
         const timeoutId = setTimeout(() => controller.abort(), timeout);
 
         try {
+          console.log(`Making request to: ${url}`);
           const response = await fetch(url, {
             headers: {
               'Content-Type': 'application/json',
@@ -60,12 +61,29 @@ export default function Dashboard() {
             signal: controller.signal
           });
           clearTimeout(timeoutId);
+          console.log(`Response from ${url}:`, response.status, response.statusText);
           return response;
         } catch (error) {
           clearTimeout(timeoutId);
+          console.error(`Request to ${url} failed:`, error);
           throw error;
         }
       };
+
+      // Simple health check first
+      try {
+        const healthResponse = await makeRequest('/api/ping', 5000);
+        if (!healthResponse.ok) {
+          setFetchError('Server is not responding properly.');
+          setLoading(false);
+          return;
+        }
+      } catch (error) {
+        console.error('Health check failed:', error);
+        setFetchError('Unable to connect to server. Please refresh the page.');
+        setLoading(false);
+        return;
+      }
 
       // Reset error state
       setFetchError(null);
