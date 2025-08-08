@@ -208,7 +208,7 @@ export function NavigationSidebar() {
                         : "hover:bg-white/5 hover:shadow-md"
                     }`}
                   >
-                    <div className="flex items-center space-x-3">
+                    <div className="flex items-center space-x-3 ml-px">
                       <div className={`${item.iconColor} transition-colors duration-200`}>
                         {item.iconSvg}
                       </div>
