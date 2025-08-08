@@ -253,20 +253,29 @@ export default function Chat() {
     }
 
     try {
-      // This would create a group chat via API
-      // For now, we'll show a success message
-      toast({
-        title: "Success",
-        description: `Group chat "${groupChatName}" created with ${selectedFriends.length} friends!`,
-      });
-      setShowCreateChatDialog(false);
-      setSelectedFriends([]);
-      setGroupChatName("");
+      const selectedUsernames = selectedFriends.map(friendId =>
+        friends.find(f => f.id === friendId)?.username
+      ).filter(Boolean) as string[];
+
+      const chatId = await createGroupChat(groupChatName.trim(), selectedUsernames);
+      if (chatId) {
+        await refreshChats();
+        navigate(`/chat/${chatId}`);
+        setShowCreateChatDialog(false);
+        setSelectedFriends([]);
+        setGroupChatName("");
+        toast({
+          title: "Success",
+          description: `Group chat "${groupChatName}" created with ${selectedFriends.length} friends!`,
+        });
+      } else {
+        throw new Error("Failed to create group chat");
+      }
     } catch (error) {
       console.error("Failed to create group chat:", error);
       toast({
         title: "Error",
-        description: "Failed to create group chat.",
+        description: "Failed to create group chat. Please try again.",
         variant: "destructive",
       });
     }
