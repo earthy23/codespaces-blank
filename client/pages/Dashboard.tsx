@@ -126,6 +126,8 @@ export default function Dashboard() {
       // Fetch top servers with error handling
       try {
         const serversResponse = await makeRequest("/api/servers/top?limit=3");
+        if (!serversResponse) return; // Request was cancelled
+
         if (serversResponse.ok) {
           const serversData = await serversResponse.json();
           setTopServers(serversData.servers || []);
@@ -138,10 +140,9 @@ export default function Dashboard() {
           setTopServers([]);
         }
       } catch (error) {
-        console.warn(
-          "Failed to fetch servers:",
-          error.name === "AbortError" ? "Request timed out" : error.message,
-        );
+        if (error.name === "AbortError") return; // Component was unmounted
+
+        console.warn("Failed to fetch servers:", error.message);
         setTopServers([]);
       }
 
