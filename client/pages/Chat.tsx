@@ -266,9 +266,9 @@ export default function Chat() {
 
   const handleStartCall = () => {
     if (!currentChat) return;
-    
+
     setIsInCall(true);
-    setCallParticipants(currentChat.participants?.map(p => p.username) || []);
+    setCallParticipants(currentChat.participant_usernames || []);
     toast({
       title: "Call Started",
       description: "Voice call initiated with chat participants.",
