@@ -410,15 +410,102 @@ export default function Profile() {
       <div className="max-w-6xl">
         {/* Profile Header */}
         <div className="mb-8">
-          <Card className="minecraft-panel">
-            <CardContent className="p-6">
+          <Card className="minecraft-panel overflow-hidden">
+            {/* Profile Banner */}
+            <div className="relative h-48 bg-gradient-to-r from-primary/20 to-primary/10">
+              {formData.banner && (
+                <img
+                  src={formData.banner}
+                  alt="Profile Banner"
+                  className="w-full h-full object-cover"
+                />
+              )}
+              {isOwnProfile && (
+                <Dialog open={showBannerDialog} onOpenChange={setShowBannerDialog}>
+                  <DialogTrigger asChild>
+                    <Button
+                      variant="secondary"
+                      size="sm"
+                      className="absolute top-4 right-4"
+                    >
+                      Edit Banner
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>Update Profile Banner</DialogTitle>
+                      <DialogDescription>
+                        Upload a new banner image for your profile
+                      </DialogDescription>
+                    </DialogHeader>
+                    <div className="space-y-4">
+                      <Input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleBannerUpload}
+                        disabled={uploadingBanner}
+                      />
+                      <p className="text-sm text-muted-foreground">
+                        Recommended size: 1200x300px. Max file size: 5MB
+                      </p>
+                    </div>
+                  </DialogContent>
+                </Dialog>
+              )}
+            </div>
+
+            <CardContent className="p-6 -mt-12 relative">
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-6">
                   {/* Profile Avatar */}
-                  <div className="w-24 h-24 rounded-full bg-primary/20 border-4 border-primary/30 flex items-center justify-center">
-                    <span className="text-3xl font-bold text-primary">
-                      {profileUser.username.charAt(0).toUpperCase()}
-                    </span>
+                  <div className="relative">
+                    <div className="w-24 h-24 rounded-full bg-primary/20 border-4 border-background overflow-hidden">
+                      {formData.avatar ? (
+                        <img
+                          src={formData.avatar}
+                          alt={profileUser.username}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center">
+                          <span className="text-3xl font-bold text-primary">
+                            {profileUser.username.charAt(0).toUpperCase()}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                    {isOwnProfile && (
+                      <Dialog open={showAvatarDialog} onOpenChange={setShowAvatarDialog}>
+                        <DialogTrigger asChild>
+                          <Button
+                            variant="secondary"
+                            size="sm"
+                            className="absolute -bottom-2 -right-2 h-8 w-8 rounded-full p-0"
+                          >
+                            ✏️
+                          </Button>
+                        </DialogTrigger>
+                        <DialogContent>
+                          <DialogHeader>
+                            <DialogTitle>Update Profile Picture</DialogTitle>
+                            <DialogDescription>
+                              Upload a new profile picture
+                            </DialogDescription>
+                          </DialogHeader>
+                          <div className="space-y-4">
+                            <Input
+                              type="file"
+                              accept="image/*"
+                              onChange={handleAvatarUpload}
+                              disabled={uploadingAvatar}
+                            />
+                            <p className="text-sm text-muted-foreground">
+                              Recommended size: 400x400px. Max file size: 2MB
+                            </p>
+                          </div>
+                        </DialogContent>
+                      </Dialog>
+                    )}
                   </div>
 
                   {/* Profile Info */}
