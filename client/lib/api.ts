@@ -592,9 +592,16 @@ export const authApi = {
   getProfile: async () => {
     try {
       console.log("🔍 Attempting to fetch user profile...");
-      const result = await makeRequest("/auth/profile");
+      const response = await makeRequest("/auth/profile");
+
+      // Handle graceful cancellation response
+      if (response && typeof response === 'object' && 'error' in response && response.temporary) {
+        console.warn("🔐 Profile request was gracefully cancelled");
+        throw new Error("Profile request cancelled");
+      }
+
       console.log("✅ User profile fetched successfully");
-      return result;
+      return response;
     } catch (error) {
       console.error("❌ Failed to fetch user profile:", error);
 
