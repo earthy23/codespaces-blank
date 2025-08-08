@@ -59,6 +59,7 @@ export default function Profile() {
   const [formData, setFormData] = useState({
     username: "",
     email: "",
+    bio: "",
     currentPassword: "",
     newPassword: "",
     confirmPassword: "",
