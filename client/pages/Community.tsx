@@ -514,11 +514,11 @@ export default function Community() {
                           </div>
                           <div>
                             <Link
-                              to={`/profile/${video.authorId}`}
-                              className="text-sm font-medium hover:text-primary transition-colors block"
-                            >
-                              {video.author}
-                            </Link>
+                            to={`/profile/user/${video.author}`}
+                            className="text-sm font-medium hover:text-primary transition-colors block"
+                          >
+                            {video.author}
+                          </Link>
                             <p className="text-xs text-muted-foreground">Content Creator</p>
                           </div>
                         </div>
