@@ -153,21 +153,27 @@ export default function Profile() {
     }
   }, [user, userId, username, navigate]);
 
-  const loadUserProfile = async (targetUserId: string) => {
+  const loadUserProfile = async (targetIdentifier: string) => {
     try {
       setIsLoadingProfile(true);
 
-      // Mock data for demonstration
+      // In a real application, you would make an API call here
+      // The API would handle both userId and username lookups
+
+      // Mock data for demonstration - determine if it's a username or userId
+      const isUsername = targetIdentifier.includes('/user/') || !targetIdentifier.match(/^[0-9]+$/);
+      const actualUsername = isUsername ? targetIdentifier.replace('/user/', '') : `User${targetIdentifier}`;
+
       const mockProfile: ProfileUser = {
-        id: targetUserId,
-        username: "ViewedUser",
-        bio: "Minecraft enthusiast and content creator. Love building epic structures and sharing tutorials!",
+        id: isUsername ? `user_${actualUsername}` : targetIdentifier,
+        username: actualUsername,
+        bio: `${actualUsername} is a Minecraft enthusiast and content creator. Love building epic structures and sharing tutorials!`,
         joinedAt: new Date(Date.now() - 31536000000).toISOString(), // 1 year ago
-        followers: 1250,
-        following: 89,
-        totalVideos: 23,
-        totalViews: 45600,
-        totalLikes: 2340,
+        followers: Math.floor(Math.random() * 2000) + 500,
+        following: Math.floor(Math.random() * 500) + 50,
+        totalVideos: Math.floor(Math.random() * 50) + 5,
+        totalViews: Math.floor(Math.random() * 100000) + 10000,
+        totalLikes: Math.floor(Math.random() * 5000) + 500,
         isFollowing: false,
       };
 
