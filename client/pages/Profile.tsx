@@ -69,7 +69,7 @@ export default function Profile() {
   const { user } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
-  const { userId } = useParams();
+  const { userId, username } = useParams();
 
   const [profileUser, setProfileUser] = useState<ProfileUser | null>(null);
   const [userVideos, setUserVideos] = useState<ProfileVideo[]>([]);
