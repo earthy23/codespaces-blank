@@ -27,6 +27,7 @@ export default function Dashboard() {
   const [topServers, setTopServers] = useState([]);
   const [partners, setPartners] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [fetchError, setFetchError] = useState(null);
   const { user } = useAuth();
   const { onlineFriends } = useFriends();
   const { unreadTotal } = useChat();
@@ -66,6 +67,9 @@ export default function Dashboard() {
         }
       };
 
+      // Reset error state
+      setFetchError(null);
+
       // Fetch clients with error handling
       try {
         const clientsResponse = await makeRequest("/api/clients");
@@ -75,10 +79,17 @@ export default function Dashboard() {
         } else {
           console.warn("Clients API returned:", clientsResponse.status, clientsResponse.statusText);
           setClients([]);
+          if (clientsResponse.status >= 500) {
+            setFetchError('Server is experiencing issues. Some features may be unavailable.');
+          }
         }
       } catch (error) {
-        console.warn("Failed to fetch clients:", error.name === 'AbortError' ? 'Request timed out' : error.message);
+        const errorMsg = error.name === 'AbortError' ? 'Request timed out' : error.message;
+        console.warn("Failed to fetch clients:", errorMsg);
         setClients([]);
+        if (error.name === 'AbortError' || error.message.includes('fetch')) {
+          setFetchError('Unable to connect to server. Please check your internet connection.');
+        }
       }
 
       // Fetch top servers with error handling
