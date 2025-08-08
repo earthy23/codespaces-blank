@@ -242,37 +242,22 @@ export default function Friends() {
               value="friends"
               className="flex items-center space-x-2"
             >
-              <svg viewBox="0 0 24 24" fill="none" className="w-4 h-4">
-                <circle cx="9" cy="7" r="4" fill="currentColor"/>
-                <path d="m3 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2" stroke="currentColor" strokeWidth="2" fill="none"/>
-                <circle cx="16" cy="11" r="3" fill="currentColor" opacity="0.7"/>
-              </svg>
+              <span className="w-4 h-4"></span>
               <span>Friends ({friends.length})</span>
             </TabsTrigger>
             <TabsTrigger
               value="requests"
               className="flex items-center space-x-2"
             >
-              <svg viewBox="0 0 24 24" fill="none" className="w-4 h-4">
-                <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" fill="none"/>
-                <polyline points="12,6 12,12 16,14" stroke="currentColor" strokeWidth="2" fill="none"/>
-              </svg>
+              <span className="w-4 h-4"></span>
               <span>Requests ({friendRequests.length})</span>
             </TabsTrigger>
             <TabsTrigger value="sent" className="flex items-center space-x-2">
-              <svg viewBox="0 0 24 24" fill="none" className="w-4 h-4">
-                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" stroke="currentColor" strokeWidth="2" fill="none"/>
-                <circle cx="9" cy="7" r="4" stroke="currentColor" strokeWidth="2" fill="none"/>
-                <line x1="19" y1="8" x2="19" y2="14" stroke="currentColor" strokeWidth="2"/>
-                <line x1="22" y1="11" x2="16" y2="11" stroke="currentColor" strokeWidth="2"/>
-              </svg>
+              <span className="w-4 h-4"></span>
               <span>Sent ({sentRequests.length})</span>
             </TabsTrigger>
             <TabsTrigger value="add" className="flex items-center space-x-2">
-              <svg viewBox="0 0 24 24" fill="none" className="w-4 h-4">
-                <circle cx="11" cy="11" r="8" stroke="currentColor" strokeWidth="2" fill="none"/>
-                <path d="m21 21-4.35-4.35" stroke="currentColor" strokeWidth="2"/>
-              </svg>
+              <span className="w-4 h-4"></span>
               <span>Add Friends</span>
             </TabsTrigger>
           </TabsList>
@@ -291,11 +276,7 @@ export default function Friends() {
                         <div className="flex items-center space-x-4">
                           <div className="relative">
                             <div className="w-12 h-12 rounded-lg bg-muted border border-border flex items-center justify-center">
-                              <svg viewBox="0 0 24 24" fill="none" className="w-6 h-6 text-muted-foreground">
-                                <circle cx="9" cy="7" r="4" fill="currentColor"/>
-                                <path d="m3 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2" stroke="currentColor" strokeWidth="2" fill="none"/>
-                                <circle cx="16" cy="11" r="3" fill="currentColor" opacity="0.7"/>
-                              </svg>
+                              <span className="w-6 h-6 text-muted-foreground"></span>
                             </div>
                             <div
                               className={`absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-2 border-background ${getStatusColor(friend.status)}`}
@@ -314,11 +295,7 @@ export default function Friends() {
                                 }
                               >
                                 {friend.status === "playing" && (
-                                  <svg viewBox="0 0 24 24" fill="none" className="w-3 h-3 mr-1">
-                                    <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" fill="currentColor"/>
-                                    <circle cx="8" cy="12" r="1" fill="white"/>
-                                    <circle cx="16" cy="12" r="1" fill="white"/>
-                                  </svg>
+                                  <span className="w-3 h-3 mr-1"></span>
                                 )}
                                 {getStatusText(friend.status)}
                               </Badge>
@@ -342,12 +319,7 @@ export default function Friends() {
                             onClick={() => handleStartChat(friend.username)}
                             className="minecraft-button bg-primary/20 text-primary hover:bg-primary/30"
                           >
-                            <svg viewBox="0 0 24 24" fill="none" className="w-4 h-4">
-                              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" fill="currentColor"/>
-                              <circle cx="8" cy="11" r="1" fill="white"/>
-                              <circle cx="12" cy="11" r="1" fill="white"/>
-                              <circle cx="16" cy="11" r="1" fill="white"/>
-                            </svg>
+                            <span className="w-4 h-4"></span>
                           </Button>
                           <Button
                             size="sm"
@@ -357,11 +329,7 @@ export default function Friends() {
                             }
                             className="minecraft-button border-red-500/50 text-red-500 hover:bg-red-500/20"
                           >
-                            <svg viewBox="0 0 24 24" fill="none" className="w-4 h-4">
-                              <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" stroke="currentColor" strokeWidth="2" fill="none"/>
-                              <circle cx="9" cy="7" r="4" stroke="currentColor" strokeWidth="2" fill="none"/>
-                              <line x1="22" y1="11" x2="16" y2="11" stroke="currentColor" strokeWidth="2"/>
-                            </svg>
+                            <span className="w-4 h-4"></span>
                           </Button>
                         </div>
                       </div>
@@ -372,11 +340,7 @@ export default function Friends() {
             ) : (
               <Card className="minecraft-panel bg-card/50 border-2 border-border shadow-lg">
                 <CardContent className="p-8 text-center">
-                  <svg viewBox="0 0 24 24" fill="none" className="w-16 h-16 mx-auto mb-4 opacity-50">
-                    <circle cx="9" cy="7" r="4" fill="currentColor"/>
-                    <path d="m3 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2" stroke="currentColor" strokeWidth="2" fill="none"/>
-                    <circle cx="16" cy="11" r="3" fill="currentColor" opacity="0.7"/>
-                  </svg>
+                  <div className="w-16 h-16 mx-auto mb-4 opacity-50"></div>
                   <h3 className="text-xl font-semibold mb-2">No Friends Yet</h3>
                   <p className="text-muted-foreground mb-4">
                     Start building your network by adding friends!
@@ -385,12 +349,7 @@ export default function Friends() {
                     onClick={() => setActiveTab("add")}
                     className="minecraft-button bg-primary text-primary-foreground hover:bg-primary/90"
                   >
-                    <svg viewBox="0 0 24 24" fill="none" className="w-4 h-4 mr-2">
-                      <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" stroke="currentColor" strokeWidth="2" fill="none"/>
-                      <circle cx="9" cy="7" r="4" stroke="currentColor" strokeWidth="2" fill="none"/>
-                      <line x1="19" y1="8" x2="19" y2="14" stroke="currentColor" strokeWidth="2"/>
-                      <line x1="22" y1="11" x2="16" y2="11" stroke="currentColor" strokeWidth="2"/>
-                    </svg>
+                    <span className="w-4 h-4 mr-2"></span>
                     Add Friends
                   </Button>
                 </CardContent>
@@ -411,11 +370,7 @@ export default function Friends() {
                       <div className="flex items-center justify-between">
                         <div className="flex items-center space-x-4">
                           <div className="w-12 h-12 rounded-lg bg-muted border border-border flex items-center justify-center">
-                            <svg viewBox="0 0 24 24" fill="none" className="w-6 h-6 text-muted-foreground">
-                              <circle cx="9" cy="7" r="4" fill="currentColor"/>
-                              <path d="m3 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2" stroke="currentColor" strokeWidth="2" fill="none"/>
-                              <circle cx="16" cy="11" r="3" fill="currentColor" opacity="0.7"/>
-                            </svg>
+                            <span className="w-6 h-6 text-muted-foreground"></span>
                           </div>
                           <div>
                             <h3 className="font-semibold">
@@ -437,9 +392,7 @@ export default function Friends() {
                             }
                             className="minecraft-button bg-green-500/20 text-green-500 hover:bg-green-500/30"
                           >
-                            <svg viewBox="0 0 24 24" fill="none" className="w-4 h-4 mr-2">
-                              <polyline points="20,6 9,17 4,12" stroke="currentColor" strokeWidth="2" fill="none"/>
-                            </svg>
+                            <span className="w-4 h-4 mr-2"></span>
                             Accept
                           </Button>
                           <Button
@@ -453,10 +406,7 @@ export default function Friends() {
                             }
                             className="minecraft-button border-red-500/50 text-red-500 hover:bg-red-500/20"
                           >
-                            <svg viewBox="0 0 24 24" fill="none" className="w-4 h-4 mr-2">
-                              <line x1="18" y1="6" x2="6" y2="18" stroke="currentColor" strokeWidth="2"/>
-                              <line x1="6" y1="6" x2="18" y2="18" stroke="currentColor" strokeWidth="2"/>
-                            </svg>
+                            <span className="w-4 h-4 mr-2"></span>
                             Decline
                           </Button>
                         </div>
@@ -468,10 +418,7 @@ export default function Friends() {
             ) : (
               <Card className="minecraft-panel bg-card/50 border-2 border-border shadow-lg">
                 <CardContent className="p-8 text-center">
-                  <svg viewBox="0 0 24 24" fill="none" className="w-16 h-16 mx-auto mb-4 opacity-50">
-                    <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" fill="none"/>
-                    <polyline points="12,6 12,12 16,14" stroke="currentColor" strokeWidth="2" fill="none"/>
-                  </svg>
+                  <div className="w-16 h-16 mx-auto mb-4 opacity-50"></div>
                   <h3 className="text-xl font-semibold mb-2">
                     No Pending Requests
                   </h3>
@@ -496,11 +443,7 @@ export default function Friends() {
                       <div className="flex items-center justify-between">
                         <div className="flex items-center space-x-4">
                           <div className="w-12 h-12 rounded-lg bg-muted border border-border flex items-center justify-center">
-                            <svg viewBox="0 0 24 24" fill="none" className="w-6 h-6 text-muted-foreground">
-                              <circle cx="9" cy="7" r="4" fill="currentColor"/>
-                              <path d="m3 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2" stroke="currentColor" strokeWidth="2" fill="none"/>
-                              <circle cx="16" cy="11" r="3" fill="currentColor" opacity="0.7"/>
-                            </svg>
+                            <span className="w-6 h-6 text-muted-foreground"></span>
                           </div>
                           <div>
                             <h3 className="font-semibold">
@@ -515,10 +458,7 @@ export default function Friends() {
                           variant="outline"
                           className="flex items-center space-x-1"
                         >
-                          <svg viewBox="0 0 24 24" fill="none" className="w-3 h-3">
-                            <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" fill="none"/>
-                            <polyline points="12,6 12,12 16,14" stroke="currentColor" strokeWidth="2" fill="none"/>
-                          </svg>
+                          <span className="w-3 h-3"></span>
                           <span>Pending</span>
                         </Badge>
                       </div>
@@ -529,12 +469,7 @@ export default function Friends() {
             ) : (
               <Card className="minecraft-panel bg-card/50 border-2 border-border shadow-lg">
                 <CardContent className="p-8 text-center">
-                  <svg viewBox="0 0 24 24" fill="none" className="w-16 h-16 mx-auto mb-4 opacity-50">
-                    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" stroke="currentColor" strokeWidth="2" fill="none"/>
-                    <circle cx="9" cy="7" r="4" stroke="currentColor" strokeWidth="2" fill="none"/>
-                    <line x1="19" y1="8" x2="19" y2="14" stroke="currentColor" strokeWidth="2"/>
-                    <line x1="22" y1="11" x2="16" y2="11" stroke="currentColor" strokeWidth="2"/>
-                  </svg>
+                  <div className="w-16 h-16 mx-auto mb-4 opacity-50"></div>
                   <h3 className="text-xl font-semibold mb-2">
                     No Sent Requests
                   </h3>
@@ -553,12 +488,7 @@ export default function Friends() {
               <CardHeader>
                 <CardTitle className="flex items-center space-x-2">
                   <div className="w-8 h-8 rounded-lg bg-card border border-primary/50 flex items-center justify-center shadow-lg shadow-primary/20">
-                    <svg viewBox="0 0 24 24" fill="none" className="w-5 h-5 text-primary drop-shadow-[0_0_4px_currentColor]">
-                      <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" stroke="currentColor" strokeWidth="2" fill="none"/>
-                      <circle cx="9" cy="7" r="4" stroke="currentColor" strokeWidth="2" fill="none"/>
-                      <line x1="19" y1="8" x2="19" y2="14" stroke="currentColor" strokeWidth="2"/>
-                      <line x1="22" y1="11" x2="16" y2="11" stroke="currentColor" strokeWidth="2"/>
-                    </svg>
+                    <span className="w-5 h-5 text-primary drop-shadow-[0_0_4px_currentColor]"></span>
                   </div>
                   <span>Add Friend by Username</span>
                 </CardTitle>
@@ -579,12 +509,7 @@ export default function Friends() {
                     disabled={!addFriendUsername.trim()}
                     className="minecraft-button bg-primary text-primary-foreground hover:bg-primary/90"
                   >
-                    <svg viewBox="0 0 24 24" fill="none" className="w-4 h-4 mr-2">
-                      <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" stroke="currentColor" strokeWidth="2" fill="none"/>
-                      <circle cx="9" cy="7" r="4" stroke="currentColor" strokeWidth="2" fill="none"/>
-                      <line x1="19" y1="8" x2="19" y2="14" stroke="currentColor" strokeWidth="2"/>
-                      <line x1="22" y1="11" x2="16" y2="11" stroke="currentColor" strokeWidth="2"/>
-                    </svg>
+                    <span className="w-4 h-4 mr-2"></span>
                     Send Request
                   </Button>
                 </form>
@@ -596,10 +521,7 @@ export default function Friends() {
               <CardHeader>
                 <CardTitle className="flex items-center space-x-2">
                   <div className="w-8 h-8 rounded-lg bg-card border border-primary/50 flex items-center justify-center shadow-lg shadow-primary/20">
-                    <svg viewBox="0 0 24 24" fill="none" className="w-5 h-5 text-primary drop-shadow-[0_0_4px_currentColor]">
-                      <circle cx="11" cy="11" r="8" stroke="currentColor" strokeWidth="2" fill="none"/>
-                      <path d="m21 21-4.35-4.35" stroke="currentColor" strokeWidth="2"/>
-                    </svg>
+                    <span className="w-5 h-5 text-primary drop-shadow-[0_0_4px_currentColor]"></span>
                   </div>
                   <span>Search Users</span>
                 </CardTitle>
@@ -609,10 +531,7 @@ export default function Friends() {
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="relative">
-                  <svg viewBox="0 0 24 24" fill="none" className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground">
-                    <circle cx="11" cy="11" r="8" stroke="currentColor" strokeWidth="2" fill="none"/>
-                    <path d="m21 21-4.35-4.35" stroke="currentColor" strokeWidth="2"/>
-                  </svg>
+                  <span className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground"></span>
                   <Input
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
@@ -620,9 +539,7 @@ export default function Friends() {
                     className="minecraft-input pl-10"
                   />
                   {isSearching && (
-                    <svg viewBox="0 0 24 24" fill="none" className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 animate-spin">
-                      <path d="M21 12a9 9 0 11-6.219-8.56" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-                    </svg>
+                    <span className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 animate-spin"></span>
                   )}
                 </div>
 
@@ -635,11 +552,7 @@ export default function Friends() {
                       >
                         <div className="flex items-center space-x-3">
                           <div className="w-8 h-8 rounded-lg bg-muted border border-border flex items-center justify-center">
-                            <svg viewBox="0 0 24 24" fill="none" className="w-4 h-4 text-muted-foreground">
-                              <circle cx="9" cy="7" r="4" fill="currentColor"/>
-                              <path d="m3 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2" stroke="currentColor" strokeWidth="2" fill="none"/>
-                              <circle cx="16" cy="11" r="3" fill="currentColor" opacity="0.7"/>
-                            </svg>
+                            <span className="w-4 h-4 text-muted-foreground"></span>
                           </div>
                           <span className="font-medium">{user.username}</span>
                         </div>
@@ -648,12 +561,7 @@ export default function Friends() {
                           onClick={() => sendFriendRequest(user.username)}
                           className="minecraft-button bg-primary/20 text-primary hover:bg-primary/30"
                         >
-                          <svg viewBox="0 0 24 24" fill="none" className="w-4 h-4 mr-2">
-                            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" stroke="currentColor" strokeWidth="2" fill="none"/>
-                            <circle cx="9" cy="7" r="4" stroke="currentColor" strokeWidth="2" fill="none"/>
-                            <line x1="19" y1="8" x2="19" y2="14" stroke="currentColor" strokeWidth="2"/>
-                            <line x1="22" y1="11" x2="16" y2="11" stroke="currentColor" strokeWidth="2"/>
-                          </svg>
+                          <span className="w-4 h-4 mr-2"></span>
                           Add
                         </Button>
                       </div>
@@ -665,10 +573,7 @@ export default function Friends() {
                   !isSearching &&
                   searchResults.length === 0 && (
                     <Alert>
-                      <svg viewBox="0 0 24 24" fill="none" className="h-4 w-4">
-                        <circle cx="11" cy="11" r="8" stroke="currentColor" strokeWidth="2" fill="none"/>
-                        <path d="m21 21-4.35-4.35" stroke="currentColor" strokeWidth="2"/>
-                      </svg>
+                      <span className="h-4 w-4"></span>
                       <AlertDescription>
                         No users found matching "{searchQuery}"
                       </AlertDescription>
