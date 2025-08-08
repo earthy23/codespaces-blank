@@ -40,6 +40,8 @@ export default function Dashboard() {
   }, [user, navigate]);
 
   useEffect(() => {
+    const abortController = new AbortController();
+
     const fetchDashboardData = async () => {
       if (!user) return;
 
@@ -48,8 +50,11 @@ export default function Dashboard() {
       // Helper function to make authenticated requests with timeout
       const makeRequest = async (url, timeout = 10000) => {
         const token = localStorage.getItem("auth_token");
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), timeout);
+        const timeoutId = setTimeout(() => {
+          if (!abortController.signal.aborted) {
+            console.log(`Request to ${url} timed out after ${timeout}ms`);
+          }
+        }, timeout);
 
         try {
           console.log(`Making request to: ${url}`);
@@ -58,7 +63,7 @@ export default function Dashboard() {
               "Content-Type": "application/json",
               ...(token && { Authorization: `Bearer ${token}` }),
             },
-            signal: controller.signal,
+            signal: abortController.signal,
           });
           clearTimeout(timeoutId);
           console.log(
@@ -69,6 +74,13 @@ export default function Dashboard() {
           return response;
         } catch (error) {
           clearTimeout(timeoutId);
+
+          // Don't log error if it was intentionally aborted (component unmount)
+          if (error.name === 'AbortError' && abortController.signal.aborted) {
+            console.log(`Request to ${url} was cancelled (component unmounted)`);
+            return null;
+          }
+
           console.error(`Request to ${url} failed:`, error);
           throw error;
         }
