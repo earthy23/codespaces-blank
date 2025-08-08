@@ -10,45 +10,21 @@ const navigationSections = [
     title: "Main",
     items: [
       {
-        iconSvg: (
-          <svg viewBox="0 0 24 24" fill="none" className="w-5 h-5">
-            <path d="M3 12l9-9 9 9v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-8z" stroke="white" strokeWidth="2" fill="black"/>
-            <path d="M9 21V12h6v9" stroke="white" strokeWidth="2" fill="none"/>
-          </svg>
-        ),
+        iconSvg: null,
         label: "Dashboard",
         path: "/dashboard",
         iconColor: "text-primary",
         glow: "shadow-primary/50",
       },
       {
-        iconSvg: (
-          <svg viewBox="0 0 24 24" fill="none" className="w-5 h-5">
-            <rect x="2" y="3" width="20" height="6" rx="2" stroke="white" strokeWidth="2" fill="black"/>
-            <rect x="2" y="9" width="20" height="6" rx="2" stroke="white" strokeWidth="2" fill="black"/>
-            <rect x="2" y="15" width="20" height="6" rx="2" stroke="white" strokeWidth="2" fill="black"/>
-            <circle cx="6" cy="6" r="1" fill="white"/>
-            <circle cx="6" cy="12" r="1" fill="white"/>
-            <circle cx="6" cy="18" r="1" fill="white"/>
-            <circle cx="18" cy="6" r="1" fill="white"/>
-            <circle cx="18" cy="12" r="1" fill="white"/>
-            <circle cx="18" cy="18" r="1" fill="white"/>
-          </svg>
-        ),
+        iconSvg: null,
         label: "Servers",
         path: "/servers",
         iconColor: "text-primary",
         glow: "shadow-primary/50",
       },
       {
-        iconSvg: (
-          <svg viewBox="0 0 24 24" fill="none" className="w-5 h-5">
-            <path d="M3 7l9-4 9 4v10l-9 4-9-4V7z" stroke="white" strokeWidth="2" fill="black"/>
-            <path d="M3 7l9 4 9-4" stroke="white" strokeWidth="2"/>
-            <path d="M12 11v10" stroke="white" strokeWidth="2"/>
-            <circle cx="12" cy="7" r="2" stroke="white" strokeWidth="1.5" fill="none"/>
-          </svg>
-        ),
+        iconSvg: null,
         label: "Downloads",
         path: "/downloads",
         iconColor: "text-primary",
@@ -60,30 +36,23 @@ const navigationSections = [
     title: "Social",
     items: [
       {
-        iconSvg: (
-          <svg viewBox="0 0 24 24" fill="none" className="w-5 h-5">
-            <circle cx="9" cy="7" r="3" stroke="white" strokeWidth="2" fill="black"/>
-            <path d="M3 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2" stroke="white" strokeWidth="2" fill="none"/>
-            <circle cx="16" cy="11" r="2" stroke="white" strokeWidth="2" fill="black"/>
-            <path d="M22 21v-2a4 4 0 0 0-3-3.87" stroke="white" strokeWidth="2" fill="none"/>
-          </svg>
-        ),
+        iconSvg: null,
         label: "Friends",
         path: "/friends",
         iconColor: "text-primary",
         glow: "shadow-primary/50",
       },
       {
-        iconSvg: (
-          <svg viewBox="0 0 24 24" fill="none" className="w-5 h-5">
-            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" stroke="white" strokeWidth="2" fill="black"/>
-            <circle cx="8" cy="11" r="1" fill="white"/>
-            <circle cx="12" cy="11" r="1" fill="white"/>
-            <circle cx="16" cy="11" r="1" fill="white"/>
-          </svg>
-        ),
+        iconSvg: null,
         label: "Chat",
         path: "/chat",
+        iconColor: "text-primary",
+        glow: "shadow-primary/50",
+      },
+      {
+        iconSvg: null,
+        label: "Community",
+        path: "/community",
         iconColor: "text-primary",
         glow: "shadow-primary/50",
       },
@@ -93,25 +62,14 @@ const navigationSections = [
     title: "Content",
     items: [
       {
-        iconSvg: (
-          <svg viewBox="0 0 24 24" fill="none" className="w-5 h-5">
-            <path d="M18 8a6 6 0 0 0-6-6 6 6 0 0 0-6 6c0 7 6 9 6 9s6-2 6-9" stroke="white" strokeWidth="2" fill="black"/>
-            <path d="M13.73 21a2 2 0 0 1-3.46 0" stroke="white" strokeWidth="2" fill="none"/>
-            <circle cx="16" cy="6" r="2" fill="white"/>
-          </svg>
-        ),
+        iconSvg: null,
         label: "News",
         path: "/news",
         iconColor: "text-primary",
         glow: "shadow-primary/50",
       },
       {
-        iconSvg: (
-          <svg viewBox="0 0 24 24" fill="none" className="w-5 h-5">
-            <circle cx="12" cy="12" r="9" stroke="white" strokeWidth="2" fill="black"/>
-            <text x="12" y="16" textAnchor="middle" fontSize="14" fontWeight="bold" fill="white">$</text>
-          </svg>
-        ),
+        iconSvg: null,
         label: "Store",
         path: "/store",
         iconColor: "text-primary",
@@ -123,25 +81,14 @@ const navigationSections = [
     title: "Account",
     items: [
       {
-        iconSvg: (
-          <svg viewBox="0 0 24 24" fill="none" className="w-5 h-5">
-            <circle cx="12" cy="8" r="4" stroke="white" strokeWidth="2" fill="black"/>
-            <path d="M20 21a8 8 0 1 0-16 0" stroke="white" strokeWidth="2" fill="black"/>
-          </svg>
-        ),
+        iconSvg: null,
         label: "Profile",
         path: "/profile",
         iconColor: "text-primary",
         glow: "shadow-primary/50",
       },
       {
-        iconSvg: (
-          <svg viewBox="0 0 24 24" fill="none" className="w-5 h-5">
-            <circle cx="12" cy="12" r="9" stroke="white" strokeWidth="2" fill="black"/>
-            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" stroke="white" strokeWidth="2" fill="none"/>
-            <circle cx="12" cy="17" r="1" fill="white"/>
-          </svg>
-        ),
+        iconSvg: null,
         label: "Support",
         path: "/support",
         iconColor: "text-primary",
@@ -163,12 +110,6 @@ export function NavigationSidebar() {
       <aside className="w-80 h-full bg-sidebar border-r border-sidebar-border flex flex-col">
         <div className="flex-1 overflow-y-auto p-4">
           <div className="text-center py-8">
-            <svg viewBox="0 0 24 24" fill="none" className="w-16 h-16 mx-auto mb-4 text-sidebar-foreground/30">
-              <circle cx="9" cy="7" r="4" fill="currentColor"/>
-              <path d="m3 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2" stroke="currentColor" strokeWidth="2" fill="none"/>
-              <circle cx="16" cy="11" r="3" fill="currentColor" opacity="0.7"/>
-              <path d="m22 21v-2a4 4 0 0 0-3-3.87" stroke="currentColor" strokeWidth="2" fill="none"/>
-            </svg>
             <h3 className="font-semibold text-sidebar-foreground mb-2">
               Sign in Required
             </h3>
@@ -208,10 +149,10 @@ export function NavigationSidebar() {
                         : "hover:bg-white/5 hover:shadow-md"
                     }`}
                   >
-                    <div className="flex items-center space-x-3">
-                      <div className={`${item.iconColor} transition-colors duration-200`}>
-                        {item.iconSvg}
-                      </div>
+                    <div className="flex items-center space-x-3 ml-px">
+                      <div
+                        className={`${item.iconColor} transition-colors duration-200`}
+                      ></div>
                       <div className="flex-1">
                         <p
                           className={`font-semibold ${isActive ? "text-primary" : "text-sidebar-foreground"} group-hover:text-primary transition-colors`}
@@ -277,12 +218,6 @@ export function NavigationSidebar() {
               ))
             ) : (
               <div className="text-center py-4">
-                <svg viewBox="0 0 24 24" fill="none" className="w-8 h-8 mx-auto mb-2 text-sidebar-foreground/30">
-                  <circle cx="9" cy="7" r="4" fill="currentColor"/>
-                  <path d="m3 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2" stroke="currentColor" strokeWidth="2" fill="none"/>
-                  <circle cx="16" cy="11" r="3" fill="currentColor" opacity="0.7"/>
-                  <path d="m22 21v-2a4 4 0 0 0-3-3.87" stroke="currentColor" strokeWidth="2" fill="none"/>
-                </svg>
                 <p className="text-xs text-sidebar-foreground/70">
                   No friends online
                 </p>
@@ -308,13 +243,7 @@ export function NavigationSidebar() {
               // Toggle sidebar functionality can be implemented here
               console.log("Toggle sidebar");
             }}
-          >
-            <svg viewBox="0 0 24 24" fill="none" className="w-5 h-5 text-sidebar-foreground">
-              <rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" strokeWidth="2" fill="none"/>
-              <path d="M9 3v18" stroke="currentColor" strokeWidth="2" fill="none"/>
-              <path d="M14 8l-2 2 2 2" stroke="currentColor" strokeWidth="2" fill="none"/>
-            </svg>
-          </Button>
+          ></Button>
         </div>
       </div>
     </aside>

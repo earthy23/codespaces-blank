@@ -28,6 +28,7 @@ import Forums from "./pages/Forums";
 import Profile from "./pages/Profile";
 import News from "./pages/News";
 import Servers from "./pages/Servers";
+import Community from "./pages/Community";
 
 import About from "./pages/About";
 import Terms from "./pages/Terms";
@@ -82,8 +83,17 @@ function App() {
                           <Route path="/downloads" element={<Downloads />} />
                           <Route path="/forums" element={<Forums />} />
                           <Route path="/profile" element={<Profile />} />
+                          <Route
+                            path="/profile/:userId"
+                            element={<Profile />}
+                          />
+                          <Route
+                            path="/profile/user/:username"
+                            element={<Profile />}
+                          />
                           <Route path="/news" element={<News />} />
                           <Route path="/servers" element={<Servers />} />
+                          <Route path="/community" element={<Community />} />
 
                           {/* Info Pages */}
                           <Route path="/about" element={<About />} />

@@ -80,10 +80,7 @@ const ToastClose = React.forwardRef<
     toast-close=""
     {...props}
   >
-    <svg viewBox="0 0 24 24" fill="none" className="h-4 w-4">
-      <line x1="18" y1="6" x2="6" y2="18" stroke="currentColor" strokeWidth="2"/>
-      <line x1="6" y1="6" x2="18" y2="18" stroke="currentColor" strokeWidth="2"/>
-    </svg>
+    <span className="h-4 w-4"></span>
   </ToastPrimitives.Close>
 ));
 ToastClose.displayName = ToastPrimitives.Close.displayName;

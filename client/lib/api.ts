@@ -79,7 +79,7 @@ const makeRequest = async (endpoint: string, options: RequestInit = {}) => {
 
   // Longer timeout for authentication operations (bcrypt can be slow)
   if (endpoint.includes("/auth/")) {
-    timeoutMs = 10000; // 10 seconds for auth operations
+    timeoutMs = 15000; // 15 seconds for auth operations
   }
 
   // Longer timeout for server operations that may involve connectivity tests
@@ -265,11 +265,23 @@ const makeRequest = async (endpoint: string, options: RequestInit = {}) => {
       console.log(`📊 Response status: ${response.status} for ${url}`);
 
       // Handle aborted requests gracefully (status 0 from XMLHttpRequest)
-      if (response.status === 0 && response.statusText === "Aborted") {
+      if (response.status === 0 && (response.statusText === "Aborted" || response.statusText === "Cancelled")) {
         if (process.env.NODE_ENV === "development") {
           console.warn(
             `⚠️ Request aborted for ${url}, likely due to navigation or cancellation`,
           );
+        }
+        // For auth-related requests, don't throw error - just return a fallback
+        if (url.includes('/auth/profile') || url.includes('/auth/')) {
+          console.warn("🔐 Auth request was cancelled - returning graceful fallback");
+          return {
+            ok: false,
+            status: 499, // Client closed request
+            statusText: "Auth request cancelled",
+            json: () => Promise.resolve({ error: "Request cancelled", temporary: true }),
+            text: () => Promise.resolve("Request cancelled"),
+            headers: new Headers(),
+          } as Response;
         }
         throw new Error("Request was cancelled. Please try again.");
       }
@@ -580,11 +592,24 @@ export const authApi = {
   getProfile: async () => {
     try {
       console.log("🔍 Attempting to fetch user profile...");
-      const result = await makeRequest("/auth/profile");
+      const response = await makeRequest("/auth/profile");
+
+      // Handle graceful cancellation response
+      if (response && typeof response === 'object' && 'error' in response && response.temporary) {
+        console.warn("🔐 Profile request was gracefully cancelled");
+        throw new Error("Profile request cancelled");
+      }
+
       console.log("✅ User profile fetched successfully");
-      return result;
+      return response;
     } catch (error) {
       console.error("❌ Failed to fetch user profile:", error);
+
+      // Handle cancellation gracefully for auth requests
+      if (error instanceof Error && (error.message.includes("cancelled") || error.message.includes("aborted"))) {
+        console.warn("🔐 Profile request was cancelled - this is normal during navigation");
+        throw new Error("Profile request cancelled");
+      }
 
       // If it's a network error, try to provide more helpful error context
       if (error instanceof TypeError && error.message === "Failed to fetch") {

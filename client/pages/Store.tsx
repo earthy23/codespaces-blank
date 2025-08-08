@@ -59,6 +59,8 @@ export default function Store() {
   const [customFavicon, setCustomFavicon] = useState(
     customizations.website_favicon || "",
   );
+  const [uploadingFile, setUploadingFile] = useState(false);
+  const [uploadedFiles, setUploadedFiles] = useState<any[]>([]);
 
   useEffect(() => {
     if (!user) {
@@ -120,6 +122,122 @@ export default function Store() {
         description: "Failed to save customization",
         variant: "destructive",
       });
+    }
+  };
+
+  const handleFileUpload = async (
+    event: React.ChangeEvent<HTMLInputElement>,
+    type: "background" | "avatar" | "resource",
+  ) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    // Check rank-based restrictions for resource files
+    if (type === 'resource') {
+      if (currentTier.tier === 'free') {
+        toast({
+          title: "VIP+ Required",
+          description: "You need a VIP+ subscription to upload personal files",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      const maxFileSize = currentTier.tier === 'vip' ? 10 * 1024 * 1024 : 50 * 1024 * 1024; // 10MB for VIP, 50MB for VIP+/Legend
+      const maxFiles = currentTier.tier === 'vip' ? 5 : 20; // 5 files for VIP, 20 for VIP+/Legend
+      const currentFileCount = uploadedFiles.filter(f => f.type === 'resource').length;
+
+      if (currentFileCount >= maxFiles) {
+        toast({
+          title: "File limit reached",
+          description: `You can only upload ${maxFiles} files with your ${currentTier.tier.toUpperCase()} subscription`,
+          variant: "destructive",
+        });
+        return;
+      }
+
+      if (file.size > maxFileSize) {
+        const maxSizeMB = maxFileSize / (1024 * 1024);
+        toast({
+          title: "File too large",
+          description: `Please select a file smaller than ${maxSizeMB}MB`,
+          variant: "destructive",
+        });
+        return;
+      }
+    } else {
+      // Check file size for background/avatar (max 10MB)
+      if (file.size > 10 * 1024 * 1024) {
+        toast({
+          title: "File too large",
+          description: "Please select a file smaller than 10MB",
+          variant: "destructive",
+        });
+        return;
+      }
+    }
+
+    // Check file type
+    const allowedTypes =
+      type === "background"
+        ? ["image/jpeg", "image/jpg", "image/png", "image/gif", "image/webp"]
+        : [
+            "image/jpeg",
+            "image/jpg",
+            "image/png",
+            "image/gif",
+            "image/webp",
+            "application/zip",
+            "application/x-zip-compressed",
+          ];
+
+    if (!allowedTypes.includes(file.type)) {
+      toast({
+        title: "Invalid file type",
+        description: `Please select a valid ${type === "background" ? "image" : "file"} file`,
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      setUploadingFile(true);
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("type", type);
+
+      const token = localStorage.getItem("auth_token");
+      const response = await fetch("/api/store/upload", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        body: formData,
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        if (type === "background") {
+          setCustomBackground(data.url);
+          handleSaveCustomization("website_background", data.url);
+        }
+
+        setUploadedFiles((prev) => [...prev, { ...data, type }]);
+        toast({
+          title: "Upload Successful",
+          description: "Your file has been uploaded successfully!",
+        });
+      } else {
+        throw new Error("Upload failed");
+      }
+    } catch (error) {
+      toast({
+        title: "Upload Failed",
+        description: "Failed to upload file. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setUploadingFile(false);
     }
   };
 
@@ -370,7 +488,7 @@ export default function Store() {
                       <span>Website Colors</span>
                     </CardTitle>
                     <CardDescription>
-                      Customize the primary color scheme of the website
+                      Customize the primary color scheme for your personal view
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-4">
@@ -411,10 +529,51 @@ export default function Store() {
                       <span>Background Image</span>
                     </CardTitle>
                     <CardDescription>
-                      Set a custom background image for the website
+                      Upload or set a custom background image for your personal view (only you will see this)
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-4">
+                    <div>
+                      <Label htmlFor="background-file">
+                        Upload Background Image
+                      </Label>
+                      <div className="mt-2 border-2 border-dashed border-border rounded-lg p-4">
+                        <input
+                          id="background-file"
+                          type="file"
+                          accept="image/*"
+                          onChange={(e) => handleFileUpload(e, "background")}
+                          className="hidden"
+                        />
+                        <div
+                          className="flex flex-col items-center justify-center cursor-pointer"
+                          onClick={() =>
+                            document.getElementById("background-file")?.click()
+                          }
+                        >
+                          {uploadingFile ? (
+                            <Loader2 className="w-8 h-8 animate-spin text-primary" />
+                          ) : (
+                            <Upload className="w-8 h-8 text-muted-foreground" />
+                          )}
+                          <p className="text-sm text-muted-foreground mt-2">
+                            {uploadingFile
+                              ? "Uploading..."
+                              : "Click to upload image (Max 10MB)"}
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            Supports: JPG, PNG, GIF, WebP
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex items-center my-4">
+                      <div className="flex-grow border-t border-border"></div>
+                      <span className="px-3 text-sm text-muted-foreground">
+                        or
+                      </span>
+                      <div className="flex-grow border-t border-border"></div>
+                    </div>
                     <div>
                       <Label htmlFor="background">Image URL</Label>
                       <Input
@@ -433,9 +592,107 @@ export default function Store() {
                         )
                       }
                       className="w-full minecraft-button"
+                      disabled={uploadingFile}
                     >
                       Apply Background
                     </Button>
+                  </CardContent>
+                </Card>
+
+                {/* Personal File Uploads */}
+                <Card className="minecraft-panel bg-card/50 border-2 border-border shadow-lg">
+                  <CardHeader>
+                    <CardTitle className="flex items-center space-x-2">
+                      <Upload className="w-5 h-5 text-primary" />
+                      <span>Personal Files</span>
+                      {currentTier.tier === 'free' && (
+                        <Badge variant="outline" className="text-muted-foreground">
+                          VIP+ Required
+                        </Badge>
+                      )}
+                      {currentTier.tier === 'vip' && (
+                        <Badge variant="outline" className="text-yellow-500">
+                          VIP Access
+                        </Badge>
+                      )}
+                      {(currentTier.tier === 'vip_plus' || currentTier.tier === 'legend') && (
+                        <Badge variant="outline" className="text-purple-500">
+                          Premium Access
+                        </Badge>
+                      )}
+                    </CardTitle>
+                    <CardDescription>
+                      Upload resource packs, skins, and other personal files
+                      {currentTier.tier === 'free' && ' (VIP+ subscription required)'}
+                      {currentTier.tier === 'vip' && ' (Up to 5 files, 10MB each)'}
+                      {(currentTier.tier === 'vip_plus' || currentTier.tier === 'legend') && ' (Up to 20 files, 50MB each)'}
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div>
+                      <Label htmlFor="resource-file">
+                        Upload Personal Files
+                      </Label>
+                      <div className="mt-2 border-2 border-dashed border-border rounded-lg p-4">
+                        <input
+                          id="resource-file"
+                          type="file"
+                          accept=".zip,.png,.jpg,.jpeg,.mcpack,.mcworld"
+                          onChange={(e) => handleFileUpload(e, "resource")}
+                          className="hidden"
+                          disabled={currentTier.tier === 'free'}
+                        />
+                        <div
+                          className={`flex flex-col items-center justify-center ${
+                            currentTier.tier === 'free' ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'
+                          }`}
+                          onClick={() => {
+                            if (currentTier.tier !== 'free') {
+                              document.getElementById("resource-file")?.click()
+                            }
+                          }}
+                        >
+                          {uploadingFile ? (
+                            <Loader2 className="w-8 h-8 animate-spin text-primary" />
+                          ) : (
+                            <Upload className="w-8 h-8 text-muted-foreground" />
+                          )}
+                          <p className="text-sm text-muted-foreground mt-2">
+                            {uploadingFile
+                              ? "Uploading..."
+                              : currentTier.tier === 'free'
+                                ? 'VIP+ subscription required'
+                                : `Click to upload files (Max ${currentTier.tier === 'vip' ? '10MB' : '50MB'})`}
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            {currentTier.tier === 'free'
+                              ? 'Upgrade to VIP+ to upload personal files'
+                              : 'Supports: ZIP, PNG, JPG, MCPACK, MCWORLD'}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                    {uploadedFiles.filter((f) => f.type === "resource").length >
+                      0 && (
+                      <div className="space-y-2">
+                        <Label>Your Uploaded Files</Label>
+                        <div className="max-h-32 overflow-y-auto space-y-1">
+                          {uploadedFiles
+                            .filter((f) => f.type === "resource")
+                            .map((file, index) => (
+                              <div
+                                key={index}
+                                className="flex items-center justify-between p-2 bg-muted rounded text-sm"
+                              >
+                                <span className="truncate">
+                                  {file.filename}
+                                </span>
+                                <Badge variant="outline">{file.size}</Badge>
+                              </div>
+                            ))}
+                        </div>
+                      </div>
+                    )}
                   </CardContent>
                 </Card>
 
@@ -455,7 +712,7 @@ export default function Store() {
                           </Badge>
                         </CardTitle>
                         <CardDescription>
-                          Customize the browser tab title
+                          Customize the browser tab title for your personal view
                         </CardDescription>
                       </CardHeader>
                       <CardContent className="space-y-4">
@@ -496,7 +753,7 @@ export default function Store() {
                           </Badge>
                         </CardTitle>
                         <CardDescription>
-                          Set a custom favicon for the browser tab
+                          Set a custom favicon for your browser tab (personal view only)
                         </CardDescription>
                       </CardHeader>
                       <CardContent className="space-y-4">

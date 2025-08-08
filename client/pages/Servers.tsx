@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Dialog,
   DialogContent,
@@ -37,9 +37,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/lib/auth";
+import { useStore } from "@/lib/store";
 import { serversApi } from "@/lib/api";
 import { useToast } from "@/hooks/use-toast";
 import { UserLayout } from "@/components/ui/user-layout";
@@ -68,6 +70,7 @@ interface GameServer {
 
 export default function Servers() {
   const { user } = useAuth();
+  const { currentTier } = useStore();
   const navigate = useNavigate();
   const [servers, setServers] = useState<GameServer[]>([]);
   const [loading, setLoading] = useState(false);
@@ -101,29 +104,15 @@ export default function Servers() {
 
   useEffect(() => {
     const hasToken = !!localStorage.getItem("auth_token");
-    console.log("🔄 Servers useEffect: User state changed:", {
-      hasUser: !!user,
-      username: user?.username,
-      userId: user?.id,
-      hasToken,
-    });
 
-    // Clear any existing timeout
     if (fetchTimeoutRef.current) {
       clearTimeout(fetchTimeoutRef.current);
     }
 
     if (user && hasToken) {
-      console.log(
-        "🔄 Servers useEffect: User and token exist, scheduling server fetch...",
-      );
-
-      // Debounce the fetch to prevent rapid successive calls
       fetchTimeoutRef.current = setTimeout(async () => {
         try {
-          console.log("🔄 Starting debounced server fetch...");
           await fetchServers();
-          // Small delay before second call
           setTimeout(() => {
             fetchMyServers();
           }, 200);
@@ -131,17 +120,8 @@ export default function Servers() {
           console.error("❌ Error in debounced fetch:", error);
         }
       }, 300);
-    } else {
-      console.log(
-        "🔄 Servers useEffect: Missing user or token, skipping fetch:",
-        {
-          hasUser: !!user,
-          hasToken,
-        },
-      );
     }
 
-    // Cleanup timeout on unmount
     return () => {
       if (fetchTimeoutRef.current) {
         clearTimeout(fetchTimeoutRef.current);
@@ -150,17 +130,11 @@ export default function Servers() {
   }, [user]);
 
   const fetchServers = async () => {
-    // Prevent multiple simultaneous calls
-    if (loading) {
-      console.log("🔄 fetchServers: Already loading, skipping...");
-      return;
-    }
+    if (loading) return;
 
     try {
       setLoading(true);
-      console.log("��� fetchServers: Starting API call...");
       const data = await serversApi.getAll();
-      console.log("✅ fetchServers: Success, got", data.servers?.length || 0, "servers");
       setServers(data.servers || []);
     } catch (error) {
       console.error("❌ fetchServers: Failed to fetch servers:", error);
@@ -176,50 +150,17 @@ export default function Servers() {
 
   const fetchMyServers = async () => {
     try {
-      console.log("🔍 fetchMyServers: Starting fetch...");
-      console.log("🔍 fetchMyServers: Current user state:", {
-        hasUser: !!user,
-        username: user?.username,
-        userId: user?.id,
-      });
-
       const token = localStorage.getItem("auth_token");
-      console.log("��� fetchMyServers: Auth token status:", {
-        hasToken: !!token,
-        tokenLength: token?.length,
-        tokenPreview: token?.substring(0, 20) + "...",
-      });
+      if (!token || !user) return;
 
-      // Don't proceed if we don't have a token
-      if (!token) {
-        console.warn(
-          "⚠️ fetchMyServers: No auth token available, skipping request",
-        );
-        return;
-      }
-
-      // Don't proceed if we don't have user info
-      if (!user) {
-        console.warn(
-          "⚠️ fetchMyServers: No user info available, skipping request",
-        );
-        return;
-      }
-
-      console.log(
-        "✅ fetchMyServers: Prerequisites met, making API request...",
-      );
       const data = await serversApi.getMyServers();
-      console.log(
-        "✅ fetchMyServers: Success, got servers:",
-        data.servers?.length || 0,
-      );
       setMyServers(data.servers || []);
     } catch (error) {
       console.error("❌ fetchMyServers: Failed to fetch my servers:", error);
-
-      // Only show toast for non-authentication errors and non-timeout errors
-      if (!error.message.includes("Authentication required") && !error.message.includes("timed out")) {
+      if (
+        !error.message.includes("Authentication required") &&
+        !error.message.includes("timed out")
+      ) {
         toast({
           title: "Error",
           description: error.message || "Failed to fetch your servers",
@@ -229,35 +170,33 @@ export default function Servers() {
     }
   };
 
+  // Check if user can add more servers based on tier
+  const canAddServer = () => {
+    if (!currentTier) return false;
+    const maxServers = currentTier.limits.owned_servers;
+    return maxServers === -1 || myServers.length < maxServers;
+  };
+
+  // Check if user can upload banner based on tier
+  const canUploadBanner = () => {
+    if (!currentTier) return false;
+    return currentTier.tier !== "free";
+  };
+
+  // Get max file upload size based on tier
+  const getMaxFileSize = () => {
+    if (!currentTier) return 1024 * 1024; // 1MB default
+    return currentTier.limits.file_upload_size;
+  };
+
   const handleBannerUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      if (file.size > 5 * 1024 * 1024) {
-        // 5MB limit
+      const maxSize = getMaxFileSize();
+      if (file.size > maxSize) {
         toast({
           title: "Error",
-          description: "Banner file must be less than 5MB",
-          variant: "destructive",
-        });
-        return;
-      }
-      setBannerFile(file);
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        setBannerPreview(e.target?.result as string);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
-  const handleBannerUploadEdit = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      if (file.size > 5 * 1024 * 1024) {
-        // 5MB limit
-        toast({
-          title: "Error",
-          description: "Banner file must be less than 5MB",
+          description: `Banner file must be less than ${(maxSize / (1024 * 1024)).toFixed(1)}MB`,
           variant: "destructive",
         });
         return;
@@ -272,36 +211,30 @@ export default function Servers() {
   };
 
   const validateServerInfo = (ip: string) => {
-    // Basic IP/hostname validation
     if (!ip || ip.trim().length === 0) return false;
-
-    // Check for valid hostname/domain
     const hostnameRegex =
       /^([a-zA-Z0-9]([a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?\.)*(([a-zA-Z0-9]([a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?))$/;
-
-    // Check for valid IPv4
     const ipv4Regex =
       /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
-
     return hostnameRegex.test(ip) || ipv4Regex.test(ip);
   };
 
   const handleSubmitServer = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!validateServerInfo(newServerData.ip)) {
+    if (!canAddServer()) {
       toast({
-        title: "Error",
-        description: "Please enter a valid IP address or hostname",
+        title: "Server Limit Reached",
+        description: `Your ${currentTier?.tier || "free"} tier allows ${currentTier?.limits.owned_servers || 0} servers. Upgrade for more!`,
         variant: "destructive",
       });
       return;
     }
 
-    if (!bannerFile) {
+    if (!validateServerInfo(newServerData.ip)) {
       toast({
         title: "Error",
-        description: "Please upload a banner image for your server",
+        description: "Please enter a valid IP address or hostname",
         variant: "destructive",
       });
       return;
@@ -314,20 +247,12 @@ export default function Servers() {
       formData.append("ip", newServerData.ip);
       formData.append("category", newServerData.category);
       formData.append("version", newServerData.version);
-      formData.append("banner", bannerFile);
 
-      console.log("🔄 Submitting server data:", {
-        name: newServerData.name,
-        description: newServerData.description,
-        ip: newServerData.ip,
-        category: newServerData.category,
-        version: newServerData.version,
-        bannerSize: bannerFile.size,
-        bannerType: bannerFile.type
-      });
+      if (bannerFile) {
+        formData.append("banner", bannerFile);
+      }
 
       const data = await serversApi.add(formData);
-
       setServers([...servers, data.server]);
       setMyServers([...myServers, data.server]);
       resetForm();
@@ -339,20 +264,12 @@ export default function Servers() {
       });
     } catch (error: any) {
       console.error("❌ Server submission error:", error);
-
       let errorMessage = "Failed to add server";
-
-      if (typeof error === 'string') {
+      if (typeof error === "string") {
         errorMessage = error;
       } else if (error?.message) {
         errorMessage = error.message;
-      } else if (error?.error) {
-        errorMessage = error.error;
-      } else if (typeof error === 'object') {
-        // Handle case where error is an object
-        errorMessage = JSON.stringify(error);
       }
-
       toast({
         title: "Error",
         description: errorMessage,
@@ -364,7 +281,6 @@ export default function Servers() {
   const handleLikeServer = async (serverId: string) => {
     try {
       const data = await serversApi.like(serverId);
-
       setServers(
         servers.map((server) =>
           server.id === serverId
@@ -372,7 +288,6 @@ export default function Servers() {
             : server,
         ),
       );
-
       setMyServers(
         myServers.map((server) =>
           server.id === serverId
@@ -401,22 +316,14 @@ export default function Servers() {
     }
 
     try {
-      // Use server IP directly
-      const serverIP = server.ip;
-
-      // Copy to clipboard
-      await navigator.clipboard.writeText(serverIP);
+      await navigator.clipboard.writeText(server.ip);
       toast({
         title: "Success",
-        description: `Server IP copied to clipboard: ${serverIP}`,
+        description: `Server IP copied to clipboard: ${server.ip}`,
       });
     } catch (error) {
-      // Fallback for older browsers
-      const serverIP = server.ip;
-
-      // Create temporary input element
       const tempInput = document.createElement("input");
-      tempInput.value = serverIP;
+      tempInput.value = server.ip;
       document.body.appendChild(tempInput);
       tempInput.select();
       document.execCommand("copy");
@@ -424,7 +331,7 @@ export default function Servers() {
 
       toast({
         title: "Success",
-        description: `Server IP copied to clipboard: ${serverIP}`,
+        description: `Server IP copied to clipboard: ${server.ip}`,
       });
     }
   };
@@ -441,73 +348,13 @@ export default function Servers() {
     setBannerPreview("");
   };
 
-  const handleEditServer = (server: GameServer) => {
-    setEditingServer(server);
-    setNewServerData({
-      name: server.name,
-      description: server.description,
-      ip: server.ip,
-      category: server.category,
-      version: server.version,
-    });
-    setBannerFile(null);
-    setBannerPreview("");
-    setIsEditDialogOpen(true);
-  };
-
-  const handleUpdateServer = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (!editingServer) return;
-
-    try {
-      const formData = new FormData();
-      formData.append("name", newServerData.name);
-      formData.append("description", newServerData.description);
-      formData.append("ip", newServerData.ip);
-      formData.append("category", newServerData.category);
-      formData.append("version", newServerData.version);
-
-      if (bannerFile) {
-        formData.append("banner", bannerFile);
-      }
-
-      const data = await serversApi.update(editingServer.id, formData);
-
-      // Update both server lists
-      setServers(
-        servers.map((s) => (s.id === editingServer.id ? data.server : s)),
-      );
-      setMyServers(
-        myServers.map((s) => (s.id === editingServer.id ? data.server : s)),
-      );
-
-      setIsEditDialogOpen(false);
-      setEditingServer(null);
-      resetForm();
-
-      toast({
-        title: "Success",
-        description: "Server updated successfully",
-      });
-    } catch (error: any) {
-      toast({
-        title: "Error",
-        description: error.message || "Failed to update server",
-        variant: "destructive",
-      });
-    }
-  };
-
   const handleDeleteServer = async () => {
     if (!serverToDelete) return;
 
     try {
       await serversApi.delete(serverToDelete.id);
-
       setServers(servers.filter((s) => s.id !== serverToDelete.id));
       setMyServers(myServers.filter((s) => s.id !== serverToDelete.id));
-
       setIsDeleteDialogOpen(false);
       setServerToDelete(null);
 
@@ -524,31 +371,8 @@ export default function Servers() {
     }
   };
 
-  const handleRefreshStatus = async (serverId: string) => {
-    try {
-      const data = await serversApi.updateStatus(serverId);
-
-      setServers(servers.map((s) => (s.id === serverId ? data.server : s)));
-      setMyServers(myServers.map((s) => (s.id === serverId ? data.server : s)));
-
-      if (data.statusChanged) {
-        toast({
-          title: "Status Updated",
-          description: `Server is now ${data.server.isOnline ? "online" : "offline"}`,
-        });
-      }
-    } catch (error: any) {
-      toast({
-        title: "Error",
-        description: "Failed to refresh server status",
-        variant: "destructive",
-      });
-    }
-  };
-
   const getDisplayServers = () => {
     const sourceServers = currentView === "my" ? myServers : servers;
-
     return sourceServers
       .filter((server) => {
         const matchesCategory =
@@ -586,283 +410,273 @@ export default function Servers() {
     { value: "modded", label: "Modded" },
   ];
 
+  if (!user) {
+    return null;
+  }
+
   return (
     <UserLayout>
-      <div className="min-h-screen bg-background">
-        {/* Top Navigation */}
-        <nav className="border-b border-border bg-card">
-          <div className="px-6 py-4">
-            <div className="flex items-center justify-between">
-              <Link
-                to="/dashboard"
-                className="inline-flex items-center text-muted-foreground hover:text-primary transition-colors"
-              >
-                <svg viewBox="0 0 24 24" fill="none" className="w-4 h-4 mr-2">
-                  <rect x="3" y="4" width="18" height="2" rx="1" fill="currentColor"/>
-                  <rect x="3" y="8" width="18" height="2" rx="1" fill="currentColor"/>
-                  <rect x="3" y="12" width="18" height="2" rx="1" fill="currentColor"/>
-                  <rect x="2" y="16" width="20" height="6" rx="2" fill="currentColor" opacity="0.6"/>
-                </svg>
-                Back to Dashboard
-              </Link>
-              <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
-                  <svg viewBox="0 0 24 24" fill="none" className="w-6 h-6 text-primary-foreground">
-                    <rect x="3" y="4" width="18" height="2" rx="1" fill="currentColor"/>
-                    <rect x="3" y="8" width="18" height="2" rx="1" fill="currentColor"/>
-                    <rect x="3" y="12" width="18" height="2" rx="1" fill="currentColor"/>
-                    <rect x="2" y="16" width="20" height="6" rx="2" fill="currentColor" opacity="0.6"/>
-                  </svg>
-                </div>
-                <h1 className="text-2xl font-bold text-primary">
-                  {currentView === "my" ? "My Servers" : "Server List"}
-                </h1>
-              </div>
-              <div className="flex items-center space-x-2">
+      <div className="max-w-7xl">
+        {/* Header */}
+        <div className="flex items-center justify-between mb-8">
+          <div>
+            <h1 className="text-3xl font-bold text-foreground">Servers</h1>
+            <p className="text-muted-foreground">
+              Discover and share Minecraft servers with the community
+            </p>
+          </div>
+
+          {/* Tier info and server limits */}
+          <div className="text-right">
+            <Badge variant="outline" className="mb-2">
+              {currentTier?.tier || "Free"} Tier
+            </Badge>
+            <p className="text-sm text-muted-foreground">
+              Servers: {myServers.length}/
+              {currentTier?.limits.owned_servers === -1
+                ? "∞"
+                : currentTier?.limits.owned_servers || 0}
+            </p>
+          </div>
+        </div>
+
+        <Tabs
+          value={currentView}
+          onValueChange={(value) => setCurrentView(value as "all" | "my")}
+          className="w-full"
+        >
+          <div className="flex items-center justify-between mb-6">
+            <TabsList className="grid w-fit grid-cols-2">
+              <TabsTrigger value="all">All Servers</TabsTrigger>
+              <TabsTrigger value="my">
+                My Servers ({myServers.length})
+              </TabsTrigger>
+            </TabsList>
+
+            <Dialog open={isAddServerOpen} onOpenChange={setIsAddServerOpen}>
+              <DialogTrigger asChild>
                 <Button
-                  variant={currentView === "all" ? "default" : "outline"}
-                  onClick={() => setCurrentView("all")}
-                  size="sm"
+                  className="bg-primary text-primary-foreground"
+                  disabled={!canAddServer()}
                 >
-                  <svg viewBox="0 0 24 24" fill="none" className="w-4 h-4 mr-2">
-                    <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" fill="none"/>
-                    <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20" stroke="currentColor" strokeWidth="2" fill="none"/>
-                    <path d="M2 12h20" stroke="currentColor" strokeWidth="2"/>
-                  </svg>
-                  All Servers
+                  Add Server
                 </Button>
-                <Button
-                  variant={currentView === "my" ? "default" : "outline"}
-                  onClick={() => setCurrentView("my")}
-                  size="sm"
-                >
-                  <svg viewBox="0 0 24 24" fill="none" className="w-4 h-4 mr-2">
-                    <circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="2" fill="none"/>
-                    <path d="M12 1v6m0 6v6" stroke="currentColor" strokeWidth="2"/>
-                    <path d="m21 12-6-6-6 6 6 6 6-6Z" stroke="currentColor" strokeWidth="2" fill="none"/>
-                  </svg>
-                  My Servers ({myServers.length})
-                </Button>
-                <Dialog
-                  open={isAddServerOpen}
-                  onOpenChange={setIsAddServerOpen}
-                >
-                  <DialogTrigger asChild>
-                    <Button className="bg-primary text-primary-foreground">
-                      <svg viewBox="0 0 24 24" fill="none" className="w-4 h-4 mr-2">
-                        <path d="M12 5v14m-7-7h14" stroke="currentColor" strokeWidth="2"/>
-                      </svg>
+              </DialogTrigger>
+              <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+                <DialogHeader>
+                  <DialogTitle>Add Your Server</DialogTitle>
+                  <DialogDescription>
+                    Share your Minecraft server with the community.
+                    {!canUploadBanner() &&
+                      " Banner uploads available for VIP+ members."}
+                  </DialogDescription>
+                </DialogHeader>
+                <form onSubmit={handleSubmitServer} className="space-y-4">
+                  <div>
+                    <Label htmlFor="serverName">Server Name</Label>
+                    <Input
+                      id="serverName"
+                      value={newServerData.name}
+                      onChange={(e) =>
+                        setNewServerData({
+                          ...newServerData,
+                          name: e.target.value,
+                        })
+                      }
+                      placeholder="Enter server name"
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <Label htmlFor="description">Description</Label>
+                    <Textarea
+                      id="description"
+                      value={newServerData.description}
+                      onChange={(e) =>
+                        setNewServerData({
+                          ...newServerData,
+                          description: e.target.value,
+                        })
+                      }
+                      placeholder="Describe your server"
+                      rows={3}
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <Label htmlFor="ip">Server IP</Label>
+                    <Input
+                      id="ip"
+                      value={newServerData.ip}
+                      onChange={(e) =>
+                        setNewServerData({
+                          ...newServerData,
+                          ip: e.target.value,
+                        })
+                      }
+                      placeholder="play.yourserver.com"
+                      required
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="category">Category</Label>
+                      <Select
+                        value={newServerData.category}
+                        onValueChange={(value) =>
+                          setNewServerData({
+                            ...newServerData,
+                            category: value,
+                          })
+                        }
+                      >
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {categories
+                            .filter((c) => c.value !== "all")
+                            .map((category) => (
+                              <SelectItem
+                                key={category.value}
+                                value={category.value}
+                              >
+                                {category.label}
+                              </SelectItem>
+                            ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div>
+                      <Label htmlFor="version">Minecraft Version</Label>
+                      <Input
+                        id="version"
+                        value={newServerData.version}
+                        onChange={(e) =>
+                          setNewServerData({
+                            ...newServerData,
+                            version: e.target.value,
+                          })
+                        }
+                        placeholder="1.8.8"
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  {canUploadBanner() && (
+                    <div>
+                      <Label htmlFor="banner">Server Banner (Optional)</Label>
+                      <div className="mt-2">
+                        <Input
+                          id="banner"
+                          type="file"
+                          accept="image/*"
+                          onChange={handleBannerUpload}
+                        />
+                        <p className="text-xs text-muted-foreground mt-1">
+                          Upload a banner image (max{" "}
+                          {(getMaxFileSize() / (1024 * 1024)).toFixed(1)}MB)
+                        </p>
+                        {bannerPreview && (
+                          <div className="mt-3">
+                            <img
+                              src={bannerPreview}
+                              alt="Banner preview"
+                              className="w-full h-32 object-cover rounded-lg border"
+                            />
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  {!canAddServer() && (
+                    <Alert>
+                      <AlertDescription>
+                        You've reached your server limit (
+                        {currentTier?.limits.owned_servers || 0} servers).
+                        <Link
+                          to="/store"
+                          className="text-primary hover:underline ml-1"
+                        >
+                          Upgrade your tier
+                        </Link>{" "}
+                        to add more servers.
+                      </AlertDescription>
+                    </Alert>
+                  )}
+
+                  <DialogFooter>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => setIsAddServerOpen(false)}
+                    >
+                      Cancel
+                    </Button>
+                    <Button type="submit" disabled={!canAddServer()}>
                       Add Server
                     </Button>
-                  </DialogTrigger>
-                  <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
-                    <DialogHeader>
-                      <DialogTitle>Add Your Server</DialogTitle>
-                      <DialogDescription>
-                        Share your Minecraft server with the community. Enter
-                        your server IP. Your server must be online to be added.
-                      </DialogDescription>
-                    </DialogHeader>
-                    <form onSubmit={handleSubmitServer} className="space-y-4">
-                      <div>
-                        <Label htmlFor="serverName">Server Name</Label>
-                        <Input
-                          id="serverName"
-                          value={newServerData.name}
-                          onChange={(e) =>
-                            setNewServerData({
-                              ...newServerData,
-                              name: e.target.value,
-                            })
-                          }
-                          placeholder="Enter server name"
-                          required
-                        />
-                      </div>
-
-                      <div>
-                        <Label htmlFor="description">Description</Label>
-                        <Textarea
-                          id="description"
-                          value={newServerData.description}
-                          onChange={(e) =>
-                            setNewServerData({
-                              ...newServerData,
-                              description: e.target.value,
-                            })
-                          }
-                          placeholder="Describe your server"
-                          rows={3}
-                          required
-                        />
-                      </div>
-
-                      <div>
-                        <Label htmlFor="ip">Server IP</Label>
-                        <Input
-                          id="ip"
-                          value={newServerData.ip}
-                          onChange={(e) =>
-                            setNewServerData({
-                              ...newServerData,
-                              ip: e.target.value,
-                            })
-                          }
-                          placeholder="play.yourserver.com"
-                          required
-                        />
-                      </div>
-
-                      <div className="grid grid-cols-2 gap-4">
-                        <div>
-                          <Label htmlFor="category">Category</Label>
-                          <Select
-                            value={newServerData.category}
-                            onValueChange={(value) =>
-                              setNewServerData({
-                                ...newServerData,
-                                category: value,
-                              })
-                            }
-                          >
-                            <SelectTrigger>
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {categories
-                                .filter((c) => c.value !== "all")
-                                .map((category) => (
-                                  <SelectItem
-                                    key={category.value}
-                                    value={category.value}
-                                  >
-                                    {category.label}
-                                  </SelectItem>
-                                ))}
-                            </SelectContent>
-                          </Select>
-                        </div>
-                        <div>
-                          <Label htmlFor="version">Minecraft Version</Label>
-                          <Input
-                            id="version"
-                            value={newServerData.version}
-                            onChange={(e) =>
-                              setNewServerData({
-                                ...newServerData,
-                                version: e.target.value,
-                              })
-                            }
-                            placeholder="1.8.8"
-                            required
-                          />
-                        </div>
-                      </div>
-
-                      <div>
-                        <Label htmlFor="banner">Server Banner (Required)</Label>
-                        <div className="mt-2">
-                          <Input
-                            id="banner"
-                            type="file"
-                            accept="image/*"
-                            onChange={handleBannerUpload}
-                            required
-                          />
-                          <p className="text-xs text-muted-foreground mt-1">
-                            Upload a banner image (max 5MB). Minimum size:
-                            400x100px, Maximum: 1920x600px
-                          </p>
-                          {bannerPreview && (
-                            <div className="mt-3">
-                              <img
-                                src={bannerPreview}
-                                alt="Banner preview"
-                                className="w-full h-32 object-cover rounded-lg border"
-                              />
-                            </div>
-                          )}
-                        </div>
-                      </div>
-
-                      <DialogFooter>
-                        <Button
-                          type="button"
-                          variant="outline"
-                          onClick={() => setIsAddServerOpen(false)}
-                        >
-                          Cancel
-                        </Button>
-                        <Button type="submit">
-                          <svg viewBox="0 0 24 24" fill="none" className="w-4 h-4 mr-2">
-                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" stroke="currentColor" strokeWidth="2" fill="none"/>
-                            <polyline points="17,8 12,3 7,8" stroke="currentColor" strokeWidth="2" fill="none"/>
-                            <line x1="12" y1="3" x2="12" y2="15" stroke="currentColor" strokeWidth="2"/>
-                          </svg>
-                          Add Server
-                        </Button>
-                      </DialogFooter>
-                    </form>
-                  </DialogContent>
-                </Dialog>
-              </div>
-            </div>
+                  </DialogFooter>
+                </form>
+              </DialogContent>
+            </Dialog>
           </div>
-        </nav>
 
-        <div className="p-6">
-          <div className="max-w-7xl mx-auto">
-            {/* Filters and Search */}
-            <div className="flex flex-wrap gap-4 mb-6">
-              <div className="flex-1 min-w-64">
-                <Input
-                  placeholder="Search servers..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full"
-                />
-              </div>
-              <Select
-                value={selectedCategory}
-                onValueChange={setSelectedCategory}
-              >
-                <SelectTrigger className="w-48">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {categories.map((category) => (
-                    <SelectItem key={category.value} value={category.value}>
-                      {category.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <Select value={sortBy} onValueChange={setSortBy}>
-                <SelectTrigger className="w-48">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="likes">Most Liked</SelectItem>
-                  <SelectItem value="name">Name A-Z</SelectItem>
-                  <SelectItem value="newest">Newest</SelectItem>
-                </SelectContent>
-              </Select>
+          {/* Filters and Search */}
+          <div className="flex flex-wrap gap-4 mb-6">
+            <div className="flex-1 min-w-64">
+              <Input
+                placeholder="Search servers..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full"
+              />
             </div>
+            <Select
+              value={selectedCategory}
+              onValueChange={setSelectedCategory}
+            >
+              <SelectTrigger className="w-48">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {categories.map((category) => (
+                  <SelectItem key={category.value} value={category.value}>
+                    {category.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <Select value={sortBy} onValueChange={setSortBy}>
+              <SelectTrigger className="w-48">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="likes">Most Liked</SelectItem>
+                <SelectItem value="name">Name A-Z</SelectItem>
+                <SelectItem value="newest">Newest</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
 
-            {/* Loading State */}
+          <TabsContent value="all" className="mt-0">
+            {/* Server List */}
             {loading && (
               <div className="text-center py-8">
                 <div className="inline-flex items-center space-x-2">
-                  <svg className="animate-spin h-5 w-5 text-primary" viewBox="0 0 24 24">
-                    <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" className="opacity-25"/>
-                    <path fill="currentColor" className="opacity-75" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
-                  </svg>
-                  <span className="text-muted-foreground">Loading servers...</span>
+                  <span className="animate-spin h-5 w-5 text-primary"></span>
+                  <span className="text-muted-foreground">
+                    Loading servers...
+                  </span>
                 </div>
               </div>
             )}
 
-            {/* Server List */}
             {!loading && filteredServers.length > 0 ? (
               <div className="grid gap-6">
                 {filteredServers.map((server) => (
@@ -870,31 +684,15 @@ export default function Servers() {
                     key={server.id}
                     className="minecraft-panel overflow-hidden"
                   >
-                    <div className="relative">
-                      {server.banner && (
-                        <div className="h-48 overflow-hidden">
-                          <img
-                            src={server.banner}
-                            alt={`${server.name} banner`}
-                            className="w-full h-full object-cover"
-                          />
-                        </div>
-                      )}
-                      <div className="absolute top-4 right-4 flex space-x-2">
-                        <Badge
-                          variant={server.isOnline ? "default" : "destructive"}
-                          className="bg-black/50 backdrop-blur"
-                        >
-                          {server.isOnline ? "Online" : "Offline"}
-                        </Badge>
-                        <Badge
-                          variant="secondary"
-                          className="bg-black/50 backdrop-blur text-white"
-                        >
-                          {server.category}
-                        </Badge>
+                    {server.banner && (
+                      <div className="h-48 overflow-hidden">
+                        <img
+                          src={server.banner}
+                          alt={`${server.name} banner`}
+                          className="w-full h-full object-cover"
+                        />
                       </div>
-                    </div>
+                    )}
 
                     <CardContent className="p-6">
                       <div className="flex items-start justify-between mb-4">
@@ -902,40 +700,23 @@ export default function Servers() {
                           <div className="flex items-center space-x-3 mb-2">
                             <h3 className="text-xl font-bold">{server.name}</h3>
                             <Badge variant="outline">{server.version}</Badge>
+                            <Badge
+                              variant={
+                                server.isOnline ? "default" : "destructive"
+                              }
+                            >
+                              {server.isOnline ? "Online" : "Offline"}
+                            </Badge>
+                            <Badge variant="secondary">{server.category}</Badge>
                           </div>
                           <p className="text-muted-foreground mb-3">
                             {server.description}
                           </p>
 
                           <div className="flex items-center space-x-6 text-sm text-muted-foreground">
-                            <div className="flex items-center space-x-1">
-                              <svg viewBox="0 0 24 24" fill="none" className="w-4 h-4">
-                                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" stroke="currentColor" strokeWidth="2" fill="none"/>
-                              </svg>
-                              <span>{server.likes} likes</span>
-                            </div>
-                            <div className="flex items-center space-x-1">
-                              <svg viewBox="0 0 24 24" fill="none" className="w-4 h-4">
-                                <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" fill="none"/>
-                                <polyline points="12,6 12,12 16,14" stroke="currentColor" strokeWidth="2" fill="none"/>
-                              </svg>
-                              <span>by {server.ownerName}</span>
-                            </div>
+                            <span>{server.likes} likes</span>
+                            <span>by {server.ownerName}</span>
                           </div>
-
-                          {server.features.length > 0 && (
-                            <div className="flex flex-wrap gap-2 mt-3">
-                              {server.features.map((feature, index) => (
-                                <Badge
-                                  key={index}
-                                  variant="secondary"
-                                  className="text-xs"
-                                >
-                                  {feature}
-                                </Badge>
-                              ))}
-                            </div>
-                          )}
                         </div>
 
                         <div className="flex flex-col space-y-2 ml-4">
@@ -944,9 +725,6 @@ export default function Servers() {
                             disabled={!server.isOnline}
                             className="bg-primary text-primary-foreground"
                           >
-                            <svg viewBox="0 0 24 24" fill="none" className="w-4 h-4 mr-2">
-                              <polygon points="5,3 19,12 5,21" fill="currentColor"/>
-                            </svg>
                             {server.isOnline ? "Copy IP" : "Offline"}
                           </Button>
 
@@ -959,74 +737,8 @@ export default function Servers() {
                                 : ""
                             }
                           >
-                            <svg viewBox="0 0 24 24" className={`w-4 h-4 mr-2 ${server.hasLiked ? "fill-red-500" : "fill-none"}`}>
-                              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" stroke="currentColor" strokeWidth="2"/>
-                            </svg>
                             {server.hasLiked ? "Liked" : "Like"}
                           </Button>
-
-                          {/* Show management buttons for own servers */}
-                          {(currentView === "my" ||
-                            server.ownerId === user?.id) && (
-                            <div className="space-y-2">
-                              <div className="flex items-center space-x-1 text-xs text-green-600">
-                                <svg viewBox="0 0 24 24" fill="none" className="w-3 h-3">
-                                  <path d="M5 12h14l-5-7v4.5z" fill="currentColor"/>
-                                  <path d="M5 12h14v7l-7-2-7 2v-7z" fill="currentColor" opacity="0.8"/>
-                                </svg>
-                                <span>You own this server</span>
-                              </div>
-                              <div className="flex space-x-2">
-                                <Button
-                                  variant="outline"
-                                  size="sm"
-                                  onClick={() => handleEditServer(server)}
-                                  className="flex-1"
-                                >
-                                  <svg viewBox="0 0 24 24" fill="none" className="w-4 h-4 mr-1">
-                                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" stroke="currentColor" strokeWidth="2" fill="none"/>
-                                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" stroke="currentColor" strokeWidth="2" fill="none"/>
-                                  </svg>
-                                  Edit
-                                </Button>
-                                <Button
-                                  variant="outline"
-                                  size="sm"
-                                  onClick={() => handleRefreshStatus(server.id)}
-                                >
-                                  <svg viewBox="0 0 24 24" fill="none" className="w-4 h-4">
-                                    <path d="M23 4v6h-6" stroke="currentColor" strokeWidth="2" fill="none"/>
-                                    <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" stroke="currentColor" strokeWidth="2" fill="none"/>
-                                  </svg>
-                                </Button>
-                                <Button
-                                  variant="outline"
-                                  size="sm"
-                                  onClick={() => {
-                                    setServerToDelete(server);
-                                    setIsDeleteDialogOpen(true);
-                                  }}
-                                  className="text-red-500 hover:bg-red-50 hover:text-red-600"
-                                >
-                                  <svg viewBox="0 0 24 24" fill="none" className="w-4 h-4">
-                                    <path d="M3 6h18m-2 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" stroke="currentColor" strokeWidth="2" fill="none"/>
-                                  </svg>
-                                </Button>
-                              </div>
-                            </div>
-                          )}
-
-                          {/* Show owner info for servers owned by others */}
-                          {server.ownerId !== user?.id &&
-                            currentView !== "my" && (
-                              <div className="flex items-center space-x-1 text-xs text-muted-foreground mt-2">
-                                <svg viewBox="0 0 24 24" fill="none" className="w-3 h-3">
-                                  <path d="M5 12h14l-5-7v4.5z" fill="currentColor"/>
-                                  <path d="M5 12h14v7l-7-2-7 2v-7z" fill="currentColor" opacity="0.8"/>
-                                </svg>
-                                <span>Owner: {server.ownerName}</span>
-                              </div>
-                            )}
                         </div>
                       </div>
                     </CardContent>
@@ -1035,197 +747,112 @@ export default function Servers() {
               </div>
             ) : !loading ? (
               <div className="text-center py-12">
-                <svg viewBox="0 0 24 24" fill="none" className="w-16 h-16 text-muted-foreground mx-auto mb-4">
-                  <rect x="3" y="4" width="18" height="2" rx="1" fill="currentColor"/>
-                  <rect x="3" y="8" width="18" height="2" rx="1" fill="currentColor"/>
-                  <rect x="3" y="12" width="18" height="2" rx="1" fill="currentColor"/>
-                  <rect x="2" y="16" width="20" height="6" rx="2" fill="currentColor" opacity="0.6"/>
-                </svg>
                 <h3 className="text-lg font-semibold mb-2">No servers found</h3>
                 <p className="text-muted-foreground mb-4">
-                  {currentView === "my"
-                    ? "You haven't added any servers yet"
-                    : searchQuery || selectedCategory !== "all"
-                      ? "Try adjusting your search or filters"
-                      : "Be the first to add a server to the community!"}
+                  {searchQuery || selectedCategory !== "all"
+                    ? "Try adjusting your search or filters"
+                    : "Be the first to add a server to the community!"}
                 </p>
-                <Button onClick={() => setIsAddServerOpen(true)}>
-                  <svg viewBox="0 0 24 24" fill="none" className="w-4 h-4 mr-2">
-                    <path d="M12 5v14m-7-7h14" stroke="currentColor" strokeWidth="2"/>
-                  </svg>
+                <Button
+                  onClick={() => setIsAddServerOpen(true)}
+                  disabled={!canAddServer()}
+                >
                   Add Your Server
                 </Button>
               </div>
             ) : null}
-          </div>
-        </div>
+          </TabsContent>
 
-        {/* Edit Server Dialog */}
-        {editingServer && (
-          <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-            <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
-              <DialogHeader>
-                <DialogTitle>Edit Server</DialogTitle>
-                <DialogDescription>
-                  Update your server information. IP changes require the new
-                  server to be online.
-                </DialogDescription>
-              </DialogHeader>
-              <form onSubmit={handleUpdateServer} className="space-y-4">
-                <div>
-                  <Label htmlFor="editServerName">Server Name</Label>
-                  <Input
-                    id="editServerName"
-                    value={newServerData.name}
-                    onChange={(e) =>
-                      setNewServerData({
-                        ...newServerData,
-                        name: e.target.value,
-                      })
-                    }
-                    placeholder="Enter server name"
-                    required
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="editDescription">Description</Label>
-                  <Textarea
-                    id="editDescription"
-                    value={newServerData.description}
-                    onChange={(e) =>
-                      setNewServerData({
-                        ...newServerData,
-                        description: e.target.value,
-                      })
-                    }
-                    placeholder="Describe your server"
-                    rows={3}
-                    required
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="editIp">Server IP</Label>
-                  <Input
-                    id="editIp"
-                    value={newServerData.ip}
-                    onChange={(e) =>
-                      setNewServerData({ ...newServerData, ip: e.target.value })
-                    }
-                    placeholder="play.yourserver.com"
-                    required
-                  />
-                  <p className="text-xs text-muted-foreground mt-1">
-                    Changing IP will test connectivity to the new address
-                  </p>
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="editCategory">Category</Label>
-                    <Select
-                      value={newServerData.category}
-                      onValueChange={(value) =>
-                        setNewServerData({ ...newServerData, category: value })
-                      }
-                    >
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {categories
-                          .filter((c) => c.value !== "all")
-                          .map((category) => (
-                            <SelectItem
-                              key={category.value}
-                              value={category.value}
-                            >
-                              {category.label}
-                            </SelectItem>
-                          ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div>
-                    <Label htmlFor="editVersion">Minecraft Version</Label>
-                    <Input
-                      id="editVersion"
-                      value={newServerData.version}
-                      onChange={(e) =>
-                        setNewServerData({
-                          ...newServerData,
-                          version: e.target.value,
-                        })
-                      }
-                      placeholder="1.8.8"
-                      required
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <Label htmlFor="editBanner">Update Banner (Optional)</Label>
-                  <div className="mt-2">
-                    <Input
-                      id="editBanner"
-                      type="file"
-                      accept="image/*"
-                      onChange={handleBannerUploadEdit}
-                    />
-                    <p className="text-xs text-muted-foreground mt-1">
-                      Upload a new banner (max 5MB). Minimum size: 400x100px,
-                      Maximum: 1920x600px
-                    </p>
-                    {bannerPreview && (
-                      <div className="mt-3">
-                        <img
-                          src={bannerPreview}
-                          alt="New banner preview"
-                          className="w-full h-32 object-cover rounded-lg border"
-                        />
-                      </div>
-                    )}
-                    {!bannerPreview && editingServer.banner && (
-                      <div className="mt-3">
-                        <p className="text-sm text-muted-foreground mb-2">
-                          Current banner:
-                        </p>
-                        <img
-                          src={editingServer.banner}
-                          alt="Current banner"
-                          className="w-full h-32 object-cover rounded-lg border"
-                        />
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-                <DialogFooter>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => {
-                      setIsEditDialogOpen(false);
-                      setEditingServer(null);
-                      resetForm();
-                    }}
+          <TabsContent value="my" className="mt-0">
+            {myServers.length > 0 ? (
+              <div className="grid gap-6">
+                {myServers.map((server) => (
+                  <Card
+                    key={server.id}
+                    className="minecraft-panel overflow-hidden"
                   >
-                    Cancel
-                  </Button>
-                  <Button type="submit">
-                    <svg viewBox="0 0 24 24" fill="none" className="w-4 h-4 mr-2">
-                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" stroke="currentColor" strokeWidth="2" fill="none"/>
-                      <polyline points="17,8 12,3 7,8" stroke="currentColor" strokeWidth="2" fill="none"/>
-                      <line x1="12" y1="3" x2="12" y2="15" stroke="currentColor" strokeWidth="2"/>
-                    </svg>
-                    Update Server
-                  </Button>
-                </DialogFooter>
-              </form>
-            </DialogContent>
-          </Dialog>
-        )}
+                    {server.banner && (
+                      <div className="h-48 overflow-hidden">
+                        <img
+                          src={server.banner}
+                          alt={`${server.name} banner`}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                    )}
+
+                    <CardContent className="p-6">
+                      <div className="flex items-start justify-between mb-4">
+                        <div className="flex-1">
+                          <div className="flex items-center space-x-3 mb-2">
+                            <h3 className="text-xl font-bold">{server.name}</h3>
+                            <Badge variant="outline">{server.version}</Badge>
+                            <Badge
+                              variant={
+                                server.isOnline ? "default" : "destructive"
+                              }
+                            >
+                              {server.isOnline ? "Online" : "Offline"}
+                            </Badge>
+                            <Badge variant="secondary">{server.category}</Badge>
+                          </div>
+                          <p className="text-muted-foreground mb-3">
+                            {server.description}
+                          </p>
+
+                          <div className="flex items-center space-x-6 text-sm text-muted-foreground">
+                            <span>{server.likes} likes</span>
+                            <span className="text-green-600">
+                              You own this server
+                            </span>
+                          </div>
+                        </div>
+
+                        <div className="flex flex-col space-y-2 ml-4">
+                          <Button
+                            onClick={() => handleCopyIP(server)}
+                            disabled={!server.isOnline}
+                            className="bg-primary text-primary-foreground"
+                          >
+                            {server.isOnline ? "Copy IP" : "Offline"}
+                          </Button>
+
+                          <div className="flex space-x-2">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => {
+                                setServerToDelete(server);
+                                setIsDeleteDialogOpen(true);
+                              }}
+                              className="text-red-500 hover:bg-red-50 hover:text-red-600"
+                            >
+                              Delete
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-12">
+                <h3 className="text-lg font-semibold mb-2">No servers yet</h3>
+                <p className="text-muted-foreground mb-4">
+                  You haven't added any servers yet. Share your server with the
+                  community!
+                </p>
+                <Button
+                  onClick={() => setIsAddServerOpen(true)}
+                  disabled={!canAddServer()}
+                >
+                  Add Your First Server
+                </Button>
+              </div>
+            )}
+          </TabsContent>
+        </Tabs>
 
         {/* Delete Confirmation Dialog */}
         <AlertDialog
@@ -1235,32 +862,11 @@ export default function Servers() {
           <AlertDialogContent>
             <AlertDialogHeader>
               <AlertDialogTitle className="flex items-center space-x-2">
-                <svg viewBox="0 0 24 24" fill="none" className="w-5 h-5 text-red-500">
-                  <path d="M3 6h18m-2 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" stroke="currentColor" strokeWidth="2" fill="none"/>
-                </svg>
-                <span>Delete Your Server</span>
+                <span>Delete Server</span>
               </AlertDialogTitle>
               <AlertDialogDescription>
-                <div className="space-y-3">
-                  <p>
-                    Are you sure you want to permanently delete "
-                    {serverToDelete?.name}"?
-                  </p>
-                  <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
-                    <div className="flex items-center space-x-2 text-red-600 text-sm">
-                      <svg viewBox="0 0 24 24" fill="none" className="w-4 h-4">
-                        <path d="M5 12h14l-5-7v4.5z" fill="currentColor"/>
-                        <path d="M5 12h14v7l-7-2-7 2v-7z" fill="currentColor" opacity="0.8"/>
-                      </svg>
-                      <span className="font-medium">Server Owner:</span>
-                      <span>{serverToDelete?.ownerName}</span>
-                    </div>
-                    <p className="text-xs text-red-500 mt-1">
-                      This action cannot be undone and will remove all server
-                      data.
-                    </p>
-                  </div>
-                </div>
+                Are you sure you want to permanently delete "
+                {serverToDelete?.name}"? This action cannot be undone.
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
@@ -1276,9 +882,6 @@ export default function Servers() {
                 onClick={handleDeleteServer}
                 className="bg-red-500 hover:bg-red-600"
               >
-                <svg viewBox="0 0 24 24" fill="none" className="w-4 h-4 mr-2">
-                  <path d="M3 6h18m-2 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" stroke="currentColor" strokeWidth="2" fill="none"/>
-                </svg>
                 Delete Server
               </AlertDialogAction>
             </AlertDialogFooter>

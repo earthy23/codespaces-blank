@@ -82,7 +82,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
       // Add timeout for auth response (increased for better reliability)
       const timeoutPromise = new Promise<never>((_, reject) =>
-        setTimeout(() => reject(new Error("Auth timeout")), 10000),
+        setTimeout(() => reject(new Error("Auth timeout")), 15000),
       );
 
       const response = await Promise.race([
@@ -99,6 +99,16 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         console.warn("🌐 Network connectivity issue during user refresh - keeping current session");
         // Don't clear tokens on network errors, just log and continue
         // This prevents users from being logged out due to temporary connectivity issues
+      } else if (error instanceof Error && (
+        error.message.includes("Auth timeout") ||
+        error.message.includes("Request was cancelled") ||
+        error.message.includes("Profile request cancelled") ||
+        error.message.includes("Failed to fetch") ||
+        error.message.includes("Network request failed")
+      )) {
+        console.warn("⏱️ Auth request failed due to temporary issue - keeping current session");
+        // Don't clear tokens on timeout/cancellation/network issues, just log and continue
+        // This prevents users from being logged out due to slow networks or navigation
       } else if (error instanceof Error && error.message.includes("Authentication required")) {
         console.log("🔐 Authentication required - clearing session");
         tokenManager.clear();
