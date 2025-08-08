@@ -25,41 +25,48 @@ interface Notification {
 
 export function TopNavigation() {
   const { user } = useAuth();
+  const { unreadTotal, chats } = useChat();
+  const { friendRequests } = useFriends();
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [showNotifications, setShowNotifications] = useState(false);
 
-  // Simulate some notifications for demo
+  // Generate real notifications from chat and friends data
   useEffect(() => {
     if (user) {
-      const mockNotifications: Notification[] = [
-        {
-          id: '1',
-          type: 'ping',
-          from: 'GameMaster',
-          content: 'mentioned you in general chat',
-          timestamp: new Date(Date.now() - 300000).toISOString(),
-          read: false
-        },
-        {
-          id: '2',
-          type: 'message',
-          from: 'Builder123',
-          content: 'sent you a direct message',
-          timestamp: new Date(Date.now() - 600000).toISOString(),
-          read: false
-        },
-        {
-          id: '3',
+      const realNotifications: Notification[] = [];
+
+      // Add friend request notifications
+      friendRequests.forEach((request) => {
+        realNotifications.push({
+          id: `friend_${request.id}`,
           type: 'follow',
-          from: 'CrafterPro',
-          content: 'started following you',
-          timestamp: new Date(Date.now() - 900000).toISOString(),
-          read: true
+          from: request.requesterUsername || 'Unknown',
+          content: 'sent you a friend request',
+          timestamp: request.createdAt,
+          read: false
+        });
+      });
+
+      // Add unread message notifications
+      chats.forEach((chat) => {
+        if (chat.unread_count > 0 && chat.last_message) {
+          realNotifications.push({
+            id: `message_${chat.id}`,
+            type: 'message',
+            from: chat.last_message.sender_username,
+            content: `sent ${chat.unread_count} new message${chat.unread_count > 1 ? 's' : ''}`,
+            timestamp: chat.last_message.created_at,
+            read: false
+          });
         }
-      ];
-      setNotifications(mockNotifications);
+      });
+
+      // Sort by timestamp (newest first)
+      realNotifications.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+
+      setNotifications(realNotifications);
     }
-  }, [user]);
+  }, [user, friendRequests, chats, unreadTotal]);
 
   const unreadCount = notifications.filter(n => !n.read).length;
 
