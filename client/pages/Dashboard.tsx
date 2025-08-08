@@ -216,7 +216,7 @@ export default function Dashboard() {
                   disabled={false}
                 >
                   <SelectTrigger className="minecraft-input h-12 text-base border-2">
-                    <SelectValue placeholder="Choose a client..." />
+                    <SelectValue placeholder={loading ? "Loading clients..." : "Choose a client..."} />
                   </SelectTrigger>
                   <SelectContent>
                     {clients.length > 0 ? (
@@ -242,12 +242,12 @@ export default function Dashboard() {
               </div>
               <Button
                 onClick={launchClient}
-                disabled={!selectedClient || selectedClient === "no-clients"}
+                disabled={!selectedClient || selectedClient === "no-clients" || loading}
                 size="lg"
                 className="h-12 px-8 minecraft-button bg-primary text-primary-foreground border-none hover:bg-primary/90 shadow-lg hover:shadow-primary/30"
               >
                 <span className="-ml-0.5">
-                  Launch Game
+                  {loading ? "Loading..." : "Launch Game"}
                 </span>
               </Button>
             </div>
