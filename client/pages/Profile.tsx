@@ -50,11 +50,12 @@ export default function Profile() {
   const { toast } = useToast();
   const navigate = useNavigate();
   const { userId } = useParams();
-
+  
   const [profileUser, setProfileUser] = useState<ProfileUser | null>(null);
   const [userVideos, setUserVideos] = useState<ProfileVideo[]>([]);
   const [isOwnProfile, setIsOwnProfile] = useState(true);
   const [isLoadingProfile, setIsLoadingProfile] = useState(false);
+  const [activeTab, setActiveTab] = useState("videos");
 
   const [formData, setFormData] = useState({
     username: "",
@@ -84,11 +85,11 @@ export default function Profile() {
       navigate("/login");
       return;
     }
-
+    
     const targetUserId = userId || user.id;
     const isOwn = !userId || userId === user.id;
     setIsOwnProfile(isOwn);
-
+    
     if (isOwn) {
       setFormData({
         username: user.username || "",
@@ -114,14 +115,14 @@ export default function Profile() {
     } else {
       loadUserProfile(targetUserId);
     }
-
+    
     loadUserVideos(targetUserId);
   }, [user, userId, navigate]);
 
   const loadUserProfile = async (targetUserId: string) => {
     try {
       setIsLoadingProfile(true);
-
+      
       // Mock data for demonstration
       const mockProfile: ProfileUser = {
         id: targetUserId,
@@ -135,7 +136,7 @@ export default function Profile() {
         totalLikes: 2340,
         isFollowing: false,
       };
-
+      
       setProfileUser(mockProfile);
     } catch (error) {
       console.error("Failed to load profile:", error);
@@ -163,7 +164,7 @@ export default function Profile() {
           duration: "15:32",
         },
         {
-          id: "2",
+          id: "2", 
           title: "Redstone Tutorial: Automatic Farm",
           thumbnail: "https://via.placeholder.com/320x180/10b981/ffffff?text=Auto+Farm",
           views: 8900,
@@ -181,7 +182,7 @@ export default function Profile() {
           duration: "8:12",
         },
       ];
-
+      
       setUserVideos(mockVideos);
     } catch (error) {
       console.error("Failed to load user videos:", error);
@@ -190,7 +191,7 @@ export default function Profile() {
 
   const handleFollow = async () => {
     if (!profileUser || isOwnProfile) return;
-
+    
     try {
       const newFollowState = !profileUser.isFollowing;
       setProfileUser(prev => prev ? {
@@ -198,7 +199,7 @@ export default function Profile() {
         isFollowing: newFollowState,
         followers: newFollowState ? prev.followers + 1 : prev.followers - 1,
       } : null);
-
+      
       toast({
         title: newFollowState ? "Following!" : "Unfollowed",
         description: `You ${newFollowState ? 'are now following' : 'unfollowed'} ${profileUser.username}`,
@@ -231,10 +232,10 @@ export default function Profile() {
     const date = new Date(dateString);
     const now = new Date();
     const diff = now.getTime() - date.getTime();
-
+    
     const days = Math.floor(diff / (1000 * 60 * 60 * 24));
     const hours = Math.floor(diff / (1000 * 60 * 60));
-
+    
     if (days > 0) return `${days} day${days > 1 ? 's' : ''} ago`;
     if (hours > 0) return `${hours} hour${hours > 1 ? 's' : ''} ago`;
     return 'Just now';
@@ -265,304 +266,356 @@ export default function Profile() {
     return null;
   }
 
+  if (!profileUser) {
+    return (
+      <UserLayout>
+        <div className="flex items-center justify-center h-64">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+            <p className="text-muted-foreground">Loading profile...</p>
+          </div>
+        </div>
+      </UserLayout>
+    );
+  }
+
   return (
     <UserLayout>
-      <div className="max-w-2xl">
+      <div className="max-w-6xl">
+        {/* Profile Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-foreground">
-            Profile Settings
-          </h1>
-          <p className="text-muted-foreground">
-            Manage your account settings and preferences
-          </p>
-        </div>
-
-        <div className="space-y-6">
-          {/* Account Information */}
-          <Card className="minecraft-panel bg-card/50 border-2 border-border shadow-lg">
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <div className="w-8 h-8 rounded-lg bg-card border border-primary/50 flex items-center justify-center shadow-lg shadow-primary/20">
-                  <User className="w-5 h-5 text-primary drop-shadow-[0_0_4px_currentColor]" />
-                </div>
-                <span>Account Information</span>
-              </CardTitle>
-              <CardDescription>
-                Update your account details and credentials
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="username">Username</Label>
-                    <Input
-                      id="username"
-                      value={formData.username}
-                      onChange={(e) =>
-                        setFormData({ ...formData, username: e.target.value })
-                      }
-                      className="minecraft-input"
-                    />
+          <Card className="minecraft-panel">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-6">
+                  {/* Profile Avatar */}
+                  <div className="w-24 h-24 rounded-full bg-primary/20 border-4 border-primary/30 flex items-center justify-center">
+                    <span className="text-3xl font-bold text-primary">
+                      {profileUser.username.charAt(0).toUpperCase()}
+                    </span>
                   </div>
-                  <div>
-                    <Label htmlFor="email">Email</Label>
-                    <Input
-                      id="email"
-                      type="email"
-                      value={formData.email}
-                      onChange={(e) =>
-                        setFormData({ ...formData, email: e.target.value })
-                      }
-                      className="minecraft-input"
-                    />
-                  </div>
-                </div>
-
-                <Separator />
-
-                <div className="space-y-4">
-                  <h4 className="font-semibold">Change Password</h4>
-                  <div>
-                    <Label htmlFor="currentPassword">Current Password</Label>
-                    <div className="relative">
-                      <Input
-                        id="currentPassword"
-                        type={showPasswords.current ? "text" : "password"}
-                        value={formData.currentPassword}
-                        onChange={(e) =>
-                          setFormData({
-                            ...formData,
-                            currentPassword: e.target.value,
-                          })
-                        }
-                        className="minecraft-input pr-10"
-                      />
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        className="absolute right-2 top-1/2 -translate-y-1/2"
-                        onClick={() =>
-                          setShowPasswords({
-                            ...showPasswords,
-                            current: !showPasswords.current,
-                          })
-                        }
-                      >
-                        {showPasswords.current ? (
-                          <EyeOff className="w-4 h-4" />
-                        ) : (
-                          <Eye className="w-4 h-4" />
-                        )}
-                      </Button>
+                  
+                  {/* Profile Info */}
+                  <div className="space-y-2">
+                    <div className="flex items-center space-x-3">
+                      <h1 className="text-3xl font-bold">{profileUser.username}</h1>
+                      {profileUser.role === 'admin' && (
+                        <Badge variant="default" className="bg-yellow-500">
+                          <Shield className="w-3 h-3 mr-1" />
+                          Admin
+                        </Badge>
+                      )}
                     </div>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <Label htmlFor="newPassword">New Password</Label>
-                      <div className="relative">
-                        <Input
-                          id="newPassword"
-                          type={showPasswords.new ? "text" : "password"}
-                          value={formData.newPassword}
-                          onChange={(e) =>
-                            setFormData({
-                              ...formData,
-                              newPassword: e.target.value,
-                            })
-                          }
-                          className="minecraft-input pr-10"
-                        />
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="sm"
-                          className="absolute right-2 top-1/2 -translate-y-1/2"
-                          onClick={() =>
-                            setShowPasswords({
-                              ...showPasswords,
-                              new: !showPasswords.new,
-                            })
-                          }
-                        >
-                          {showPasswords.new ? (
-                            <EyeOff className="w-4 h-4" />
-                          ) : (
-                            <Eye className="w-4 h-4" />
-                          )}
-                        </Button>
-                      </div>
-                    </div>
-
-                    <div>
-                      <Label htmlFor="confirmPassword">Confirm Password</Label>
-                      <div className="relative">
-                        <Input
-                          id="confirmPassword"
-                          type={showPasswords.confirm ? "text" : "password"}
-                          value={formData.confirmPassword}
-                          onChange={(e) =>
-                            setFormData({
-                              ...formData,
-                              confirmPassword: e.target.value,
-                            })
-                          }
-                          className="minecraft-input pr-10"
-                        />
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="sm"
-                          className="absolute right-2 top-1/2 -translate-y-1/2"
-                          onClick={() =>
-                            setShowPasswords({
-                              ...showPasswords,
-                              confirm: !showPasswords.confirm,
-                            })
-                          }
-                        >
-                          {showPasswords.confirm ? (
-                            <EyeOff className="w-4 h-4" />
-                          ) : (
-                            <Eye className="w-4 h-4" />
-                          )}
-                        </Button>
+                    {profileUser.bio && (
+                      <p className="text-muted-foreground max-w-md">{profileUser.bio}</p>
+                    )}
+                    <div className="flex items-center space-x-6 text-sm text-muted-foreground">
+                      <div className="flex items-center space-x-1">
+                        <Calendar className="w-4 h-4" />
+                        <span>Joined {formatDate(profileUser.joinedAt)}</span>
                       </div>
                     </div>
                   </div>
                 </div>
 
-                <Button
-                  type="submit"
-                  className="minecraft-button bg-primary text-primary-foreground hover:bg-primary/90 shadow-lg hover:shadow-primary/30"
-                >
-                  <Save className="w-4 h-4 mr-2" />
-                  Save Changes
-                </Button>
-              </form>
-            </CardContent>
-          </Card>
-
-          {/* Notification Settings */}
-          <Card className="minecraft-panel bg-card/50 border-2 border-border shadow-lg">
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <div className="w-8 h-8 rounded-lg bg-card border border-primary/50 flex items-center justify-center shadow-lg shadow-primary/20">
-                  <Settings className="w-5 h-5 text-primary drop-shadow-[0_0_4px_currentColor]" />
+                {/* Actions */}
+                <div className="flex items-center space-x-3">
+                  {!isOwnProfile ? (
+                    <Button
+                      onClick={handleFollow}
+                      variant={profileUser.isFollowing ? "outline" : "default"}
+                      className="min-w-[100px]"
+                    >
+                      {profileUser.isFollowing ? "Following" : "Follow"}
+                    </Button>
+                  ) : (
+                    <Button onClick={() => setActiveTab("settings")} variant="outline">
+                      <Settings className="w-4 h-4 mr-2" />
+                      Settings
+                    </Button>
+                  )}
                 </div>
-                <span>Preferences</span>
-              </CardTitle>
-              <CardDescription>
-                Customize your notification and feature preferences
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <div className="space-y-0.5">
-                    <Label className="text-base">Email Notifications</Label>
-                    <p className="text-sm text-muted-foreground">
-                      Receive email updates about important events
-                    </p>
-                  </div>
-                  <Switch
-                    checked={settings.emailNotifications}
-                    onCheckedChange={(checked) =>
-                      setSettings({ ...settings, emailNotifications: checked })
-                    }
-                  />
-                </div>
+              </div>
 
-                <div className="flex items-center justify-between">
-                  <div className="space-y-0.5">
-                    <Label className="text-base">Friend Requests</Label>
-                    <p className="text-sm text-muted-foreground">
-                      Allow others to send you friend requests
-                    </p>
-                  </div>
-                  <Switch
-                    checked={settings.friendRequests}
-                    onCheckedChange={(checked) =>
-                      setSettings({ ...settings, friendRequests: checked })
-                    }
-                  />
+              {/* Stats */}
+              <div className="mt-6 grid grid-cols-2 md:grid-cols-5 gap-4">
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-primary">{formatNumber(profileUser.followers)}</div>
+                  <div className="text-sm text-muted-foreground">Followers</div>
                 </div>
-
-                <div className="flex items-center justify-between">
-                  <div className="space-y-0.5">
-                    <Label className="text-base">Chat Notifications</Label>
-                    <p className="text-sm text-muted-foreground">
-                      Get notified about new messages
-                    </p>
-                  </div>
-                  <Switch
-                    checked={settings.chatNotifications}
-                    onCheckedChange={(checked) =>
-                      setSettings({ ...settings, chatNotifications: checked })
-                    }
-                  />
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-primary">{formatNumber(profileUser.following)}</div>
+                  <div className="text-sm text-muted-foreground">Following</div>
                 </div>
-
-                <div className="flex items-center justify-between">
-                  <div className="space-y-0.5">
-                    <Label className="text-base">Ping Notifications</Label>
-                    <p className="text-sm text-muted-foreground">
-                      Get notified when someone mentions you with @
-                    </p>
-                  </div>
-                  <Switch
-                    checked={settings.pingNotifications}
-                    onCheckedChange={(checked) =>
-                      setSettings({ ...settings, pingNotifications: checked })
-                    }
-                  />
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-primary">{formatNumber(profileUser.totalVideos)}</div>
+                  <div className="text-sm text-muted-foreground">Videos</div>
                 </div>
-
-                <div className="flex items-center justify-between">
-                  <div className="space-y-0.5">
-                    <Label className="text-base">Voice Chat</Label>
-                    <p className="text-sm text-muted-foreground">
-                      Enable voice communication features
-                    </p>
-                  </div>
-                  <Switch
-                    checked={settings.voiceChatEnabled}
-                    onCheckedChange={(checked) =>
-                      setSettings({ ...settings, voiceChatEnabled: checked })
-                    }
-                  />
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-primary">{formatNumber(profileUser.totalViews)}</div>
+                  <div className="text-sm text-muted-foreground">Total Views</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-primary">{formatNumber(profileUser.totalLikes)}</div>
+                  <div className="text-sm text-muted-foreground">Total Likes</div>
                 </div>
               </div>
             </CardContent>
           </Card>
+        </div>
 
-          {/* Account Status */}
-          {user.role === "admin" && (
-            <Card className="minecraft-panel bg-card/50 border-2 border-border shadow-lg">
+        {/* Content Tabs */}
+        <Tabs value={activeTab} onValueChange={setActiveTab}>
+          <TabsList className="grid w-full grid-cols-3">
+            <TabsTrigger value="videos">
+              <Video className="w-4 h-4 mr-2" />
+              Videos ({userVideos.length})
+            </TabsTrigger>
+            <TabsTrigger value="about">
+              <User className="w-4 h-4 mr-2" />
+              About
+            </TabsTrigger>
+            {isOwnProfile && (
+              <TabsTrigger value="settings">
+                <Settings className="w-4 h-4 mr-2" />
+                Settings
+              </TabsTrigger>
+            )}
+          </TabsList>
+
+          {/* Videos Tab */}
+          <TabsContent value="videos" className="mt-6">
+            {userVideos.length > 0 ? (
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                {userVideos.map((video) => (
+                  <Card key={video.id} className="minecraft-panel hover:shadow-lg transition-shadow">
+                    <div className="relative">
+                      <img
+                        src={video.thumbnail}
+                        alt={video.title}
+                        className="w-full h-40 object-cover rounded-t-lg"
+                      />
+                      <Badge className="absolute bottom-2 right-2 bg-black/70 text-white">
+                        {video.duration}
+                      </Badge>
+                    </div>
+                    <CardContent className="p-4">
+                      <h3 className="font-semibold text-sm mb-2 line-clamp-2">
+                        {video.title}
+                      </h3>
+                      <div className="flex items-center justify-between text-xs text-muted-foreground">
+                        <span>{formatNumber(video.views)} views</span>
+                        <span>{formatTimeAgo(video.createdAt)}</span>
+                      </div>
+                      <div className="flex items-center justify-between mt-2">
+                        <div className="flex items-center space-x-1 text-xs">
+                          <Heart className="w-3 h-3" />
+                          <span>{formatNumber(video.likes)}</span>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-12">
+                <Video className="w-16 h-16 mx-auto mb-4 text-muted-foreground" />
+                <h3 className="text-lg font-semibold mb-2">No videos yet</h3>
+                <p className="text-muted-foreground mb-4">
+                  {isOwnProfile 
+                    ? "Upload your first video to get started!" 
+                    : `${profileUser.username} hasn't uploaded any videos yet.`}
+                </p>
+                {isOwnProfile && (
+                  <Button onClick={() => navigate("/community")}>
+                    Upload Video
+                  </Button>
+                )}
+              </div>
+            )}
+          </TabsContent>
+
+          {/* About Tab */}
+          <TabsContent value="about" className="mt-6">
+            <Card className="minecraft-panel">
               <CardHeader>
-                <CardTitle className="flex items-center space-x-2">
-                  <div className="w-8 h-8 rounded-lg bg-card border border-primary/50 flex items-center justify-center shadow-lg shadow-primary/20">
-                    <Shield className="w-5 h-5 text-primary drop-shadow-[0_0_4px_currentColor]" />
-                  </div>
-                  <span>Account Status</span>
-                </CardTitle>
+                <CardTitle>About {profileUser.username}</CardTitle>
               </CardHeader>
-              <CardContent>
-                <div className="flex items-center justify-between">
+              <CardContent className="space-y-4">
+                {profileUser.bio ? (
                   <div>
-                    <p className="font-medium">Administrator Account</p>
-                    <p className="text-sm text-muted-foreground">
-                      You have full administrative privileges
-                    </p>
+                    <h4 className="font-semibold mb-2">Bio</h4>
+                    <p className="text-muted-foreground">{profileUser.bio}</p>
                   </div>
-                  <Shield className="w-8 h-8 text-primary" />
+                ) : (
+                  <p className="text-muted-foreground italic">No bio available.</p>
+                )}
+                
+                <div>
+                  <h4 className="font-semibold mb-2">Stats</h4>
+                  <div className="grid grid-cols-2 gap-4 text-sm">
+                    <div>
+                      <span className="text-muted-foreground">Joined:</span>
+                      <span className="ml-2">{formatDate(profileUser.joinedAt)}</span>
+                    </div>
+                    <div>
+                      <span className="text-muted-foreground">Total Views:</span>
+                      <span className="ml-2">{formatNumber(profileUser.totalViews)}</span>
+                    </div>
+                    <div>
+                      <span className="text-muted-foreground">Total Likes:</span>
+                      <span className="ml-2">{formatNumber(profileUser.totalLikes)}</span>
+                    </div>
+                    <div>
+                      <span className="text-muted-foreground">Videos:</span>
+                      <span className="ml-2">{profileUser.totalVideos}</span>
+                    </div>
+                  </div>
                 </div>
               </CardContent>
             </Card>
+          </TabsContent>
+
+          {/* Settings Tab (Own Profile Only) */}
+          {isOwnProfile && (
+            <TabsContent value="settings" className="mt-6">
+              <div className="grid gap-6">
+                {/* Profile Information */}
+                <Card className="minecraft-panel">
+                  <CardHeader>
+                    <CardTitle>Profile Information</CardTitle>
+                    <CardDescription>
+                      Update your personal information and account details
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <form onSubmit={handleSubmit} className="space-y-4">
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <Label htmlFor="username">Username</Label>
+                          <Input
+                            id="username"
+                            value={formData.username}
+                            onChange={(e) => setFormData({ ...formData, username: e.target.value })}
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="email">Email</Label>
+                          <Input
+                            id="email"
+                            type="email"
+                            value={formData.email}
+                            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                          />
+                        </div>
+                      </div>
+                      <div>
+                        <Label htmlFor="bio">Bio</Label>
+                        <Textarea
+                          id="bio"
+                          value={formData.bio}
+                          onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
+                          placeholder="Tell others about yourself..."
+                          rows={3}
+                        />
+                      </div>
+                      <Button type="submit">
+                        <Save className="w-4 h-4 mr-2" />
+                        Save Changes
+                      </Button>
+                    </form>
+                  </CardContent>
+                </Card>
+
+                {/* Settings */}
+                <Card className="minecraft-panel">
+                  <CardHeader>
+                    <CardTitle>Preferences</CardTitle>
+                    <CardDescription>
+                      Customize your experience and notification settings
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-6">
+                    <div className="flex items-center justify-between">
+                      <div className="space-y-0.5">
+                        <Label className="text-base">Email Notifications</Label>
+                        <p className="text-sm text-muted-foreground">
+                          Receive email updates about important events
+                        </p>
+                      </div>
+                      <Switch
+                        checked={settings.emailNotifications}
+                        onCheckedChange={(checked) =>
+                          setSettings({ ...settings, emailNotifications: checked })
+                        }
+                      />
+                    </div>
+
+                    <div className="flex items-center justify-between">
+                      <div className="space-y-0.5">
+                        <Label className="text-base">Friend Requests</Label>
+                        <p className="text-sm text-muted-foreground">
+                          Allow others to send you friend requests
+                        </p>
+                      </div>
+                      <Switch
+                        checked={settings.friendRequests}
+                        onCheckedChange={(checked) =>
+                          setSettings({ ...settings, friendRequests: checked })
+                        }
+                      />
+                    </div>
+
+                    <div className="flex items-center justify-between">
+                      <div className="space-y-0.5">
+                        <Label className="text-base">Chat Notifications</Label>
+                        <p className="text-sm text-muted-foreground">
+                          Get notified about new messages
+                        </p>
+                      </div>
+                      <Switch
+                        checked={settings.chatNotifications}
+                        onCheckedChange={(checked) =>
+                          setSettings({ ...settings, chatNotifications: checked })
+                        }
+                      />
+                    </div>
+
+                    <div className="flex items-center justify-between">
+                      <div className="space-y-0.5">
+                        <Label className="text-base">Ping Notifications</Label>
+                        <p className="text-sm text-muted-foreground">
+                          Get notified when someone mentions you with @
+                        </p>
+                      </div>
+                      <Switch
+                        checked={settings.pingNotifications}
+                        onCheckedChange={(checked) =>
+                          setSettings({ ...settings, pingNotifications: checked })
+                        }
+                      />
+                    </div>
+
+                    <div className="flex items-center justify-between">
+                      <div className="space-y-0.5">
+                        <Label className="text-base">Voice Chat</Label>
+                        <p className="text-sm text-muted-foreground">
+                          Enable voice communication features
+                        </p>
+                      </div>
+                      <Switch
+                        checked={settings.voiceChatEnabled}
+                        onCheckedChange={(checked) =>
+                          setSettings({ ...settings, voiceChatEnabled: checked })
+                        }
+                      />
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            </TabsContent>
           )}
-        </div>
+        </Tabs>
       </div>
     </UserLayout>
   );
