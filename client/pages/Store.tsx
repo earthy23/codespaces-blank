@@ -544,6 +544,62 @@ export default function Store() {
                   </CardContent>
                 </Card>
 
+                {/* Personal File Uploads */}
+                <Card className="minecraft-panel bg-card/50 border-2 border-border shadow-lg">
+                  <CardHeader>
+                    <CardTitle className="flex items-center space-x-2">
+                      <Upload className="w-5 h-5 text-primary" />
+                      <span>Personal Files</span>
+                    </CardTitle>
+                    <CardDescription>
+                      Upload resource packs, skins, and other personal files
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div>
+                      <Label htmlFor="resource-file">Upload Personal Files</Label>
+                      <div className="mt-2 border-2 border-dashed border-border rounded-lg p-4">
+                        <input
+                          id="resource-file"
+                          type="file"
+                          accept=".zip,.png,.jpg,.jpeg,.mcpack,.mcworld"
+                          onChange={(e) => handleFileUpload(e, 'resource')}
+                          className="hidden"
+                        />
+                        <div
+                          className="flex flex-col items-center justify-center cursor-pointer"
+                          onClick={() => document.getElementById('resource-file')?.click()}
+                        >
+                          {uploadingFile ? (
+                            <Loader2 className="w-8 h-8 animate-spin text-primary" />
+                          ) : (
+                            <Upload className="w-8 h-8 text-muted-foreground" />
+                          )}
+                          <p className="text-sm text-muted-foreground mt-2">
+                            {uploadingFile ? 'Uploading...' : 'Click to upload files (Max 10MB)'}
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            Supports: ZIP, PNG, JPG, MCPACK, MCWORLD
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                    {uploadedFiles.filter(f => f.type === 'resource').length > 0 && (
+                      <div className="space-y-2">
+                        <Label>Your Uploaded Files</Label>
+                        <div className="max-h-32 overflow-y-auto space-y-1">
+                          {uploadedFiles.filter(f => f.type === 'resource').map((file, index) => (
+                            <div key={index} className="flex items-center justify-between p-2 bg-muted rounded text-sm">
+                              <span className="truncate">{file.filename}</span>
+                              <Badge variant="outline">{file.size}</Badge>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+
                 {/* Legend-only features */}
                 {(currentTier.tier === "legend" || currentTier.isStaff) && (
                   <>
