@@ -70,20 +70,6 @@ export default function Dashboard() {
         }
       };
 
-      // Simple health check first
-      try {
-        const healthResponse = await makeRequest('/api/ping', 5000);
-        if (!healthResponse.ok) {
-          setFetchError('Server is not responding properly.');
-          setLoading(false);
-          return;
-        }
-      } catch (error) {
-        console.error('Health check failed:', error);
-        setFetchError('Unable to connect to server. Please refresh the page.');
-        setLoading(false);
-        return;
-      }
 
       // Reset error state
       setFetchError(null);
