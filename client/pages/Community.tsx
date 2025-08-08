@@ -694,7 +694,7 @@ export default function Community() {
                           </div>
                           <div className="min-w-0 flex-1">
                             <Link
-                              to={`/profile/${creator.id}`}
+                              to={`/profile/user/${creator.username}`}
                               className="font-medium hover:text-primary transition-colors block truncate"
                             >
                               {creator.username}
