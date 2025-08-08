@@ -83,8 +83,10 @@ function App() {
                           <Route path="/downloads" element={<Downloads />} />
                           <Route path="/forums" element={<Forums />} />
                           <Route path="/profile" element={<Profile />} />
+                          <Route path="/profile/:userId" element={<Profile />} />
                           <Route path="/news" element={<News />} />
                           <Route path="/servers" element={<Servers />} />
+                          <Route path="/community" element={<Community />} />
 
                           {/* Info Pages */}
                           <Route path="/about" element={<About />} />
