@@ -446,24 +446,37 @@ export default function Community() {
           </Dialog>
         </div>
 
-        {/* Search */}
-        <div className="mb-6">
-          <Input
-            placeholder="Search videos, creators, or tags..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="max-w-md"
-          />
+        {/* Enhanced Search Section */}
+        <div className="mb-8">
+          <div className="relative max-w-2xl mx-auto">
+            <Input
+              placeholder="Search videos, creators, or tags..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="h-12 text-lg bg-card/50 border-border/50 focus:border-primary transition-all duration-200 rounded-xl"
+            />
+            <div className="absolute right-3 top-1/2 -translate-y-1/2">
+              <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                🔍
+              </Button>
+            </div>
+          </div>
         </div>
 
-        <div className="grid lg:grid-cols-4 gap-6">
+        <div className="grid lg:grid-cols-4 gap-8">
           {/* Main content */}
           <div className="lg:col-span-3">
             <Tabs value={activeTab} onValueChange={setActiveTab}>
-              <TabsList className="grid w-full grid-cols-3">
-                <TabsTrigger value="trending">Trending</TabsTrigger>
-                <TabsTrigger value="recent">Recent</TabsTrigger>
-                <TabsTrigger value="following">Following</TabsTrigger>
+              <TabsList className="grid w-full grid-cols-3 h-12 p-1 bg-card/50 rounded-xl">
+                <TabsTrigger value="trending" className="rounded-lg">
+                  🔥 Trending
+                </TabsTrigger>
+                <TabsTrigger value="recent" className="rounded-lg">
+                  🕒 Recent
+                </TabsTrigger>
+                <TabsTrigger value="following" className="rounded-lg">
+                  👥 Following
+                </TabsTrigger>
               </TabsList>
 
               <TabsContent value="trending" className="mt-6">
