@@ -401,7 +401,7 @@ export default function Chat() {
       <div className="max-w-6xl">
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h1 className="text-3xl font-bold text-foreground">Connect with friends and community</h1>
+            <h1 className="text-3xl font-bold text-foreground">Chat</h1>
           </div>
           <div className="flex items-center space-x-4">
             <div className={`w-3 h-3 rounded-full ${isConnected ? 'bg-green-500' : 'bg-red-500'}`}></div>
