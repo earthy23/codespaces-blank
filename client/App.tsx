@@ -28,6 +28,7 @@ import Forums from "./pages/Forums";
 import Profile from "./pages/Profile";
 import News from "./pages/News";
 import Servers from "./pages/Servers";
+import Community from "./pages/Community";
 
 import About from "./pages/About";
 import Terms from "./pages/Terms";
