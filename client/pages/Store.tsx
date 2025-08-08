@@ -691,7 +691,7 @@ export default function Store() {
                           </Badge>
                         </CardTitle>
                         <CardDescription>
-                          Set a custom favicon for the browser tab
+                          Set a custom favicon for your browser tab (personal view only)
                         </CardDescription>
                       </CardHeader>
                       <CardContent className="space-y-4">
