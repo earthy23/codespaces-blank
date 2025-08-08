@@ -148,9 +148,17 @@ export default function Dashboard() {
         if (!serversResponse || !isMounted) return; // Request was cancelled or component unmounted
 
         if (serversResponse.ok) {
-          const serversData = await serversResponse.json();
-          if (isMounted) {
-            setTopServers(serversData.servers || []);
+          try {
+            const serversData = await serversResponse.json();
+            if (isMounted) {
+              setTopServers(serversData.servers || []);
+            }
+          } catch (error) {
+            if (!isMounted || error.name === "AbortError") return;
+            console.warn("Failed to parse servers response:", error);
+            if (isMounted) {
+              setTopServers([]);
+            }
           }
         } else {
           console.warn(
