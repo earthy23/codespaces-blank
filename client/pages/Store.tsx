@@ -650,7 +650,7 @@ export default function Store() {
                           </Badge>
                         </CardTitle>
                         <CardDescription>
-                          Customize the browser tab title
+                          Customize the browser tab title for your personal view
                         </CardDescription>
                       </CardHeader>
                       <CardContent className="space-y-4">
