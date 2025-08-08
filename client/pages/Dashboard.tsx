@@ -92,6 +92,8 @@ export default function Dashboard() {
       // Fetch clients with error handling
       try {
         const clientsResponse = await makeRequest("/api/clients");
+        if (!clientsResponse) return; // Request was cancelled
+
         if (clientsResponse.ok) {
           const clientsData = await clientsResponse.json();
           setClients(clientsData.clients || []);
@@ -109,11 +111,12 @@ export default function Dashboard() {
           }
         }
       } catch (error) {
-        const errorMsg =
-          error.name === "AbortError" ? "Request timed out" : error.message;
+        if (error.name === "AbortError") return; // Component was unmounted
+
+        const errorMsg = error.message;
         console.warn("Failed to fetch clients:", errorMsg);
         setClients([]);
-        if (error.name === "AbortError" || error.message.includes("fetch")) {
+        if (error.message.includes("fetch")) {
           setFetchError(
             "Unable to connect to server. Please check your internet connection.",
           );
