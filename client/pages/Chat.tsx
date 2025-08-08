@@ -212,9 +212,9 @@ export default function Chat() {
     }
   };
 
-  const handleCreateDM = async (friendId: string) => {
+  const handleCreateDM = async (friendUsername: string) => {
     try {
-      const chatId = await createDirectMessage(friendId);
+      const chatId = await createDirectMessage(friendUsername);
       if (chatId) {
         await refreshChats();
         navigate(`/chat/${chatId}`);
