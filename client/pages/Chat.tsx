@@ -92,7 +92,14 @@ export default function Chat() {
   }, [chatId, markAsRead]);
 
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    // Auto-scroll to bottom when new messages arrive
+    const scrollToBottom = () => {
+      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    };
+
+    // Small delay to ensure content is rendered
+    const timeoutId = setTimeout(scrollToBottom, 100);
+    return () => clearTimeout(timeoutId);
   }, [chatId, getChatMessages(chatId || ""), generalMessages]);
 
   // Load general chat messages
