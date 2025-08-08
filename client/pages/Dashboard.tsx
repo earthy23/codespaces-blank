@@ -47,14 +47,9 @@ export default function Dashboard() {
 
       setLoading(true);
 
-      // Helper function to make authenticated requests with timeout
+      // Helper function to make authenticated requests
       const makeRequest = async (url, timeout = 10000) => {
         const token = localStorage.getItem("auth_token");
-        const timeoutId = setTimeout(() => {
-          if (!abortController.signal.aborted) {
-            console.log(`Request to ${url} timed out after ${timeout}ms`);
-          }
-        }, timeout);
 
         try {
           console.log(`Making request to: ${url}`);
