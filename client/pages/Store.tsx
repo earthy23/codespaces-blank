@@ -570,9 +570,27 @@ export default function Store() {
                     <CardTitle className="flex items-center space-x-2">
                       <Upload className="w-5 h-5 text-primary" />
                       <span>Personal Files</span>
+                      {currentTier.tier === 'free' && (
+                        <Badge variant="outline" className="text-muted-foreground">
+                          VIP+ Required
+                        </Badge>
+                      )}
+                      {currentTier.tier === 'vip' && (
+                        <Badge variant="outline" className="text-yellow-500">
+                          VIP Access
+                        </Badge>
+                      )}
+                      {(currentTier.tier === 'vip_plus' || currentTier.tier === 'legend') && (
+                        <Badge variant="outline" className="text-purple-500">
+                          Premium Access
+                        </Badge>
+                      )}
                     </CardTitle>
                     <CardDescription>
                       Upload resource packs, skins, and other personal files
+                      {currentTier.tier === 'free' && ' (VIP+ subscription required)'}
+                      {currentTier.tier === 'vip' && ' (Up to 5 files, 10MB each)'}
+                      {(currentTier.tier === 'vip_plus' || currentTier.tier === 'legend') && ' (Up to 20 files, 50MB each)'}
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-4">
