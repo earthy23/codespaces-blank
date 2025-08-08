@@ -162,11 +162,17 @@ export default function Dashboard() {
             data.error || "Unknown error",
           );
         } catch (parseError) {
-          console.error("Failed to launch client: Response not readable");
+          console.error("Failed to launch client: Response not readable", response.status, response.statusText);
         }
       }
     } catch (error) {
-      console.error("Error launching client:", error);
+      if (error.name === 'AbortError') {
+        console.error("Launch request timed out");
+      } else {
+        console.error("Error launching client:", error.message || error);
+      }
+    } finally {
+      setLoading(false);
     }
   };
 
