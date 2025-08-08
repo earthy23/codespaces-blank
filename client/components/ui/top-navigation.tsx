@@ -1,6 +1,8 @@
 import { Link } from "react-router-dom";
 import { UECLogo } from "@/components/ui/uec-logo";
 import { useAuth } from "@/lib/auth";
+import { useChat } from "@/lib/chat";
+import { useFriends } from "@/lib/friends";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
