@@ -100,9 +100,17 @@ export default function Dashboard() {
         if (!clientsResponse || !isMounted) return; // Request was cancelled or component unmounted
 
         if (clientsResponse.ok) {
-          const clientsData = await clientsResponse.json();
-          if (isMounted) {
-            setClients(clientsData.clients || []);
+          try {
+            const clientsData = await clientsResponse.json();
+            if (isMounted) {
+              setClients(clientsData.clients || []);
+            }
+          } catch (error) {
+            if (!isMounted || error.name === "AbortError") return;
+            console.warn("Failed to parse clients response:", error);
+            if (isMounted) {
+              setClients([]);
+            }
           }
         } else {
           console.warn(
