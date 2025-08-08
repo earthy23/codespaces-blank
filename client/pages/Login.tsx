@@ -70,7 +70,7 @@ export default function Login() {
 
           <Card className="minecraft-panel">
             <CardHeader className="text-center">
-              <UECLogo size="lg" className="mx-auto mb-4" showText={false} />
+              <UECLogo size="lg" className="mx-auto mb-4" />
               <CardTitle className="text-2xl font-bold text-primary">
                 Welcome Back
               </CardTitle>
