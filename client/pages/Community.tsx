@@ -479,87 +479,96 @@ export default function Community() {
                 </TabsTrigger>
               </TabsList>
 
-              <TabsContent value="trending" className="mt-6">
-                <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-4">
+              <TabsContent value="trending" className="mt-8">
+                <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-6">
                   {filteredVideos.map((video) => (
                     <Card
                       key={video.id}
-                      className="minecraft-panel hover:shadow-lg transition-shadow"
+                      className="group minecraft-panel hover:shadow-xl hover:shadow-primary/20 hover:-translate-y-1 transition-all duration-300 bg-card/80 backdrop-blur-sm border-border/40"
                     >
-                      <div className="relative">
+                      <div className="relative overflow-hidden rounded-t-lg">
                         <img
                           src={video.thumbnail}
                           alt={video.title}
-                          className="w-full h-40 object-cover rounded-t-lg"
+                          className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
                         />
-                        <Badge className="absolute bottom-2 right-2 bg-black/70 text-white">
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                        <Badge className="absolute bottom-3 right-3 bg-black/80 text-white border-0 backdrop-blur-sm">
                           {video.duration}
                         </Badge>
+                        <div className="absolute top-3 left-3">
+                          <Badge variant="secondary" className="bg-primary/20 text-primary border-0">
+                            HD
+                          </Badge>
+                        </div>
                       </div>
-                      <CardContent className="p-4">
-                        <h3 className="font-semibold text-lg mb-2 line-clamp-2">
+                      <CardContent className="p-5">
+                        <h3 className="font-semibold text-lg mb-3 line-clamp-2 group-hover:text-primary transition-colors">
                           {video.title}
                         </h3>
-                        <div className="flex items-center space-x-2 mb-2">
-                          <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center">
-                            <span className="text-sm font-semibold">
+                        <div className="flex items-center space-x-3 mb-4">
+                          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary/30 to-primary/10 flex items-center justify-center ring-2 ring-primary/20">
+                            <span className="text-sm font-bold text-primary">
                               {video.author.charAt(0).toUpperCase()}
                             </span>
                           </div>
-                          <Link
-                            to={`/profile/${video.authorId}`}
-                            className="text-sm font-medium hover:text-primary transition-colors"
-                          >
-                            {video.author}
-                          </Link>
+                          <div>
+                            <Link
+                              to={`/profile/${video.authorId}`}
+                              className="text-sm font-medium hover:text-primary transition-colors block"
+                            >
+                              {video.author}
+                            </Link>
+                            <p className="text-xs text-muted-foreground">Content Creator</p>
+                          </div>
                         </div>
-                        <div className="flex items-center justify-between text-sm text-muted-foreground mb-3">
-                          <span>{formatNumber(video.views)} views</span>
+                        <div className="flex items-center justify-between text-sm text-muted-foreground mb-4">
+                          <span className="flex items-center gap-1">
+                            👁️ {formatNumber(video.views)} views
+                          </span>
                           <span>{formatTimeAgo(video.createdAt)}</span>
                         </div>
-                        <div className="flex items-center justify-between">
+                        <div className="flex items-center justify-between mb-4">
                           <div className="flex items-center space-x-2">
                             <Button
                               size="sm"
                               variant={video.liked ? "default" : "outline"}
                               onClick={() => handleLike(video.id, !video.liked)}
-                              className="text-xs"
+                              className="text-xs h-8"
                             >
-                              Like {formatNumber(video.likes)}
+                              👍 {formatNumber(video.likes)}
                             </Button>
                             <Button
                               size="sm"
                               variant="outline"
-                              className="text-xs"
+                              className="text-xs h-8"
                             >
-                              Dislike {formatNumber(video.dislikes)}
+                              👎 {formatNumber(video.dislikes)}
                             </Button>
                           </div>
                           <DropdownMenu>
                             <DropdownMenuTrigger asChild>
-                              <Button size="sm" variant="ghost">
-                                •••
+                              <Button size="sm" variant="ghost" className="h-8 w-8 p-0">
+                                ⋯
                               </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent>
-                              <DropdownMenuItem>Watch Later</DropdownMenuItem>
-                              <DropdownMenuItem>Share</DropdownMenuItem>
-                              <DropdownMenuItem>Report</DropdownMenuItem>
+                              <DropdownMenuItem>📚 Watch Later</DropdownMenuItem>
+                              <DropdownMenuItem>📤 Share</DropdownMenuItem>
+                              <DropdownMenuItem className="text-red-600">🚨 Report</DropdownMenuItem>
                             </DropdownMenuContent>
                           </DropdownMenu>
                         </div>
-                        <div className="mt-3">
-                          <div className="flex flex-wrap gap-1">
-                            {video.tags.slice(0, 3).map((tag) => (
-                              <Badge
-                                key={tag}
-                                variant="secondary"
-                                className="text-xs"
-                              >
-                                #{tag}
-                              </Badge>
-                            ))}
-                          </div>
+                        <div className="flex flex-wrap gap-1.5">
+                          {video.tags.slice(0, 3).map((tag) => (
+                            <Badge
+                              key={tag}
+                              variant="secondary"
+                              className="text-xs bg-muted/50 hover:bg-muted transition-colors cursor-pointer"
+                            >
+                              #{tag}
+                            </Badge>
+                          ))}
                         </div>
                       </CardContent>
                     </Card>
