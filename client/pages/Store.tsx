@@ -125,6 +125,75 @@ export default function Store() {
     }
   };
 
+  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>, type: 'background' | 'avatar' | 'resource') => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    // Check file size (max 10MB)
+    if (file.size > 10 * 1024 * 1024) {
+      toast({
+        title: "File too large",
+        description: "Please select a file smaller than 10MB",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Check file type
+    const allowedTypes = type === 'background'
+      ? ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp']
+      : ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp', 'application/zip', 'application/x-zip-compressed'];
+
+    if (!allowedTypes.includes(file.type)) {
+      toast({
+        title: "Invalid file type",
+        description: `Please select a valid ${type === 'background' ? 'image' : 'file'} file`,
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      setUploadingFile(true);
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('type', type);
+
+      const token = localStorage.getItem('auth_token');
+      const response = await fetch('/api/store/upload', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+        body: formData,
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        if (type === 'background') {
+          setCustomBackground(data.url);
+          handleSaveCustomization('website_background', data.url);
+        }
+
+        setUploadedFiles(prev => [...prev, { ...data, type }]);
+        toast({
+          title: "Upload Successful",
+          description: "Your file has been uploaded successfully!",
+        });
+      } else {
+        throw new Error('Upload failed');
+      }
+    } catch (error) {
+      toast({
+        title: "Upload Failed",
+        description: "Failed to upload file. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setUploadingFile(false);
+    }
+  };
+
   const getTierIcon = (tier: string) => {
     switch (tier) {
       case "vip":
