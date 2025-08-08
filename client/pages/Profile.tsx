@@ -188,6 +188,58 @@ export default function Profile() {
     }
   };
 
+  const handleFollow = async () => {
+    if (!profileUser || isOwnProfile) return;
+
+    try {
+      const newFollowState = !profileUser.isFollowing;
+      setProfileUser(prev => prev ? {
+        ...prev,
+        isFollowing: newFollowState,
+        followers: newFollowState ? prev.followers + 1 : prev.followers - 1,
+      } : null);
+
+      toast({
+        title: newFollowState ? "Following!" : "Unfollowed",
+        description: `You ${newFollowState ? 'are now following' : 'unfollowed'} ${profileUser.username}`,
+      });
+    } catch (error) {
+      console.error("Failed to follow user:", error);
+      toast({
+        title: "Error",
+        description: "Failed to update follow status.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const formatNumber = (num: number) => {
+    if (num >= 1000000) return `${(num / 1000000).toFixed(1)}M`;
+    if (num >= 1000) return `${(num / 1000).toFixed(1)}K`;
+    return num.toString();
+  };
+
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+  };
+
+  const formatTimeAgo = (dateString: string) => {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diff = now.getTime() - date.getTime();
+
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+    const hours = Math.floor(diff / (1000 * 60 * 60));
+
+    if (days > 0) return `${days} day${days > 1 ? 's' : ''} ago`;
+    if (hours > 0) return `${hours} hour${hours > 1 ? 's' : ''} ago`;
+    return 'Just now';
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
