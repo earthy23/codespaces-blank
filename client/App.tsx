@@ -87,6 +87,10 @@ function App() {
                             path="/profile/:userId"
                             element={<Profile />}
                           />
+                          <Route
+                            path="/profile/user/:username"
+                            element={<Profile />}
+                          />
                           <Route path="/news" element={<News />} />
                           <Route path="/servers" element={<Servers />} />
                           <Route path="/community" element={<Community />} />
