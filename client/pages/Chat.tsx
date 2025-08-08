@@ -1166,7 +1166,7 @@ export default function Chat() {
 
                 <div className="flex items-center justify-center">
                   <Link
-                    to={`/profile/${selectedUser.id}`}
+                    to={`/profile/user/${selectedUser.username}`}
                     onClick={() => setShowMiniProfile(false)}
                   >
                     <Button variant="outline" size="sm">
