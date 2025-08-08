@@ -27,6 +27,7 @@ export function TopNavigation() {
   const { user } = useAuth();
   const { unreadTotal, chats } = useChat();
   const { friendRequests } = useFriends();
+  const navigate = useNavigate();
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [showNotifications, setShowNotifications] = useState(false);
 
