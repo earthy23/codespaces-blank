@@ -912,9 +912,12 @@ export default function Chat() {
                           </div>
                           <div className="flex-1">
                             <div className="flex items-center space-x-2 mb-1">
-                              <span className="font-semibold text-sm">
+                              <button
+                                onClick={() => handleUserClick(message.sender_username, message.sender_id)}
+                                className="font-semibold text-sm hover:text-primary transition-colors cursor-pointer"
+                              >
                                 {message.sender_username}
-                              </span>
+                              </button>
                               <span className="text-xs text-muted-foreground">
                                 {formatMessageTime(message.created_at)}
                               </span>
