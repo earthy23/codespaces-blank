@@ -79,6 +79,10 @@ export default function Chat() {
   const [isInCall, setIsInCall] = useState(false);
   const [callParticipants, setCallParticipants] = useState<string[]>([]);
 
+  // Mini profile popup state
+  const [showMiniProfile, setShowMiniProfile] = useState(false);
+  const [selectedUser, setSelectedUser] = useState<any>(null);
+
   useEffect(() => {
     if (!user) {
       navigate("/login");
