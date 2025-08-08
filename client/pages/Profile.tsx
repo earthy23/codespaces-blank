@@ -113,11 +113,12 @@ export default function Profile() {
       return;
     }
 
-    const targetUserId = userId || user.id;
-    const isOwn = !userId || userId === user.id;
+    // Determine if this is the user's own profile
+    const isOwn = (!userId && !username) || userId === user.id || username === user.username;
     setIsOwnProfile(isOwn);
 
     if (isOwn) {
+      // Load current user's profile
       setFormData({
         username: user.username || "",
         email: user.email || "",
@@ -125,6 +126,8 @@ export default function Profile() {
         currentPassword: "",
         newPassword: "",
         confirmPassword: "",
+        banner: "",
+        avatar: "",
       });
       setProfileUser({
         id: user.id,
@@ -139,12 +142,16 @@ export default function Profile() {
         totalLikes: 0,
         role: user.role,
       });
+      loadUserVideos(user.id);
     } else {
-      loadUserProfile(targetUserId);
+      // Load other user's profile
+      const targetIdentifier = userId || username;
+      if (targetIdentifier) {
+        loadUserProfile(targetIdentifier);
+        loadUserVideos(targetIdentifier);
+      }
     }
-
-    loadUserVideos(targetUserId);
-  }, [user, userId, navigate]);
+  }, [user, userId, username, navigate]);
 
   const loadUserProfile = async (targetUserId: string) => {
     try {
