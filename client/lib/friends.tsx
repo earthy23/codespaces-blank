@@ -186,19 +186,8 @@ export const FriendsProvider = ({ children }: { children: React.ReactNode }) => 
 
         // Handle sent requests response
         if (sentRes.status === 'fulfilled' && sentRes.value.ok) {
-          try {
-            const responseText = await sentRes.value.text();
-            if (responseText.trim()) {
-              const sentData = JSON.parse(responseText);
-              setSentRequests(sentData.requests || []);
-            } else {
-              console.warn("Sent requests API returned empty response, keeping existing data");
-              setSentRequests([]);
-            }
-          } catch (parseError) {
-            console.warn("Failed to parse sent requests response:", parseError);
-            setSentRequests([]);
-          }
+          const sentData = await safeJsonParse(sentRes.value, { requests: [] });
+          setSentRequests(sentData.requests || []);
         } else {
           console.warn("Failed to load sent requests, keeping existing data");
         }
