@@ -822,10 +822,10 @@ export default function Chat() {
                         handleTyping();
                       }}
                       placeholder={
-                        activeTab === "general" 
-                          ? "Message the community... (Use @username to ping someone)" 
-                          : currentChat 
-                            ? `Message ${currentChat.type === 'group' ? 'the group' : currentChat.participants?.find(p => p.id !== user.id)?.username}... (Use @username to ping)`
+                        activeTab === "general"
+                          ? "Message the community... (Use @username to ping someone)"
+                          : currentChat
+                            ? `Message ${currentChat.type === 'group' ? 'the group' : currentChat.participant_usernames?.find(username => username !== user.username)}... (Use @username to ping)`
                             : "Select a chat to start messaging..."
                       }
                       disabled={!currentChat && activeTab === "direct"}
