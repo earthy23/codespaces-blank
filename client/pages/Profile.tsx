@@ -94,6 +94,11 @@ export default function Profile() {
     confirm: false,
   });
 
+  const [uploadingBanner, setUploadingBanner] = useState(false);
+  const [uploadingAvatar, setUploadingAvatar] = useState(false);
+  const [showBannerDialog, setShowBannerDialog] = useState(false);
+  const [showAvatarDialog, setShowAvatarDialog] = useState(false);
+
   useEffect(() => {
     if (!user) {
       navigate("/login");
