@@ -828,6 +828,12 @@ export default function Chat() {
                         setMessageContent(e.target.value);
                         handleTyping();
                       }}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' && !e.shiftKey) {
+                          e.preventDefault();
+                          handleSendMessage(e);
+                        }
+                      }}
                       placeholder={
                         activeTab === "general"
                           ? "Message the community... (Use @username to ping someone)"
@@ -837,15 +843,21 @@ export default function Chat() {
                       }
                       disabled={!currentChat && activeTab === "direct"}
                       className="flex-1"
+                      autoComplete="off"
                     />
-                    <Button 
-                      type="submit" 
+                    <Button
+                      type="submit"
                       disabled={!messageContent.trim() || (!currentChat && activeTab === "direct")}
-                      className="bg-primary text-primary-foreground hover:bg-primary/90"
+                      className="bg-primary text-primary-foreground hover:bg-primary/90 min-w-[60px]"
                     >
                       Send
                     </Button>
                   </form>
+                  {isInCall && (
+                    <div className="mt-2 text-xs text-muted-foreground text-center">
+                      🎧 Voice call active • {callParticipants.length} participants
+                    </div>
+                  )}
                 </div>
               </CardContent>
             </Card>
