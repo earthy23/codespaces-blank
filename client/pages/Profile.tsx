@@ -788,6 +788,158 @@ export default function Profile() {
                   </CardContent>
                 </Card>
 
+                {/* Password & Security */}
+                <Card className="minecraft-panel">
+                  <CardHeader>
+                    <CardTitle>Password & Security</CardTitle>
+                    <CardDescription>
+                      Manage your account security settings
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-6">
+                    <div className="space-y-4">
+                      <h4 className="font-semibold">Change Password</h4>
+                      <div>
+                        <Label htmlFor="currentPassword">Current Password</Label>
+                        <div className="relative">
+                          <Input
+                            id="currentPassword"
+                            type={showPasswords.current ? "text" : "password"}
+                            value={formData.currentPassword}
+                            onChange={(e) =>
+                              setFormData({ ...formData, currentPassword: e.target.value })
+                            }
+                            className="pr-10"
+                          />
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            className="absolute right-2 top-1/2 -translate-y-1/2"
+                            onClick={() =>
+                              setShowPasswords({
+                                ...showPasswords,
+                                current: !showPasswords.current,
+                              })
+                            }
+                          >
+                            {showPasswords.current ? (
+                              <EyeOff className="w-4 h-4" />
+                            ) : (
+                              <Eye className="w-4 h-4" />
+                            )}
+                          </Button>
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <Label htmlFor="newPassword">New Password</Label>
+                          <div className="relative">
+                            <Input
+                              id="newPassword"
+                              type={showPasswords.new ? "text" : "password"}
+                              value={formData.newPassword}
+                              onChange={(e) =>
+                                setFormData({ ...formData, newPassword: e.target.value })
+                              }
+                              className="pr-10"
+                            />
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              className="absolute right-2 top-1/2 -translate-y-1/2"
+                              onClick={() =>
+                                setShowPasswords({
+                                  ...showPasswords,
+                                  new: !showPasswords.new,
+                                })
+                              }
+                            >
+                              {showPasswords.new ? (
+                                <EyeOff className="w-4 h-4" />
+                              ) : (
+                                <Eye className="w-4 h-4" />
+                              )}
+                            </Button>
+                          </div>
+                        </div>
+                        <div>
+                          <Label htmlFor="confirmPassword">Confirm New Password</Label>
+                          <div className="relative">
+                            <Input
+                              id="confirmPassword"
+                              type={showPasswords.confirm ? "text" : "password"}
+                              value={formData.confirmPassword}
+                              onChange={(e) =>
+                                setFormData({ ...formData, confirmPassword: e.target.value })
+                              }
+                              className="pr-10"
+                            />
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              className="absolute right-2 top-1/2 -translate-y-1/2"
+                              onClick={() =>
+                                setShowPasswords({
+                                  ...showPasswords,
+                                  confirm: !showPasswords.confirm,
+                                })
+                              }
+                            >
+                              {showPasswords.confirm ? (
+                                <EyeOff className="w-4 h-4" />
+                              ) : (
+                                <Eye className="w-4 h-4" />
+                              )}
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+                      <Button variant="outline">
+                        Update Password
+                      </Button>
+                    </div>
+
+                    <Separator />
+
+                    <div className="space-y-4">
+                      <h4 className="font-semibold">Email Settings</h4>
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="font-medium">Email Verification</p>
+                          <p className="text-sm text-muted-foreground">
+                            {user.emailVerified ? 'Your email is verified' : 'Your email is not verified'}
+                          </p>
+                        </div>
+                        {!user.emailVerified && (
+                          <Button variant="outline" size="sm">
+                            Send Verification
+                          </Button>
+                        )}
+                      </div>
+                    </div>
+
+                    <Separator />
+
+                    <div className="space-y-4">
+                      <h4 className="font-semibold">Two-Factor Authentication</h4>
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="font-medium">2FA Status</p>
+                          <p className="text-sm text-muted-foreground">
+                            Add an extra layer of security to your account
+                          </p>
+                        </div>
+                        <Button variant="outline" size="sm">
+                          Enable 2FA
+                        </Button>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
                 {/* Settings */}
                 <Card className="minecraft-panel">
                   <CardHeader>
