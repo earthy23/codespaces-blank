@@ -548,6 +548,33 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
     return null;
   };
 
+  const createGroupChat = async (
+    name: string,
+    usernames: string[],
+  ): Promise<string | null> => {
+    if (!user || !token) return null;
+
+    try {
+      const response = await makeRequest("/api/chat/group", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ name, usernames }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        await refreshChats(); // Refresh to get the new chat
+        return data.chatId;
+      }
+    } catch (error) {
+      console.error("Error creating group chat:", error);
+    }
+    return null;
+  };
+
   const sendMessage = async (
     chatId: string,
     content: string,
