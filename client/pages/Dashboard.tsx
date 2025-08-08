@@ -143,16 +143,6 @@ export default function Dashboard() {
             </p>
           </div>
           <div className="flex items-center space-x-2">
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              className="w-5 h-5 text-yellow-500"
-            >
-              <polygon
-                points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"
-                fill="currentColor"
-              />
-            </svg>
             <span className="text-sm font-medium">
               Level {user?.role === "admin" ? "Admin" : "Member"}
             </span>
@@ -163,14 +153,6 @@ export default function Dashboard() {
         <Card className="minecraft-panel mb-8 bg-card border-2 border-primary/20 shadow-xl shadow-primary/10">
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
-              <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                className="w-8 h-8 text-primary"
-              >
-                <polygon points="5,21 19,12 5,3" fill="currentColor" />
-                <circle cx="12" cy="12" r="2" fill="white" />
-              </svg>
               <div>
                 <span className="text-xl">Launch Client</span>
                 <p className="text-sm font-normal text-muted-foreground">
@@ -218,11 +200,9 @@ export default function Dashboard() {
                 size="lg"
                 className="h-12 px-8 minecraft-button bg-primary text-primary-foreground border-none hover:bg-primary/90 shadow-lg hover:shadow-primary/30"
               >
-                <svg viewBox="0 0 24 24" fill="none" className="w-5 h-5 mr-2">
-                  <polygon points="5,21 19,12 5,3" fill="currentColor" />
-                  <circle cx="12" cy="12" r="1" fill="white" />
-                </svg>
-                Launch Game
+                <span className="-ml-0.5">
+                  Launch Game
+                </span>
               </Button>
             </div>
           </CardContent>
@@ -233,45 +213,6 @@ export default function Dashboard() {
           <Card className="minecraft-panel mb-8">
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
-                <svg
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  className="w-6 h-6 text-primary"
-                >
-                  <rect
-                    x="3"
-                    y="4"
-                    width="18"
-                    height="2"
-                    rx="1"
-                    fill="currentColor"
-                  />
-                  <rect
-                    x="3"
-                    y="8"
-                    width="18"
-                    height="2"
-                    rx="1"
-                    fill="currentColor"
-                  />
-                  <rect
-                    x="3"
-                    y="12"
-                    width="18"
-                    height="2"
-                    rx="1"
-                    fill="currentColor"
-                  />
-                  <rect
-                    x="2"
-                    y="16"
-                    width="20"
-                    height="6"
-                    rx="2"
-                    fill="currentColor"
-                    opacity="0.6"
-                  />
-                </svg>
                 <span>Popular Servers</span>
               </CardTitle>
               <CardDescription>
@@ -313,21 +254,6 @@ export default function Dashboard() {
                           size="sm"
                           className="w-full bg-primary text-primary-foreground hover:bg-primary/90 shadow-md hover:shadow-primary/20"
                         >
-                          <svg
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            className="w-4 h-4 mr-2"
-                          >
-                            <circle
-                              cx="12"
-                              cy="12"
-                              r="10"
-                              stroke="currentColor"
-                              strokeWidth="2"
-                              fill="none"
-                            />
-                            <circle cx="12" cy="12" r="3" fill="currentColor" />
-                          </svg>
                           View Servers
                         </Button>
                       </Link>
@@ -344,22 +270,6 @@ export default function Dashboard() {
           <Card className="minecraft-panel mb-8">
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
-                <svg
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  className="w-6 h-6 text-primary"
-                >
-                  <path
-                    d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"
-                    fill="currentColor"
-                  />
-                  <path
-                    d="m9 12 2 2 4-4"
-                    stroke="white"
-                    strokeWidth="2"
-                    fill="none"
-                  />
-                </svg>
                 <span>Our Partners</span>
               </CardTitle>
               <CardDescription>Organizations we work with</CardDescription>
@@ -395,32 +305,6 @@ export default function Dashboard() {
                           className="inline-flex items-center text-xs text-primary hover:underline"
                         >
                           Visit
-                          <svg
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            className="w-3 h-3 ml-1"
-                          >
-                            <path
-                              d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"
-                              stroke="currentColor"
-                              strokeWidth="2"
-                              fill="none"
-                            />
-                            <polyline
-                              points="15,3 21,3 21,9"
-                              stroke="currentColor"
-                              strokeWidth="2"
-                              fill="none"
-                            />
-                            <line
-                              x1="10"
-                              y1="14"
-                              x2="21"
-                              y2="3"
-                              stroke="currentColor"
-                              strokeWidth="2"
-                            />
-                          </svg>
                         </a>
                       )}
                     </CardContent>
