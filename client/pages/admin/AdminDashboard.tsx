@@ -585,12 +585,16 @@ export default function AdminDashboard() {
                   <span className="text-sm">Settings</span>
                 </Button>
               </Link>
-              <Button className="w-full h-auto p-4 flex flex-col space-y-2">
-                <span className="text-sm">Support</span>
-              </Button>
-              <Button className="w-full h-auto p-4 flex flex-col space-y-2">
-                <span className="text-sm">Logs</span>
-              </Button>
+              <Link to="/admin/analytics">
+                <Button className="w-full h-auto p-4 flex flex-col space-y-2">
+                  <span className="text-sm">Analytics</span>
+                </Button>
+              </Link>
+              <Link to="/admin/logs">
+                <Button className="w-full h-auto p-4 flex flex-col space-y-2">
+                  <span className="text-sm">Logs</span>
+                </Button>
+              </Link>
             </div>
           </CardContent>
         </Card>
