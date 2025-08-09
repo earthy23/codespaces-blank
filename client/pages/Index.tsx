@@ -47,9 +47,9 @@ export default function Index() {
             <h1 className="text-5xl md:text-7xl font-bold mb-6 bg-gradient-to-r from-primary via-foreground to-primary bg-clip-text text-transparent">
               UEC Launcher
             </h1>
-            
+
             <p className="text-xl md:text-2xl text-muted-foreground mb-8 max-w-2xl mx-auto">
-              The ultimate platform for Eaglercraft web clients. Launch games, connect with friends, and join the community.
+              Your hub for Eaglercraft clients. Built by the community, for the community.
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
