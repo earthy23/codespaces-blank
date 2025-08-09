@@ -222,8 +222,12 @@ export default function Dashboard() {
             partnersResponse.status,
             partnersResponse.statusText,
           );
-          if (isMounted) {
-            setPartners([]);
+          if (isMounted && !abortController.signal.aborted) {
+            try {
+              setPartners([]);
+            } catch (e) {
+              // Ignore any errors during state updates
+            }
           }
         }
       } catch (error) {
