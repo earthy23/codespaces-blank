@@ -29,7 +29,7 @@ export default function About() {
             </div>
             <h1 className="text-4xl font-bold text-primary">About UEC Launcher</h1>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              The ultimate platform for Eaglercraft web clients with comprehensive social features and server management tools.
+              We built this because we got sick of broken Eaglercraft sites and wanted something that actually works.
             </p>
           </div>
 
