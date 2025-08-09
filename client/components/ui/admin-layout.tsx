@@ -76,10 +76,10 @@ export function AdminLayout({ children }: AdminLayoutProps) {
   }
 
   return (
-    <div className="min-h-screen bg-black flex text-white">
+    <div className="min-h-screen bg-[#1a1a1a] flex text-white">
       {/* Desktop Sidebar */}
       <aside
-        className={`hidden lg:flex flex-col bg-black border-r border-white transition-all duration-300 ${
+        className={`hidden lg:flex flex-col bg-[#1a1a1a] border-r border-white transition-all duration-300 ${
           sidebarCollapsed ? "w-16" : "w-72"
         }`}
       >
@@ -191,7 +191,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
             className="fixed inset-0 bg-black/50"
             onClick={() => setMobileMenuOpen(false)}
           />
-          <aside className="relative w-72 bg-black border-r border-white">
+          <aside className="relative w-72 bg-[#1a1a1a] border-r border-white">
             {/* Mobile Header */}
             <div className="p-4 border-b border-white flex items-center justify-between">
               <div>
@@ -265,7 +265,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
       )}
 
       {/* Main Content */}
-      <main className="flex-1 overflow-auto bg-black">
+      <main className="flex-1 overflow-auto bg-[#1a1a1a]">
         <div className="p-6 lg:p-8">{children}</div>
       </main>
     </div>
