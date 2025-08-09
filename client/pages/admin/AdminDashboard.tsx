@@ -599,6 +599,105 @@ export default function AdminDashboard() {
           </CardContent>
         </Card>
 
+        {/* Video Monitoring */}
+        <Card className="minecraft-panel">
+          <CardHeader>
+            <CardTitle className="flex items-center justify-between">
+              <span>Video Monitoring & User Features</span>
+              <Badge className="bg-green-500/20 text-green-600">
+                Live
+              </Badge>
+            </CardTitle>
+            <CardDescription>
+              Real-time monitoring of video content and user feature usage
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {/* Video Stats */}
+              <div className="space-y-4">
+                <h4 className="font-semibold text-primary">Video Platform</h4>
+                <div className="space-y-3">
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-muted-foreground">Total Videos</span>
+                    <span className="font-bold">247</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-muted-foreground">Active Streams</span>
+                    <span className="font-bold text-green-600">12</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-muted-foreground">Views Today</span>
+                    <span className="font-bold">1,854</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-muted-foreground">Flagged Content</span>
+                    <span className="font-bold text-red-600">3</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* User Features */}
+              <div className="space-y-4">
+                <h4 className="font-semibold text-primary">User Features</h4>
+                <div className="space-y-3">
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-muted-foreground">File Uploads</span>
+                    <span className="font-bold">89</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-muted-foreground">Voice Calls Active</span>
+                    <span className="font-bold text-blue-600">7</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-muted-foreground">Chat Messages</span>
+                    <span className="font-bold">2,156</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-muted-foreground">Server Connections</span>
+                    <span className="font-bold text-green-600">34</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Monitoring Controls */}
+              <div className="space-y-4">
+                <h4 className="font-semibold text-primary">Monitoring Controls</h4>
+                <div className="space-y-2">
+                  <Button variant="outline" className="w-full justify-start text-left" size="sm">
+                    Review Flagged Videos
+                  </Button>
+                  <Button variant="outline" className="w-full justify-start text-left" size="sm">
+                    Monitor Live Streams
+                  </Button>
+                  <Button variant="outline" className="w-full justify-start text-left" size="sm">
+                    User Feature Analytics
+                  </Button>
+                  <Button variant="outline" className="w-full justify-start text-left" size="sm">
+                    Content Moderation Queue
+                  </Button>
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-6 pt-4 border-t border-border">
+              <div className="flex items-center justify-between text-sm text-muted-foreground">
+                <span>Last updated: {new Date().toLocaleTimeString()}</span>
+                <div className="flex items-center space-x-4">
+                  <div className="flex items-center space-x-2">
+                    <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                    <span>Video monitoring active</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
+                    <span>User features tracked</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
         {/* Recent Activity */}
         <Card className="minecraft-panel">
           <CardHeader>
