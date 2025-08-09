@@ -526,7 +526,7 @@ export default function Dashboard() {
                         className="h-8 w-8 p-0"
                         onClick={() => navigate(`/chat/${friend.id}`)}
                       >
-                        💬
+                        Chat
                       </Button>
                     </div>
                   ))}
