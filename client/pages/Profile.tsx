@@ -102,7 +102,6 @@ export default function Profile() {
   });
 
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
-  const [showAvatarDialog, setShowAvatarDialog] = useState(false);
 
   useEffect(() => {
     if (!user) {
