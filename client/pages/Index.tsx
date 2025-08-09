@@ -21,7 +21,7 @@ export default function Index() {
               </Link>
               <Link to="/register">
                 <Button className="minecraft-button bg-primary text-primary-foreground hover:bg-primary/90">
-                  Get Started
+                  Sign Up
                 </Button>
               </Link>
             </div>
