@@ -87,9 +87,128 @@ export default function Community() {
     try {
       setIsLoading(true);
 
-      // No videos or creators to display
-      setVideos([]);
-      setFeaturedCreators([]);
+      // Placeholder videos for testing
+      const placeholderVideos: VideoItem[] = [
+        {
+          id: "1",
+          title: "Epic Castle Build Tutorial",
+          description: "Learn how to build an amazing medieval castle in Minecraft! This tutorial covers everything from foundation to towers.",
+          thumbnail: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=320&h=180&fit=crop",
+          videoUrl: "#",
+          author: "BuildMaster",
+          authorId: "user1",
+          views: 15420,
+          likes: 892,
+          dislikes: 23,
+          createdAt: new Date(Date.now() - 86400000).toISOString(),
+          tags: ["tutorial", "building", "castle", "medieval"],
+          duration: "24:15",
+          liked: false,
+        },
+        {
+          id: "2",
+          title: "Redstone Computer Build",
+          description: "Building a functional computer inside Minecraft using only redstone! First part of a series.",
+          thumbnail: "https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=320&h=180&fit=crop",
+          videoUrl: "#",
+          author: "RedstoneWiz",
+          authorId: "user2",
+          views: 8540,
+          likes: 456,
+          dislikes: 12,
+          createdAt: new Date(Date.now() - 172800000).toISOString(),
+          tags: ["redstone", "computer", "engineering", "tutorial"],
+          duration: "18:42",
+          liked: true,
+        },
+        {
+          id: "3",
+          title: "Modern House Speed Build",
+          description: "Quick modern house build with interior design. Perfect for survival mode!",
+          thumbnail: "https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=320&h=180&fit=crop",
+          videoUrl: "#",
+          author: "ArchitectPro",
+          authorId: "user3",
+          views: 23100,
+          likes: 1340,
+          dislikes: 56,
+          createdAt: new Date(Date.now() - 259200000).toISOString(),
+          tags: ["modern", "house", "speedbuild", "survival"],
+          duration: "12:08",
+          liked: false,
+        },
+        {
+          id: "4",
+          title: "PvP Tips and Tricks",
+          description: "Improve your PvP skills with these advanced techniques and strategies.",
+          thumbnail: "https://images.unsplash.com/photo-1542751371-adc38448a05e?w=320&h=180&fit=crop",
+          videoUrl: "#",
+          author: "PvPGod",
+          authorId: "user4",
+          views: 12750,
+          likes: 678,
+          dislikes: 34,
+          createdAt: new Date(Date.now() - 345600000).toISOString(),
+          tags: ["pvp", "combat", "tips", "strategy"],
+          duration: "16:23",
+          liked: false,
+        },
+        {
+          id: "5",
+          title: "Automatic Farm Tutorial",
+          description: "Build this fully automatic farm that works in 1.8! Great for servers.",
+          thumbnail: "https://images.unsplash.com/photo-1574943320219-553eb213f72d?w=320&h=180&fit=crop",
+          videoUrl: "#",
+          author: "FarmExpert",
+          authorId: "user5",
+          views: 9890,
+          likes: 523,
+          dislikes: 18,
+          createdAt: new Date(Date.now() - 432000000).toISOString(),
+          tags: ["farm", "automatic", "tutorial", "redstone"],
+          duration: "21:45",
+          liked: false,
+        },
+      ];
+
+      // Placeholder creators for testing
+      const placeholderCreators: CreatorUser[] = [
+        {
+          id: "user1",
+          username: "BuildMaster",
+          followers: 12500,
+          following: 89,
+          videos: 45,
+          isFollowing: false,
+        },
+        {
+          id: "user2",
+          username: "RedstoneWiz",
+          followers: 8900,
+          following: 124,
+          videos: 23,
+          isFollowing: true,
+        },
+        {
+          id: "user3",
+          username: "ArchitectPro",
+          followers: 15600,
+          following: 67,
+          videos: 67,
+          isFollowing: false,
+        },
+        {
+          id: "user4",
+          username: "PvPGod",
+          followers: 7320,
+          following: 45,
+          videos: 31,
+          isFollowing: false,
+        },
+      ];
+
+      setVideos(placeholderVideos);
+      setFeaturedCreators(placeholderCreators);
     } catch (error) {
       console.error("Failed to load community data:", error);
       toast({
