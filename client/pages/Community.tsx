@@ -749,19 +749,73 @@ export default function Community() {
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <div className="text-center py-8">
-                      <p className="text-muted-foreground mb-4">
-                        No featured creators yet. Upload content to become featured!
-                      </p>
-                      <Button
-                        onClick={() => setShowUploadDialog(true)}
-                        variant="outline"
-                        size="sm"
-                      >
-                        <Plus className="w-4 h-4 mr-2" />
-                        Get Started
-                      </Button>
-                    </div>
+                    {featuredCreators.length > 0 ? (
+                      <div className="space-y-4">
+                        {featuredCreators.map((creator, index) => (
+                          <div
+                            key={creator.id}
+                            className="group p-3 rounded-lg bg-muted/30 hover:bg-muted/50 transition-all duration-200 border border-border/30"
+                          >
+                            <div className="flex items-center justify-between mb-2">
+                              <div className="flex items-center space-x-3">
+                                <div className="relative">
+                                  <Link to={`/profile/${creator.username}`}>
+                                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary/30 to-primary/10 flex items-center justify-center ring-2 ring-primary/20 hover:ring-primary/40 transition-all">
+                                      <span className="font-bold text-primary">
+                                        {creator.username.charAt(0).toUpperCase()}
+                                      </span>
+                                    </div>
+                                  </Link>
+                                  {index < 3 && (
+                                    <div className="absolute -top-1 -right-1 w-5 h-5 bg-yellow-500 rounded-full flex items-center justify-center text-xs font-bold text-black">
+                                      {index + 1}
+                                    </div>
+                                  )}
+                                </div>
+                                <div className="min-w-0 flex-1">
+                                  <Link
+                                    to={`/profile/${creator.username}`}
+                                    className="font-medium hover:text-primary transition-colors block truncate"
+                                  >
+                                    {creator.username}
+                                  </Link>
+                                  <p className="text-xs text-muted-foreground">
+                                    {formatNumber(creator.followers)} followers
+                                  </p>
+                                  <p className="text-xs text-muted-foreground">
+                                    {creator.videos} videos
+                                  </p>
+                                </div>
+                              </div>
+                            </div>
+                            <Button
+                              size="sm"
+                              variant={creator.isFollowing ? "outline" : "default"}
+                              onClick={() =>
+                                handleFollow(creator.id, !creator.isFollowing)
+                              }
+                              className="w-full h-8 text-xs"
+                            >
+                              {creator.isFollowing ? "✓ Following" : "➕ Follow"}
+                            </Button>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="text-center py-8">
+                        <p className="text-muted-foreground mb-4">
+                          No featured creators yet. Upload content to become featured!
+                        </p>
+                        <Button
+                          onClick={() => setShowUploadDialog(true)}
+                          variant="outline"
+                          size="sm"
+                        >
+                          <Plus className="w-4 h-4 mr-2" />
+                          Get Started
+                        </Button>
+                      </div>
+                    )}
                   </CardContent>
                 </Card>
 
