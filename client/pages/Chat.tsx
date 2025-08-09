@@ -570,7 +570,7 @@ export default function Chat() {
                     </Link>
                   ))}
 
-                  {chats.length === 0 && (
+                  {(chats || []).length === 0 && (
                     <div className="text-center py-8">
                       <p className="text-sm text-muted-foreground">
                         No chats yet. Click the + button to start!
