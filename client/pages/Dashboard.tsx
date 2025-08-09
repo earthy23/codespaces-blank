@@ -44,9 +44,14 @@ export default function Dashboard() {
     let isMounted = true;
 
     const fetchDashboardData = async () => {
-      if (!user || !isMounted) return;
+      if (!user || !isMounted || abortController.signal.aborted) return;
 
-      setLoading(true);
+      try {
+        setLoading(true);
+      } catch (e) {
+        // Component may be unmounting
+        return;
+      }
 
       // Helper function to make authenticated requests
       const makeRequest = async (url, timeout = 10000) => {
