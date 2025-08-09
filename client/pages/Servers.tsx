@@ -411,6 +411,7 @@ export default function Servers() {
       name: "",
       description: "",
       ip: "",
+      websocketUrl: "",
       category: "survival",
       version: "1.8.8",
     });
