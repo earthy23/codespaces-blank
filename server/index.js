@@ -38,18 +38,6 @@ const __dirname = path.dirname(__filename);
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Multi-domain support configuration
-const ALLOWED_DOMAINS = [
-  "localhost:3000",
-  "localhost:5173",
-  "localhost:8080",
-  "ueclub.com",
-  "www.ueclub.com",
-  "play.ueclub.com",
-  "api.ueclub.com",
-  "admin.ueclub.com",
-  "7b10610db8d44756a9e9dc629f6481f1-30e9842434a9496282981b9c3.fly.dev"
-];
 
 // Dynamic domain detection middleware
 app.use((req, res, next) => {
