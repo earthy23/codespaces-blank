@@ -19,29 +19,29 @@ Eaglercraft launcher that doesn't suck. Built because we got tired of broken cli
 - **Actually responsive** - works on phones without breaking
 - **Handles load** - tested with 200+ people online
 
-## 🚀 Quick Start (Development)
+## Getting started
 
-1. **Clone and Install**
+1. **Clone and install**
    ```bash
    git clone https://github.com/yourusername/uec-launcher.git
    cd uec-launcher
    npm install
    ```
 
-2. **Create Admin Account**
+2. **Create admin account**
    ```bash
    npm run create-admin
    ```
 
-3. **Start Development Server**
+3. **Start it up**
    ```bash
    npm run dev
    ```
 
-4. **Access the Platform**
-   - Open browser to http://localhost:8080
-   - Login with the admin credentials you created
-   - Configure settings in the admin panel
+4. **Check it out**
+   - Go to http://localhost:8080
+   - Login with your admin account
+   - Set things up in the admin panel
 
 ## 🏭 Production Deployment
 
