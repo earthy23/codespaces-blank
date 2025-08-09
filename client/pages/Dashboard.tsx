@@ -191,7 +191,10 @@ export default function Dashboard() {
               setPartners(partnersData.partners || []);
             }
           } catch (error) {
-            if (!isMounted || error.name === "AbortError") return;
+            // Silently handle abort errors during cleanup
+            if (!isMounted || error.name === "AbortError" || abortController.signal.aborted) {
+              return;
+            }
             console.warn("Failed to parse partners response:", error);
             if (isMounted) {
               setPartners([]);
