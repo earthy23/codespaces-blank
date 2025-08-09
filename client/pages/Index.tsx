@@ -153,9 +153,9 @@ export default function Index() {
       {/* CTA Section */}
       <section className="relative z-10 py-16 bg-primary/5">
         <div className="container mx-auto px-6 text-center">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">Ready to Start Your Adventure?</h2>
+          <h2 className="text-3xl md:text-4xl font-bold mb-4">Ready to ditch the sketchy sites?</h2>
           <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
-            Join thousands of players already using UEC Launcher. Create your account and start playing today.
+            Join the community that's tired of broken clients and wants something that works.
           </p>
           <Link to="/register">
             <Button size="lg" className="minecraft-button bg-primary text-primary-foreground hover:bg-primary/90 px-8 py-6 text-lg">
