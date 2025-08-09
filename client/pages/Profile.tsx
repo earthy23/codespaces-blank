@@ -329,7 +329,7 @@ export default function Profile() {
       <div className="max-w-7xl mx-auto px-4">
         {/* Profile Header */}
         <div className="mb-8">
-          <Card className="minecraft-panel bg-card/80 backdrop-blur-sm border-border/40">
+          <Card className="minecraft-panel bg-card/20 backdrop-blur-sm border-border/20 shadow-lg">
             <CardContent className="p-8">
               <div className="flex items-center space-x-6">
                 {/* Profile Avatar */}
