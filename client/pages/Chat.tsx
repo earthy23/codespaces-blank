@@ -38,6 +38,7 @@ import { useFriends } from "@/lib/friends";
 import { useToast } from "@/hooks/use-toast";
 import { useEffect, useState, useRef } from "react";
 import { UserLayout } from "@/components/ui/user-layout";
+import { Send, Phone, PhoneOff, Settings, Plus, Hash, Users, MessageCircle } from "lucide-react";
 
 export default function Chat() {
   const { chatId } = useParams();
@@ -48,120 +49,74 @@ export default function Chat() {
     getChatMessages,
     getChatById,
     sendMessage,
-    markAsRead,
-    isConnected,
-    isLoading,
-    typingUsers,
-    startTyping,
-    stopTyping,
-    editMessage,
-    deleteMessage,
     createDirectMessage,
     createGroupChat,
+    editMessage,
+    deleteMessage,
+    markAsRead,
     refreshChats,
+    generalMessages,
+    sendGeneralMessage,
+    startTyping,
+    stopTyping,
+    typingUsers,
+    isConnected,
   } = useChat();
   const { friends } = useFriends();
   const { toast } = useToast();
   const navigate = useNavigate();
-  const [messageContent, setMessageContent] = useState("");
-  const [editingMessageId, setEditingMessageId] = useState<string | null>(null);
-  const [editingContent, setEditingContent] = useState("");
-  const [activeTab, setActiveTab] = useState(chatId ? "direct" : "general");
-  const [generalMessages, setGeneralMessages] = useState<any[]>([]);
-  const messagesEndRef = useRef<HTMLDivElement>(null);
-  const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  // New states for enhanced features
+  const [messageContent, setMessageContent] = useState("");
+  const [activeTab, setActiveTab] = useState(
+    chatId ? "direct" : searchParams.get("tab") || "general",
+  );
   const [showCreateChatDialog, setShowCreateChatDialog] = useState(false);
   const [createChatType, setCreateChatType] = useState<"dm" | "group">("dm");
   const [selectedFriends, setSelectedFriends] = useState<string[]>([]);
   const [groupChatName, setGroupChatName] = useState("");
+  const [editingMessageId, setEditingMessageId] = useState<string | null>(null);
+  const [editingContent, setEditingContent] = useState("");
   const [isInCall, setIsInCall] = useState(false);
   const [callParticipants, setCallParticipants] = useState<string[]>([]);
 
-  // Mini profile popup state
-  const [showMiniProfile, setShowMiniProfile] = useState(false);
-  const [selectedUser, setSelectedUser] = useState<any>(null);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
+  const currentChat = chatId ? getChatById(chatId) : null;
+  const currentMessages = chatId ? getChatMessages(chatId) : [];
+
+  // Auto-scroll to bottom when new messages arrive
   useEffect(() => {
-    if (!user) {
-      navigate("/login");
-    }
-  }, [user, navigate]);
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [currentMessages, generalMessages]);
 
+  // Clean up typing timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (typingTimeoutRef.current) {
+        clearTimeout(typingTimeoutRef.current);
+      }
+    };
+  }, []);
+
+  // Update active tab based on URL
   useEffect(() => {
     if (chatId) {
-      markAsRead(chatId);
       setActiveTab("direct");
+    } else {
+      setActiveTab("general");
     }
-  }, [chatId, markAsRead]);
+  }, [chatId]);
 
+  // Mark messages as read when opening a chat
   useEffect(() => {
-    // Auto-scroll to bottom when new messages arrive
-    const scrollToBottom = () => {
-      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-    };
-
-    // Small delay to ensure content is rendered
-    const timeoutId = setTimeout(scrollToBottom, 100);
-    return () => clearTimeout(timeoutId);
-  }, [chatId, getChatMessages(chatId || ""), generalMessages]);
-
-  // Load general chat messages
-  useEffect(() => {
-    if (activeTab === "general") {
-      loadGeneralMessages();
+    if (chatId && currentChat?.unread_count > 0) {
+      const timeoutId = setTimeout(() => {
+        markAsRead(chatId);
+      }, 1000);
+      return () => clearTimeout(timeoutId);
     }
-  }, [activeTab]);
-
-  const loadGeneralMessages = async () => {
-    try {
-      // Load from localStorage if available, otherwise start with welcome message
-      const storedMessages = localStorage.getItem("general_chat_messages");
-      if (storedMessages) {
-        const parsedMessages = JSON.parse(storedMessages);
-        setGeneralMessages(parsedMessages);
-      } else {
-        // Start with welcome message for new users
-        const welcomeMessages = [
-          {
-            id: "welcome",
-            content: "Welcome to UEC Launcher community! 🎮",
-            senderId: "system",
-            senderUsername: "System",
-            timestamp: new Date().toISOString(),
-            type: "system",
-          },
-          {
-            id: "info",
-            content:
-              "This is a local community chat. Messages are stored locally and will be visible to you across sessions.",
-            senderId: "system",
-            senderUsername: "System",
-            timestamp: new Date().toISOString(),
-            type: "system",
-          },
-        ];
-        setGeneralMessages(welcomeMessages);
-        localStorage.setItem(
-          "general_chat_messages",
-          JSON.stringify(welcomeMessages),
-        );
-      }
-    } catch (error) {
-      console.error("Failed to load general messages:", error);
-      setGeneralMessages([
-        {
-          id: "fallback",
-          content: "Welcome to UEC Launcher community! 🎮",
-          senderId: "system",
-          senderUsername: "System",
-          timestamp: new Date().toISOString(),
-          type: "system",
-        },
-      ]);
-    }
-  };
+  }, [chatId, currentChat?.unread_count, markAsRead]);
 
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -169,33 +124,7 @@ export default function Chat() {
 
     if (activeTab === "general") {
       try {
-        // For now, use local general chat functionality
-        // This can be replaced with real API integration later
-        const newMessage = {
-          id: Date.now().toString(),
-          content: messageContent.trim(),
-          senderId: user?.id || "",
-          senderUsername: user?.username || "Unknown",
-          timestamp: new Date().toISOString(),
-          type: "message",
-        };
-
-        const updatedMessages = [...generalMessages, newMessage];
-        setGeneralMessages(updatedMessages);
-
-        // Save to localStorage for persistence
-        try {
-          localStorage.setItem(
-            "general_chat_messages",
-            JSON.stringify(updatedMessages),
-          );
-        } catch (storageError) {
-          console.warn(
-            "Failed to save messages to localStorage:",
-            storageError,
-          );
-        }
-
+        await sendGeneralMessage(messageContent);
         setMessageContent("");
       } catch (error) {
         console.error("Failed to send general message:", error);
@@ -299,23 +228,16 @@ export default function Chat() {
     }
 
     try {
-      const selectedUsernames = selectedFriends
-        .map((friendId) => friends.find((f) => f.id === friendId)?.username)
-        .filter(Boolean) as string[];
-
-      const chatId = await createGroupChat(
-        groupChatName.trim(),
-        selectedUsernames,
-      );
-      if (chatId) {
+      const response = await createGroupChat(groupChatName, selectedFriends);
+      if (response) {
         await refreshChats();
-        navigate(`/chat/${chatId}`);
+        navigate(`/chat/${response.chatId}`);
         setShowCreateChatDialog(false);
         setSelectedFriends([]);
         setGroupChatName("");
         toast({
           title: "Success",
-          description: `Group chat "${groupChatName}" created with ${selectedFriends.length} friends!`,
+          description: "Group chat created successfully!",
         });
       } else {
         throw new Error("Failed to create group chat");
@@ -370,114 +292,47 @@ export default function Chat() {
     }
   };
 
-  const handlePingUser = (username: string) => {
-    if (!chatId) return;
-
-    const pingMessage = `@${username} `;
-    setMessageContent((prev) => prev + pingMessage);
+  const formatTime = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
   };
-
-  const handleUserClick = (username: string, userId?: string) => {
-    // Mock user data for mini profile - in real app this would fetch from API
-    const mockUser = {
-      id: userId || username,
-      username: username,
-      bio: `${username} is an active member of the UEC community!`,
-      joinedAt: new Date(
-        Date.now() - Math.random() * 31536000000,
-      ).toISOString(),
-      followers: Math.floor(Math.random() * 1000) + 50,
-      following: Math.floor(Math.random() * 500) + 20,
-      totalVideos: Math.floor(Math.random() * 50) + 1,
-      isOnline: Math.random() > 0.5,
-      isFriend: false,
-      isBlocked: false,
-    };
-
-    setSelectedUser(mockUser);
-    setShowMiniProfile(true);
-  };
-
-  const handleAddFriend = async (username: string) => {
-    try {
-      // API call would go here
-      toast({
-        title: "Friend Request Sent",
-        description: `Friend request sent to ${username}`,
-      });
-      setShowMiniProfile(false);
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to send friend request",
-        variant: "destructive",
-      });
-    }
-  };
-
-  const handleBlockUser = async (username: string) => {
-    try {
-      // API call would go here
-      toast({
-        title: "User Blocked",
-        description: `${username} has been blocked`,
-      });
-      setShowMiniProfile(false);
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to block user",
-        variant: "destructive",
-      });
-    }
-  };
-
-  const formatMessageTime = (timestamp: string) => {
-    const messageDate = new Date(timestamp);
-    const now = new Date();
-    const diff = now.getTime() - messageDate.getTime();
-
-    if (diff < 60000) return "Just now";
-    if (diff < 3600000) return `${Math.floor(diff / 60000)}m ago`;
-    if (diff < 86400000) return `${Math.floor(diff / 3600000)}h ago`;
-    return messageDate.toLocaleDateString();
-  };
-
-  const renderMessage = (message: any) => {
-    const content = message.content;
-    const mentionRegex = /@(\w+)/g;
-    const parts = content.split(mentionRegex);
-
-    return parts.map((part: string, index: number) => {
-      if (index % 2 === 1) {
-        // This is a mention
-        return (
-          <span
-            key={index}
-            className="bg-primary/20 text-primary px-1 rounded font-semibold"
-          >
-            @{part}
-          </span>
-        );
-      }
-      return part;
-    });
-  };
-
-  const currentChat = chatId ? getChatById(chatId) : null;
-  const messages = chatId ? getChatMessages(chatId) : [];
 
   if (!user) {
-    return null;
+    return (
+      <UserLayout>
+        <div className="flex items-center justify-center h-64">
+          <div className="text-center">
+            <h2 className="text-xl font-semibold mb-2">Please log in</h2>
+            <p className="text-muted-foreground">You need to be logged in to access chat.</p>
+          </div>
+        </div>
+      </UserLayout>
+    );
   }
 
   return (
     <UserLayout>
-      <div className="h-[calc(100vh-120px)]">
+      <div className="h-[calc(100vh-120px)] flex flex-col">
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-border bg-card/50">
-          <div>
+        <div className="flex items-center justify-between p-4 border-b border-border bg-card/30 backdrop-blur-sm">
+          <div className="flex items-center space-x-4">
             <h1 className="text-2xl font-bold text-foreground">Chat</h1>
+            {isInCall && (
+              <div className="flex items-center space-x-2 bg-green-500/10 border border-green-500/20 px-3 py-1.5 rounded-full">
+                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                <span className="text-sm font-medium text-green-400">
+                  In Call ({callParticipants.length})
+                </span>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  onClick={handleEndCall}
+                  className="h-6 px-2 hover:bg-red-500/10 hover:text-red-400"
+                >
+                  End
+                </Button>
+              </div>
+            )}
           </div>
           <div className="flex items-center space-x-3">
             <div className="flex items-center space-x-2">
@@ -488,210 +343,149 @@ export default function Chat() {
                 {isConnected ? "Online" : "Offline"}
               </span>
             </div>
-            {isInCall && (
-              <div className="flex items-center space-x-2 bg-green-500/10 border border-green-500/20 px-3 py-1 rounded-full">
-                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                <span className="text-sm font-medium text-green-400">
-                  In Call ({callParticipants.length})
-                </span>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={handleEndCall}
-                  className="h-6 px-2 border-green-500/20 hover:bg-green-500/10"
-                >
-                  End
-                </Button>
-              </div>
-            )}
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-          {/* Chat List Sidebar */}
-          <div className="lg:col-span-1">
-            <Card className="minecraft-panel">
-              <CardHeader className="pb-4">
+        {/* Main Chat Interface */}
+        <div className="flex flex-1 overflow-hidden">
+          {/* Sidebar - Chat List */}
+          <div className="w-80 border-r border-border bg-card/20 backdrop-blur-sm">
+            <div className="h-full flex flex-col">
+              {/* Sidebar Header */}
+              <div className="p-4 border-b border-border">
                 <div className="flex items-center justify-between">
-                  <CardTitle className="text-lg">Chats</CardTitle>
-                  <Dialog
-                    open={showCreateChatDialog}
-                    onOpenChange={setShowCreateChatDialog}
-                  >
+                  <h2 className="font-semibold text-foreground">Conversations</h2>
+                  <Dialog open={showCreateChatDialog} onOpenChange={setShowCreateChatDialog}>
                     <DialogTrigger asChild>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        className="h-8 w-8 p-0"
-                      >
-                        +
+                      <Button size="sm" variant="ghost" className="h-8 w-8 p-0 hover:bg-primary/10">
+                        <Plus className="h-4 w-4" />
                       </Button>
                     </DialogTrigger>
                     <DialogContent className="minecraft-panel">
                       <DialogHeader>
-                        <DialogTitle>Create New Chat</DialogTitle>
+                        <DialogTitle>New Chat</DialogTitle>
                         <DialogDescription>
-                          Start a direct message or create a group chat with
-                          your friends.
+                          Start a direct message or create a group chat
                         </DialogDescription>
                       </DialogHeader>
                       <div className="space-y-4">
                         <div className="flex space-x-2">
                           <Button
-                            variant={
-                              createChatType === "dm" ? "default" : "outline"
-                            }
+                            variant={createChatType === "dm" ? "default" : "outline"}
                             onClick={() => setCreateChatType("dm")}
                             className="flex-1"
                           >
-                            DM Friends
+                            <MessageCircle className="w-4 h-4 mr-2" />
+                            Direct Message
                           </Button>
                           <Button
-                            variant={
-                              createChatType === "group" ? "default" : "outline"
-                            }
+                            variant={createChatType === "group" ? "default" : "outline"}
                             onClick={() => setCreateChatType("group")}
                             className="flex-1"
                           >
+                            <Users className="w-4 h-4 mr-2" />
                             Group Chat
                           </Button>
                         </div>
 
                         {createChatType === "dm" ? (
                           <div className="space-y-3">
-                            <h4 className="font-semibold">
-                              Select a friend to message:
-                            </h4>
-                            <div className="max-h-60 overflow-y-auto space-y-2">
-                              {friends.map((friend) => (
-                                <div
-                                  key={friend.id}
-                                  className="flex items-center justify-between p-3 bg-muted/50 rounded-lg border border-border hover:bg-muted/80 transition-colors"
-                                >
-                                  <div className="flex items-center space-x-3">
-                                    <div className="w-8 h-8 rounded-lg bg-muted border border-border flex items-center justify-center">
-                                      <span className="font-semibold text-sm">
-                                        {friend.username
-                                          .charAt(0)
-                                          .toUpperCase()}
-                                      </span>
-                                    </div>
-                                    <div>
-                                      <p className="font-medium">
-                                        {friend.username}
-                                      </p>
-                                      <p className="text-xs text-muted-foreground">
-                                        {friend.status === "online"
-                                          ? "🟢 Online"
-                                          : "⚫ Offline"}
-                                      </p>
-                                    </div>
-                                  </div>
-                                  <Button
-                                    size="sm"
-                                    onClick={() =>
-                                      handleCreateDM(friend.username)
-                                    }
-                                  >
-                                    Message
-                                  </Button>
-                                </div>
-                              ))}
-                              {friends.length === 0 && (
-                                <div className="text-center py-4 text-muted-foreground">
-                                  No friends available. Add some friends first!
-                                </div>
-                              )}
-                            </div>
-                          </div>
-                        ) : (
-                          <div className="space-y-4">
-                            <div>
-                              <label
-                                htmlFor="groupName"
-                                className="block text-sm font-medium mb-2"
-                              >
-                                Group Name
-                              </label>
-                              <Input
-                                id="groupName"
-                                value={groupChatName}
-                                onChange={(e) =>
-                                  setGroupChatName(e.target.value)
-                                }
-                                placeholder="Enter group name..."
-                              />
-                            </div>
-                            <div>
-                              <h4 className="font-semibold mb-3">
-                                Select friends to add:
-                              </h4>
-                              <div className="max-h-60 overflow-y-auto space-y-2">
+                            <h4 className="font-medium">Select a friend:</h4>
+                            <ScrollArea className="max-h-60">
+                              <div className="space-y-2">
                                 {friends.map((friend) => (
                                   <div
                                     key={friend.id}
-                                    className="flex items-center space-x-3 p-2 hover:bg-muted/50 rounded-lg transition-colors"
+                                    className="flex items-center justify-between p-2 hover:bg-muted/50 rounded-lg transition-colors"
                                   >
-                                    <Checkbox
-                                      id={friend.id}
-                                      checked={selectedFriends.includes(
-                                        friend.id,
-                                      )}
-                                      onCheckedChange={(checked) => {
-                                        if (checked) {
-                                          setSelectedFriends((prev) => [
-                                            ...prev,
-                                            friend.id,
-                                          ]);
-                                        } else {
-                                          setSelectedFriends((prev) =>
-                                            prev.filter(
-                                              (id) => id !== friend.id,
-                                            ),
-                                          );
-                                        }
-                                      }}
-                                    />
-                                    <div className="w-8 h-8 rounded-lg bg-muted border border-border flex items-center justify-center">
-                                      <span className="font-semibold text-sm">
-                                        {friend.username
-                                          .charAt(0)
-                                          .toUpperCase()}
-                                      </span>
+                                    <div className="flex items-center space-x-3">
+                                      <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center">
+                                        <span className="text-sm font-semibold">
+                                          {friend.username.charAt(0).toUpperCase()}
+                                        </span>
+                                      </div>
+                                      <div>
+                                        <p className="font-medium">{friend.username}</p>
+                                        <p className="text-xs text-muted-foreground">
+                                          {friend.status === "online" ? "🟢 Online" : "⚫ Offline"}
+                                        </p>
+                                      </div>
                                     </div>
-                                    <label
-                                      htmlFor={friend.id}
-                                      className="flex-1 cursor-pointer"
+                                    <Button
+                                      size="sm"
+                                      onClick={() => handleCreateDM(friend.username)}
                                     >
-                                      <p className="font-medium">
-                                        {friend.username}
-                                      </p>
-                                      <p className="text-xs text-muted-foreground">
-                                        {friend.status === "online"
-                                          ? "🟢 Online"
-                                          : "⚫ Offline"}
-                                      </p>
-                                    </label>
+                                      Message
+                                    </Button>
                                   </div>
                                 ))}
                                 {friends.length === 0 && (
                                   <div className="text-center py-4 text-muted-foreground">
-                                    No friends available. Add some friends
-                                    first!
+                                    No friends available. Add some friends first!
                                   </div>
                                 )}
                               </div>
+                            </ScrollArea>
+                          </div>
+                        ) : (
+                          <div className="space-y-4">
+                            <div>
+                              <label className="block text-sm font-medium mb-2">Group Name</label>
+                              <Input
+                                value={groupChatName}
+                                onChange={(e) => setGroupChatName(e.target.value)}
+                                placeholder="Enter group name..."
+                              />
+                            </div>
+                            <div>
+                              <h4 className="font-medium mb-3">Select friends:</h4>
+                              <ScrollArea className="max-h-60">
+                                <div className="space-y-2">
+                                  {friends.map((friend) => (
+                                    <div
+                                      key={friend.id}
+                                      className="flex items-center space-x-3 p-2 hover:bg-muted/50 rounded-lg transition-colors"
+                                    >
+                                      <Checkbox
+                                        id={friend.id}
+                                        checked={selectedFriends.includes(friend.id)}
+                                        onCheckedChange={(checked) => {
+                                          if (checked) {
+                                            setSelectedFriends((prev) => [...prev, friend.id]);
+                                          } else {
+                                            setSelectedFriends((prev) =>
+                                              prev.filter((id) => id !== friend.id),
+                                            );
+                                          }
+                                        }}
+                                      />
+                                      <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center">
+                                        <span className="text-sm font-semibold">
+                                          {friend.username.charAt(0).toUpperCase()}
+                                        </span>
+                                      </div>
+                                      <label htmlFor={friend.id} className="flex-1 cursor-pointer">
+                                        <p className="font-medium">{friend.username}</p>
+                                        <p className="text-xs text-muted-foreground">
+                                          {friend.status === "online" ? "🟢 Online" : "⚫ Offline"}
+                                        </p>
+                                      </label>
+                                    </div>
+                                  ))}
+                                  {friends.length === 0 && (
+                                    <div className="text-center py-4 text-muted-foreground">
+                                      No friends available.
+                                    </div>
+                                  )}
+                                </div>
+                              </ScrollArea>
                             </div>
                             <Button
                               onClick={handleCreateGroupChat}
-                              disabled={
-                                selectedFriends.length === 0 ||
-                                !groupChatName.trim()
-                              }
+                              disabled={selectedFriends.length === 0 || !groupChatName.trim()}
                               className="w-full"
                             >
-                              Create Group Chat ({selectedFriends.length}{" "}
-                              friends)
+                              Create Group ({selectedFriends.length} friends)
                             </Button>
                           </div>
                         )}
@@ -699,60 +493,60 @@ export default function Chat() {
                     </DialogContent>
                   </Dialog>
                 </div>
-              </CardHeader>
-              <CardContent className="p-0">
-                <ScrollArea className="h-[500px]">
-                  <div className="space-y-2 p-4">
-                    {/* General Chat Option */}
-                    <button
-                      onClick={() => {
-                        setActiveTab("general");
-                        navigate("/chat");
-                      }}
-                      className={`w-full text-left p-3 rounded-lg border transition-colors ${
-                        activeTab === "general"
-                          ? "bg-primary text-primary-foreground border-primary"
-                          : "bg-muted border-border hover:bg-muted/80"
+              </div>
+
+              {/* Chat List */}
+              <ScrollArea className="flex-1">
+                <div className="p-2 space-y-1">
+                  {/* General Chat */}
+                  <button
+                    onClick={() => {
+                      setActiveTab("general");
+                      navigate("/chat");
+                    }}
+                    className={`w-full text-left p-3 rounded-lg transition-colors ${
+                      activeTab === "general"
+                        ? "bg-primary text-primary-foreground"
+                        : "hover:bg-muted/50"
+                    }`}
+                  >
+                    <div className="flex items-center space-x-3">
+                      <div className="w-10 h-10 rounded-lg bg-gradient-to-r from-blue-500 to-purple-500 flex items-center justify-center">
+                        <Hash className="w-5 h-5 text-white" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="font-medium">General</p>
+                        <p className="text-xs opacity-70 truncate">Community chat</p>
+                      </div>
+                    </div>
+                  </button>
+
+                  {/* Direct Message Chats */}
+                  {chats.map((chat) => (
+                    <Link
+                      key={chat.id}
+                      to={`/chat/${chat.id}`}
+                      className={`block p-3 rounded-lg transition-colors ${
+                        chatId === chat.id
+                          ? "bg-primary text-primary-foreground"
+                          : "hover:bg-muted/50"
                       }`}
                     >
                       <div className="flex items-center space-x-3">
-                        <div className="w-8 h-8 rounded-lg bg-gradient-to-r from-blue-500 to-purple-500 flex items-center justify-center">
-                          <span className="text-white text-sm font-bold">
-                            #
-                          </span>
-                        </div>
-                        <div>
-                          <p className="font-medium">General Chat</p>
-                          <p className="text-xs opacity-70">Community chat</p>
-                        </div>
-                      </div>
-                    </button>
-
-                    {/* Direct Message Chats */}
-                    {chats.map((chat) => (
-                      <Link
-                        key={chat.id}
-                        to={`/chat/${chat.id}`}
-                        className={`block p-3 rounded-lg border transition-colors ${
-                          chatId === chat.id
-                            ? "bg-primary text-primary-foreground border-primary"
-                            : "bg-muted border-border hover:bg-muted/80"
-                        }`}
-                      >
-                        <div className="flex items-center space-x-3">
-                          <div className="w-8 h-8 rounded-lg bg-muted border border-border flex items-center justify-center">
+                        <div className="w-10 h-10 rounded-lg bg-muted/50 border border-border flex items-center justify-center">
+                          {chat.type === "group" ? (
+                            <Users className="w-5 h-5" />
+                          ) : (
                             <span className="font-semibold text-sm">
-                              {chat.type === "group"
-                                ? "👥"
-                                : chat.participant_usernames
-                                    ?.find(
-                                      (username) => username !== user.username,
-                                    )
-                                    ?.charAt(0)
-                                    .toUpperCase()}
+                              {chat.participant_usernames
+                                ?.find((username) => username !== user.username)
+                                ?.charAt(0)
+                                .toUpperCase()}
                             </span>
-                          </div>
-                          <div className="flex-1 min-w-0">
+                          )}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center justify-between">
                             <p className="font-medium truncate">
                               {chat.type === "group"
                                 ? chat.name || "Group Chat"
@@ -760,455 +554,281 @@ export default function Chat() {
                                     (username) => username !== user.username,
                                   )}
                             </p>
-                            {chat.last_message && (
-                              <p className="text-xs opacity-70 truncate">
-                                {chat.last_message.content}
-                              </p>
+                            {chat.unread_count > 0 && (
+                              <Badge variant="destructive" className="text-xs h-5 px-1.5">
+                                {chat.unread_count}
+                              </Badge>
                             )}
                           </div>
-                          {chat.unread_count > 0 && (
-                            <Badge variant="destructive" className="text-xs">
-                              {chat.unread_count}
-                            </Badge>
+                          {chat.last_message && (
+                            <p className="text-xs opacity-70 truncate">
+                              {chat.last_message.content}
+                            </p>
                           )}
                         </div>
-                      </Link>
-                    ))}
-
-                    {chats.length === 0 && (
-                      <div className="text-center py-4">
-                        <p className="text-sm text-muted-foreground">
-                          No chats yet. Click the + button to start a
-                          conversation!
-                        </p>
                       </div>
-                    )}
-                  </div>
-                </ScrollArea>
-              </CardContent>
-            </Card>
+                    </Link>
+                  ))}
+
+                  {chats.length === 0 && (
+                    <div className="text-center py-8">
+                      <p className="text-sm text-muted-foreground">
+                        No chats yet. Click the + button to start!
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </ScrollArea>
+            </div>
           </div>
 
-          {/* Chat Messages Area */}
-          <div className="lg:col-span-3">
-            <Card className="minecraft-panel h-[600px] flex flex-col">
-              <CardHeader className="border-b">
-                {activeTab === "general" ? (
-                  <div>
-                    <CardTitle className="flex items-center space-x-2">
-                      <span className="text-2xl">#</span>
-                      <span>General Chat</span>
-                    </CardTitle>
-                  </div>
-                ) : currentChat ? (
-                  <div className="flex items-center justify-between">
+          {/* Main Chat Area */}
+          <div className="flex-1 flex flex-col bg-background">
+            {/* Chat Header */}
+            <div className="p-4 border-b border-border bg-card/20 backdrop-blur-sm">
+              {activeTab === "general" ? (
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-3">
+                    <div className="w-10 h-10 rounded-lg bg-gradient-to-r from-blue-500 to-purple-500 flex items-center justify-center">
+                      <Hash className="w-5 h-5 text-white" />
+                    </div>
                     <div>
-                      <CardTitle className="flex items-center space-x-2">
-                        <span>
+                      <h3 className="font-semibold">General Chat</h3>
+                      <p className="text-sm text-muted-foreground">Community discussion</p>
+                    </div>
+                  </div>
+                </div>
+              ) : currentChat ? (
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-3">
+                    <div className="w-10 h-10 rounded-lg bg-muted/50 border border-border flex items-center justify-center">
+                      {currentChat.type === "group" ? (
+                        <Users className="w-5 h-5" />
+                      ) : (
+                        <span className="font-semibold text-sm">
+                          {currentChat.participant_usernames
+                            ?.find((username) => username !== user.username)
+                            ?.charAt(0)
+                            .toUpperCase()}
+                        </span>
+                      )}
+                    </div>
+                    <div>
+                      <div className="flex items-center space-x-2">
+                        <h3 className="font-semibold">
                           {currentChat.type === "group"
                             ? currentChat.name || "Group Chat"
                             : currentChat.participant_usernames?.find(
                                 (username) => username !== user.username,
                               )}
-                        </span>
+                        </h3>
                         {currentChat.type === "group" && (
-                          <Badge variant="outline">Group</Badge>
+                          <Badge variant="outline" className="text-xs">
+                            Group
+                          </Badge>
                         )}
-                      </CardTitle>
-                      <CardDescription>
+                      </div>
+                      <p className="text-sm text-muted-foreground">
                         {currentChat.type === "group"
                           ? `${currentChat.participant_usernames?.length || 0} members`
-                          : "Direct message conversation"}
-                      </CardDescription>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      {!isInCall ? (
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={handleStartCall}
-                        >
-                          📞 Call
-                        </Button>
-                      ) : (
-                        <Button
-                          size="sm"
-                          variant="destructive"
-                          onClick={handleEndCall}
-                        >
-                          📞 End Call
-                        </Button>
-                      )}
-                      {currentChat.type === "group" && (
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button size="sm" variant="outline">
-                              ⚙️
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent>
-                            <DropdownMenuItem
-                              onClick={handleLeaveGroup}
-                              className="text-red-600"
-                            >
-                              Leave Group
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      )}
+                          : "Direct message"}
+                      </p>
                     </div>
                   </div>
-                ) : (
-                  <div>
-                    <CardTitle>Select a Chat</CardTitle>
-                    <CardDescription>
-                      Choose a conversation or start chatting in General
-                    </CardDescription>
+                  <div className="flex items-center space-x-2">
+                    {!isInCall ? (
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={handleStartCall}
+                        className="hover:bg-green-500/10 hover:text-green-400"
+                      >
+                        <Phone className="w-4 h-4" />
+                      </Button>
+                    ) : (
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={handleEndCall}
+                        className="hover:bg-red-500/10 hover:text-red-400"
+                      >
+                        <PhoneOff className="w-4 h-4" />
+                      </Button>
+                    )}
+                    {currentChat.type === "group" && (
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button size="sm" variant="ghost">
+                            <Settings className="w-4 h-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent>
+                          <DropdownMenuItem onClick={handleLeaveGroup} className="text-red-600">
+                            Leave Group
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    )}
                   </div>
-                )}
-              </CardHeader>
+                </div>
+              ) : (
+                <div className="text-center">
+                  <h3 className="font-semibold">Select a Chat</h3>
+                  <p className="text-sm text-muted-foreground">
+                    Choose a conversation or start chatting in General
+                  </p>
+                </div>
+              )}
+            </div>
 
-              <CardContent className="flex-1 flex flex-col p-0">
-                {/* Messages Area */}
-                <ScrollArea className="flex-1 p-4">
-                  <div className="space-y-4">
-                    {activeTab === "general" ? (
-                      generalMessages.map((message) => (
-                        <div
-                          key={message.id}
-                          className="flex items-start space-x-3"
-                        >
-                          <div className="w-8 h-8 rounded-lg bg-muted border border-border flex items-center justify-center flex-shrink-0">
-                            <span className="font-semibold text-sm">
-                              {message.senderUsername.charAt(0).toUpperCase()}
-                            </span>
-                          </div>
-                          <div className="flex-1">
-                            <div className="flex items-center space-x-2 mb-1">
-                              <button
-                                onClick={() =>
-                                  handleUserClick(
-                                    message.senderUsername,
-                                    message.senderId,
-                                  )
-                                }
-                                className="font-semibold text-sm hover:text-primary transition-colors cursor-pointer"
-                              >
-                                {message.senderUsername}
-                              </button>
-                              <span className="text-xs text-muted-foreground">
-                                {formatMessageTime(message.timestamp)}
-                              </span>
-                              {message.type === "system" && (
-                                <Badge variant="outline" className="text-xs">
-                                  System
-                                </Badge>
-                              )}
-                            </div>
-                            <p className="text-sm">{renderMessage(message)}</p>
-                          </div>
-                        </div>
-                      ))
-                    ) : messages.length > 0 ? (
-                      messages.map((message) => (
-                        <div
-                          key={message.id}
-                          className="flex items-start space-x-3"
-                        >
-                          <div className="w-8 h-8 rounded-lg bg-muted border border-border flex items-center justify-center flex-shrink-0">
-                            <span className="font-semibold text-sm">
-                              {message.sender_username.charAt(0).toUpperCase()}
-                            </span>
-                          </div>
-                          <div className="flex-1">
-                            <div className="flex items-center space-x-2 mb-1">
-                              <button
-                                onClick={() =>
-                                  handleUserClick(
-                                    message.sender_username,
-                                    message.sender_id,
-                                  )
-                                }
-                                className="font-semibold text-sm hover:text-primary transition-colors cursor-pointer"
-                              >
-                                {message.sender_username}
-                              </button>
-                              <span className="text-xs text-muted-foreground">
-                                {formatMessageTime(message.created_at)}
-                              </span>
-                              {message.edited_at && (
-                                <Badge variant="outline" className="text-xs">
-                                  Edited
-                                </Badge>
-                              )}
-                              <button
-                                onClick={() =>
-                                  handlePingUser(message.sender_username)
-                                }
-                                className="text-xs text-muted-foreground hover:text-primary transition-colors"
-                                title="Ping this user"
-                              >
-                                @
-                              </button>
-                            </div>
-                            {editingMessageId === message.id ? (
-                              <div className="flex items-center space-x-2">
-                                <Input
-                                  value={editingContent}
-                                  onChange={(e) =>
-                                    setEditingContent(e.target.value)
-                                  }
-                                  className="flex-1"
-                                  autoFocus
-                                />
-                                <Button
-                                  size="sm"
-                                  onClick={() =>
-                                    handleEditMessage(
-                                      message.id,
-                                      editingContent,
-                                    )
-                                  }
-                                >
-                                  Save
-                                </Button>
-                                <Button
-                                  size="sm"
-                                  variant="outline"
-                                  onClick={() => {
-                                    setEditingMessageId(null);
-                                    setEditingContent("");
-                                  }}
-                                >
-                                  Cancel
-                                </Button>
-                              </div>
-                            ) : (
-                              <div className="flex items-center justify-between group">
-                                <p className="text-sm">
-                                  {renderMessage(message)}
-                                </p>
-                                {message.sender_id === user.id && (
-                                  <DropdownMenu>
-                                    <DropdownMenuTrigger asChild>
-                                      <Button
-                                        size="sm"
-                                        variant="ghost"
-                                        className="opacity-0 group-hover:opacity-100 transition-opacity"
-                                      >
-                                        •••
-                                      </Button>
-                                    </DropdownMenuTrigger>
-                                    <DropdownMenuContent>
-                                      <DropdownMenuItem
-                                        onClick={() => {
-                                          setEditingMessageId(message.id);
-                                          setEditingContent(message.content);
-                                        }}
-                                      >
-                                        Edit
-                                      </DropdownMenuItem>
-                                      <DropdownMenuItem
-                                        onClick={() =>
-                                          handleDeleteMessage(message.id)
-                                        }
-                                        className="text-red-600"
-                                      >
-                                        Delete
-                                      </DropdownMenuItem>
-                                    </DropdownMenuContent>
-                                  </DropdownMenu>
-                                )}
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                      ))
-                    ) : activeTab === "direct" ? (
-                      <div className="text-center py-8">
-                        <p className="text-muted-foreground">
-                          No messages yet. Start the conversation!
-                        </p>
+            {/* Messages Area */}
+            <ScrollArea className="flex-1 p-4">
+              <div className="space-y-4">
+                {activeTab === "general" ? (
+                  generalMessages.map((message) => (
+                    <div key={message.id} className="flex items-start space-x-3">
+                      <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0">
+                        <span className="text-sm font-semibold">
+                          {message.username.charAt(0).toUpperCase()}
+                        </span>
                       </div>
-                    ) : null}
-
-                    {/* Typing Indicators */}
-                    {typingUsers[chatId || ""]?.length > 0 &&
-                      activeTab === "direct" && (
-                        <div className="flex items-center space-x-2 text-sm text-muted-foreground">
-                          <div className="flex space-x-1">
-                            <div className="w-1 h-1 bg-current rounded-full animate-bounce"></div>
-                            <div
-                              className="w-1 h-1 bg-current rounded-full animate-bounce"
-                              style={{ animationDelay: "0.1s" }}
-                            ></div>
-                            <div
-                              className="w-1 h-1 bg-current rounded-full animate-bounce"
-                              style={{ animationDelay: "0.2s" }}
-                            ></div>
-                          </div>
-                          <span>
-                            {typingUsers[chatId || ""]
-                              ?.map((u) => u.username)
-                              .join(", ")}{" "}
-                            {typingUsers[chatId || ""]?.length === 1
-                              ? "is"
-                              : "are"}{" "}
-                            typing...
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center space-x-2 mb-1">
+                          <span className="font-medium text-sm">{message.username}</span>
+                          <span className="text-xs text-muted-foreground">
+                            {formatTime(message.timestamp)}
                           </span>
                         </div>
-                      )}
-
-                    <div ref={messagesEndRef} />
-                  </div>
-                </ScrollArea>
-
-                {/* Message Input */}
-                <div className="border-t p-4">
-                  <form
-                    onSubmit={handleSendMessage}
-                    className="flex items-center space-x-2"
-                  >
-                    <Input
-                      value={messageContent}
-                      onChange={(e) => {
-                        setMessageContent(e.target.value);
-                        handleTyping();
-                      }}
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter" && !e.shiftKey) {
-                          e.preventDefault();
-                          handleSendMessage(e);
-                        }
-                      }}
-                      placeholder={
-                        activeTab === "general"
-                          ? "Message the community... (Use @username to ping someone)"
-                          : currentChat
-                            ? `Message ${currentChat.type === "group" ? "the group" : currentChat.participant_usernames?.find((username) => username !== user.username)}... (Use @username to ping)`
-                            : "Select a chat to start messaging..."
-                      }
-                      disabled={!currentChat && activeTab === "direct"}
-                      className="flex-1"
-                      autoComplete="off"
-                    />
-                    <Button
-                      type="submit"
-                      disabled={
-                        !messageContent.trim() ||
-                        (!currentChat && activeTab === "direct")
-                      }
-                      className="bg-primary text-primary-foreground hover:bg-primary/90 min-w-[60px]"
-                    >
-                      Send
-                    </Button>
-                  </form>
-                  {isInCall && (
-                    <div className="mt-2 text-xs text-muted-foreground text-center">
-                      🎧 Voice call active • {callParticipants.length}{" "}
-                      participants
+                        <p className="text-sm">{message.content}</p>
+                      </div>
                     </div>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-
-        {/* Mini Profile Popup */}
-        <Dialog open={showMiniProfile} onOpenChange={setShowMiniProfile}>
-          <DialogContent className="minecraft-panel max-w-md">
-            <DialogHeader>
-              <DialogTitle className="flex items-center space-x-3">
-                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary/30 to-primary/10 flex items-center justify-center ring-2 ring-primary/20">
-                  <span className="font-bold text-primary">
-                    {selectedUser?.username?.charAt(0).toUpperCase()}
-                  </span>
-                </div>
-                <div>
-                  <p className="text-lg font-semibold">
-                    {selectedUser?.username}
-                  </p>
-                  <div className="flex items-center space-x-2 text-sm">
-                    <div
-                      className={`w-2 h-2 rounded-full ${selectedUser?.isOnline ? "bg-green-500" : "bg-gray-500"}`}
-                    ></div>
-                    <span className="text-muted-foreground">
-                      {selectedUser?.isOnline ? "Online" : "Offline"}
-                    </span>
-                  </div>
-                </div>
-              </DialogTitle>
-            </DialogHeader>
-
-            {selectedUser && (
-              <div className="space-y-4">
-                {selectedUser.bio && (
-                  <div>
-                    <h4 className="font-semibold mb-1">About</h4>
-                    <p className="text-sm text-muted-foreground">
-                      {selectedUser.bio}
-                    </p>
-                  </div>
+                  ))
+                ) : (
+                  currentMessages.map((message) => (
+                    <div key={message.id} className="flex items-start space-x-3">
+                      <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0">
+                        <span className="text-sm font-semibold">
+                          {message.sender_username.charAt(0).toUpperCase()}
+                        </span>
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center space-x-2 mb-1">
+                          <span className="font-medium text-sm">{message.sender_username}</span>
+                          <span className="text-xs text-muted-foreground">
+                            {formatTime(message.timestamp)}
+                          </span>
+                          {message.sender_username === user.username && (
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <Button size="sm" variant="ghost" className="h-5 w-5 p-0">
+                                  ⋯
+                                </Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent>
+                                <DropdownMenuItem
+                                  onClick={() => {
+                                    setEditingMessageId(message.id);
+                                    setEditingContent(message.content);
+                                  }}
+                                >
+                                  Edit
+                                </DropdownMenuItem>
+                                <DropdownMenuItem
+                                  onClick={() => handleDeleteMessage(message.id)}
+                                  className="text-red-600"
+                                >
+                                  Delete
+                                </DropdownMenuItem>
+                              </DropdownMenuContent>
+                            </DropdownMenu>
+                          )}
+                        </div>
+                        {editingMessageId === message.id ? (
+                          <form
+                            onSubmit={(e) => {
+                              e.preventDefault();
+                              handleEditMessage(message.id, editingContent);
+                            }}
+                            className="space-y-2"
+                          >
+                            <Input
+                              value={editingContent}
+                              onChange={(e) => setEditingContent(e.target.value)}
+                              className="text-sm"
+                            />
+                            <div className="flex space-x-2">
+                              <Button type="submit" size="sm">
+                                Save
+                              </Button>
+                              <Button
+                                type="button"
+                                size="sm"
+                                variant="outline"
+                                onClick={() => {
+                                  setEditingMessageId(null);
+                                  setEditingContent("");
+                                }}
+                              >
+                                Cancel
+                              </Button>
+                            </div>
+                          </form>
+                        ) : (
+                          <p className="text-sm">{message.content}</p>
+                        )}
+                      </div>
+                    </div>
+                  ))
                 )}
+                <div ref={messagesEndRef} />
+              </div>
+            </ScrollArea>
 
-                <div className="grid grid-cols-3 gap-4 text-center">
-                  <div>
-                    <div className="text-lg font-bold text-primary">
-                      {selectedUser.followers}
-                    </div>
-                    <div className="text-xs text-muted-foreground">
-                      Followers
-                    </div>
-                  </div>
-                  <div>
-                    <div className="text-lg font-bold text-primary">
-                      {selectedUser.following}
-                    </div>
-                    <div className="text-xs text-muted-foreground">
-                      Following
-                    </div>
-                  </div>
-                  <div>
-                    <div className="text-lg font-bold text-primary">
-                      {selectedUser.totalVideos}
-                    </div>
-                    <div className="text-xs text-muted-foreground">Videos</div>
-                  </div>
-                </div>
-
-                <div className="flex items-center space-x-2">
-                  <Button
-                    onClick={() => handleAddFriend(selectedUser.username)}
-                    disabled={selectedUser.isFriend}
-                    className="flex-1"
-                    variant={selectedUser.isFriend ? "outline" : "default"}
-                  >
-                    {selectedUser.isFriend ? "✓ Friends" : "➕ Add Friend"}
-                  </Button>
-                  <Button
-                    onClick={() => handleBlockUser(selectedUser.username)}
-                    variant="destructive"
-                    className="flex-1"
-                  >
-                    🚫 Block
-                  </Button>
-                </div>
-
-                <div className="flex items-center justify-center">
-                  <Link
-                    to={`/profile/user/${selectedUser.username}`}
-                    onClick={() => setShowMiniProfile(false)}
-                  >
-                    <Button variant="outline" size="sm">
-                      👤 View Full Profile
-                    </Button>
-                  </Link>
-                </div>
+            {/* Typing Indicator */}
+            {activeTab === "direct" && chatId && typingUsers[chatId]?.length > 0 && (
+              <div className="px-4 py-2 border-t border-border">
+                <p className="text-sm text-muted-foreground">
+                  {typingUsers[chatId].join(", ")} {typingUsers[chatId].length === 1 ? "is" : "are"} typing...
+                </p>
               </div>
             )}
-          </DialogContent>
-        </Dialog>
+
+            {/* Message Input */}
+            <div className="p-4 border-t border-border bg-card/20 backdrop-blur-sm">
+              <form onSubmit={handleSendMessage} className="flex space-x-2">
+                <Input
+                  value={messageContent}
+                  onChange={(e) => {
+                    setMessageContent(e.target.value);
+                    handleTyping();
+                  }}
+                  placeholder={
+                    activeTab === "general"
+                      ? "Message #general..."
+                      : currentChat
+                      ? `Message ${
+                          currentChat.type === "group"
+                            ? currentChat.name || "group"
+                            : currentChat.participant_usernames?.find(
+                                (username) => username !== user.username,
+                              )
+                        }...`
+                      : "Select a chat to start messaging..."
+                  }
+                  disabled={!activeTab || (activeTab === "direct" && !chatId)}
+                  className="flex-1"
+                />
+                <Button
+                  type="submit"
+                  disabled={!messageContent.trim() || (!activeTab || (activeTab === "direct" && !chatId))}
+                  size="sm"
+                >
+                  <Send className="w-4 h-4" />
+                </Button>
+              </form>
+            </div>
+          </div>
+        </div>
       </div>
     </UserLayout>
   );
