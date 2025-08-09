@@ -185,8 +185,12 @@ export default function Dashboard() {
               return;
             }
             console.warn("Failed to parse servers response:", error);
-            if (isMounted) {
-              setTopServers([]);
+            if (isMounted && !abortController.signal.aborted) {
+              try {
+                setTopServers([]);
+              } catch (e) {
+                // Ignore any errors during state updates
+              }
             }
           }
         } else {
