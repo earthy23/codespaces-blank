@@ -131,17 +131,56 @@ app.use("/api/auth/register", authLimiter);
 // Compression
 app.use(compression());
 
-// CORS configuration
+// Dynamic CORS configuration for multiple domains
 app.use(
   cors({
-    origin: process.env.FRONTEND_URL || [
-      "http://localhost:3000",
-      "http://localhost:5173",
-      "http://localhost:8080",
-      "https://7b10610db8d44756a9e9dc629f6481f1-30e9842434a9496282981b9c3.fly.dev",
-    ],
+    origin: (origin, callback) => {
+      // Allow requests with no origin (mobile apps, curl, etc.)
+      if (!origin) return callback(null, true);
+
+      // Build allowed origins dynamically
+      const allowedOrigins = [
+        "http://localhost:3000",
+        "http://localhost:5173",
+        "http://localhost:8080",
+        "https://localhost:3000",
+        "https://localhost:5173",
+        "https://localhost:8080",
+        "https://ueclub.com",
+        "https://www.ueclub.com",
+        "https://play.ueclub.com",
+        "https://api.ueclub.com",
+        "https://admin.ueclub.com",
+        "http://ueclub.com",
+        "http://www.ueclub.com",
+        "http://play.ueclub.com",
+        "http://api.ueclub.com",
+        "http://admin.ueclub.com",
+        "https://7b10610db8d44756a9e9dc629f6481f1-30e9842434a9496282981b9c3.fly.dev",
+      ];
+
+      // Add environment-specific origin if provided
+      if (process.env.FRONTEND_URL) {
+        allowedOrigins.push(process.env.FRONTEND_URL);
+      }
+
+      // Check if origin is allowed or matches domain patterns
+      const isAllowed = allowedOrigins.includes(origin) ||
+                       origin.includes('ueclub.com') ||
+                       origin.includes('localhost') ||
+                       origin.includes('fly.dev');
+
+      if (isAllowed) {
+        callback(null, true);
+      } else {
+        console.log(`CORS: Rejected origin: ${origin}`);
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
     credentials: true,
     optionsSuccessStatus: 200,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin'],
   }),
 );
 
