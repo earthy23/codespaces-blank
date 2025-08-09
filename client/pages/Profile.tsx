@@ -278,7 +278,6 @@ export default function Profile() {
       // In a real app, you'd upload to a server here
       const fakeUrl = URL.createObjectURL(file);
       setFormData((prev) => ({ ...prev, avatar: fakeUrl }));
-      setShowAvatarDialog(false);
 
       toast({
         title: "Avatar Updated",
