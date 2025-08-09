@@ -499,25 +499,112 @@ export default function Community() {
                   </TabsList>
 
                   <TabsContent value="trending">
-                    <div className="text-center py-16">
-                      <div className="max-w-md mx-auto">
-                        <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center">
-                          <Video className="w-10 h-10 text-primary" />
-                        </div>
-                        <h3 className="text-2xl font-semibold mb-3">No videos yet</h3>
-                        <p className="text-muted-foreground mb-6 text-lg">
-                          Be the first to upload content to the community!
-                        </p>
-                        <Button
-                          onClick={() => setShowUploadDialog(true)}
-                          size="lg"
-                          className="bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70"
-                        >
-                          <Upload className="w-5 h-5 mr-2" />
-                          Upload First Video
-                        </Button>
+                    {filteredVideos.length > 0 ? (
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {filteredVideos.map((video) => (
+                          <Card
+                            key={video.id}
+                            className="group minecraft-panel hover:shadow-xl hover:shadow-primary/20 hover:-translate-y-1 transition-all duration-300 bg-card/80 backdrop-blur-sm border-border/40 cursor-pointer"
+                          >
+                            <div className="relative overflow-hidden rounded-t-lg">
+                              <img
+                                src={video.thumbnail}
+                                alt={video.title}
+                                className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
+                              />
+                              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                              <Badge className="absolute bottom-3 right-3 bg-black/80 text-white border-0 backdrop-blur-sm">
+                                {video.duration}
+                              </Badge>
+                              <div className="absolute top-3 left-3">
+                                <Badge
+                                  variant="secondary"
+                                  className="bg-primary/20 text-primary border-0"
+                                >
+                                  HD
+                                </Badge>
+                              </div>
+                            </div>
+                            <CardContent className="p-4">
+                              <h3 className="font-semibold text-lg mb-2 line-clamp-2 group-hover:text-primary transition-colors">
+                                {video.title}
+                              </h3>
+                              <div className="flex items-center space-x-3 mb-3">
+                                <Link to={`/profile/${video.author}`}>
+                                  <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center ring-2 ring-primary/20 hover:ring-primary/40 transition-all">
+                                    <span className="text-sm font-bold text-primary">
+                                      {video.author.charAt(0).toUpperCase()}
+                                    </span>
+                                  </div>
+                                </Link>
+                                <div>
+                                  <Link
+                                    to={`/profile/${video.author}`}
+                                    className="text-sm font-medium hover:text-primary transition-colors block"
+                                  >
+                                    {video.author}
+                                  </Link>
+                                  <p className="text-xs text-muted-foreground">
+                                    Content Creator
+                                  </p>
+                                </div>
+                              </div>
+                              <div className="flex items-center justify-between text-sm text-muted-foreground mb-3">
+                                <span className="flex items-center gap-1">
+                                  👁️ {formatNumber(video.views)} views
+                                </span>
+                                <span>{formatTimeAgo(video.createdAt)}</span>
+                              </div>
+                              <div className="flex items-center justify-between mb-3">
+                                <div className="flex items-center space-x-2">
+                                  <Button
+                                    size="sm"
+                                    variant={video.liked ? "default" : "outline"}
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      handleLike(video.id, !video.liked);
+                                    }}
+                                    className="text-xs h-8"
+                                  >
+                                    👍 {formatNumber(video.likes)}
+                                  </Button>
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    className="text-xs h-8"
+                                  >
+                                    👎 {formatNumber(video.dislikes)}
+                                  </Button>
+                                </div>
+                              </div>
+                              <div className="flex flex-wrap gap-1">
+                                {video.tags.slice(0, 3).map((tag) => (
+                                  <Badge
+                                    key={tag}
+                                    variant="secondary"
+                                    className="text-xs bg-muted/50 hover:bg-muted transition-colors cursor-pointer"
+                                  >
+                                    #{tag}
+                                  </Badge>
+                                ))}
+                              </div>
+                            </CardContent>
+                          </Card>
+                        ))}
                       </div>
-                    </div>
+                    ) : (
+                      <div className="text-center py-16">
+                        <div className="max-w-md mx-auto">
+                          <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center">
+                            <Video className="w-10 h-10 text-primary" />
+                          </div>
+                          <h3 className="text-2xl font-semibold mb-3">No videos found</h3>
+                          <p className="text-muted-foreground mb-6 text-lg">
+                            Try adjusting your search or check back later!
+                          </p>
+                        </div>
+                      </div>
+                    )}
                   </TabsContent>
 
                   <TabsContent value="recent">
