@@ -214,8 +214,12 @@ export default function Dashboard() {
         }
 
         console.warn("Failed to fetch servers:", error.message);
-        if (isMounted) {
-          setTopServers([]);
+        if (isMounted && !abortController.signal.aborted) {
+          try {
+            setTopServers([]);
+          } catch (e) {
+            // Ignore any errors during state updates
+          }
         }
       }
 
