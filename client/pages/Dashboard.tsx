@@ -241,8 +241,12 @@ export default function Dashboard() {
         }
 
         console.warn("Failed to fetch partners:", error.message);
-        if (isMounted) {
-          setPartners([]);
+        if (isMounted && !abortController.signal.aborted) {
+          try {
+            setPartners([]);
+          } catch (e) {
+            // Ignore any errors during state updates
+          }
         }
       }
 
