@@ -137,7 +137,6 @@ export default function SettingsAdmin() {
           <Card className="bg-gray-900 border-gray-700">
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
-                <Globe className="w-5 h-5 text-gray-400" />
                 <span className="text-white">General Settings</span>
               </CardTitle>
               <CardDescription className="text-gray-400">
@@ -203,7 +202,6 @@ export default function SettingsAdmin() {
           <Card className="bg-gray-900 border-gray-700">
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
-                <Users className="w-5 h-5 text-gray-400" />
                 <span className="text-white">User & Access Settings</span>
               </CardTitle>
               <CardDescription className="text-gray-400">
@@ -280,7 +278,6 @@ export default function SettingsAdmin() {
           <Card className="bg-gray-900 border-gray-700">
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
-                <MessageCircle className="w-5 h-5 text-gray-400" />
                 <span className="text-white">Communication Settings</span>
               </CardTitle>
               <CardDescription className="text-gray-400">
@@ -329,7 +326,6 @@ export default function SettingsAdmin() {
           <Card className="bg-gray-900 border-gray-700">
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
-                <Shield className="w-5 h-5 text-gray-400" />
                 <span className="text-white">Security & Performance</span>
               </CardTitle>
               <CardDescription className="text-gray-400">
