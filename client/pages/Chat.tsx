@@ -884,6 +884,42 @@ export default function Chat() {
             {/* Message Input */}
             <div className="p-4 border-t border-border bg-card/20 backdrop-blur-sm">
               <form onSubmit={handleSendMessage} className="flex space-x-2">
+                {/* File Upload Button */}
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    // Placeholder for file upload
+                    toast({
+                      title: "File Upload",
+                      description: "File upload feature - Coming Soon!",
+                    });
+                  }}
+                  disabled={!activeTab || (activeTab === "direct" && !chatId)}
+                  className="px-2"
+                >
+                  📎
+                </Button>
+
+                {/* Voice Call Button */}
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    // Placeholder for voice call
+                    toast({
+                      title: "Voice Call",
+                      description: "Voice call feature - Coming Soon!",
+                    });
+                  }}
+                  disabled={!activeTab || (activeTab === "direct" && !chatId)}
+                  className="px-2"
+                >
+                  🎤
+                </Button>
+
                 <Input
                   value={messageContent}
                   onChange={(e) => {
