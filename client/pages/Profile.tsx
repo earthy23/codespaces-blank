@@ -23,10 +23,10 @@ import {
   EyeOff,
   Users,
   Video,
-  Heart,
   Calendar,
+  Play,
 } from "lucide-react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, Link } from "react-router-dom";
 import { useAuth } from "@/lib/auth";
 import { useToast } from "@/hooks/use-toast";
 import { useEffect, useState } from "react";
@@ -37,9 +37,9 @@ interface ProfileVideo {
   title: string;
   thumbnail: string;
   views: number;
-  likes: number;
   createdAt: string;
   duration: string;
+  slug: string;
 }
 
 interface ProfileUser {
@@ -52,7 +52,6 @@ interface ProfileUser {
   following: number;
   totalVideos: number;
   totalViews: number;
-  totalLikes: number;
   isFollowing?: boolean;
   role?: string;
 }
@@ -67,7 +66,7 @@ export default function Profile() {
   const [userVideos, setUserVideos] = useState<ProfileVideo[]>([]);
   const [isOwnProfile, setIsOwnProfile] = useState(true);
   const [isLoadingProfile, setIsLoadingProfile] = useState(false);
-  const [activeTab, setActiveTab] = useState("videos");
+  const [activeTab, setActiveTab] = useState("video");
 
   const [formData, setFormData] = useState({
     username: "",
@@ -124,9 +123,8 @@ export default function Profile() {
         joinedAt: user.createdAt || new Date().toISOString(),
         followers: 0,
         following: 0,
-        totalVideos: 0,
+        totalVideos: 3,
         totalViews: 0,
-        totalLikes: 0,
         role: user.role,
       });
       loadUserVideos(user.id);
@@ -153,9 +151,8 @@ export default function Profile() {
         joinedAt: new Date(Date.now() - 31536000000).toISOString(), // 1 year ago
         followers: Math.floor(Math.random() * 2000) + 500,
         following: Math.floor(Math.random() * 500) + 50,
-        totalVideos: Math.floor(Math.random() * 50) + 5,
+        totalVideos: 3,
         totalViews: Math.floor(Math.random() * 100000) + 10000,
-        totalLikes: Math.floor(Math.random() * 5000) + 500,
         isFollowing: false,
       };
 
@@ -174,32 +171,32 @@ export default function Profile() {
 
   const loadUserVideos = async (targetUserId: string) => {
     try {
-      // Placeholder videos for testing
+      // Placeholder videos for testing with proper slugs
       const placeholderVideos: ProfileVideo[] = [
         {
           id: "1",
+          slug: "epic-castle-build-tutorial",
           title: "My Epic Build Showcase",
           thumbnail: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=320&h=180&fit=crop",
           views: 2400,
-          likes: 156,
           createdAt: new Date(Date.now() - 86400000).toISOString(),
           duration: "8:32",
         },
         {
           id: "2",
+          slug: "redstone-computer-build",
           title: "Tutorial: Advanced Redstone",
           thumbnail: "https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=320&h=180&fit=crop",
           views: 1890,
-          likes: 234,
           createdAt: new Date(Date.now() - 172800000).toISOString(),
           duration: "15:45",
         },
         {
           id: "3",
+          slug: "modern-house-speed-build",
           title: "Server Tour & Review",
           thumbnail: "https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=320&h=180&fit=crop",
           views: 3200,
-          likes: 189,
           createdAt: new Date(Date.now() - 259200000).toISOString(),
           duration: "12:18",
         },
@@ -422,14 +419,14 @@ export default function Profile() {
                         }
                         className="min-w-[140px]"
                       >
-                        {profileUser.isFollowing ? "✓ Following" : "➕ Follow"}
+                        {profileUser.isFollowing ? "Following" : "Follow"}
                       </Button>
                       <Button
                         size="lg"
                         variant="outline"
                         className="min-w-[100px]"
                       >
-                        💬 Message
+                        Message
                       </Button>
                     </>
                   ) : (
@@ -467,71 +464,66 @@ export default function Profile() {
         {/* Content Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab}>
           <TabsList className={`grid w-full ${isOwnProfile ? 'grid-cols-3' : 'grid-cols-2'}`}>
-            <TabsTrigger value="videos">
-              ---
+            <TabsTrigger value="video" className="flex items-center space-x-2">
+              <Video className="w-4 h-4" />
+              <span>Video</span>
             </TabsTrigger>
-            <TabsTrigger value="bio">
-              ---
+            <TabsTrigger value="bio" className="flex items-center space-x-2">
+              <User className="w-4 h-4" />
+              <span>Bio</span>
             </TabsTrigger>
             {isOwnProfile && (
-              <TabsTrigger value="settings">
-                ---
+              <TabsTrigger value="settings" className="flex items-center space-x-2">
+                <Settings className="w-4 h-4" />
+                <span>Settings</span>
               </TabsTrigger>
             )}
           </TabsList>
 
           {/* Videos Tab */}
-          <TabsContent value="videos" className="mt-8">
+          <TabsContent value="video" className="mt-8">
             {userVideos.length > 0 ? (
-              <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {userVideos.map((video) => (
                   <Card
                     key={video.id}
-                    className="group minecraft-panel hover:shadow-xl hover:shadow-primary/20 hover:-translate-y-1 transition-all duration-300 bg-card/80 backdrop-blur-sm border-border/40"
+                    className="group minecraft-panel hover:shadow-xl hover:shadow-primary/20 hover:-translate-y-1 transition-all duration-300 bg-card/80 backdrop-blur-sm border-border/40 cursor-pointer"
+                    onClick={() => navigate(`/video/${video.slug}`)}
                   >
-                    <div className="relative overflow-hidden rounded-t-lg">
-                      <img
-                        src={video.thumbnail}
-                        alt={video.title}
-                        className="w-full h-44 object-cover group-hover:scale-105 transition-transform duration-300"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
-                      <Badge className="absolute bottom-3 right-3 bg-black/80 text-white border-0 backdrop-blur-sm">
-                        {video.duration}
-                      </Badge>
-                      <div className="absolute top-3 left-3">
-                        <Badge
-                          variant="secondary"
-                          className="bg-primary/20 text-primary border-0"
-                        >
-                          HD
-                        </Badge>
-                      </div>
-                    </div>
                     <CardContent className="p-4">
-                      <h3 className="font-semibold text-base mb-3 line-clamp-2 group-hover:text-primary transition-colors">
-                        {video.title}
-                      </h3>
-                      <div className="flex items-center justify-between text-sm text-muted-foreground mb-3">
-                        <span className="flex items-center gap-1">
-                          👁️ {formatNumber(video.views)}
-                        </span>
-                        <span>{formatTimeAgo(video.createdAt)}</span>
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center space-x-2 text-sm">
-                          <Heart className="w-4 h-4 text-red-500" />
-                          <span className="font-medium">
-                            {formatNumber(video.likes)}
-                          </span>
+                      <div className="flex space-x-4">
+                        {/* Thumbnail */}
+                        <div className="relative flex-shrink-0">
+                          <img
+                            src={video.thumbnail}
+                            alt={video.title}
+                            className="w-32 h-20 object-cover rounded group-hover:scale-105 transition-transform duration-300"
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent rounded" />
+                          <Badge className="absolute bottom-1 right-1 bg-black/80 text-white border-0 backdrop-blur-sm text-xs">
+                            {video.duration}
+                          </Badge>
+                          <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                            <div className="w-8 h-8 bg-primary/80 rounded-full flex items-center justify-center">
+                              <Play className="w-4 h-4 text-white ml-0.5" />
+                            </div>
+                          </div>
                         </div>
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          className="h-8 w-8 p-0"
-                        >
-                          ▶️
-                        </Button>
+
+                        {/* Content */}
+                        <div className="flex-1 min-w-0">
+                          <h3 className="font-semibold text-base mb-2 line-clamp-2 group-hover:text-primary transition-colors">
+                            {video.title}
+                          </h3>
+                          
+                          <div className="flex items-center justify-between text-sm text-muted-foreground mb-2">
+                            <span className="flex items-center gap-1">
+                              <Eye className="w-4 h-4" />
+                              {formatNumber(video.views)} views
+                            </span>
+                            <span>{formatTimeAgo(video.createdAt)}</span>
+                          </div>
+                        </div>
                       </div>
                     </CardContent>
                   </Card>
@@ -599,16 +591,12 @@ export default function Profile() {
                       </span>
                     </div>
                     <div>
-                      <span className="text-muted-foreground">
-                        Total Likes:
-                      </span>
-                      <span className="ml-2">
-                        {formatNumber(profileUser.totalLikes)}
-                      </span>
-                    </div>
-                    <div>
                       <span className="text-muted-foreground">Videos:</span>
                       <span className="ml-2">{profileUser.totalVideos}</span>
+                    </div>
+                    <div>
+                      <span className="text-muted-foreground">Followers:</span>
+                      <span className="ml-2">{formatNumber(profileUser.followers)}</span>
                     </div>
                   </div>
                 </div>
