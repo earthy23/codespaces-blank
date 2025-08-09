@@ -412,7 +412,6 @@ export default function AnalyticsAdmin() {
       <AdminLayout>
         <Card className="bg-gray-900 border-gray-700">
           <CardContent className="p-8 text-center">
-            <BarChart3 className="w-16 h-16 mx-auto mb-4 text-gray-400" />
             <h2 className="text-xl font-bold mb-2 text-white">
               Error Loading Analytics
             </h2>
@@ -497,7 +496,6 @@ export default function AnalyticsAdmin() {
                   <CardTitle className="text-sm font-medium text-gray-400">
                     Total Users
                   </CardTitle>
-                  <Users className="h-4 w-4 text-gray-500" />
                 </CardHeader>
                 <CardContent>
                   <div className="text-2xl font-bold text-white">
@@ -517,7 +515,6 @@ export default function AnalyticsAdmin() {
                   <CardTitle className="text-sm font-medium text-gray-400">
                     Monthly Revenue
                   </CardTitle>
-                  <DollarSign className="h-4 w-4 text-gray-500" />
                 </CardHeader>
                 <CardContent>
                   <div className="text-2xl font-bold text-white">
@@ -537,7 +534,6 @@ export default function AnalyticsAdmin() {
                   <CardTitle className="text-sm font-medium text-gray-400">
                     Active Users
                   </CardTitle>
-                  <Activity className="h-4 w-4 text-gray-500" />
                 </CardHeader>
                 <CardContent>
                   <div className="text-2xl font-bold text-white">
@@ -562,7 +558,6 @@ export default function AnalyticsAdmin() {
                   <CardTitle className="text-sm font-medium text-gray-400">
                     Server Uptime
                   </CardTitle>
-                  <Server className="h-4 w-4 text-gray-500" />
                 </CardHeader>
                 <CardContent>
                   <div className="text-2xl font-bold text-white">
@@ -581,7 +576,6 @@ export default function AnalyticsAdmin() {
               <Card className="bg-gray-900 border-gray-700">
                 <CardHeader>
                   <CardTitle className="flex items-center space-x-2">
-                    <BarChart3 className="w-5 h-5 text-gray-400" />
                     <span className="text-white">Daily User Activity</span>
                   </CardTitle>
                 </CardHeader>
@@ -601,7 +595,6 @@ export default function AnalyticsAdmin() {
               <Card className="bg-gray-900 border-gray-700">
                 <CardHeader>
                   <CardTitle className="flex items-center space-x-2">
-                    <TrendingUp className="w-5 h-5 text-gray-400" />
                     <span className="text-white">Revenue Trend</span>
                   </CardTitle>
                 </CardHeader>
@@ -624,7 +617,6 @@ export default function AnalyticsAdmin() {
               <Card className="bg-gray-900 border-gray-700">
                 <CardHeader>
                   <CardTitle className="flex items-center space-x-2">
-                    <MessageCircle className="w-5 h-5 text-gray-400" />
                     <span className="text-white">Platform Activity</span>
                   </CardTitle>
                 </CardHeader>
@@ -655,7 +647,6 @@ export default function AnalyticsAdmin() {
               <Card className="bg-gray-900 border-gray-700">
                 <CardHeader>
                   <CardTitle className="flex items-center space-x-2">
-                    <ShoppingBag className="w-5 h-5 text-gray-400" />
                     <span className="text-white">Revenue Breakdown</span>
                   </CardTitle>
                 </CardHeader>
@@ -682,7 +673,6 @@ export default function AnalyticsAdmin() {
               <Card className="bg-gray-900 border-gray-700">
                 <CardHeader>
                   <CardTitle className="flex items-center space-x-2">
-                    <Zap className="w-5 h-5 text-gray-400" />
                     <span className="text-white">Performance Metrics</span>
                   </CardTitle>
                 </CardHeader>
