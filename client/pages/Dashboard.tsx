@@ -249,7 +249,9 @@ export default function Dashboard() {
       clearTimeout(timeoutId);
       // Silently abort without errors
       try {
-        abortController.abort();
+        if (!abortController.signal.aborted) {
+          abortController.abort();
+        }
       } catch (error) {
         // Ignore any errors during cleanup
       }
