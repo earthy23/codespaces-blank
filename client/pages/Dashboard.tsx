@@ -199,8 +199,12 @@ export default function Dashboard() {
         if (partnersResponse.ok) {
           try {
             const partnersData = await partnersResponse.json();
-            if (isMounted) {
-              setPartners(partnersData.partners || []);
+            if (isMounted && !abortController.signal.aborted) {
+              try {
+                setPartners(partnersData.partners || []);
+              } catch (e) {
+                // Ignore any errors during state updates
+              }
             }
           } catch (error) {
             // Silently handle abort errors during cleanup
