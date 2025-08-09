@@ -417,7 +417,6 @@ export default function NewsAdmin() {
               <CardTitle className="text-sm font-medium text-gray-400">
                 Total Articles
               </CardTitle>
-              <Newspaper className="h-4 w-4 text-gray-500" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-white">{stats.total}</div>
@@ -429,7 +428,6 @@ export default function NewsAdmin() {
               <CardTitle className="text-sm font-medium text-gray-400">
                 Published
               </CardTitle>
-              <Eye className="h-4 w-4 text-green-400" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-white">
@@ -443,7 +441,6 @@ export default function NewsAdmin() {
               <CardTitle className="text-sm font-medium text-gray-400">
                 Drafts
               </CardTitle>
-              <Edit className="h-4 w-4 text-yellow-400" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-white">
@@ -457,7 +454,6 @@ export default function NewsAdmin() {
               <CardTitle className="text-sm font-medium text-gray-400">
                 Archived
               </CardTitle>
-              <Calendar className="h-4 w-4 text-gray-400" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-white">
@@ -508,7 +504,6 @@ export default function NewsAdmin() {
                       </TableCell>
                       <TableCell className="text-gray-300">
                         <div className="flex items-center space-x-1">
-                          <User className="w-3 h-3" />
                           <span>{article.author}</span>
                         </div>
                       </TableCell>
