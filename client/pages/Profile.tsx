@@ -482,28 +482,85 @@ export default function Profile() {
 
           {/* Videos Tab */}
           <TabsContent value="videos" className="mt-8">
-            <div className="text-center py-16">
-              <div className="max-w-md mx-auto">
-                <div className="w-24 h-24 mx-auto mb-6 rounded-full bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center">
-                  <Video className="w-12 h-12 text-primary" />
-                </div>
-                <h3 className="text-2xl font-semibold mb-3">No videos yet</h3>
-                <p className="text-muted-foreground mb-6 text-lg">
-                  {isOwnProfile
-                    ? "Ready to share your creativity? Upload your first video to get started!"
-                    : `${profileUser.username} hasn't uploaded any videos yet.`}
-                </p>
-                {isOwnProfile && (
-                  <Button
-                    onClick={() => navigate("/community")}
-                    size="lg"
-                    className="bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70"
+            {userVideos.length > 0 ? (
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                {userVideos.map((video) => (
+                  <Card
+                    key={video.id}
+                    className="group minecraft-panel hover:shadow-xl hover:shadow-primary/20 hover:-translate-y-1 transition-all duration-300 bg-card/80 backdrop-blur-sm border-border/40"
                   >
-                    Upload Your First Video
-                  </Button>
-                )}
+                    <div className="relative overflow-hidden rounded-t-lg">
+                      <img
+                        src={video.thumbnail}
+                        alt={video.title}
+                        className="w-full h-44 object-cover group-hover:scale-105 transition-transform duration-300"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                      <Badge className="absolute bottom-3 right-3 bg-black/80 text-white border-0 backdrop-blur-sm">
+                        {video.duration}
+                      </Badge>
+                      <div className="absolute top-3 left-3">
+                        <Badge
+                          variant="secondary"
+                          className="bg-primary/20 text-primary border-0"
+                        >
+                          HD
+                        </Badge>
+                      </div>
+                    </div>
+                    <CardContent className="p-4">
+                      <h3 className="font-semibold text-base mb-3 line-clamp-2 group-hover:text-primary transition-colors">
+                        {video.title}
+                      </h3>
+                      <div className="flex items-center justify-between text-sm text-muted-foreground mb-3">
+                        <span className="flex items-center gap-1">
+                          👁️ {formatNumber(video.views)}
+                        </span>
+                        <span>{formatTimeAgo(video.createdAt)}</span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-2 text-sm">
+                          <Heart className="w-4 h-4 text-red-500" />
+                          <span className="font-medium">
+                            {formatNumber(video.likes)}
+                          </span>
+                        </div>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          className="h-8 w-8 p-0"
+                        >
+                          ▶️
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
               </div>
-            </div>
+            ) : (
+              <div className="text-center py-16">
+                <div className="max-w-md mx-auto">
+                  <div className="w-24 h-24 mx-auto mb-6 rounded-full bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center">
+                    <Video className="w-12 h-12 text-primary" />
+                  </div>
+                  <h3 className="text-2xl font-semibold mb-3">No videos yet</h3>
+                  <p className="text-muted-foreground mb-6 text-lg">
+                    {isOwnProfile
+                      ? "Ready to share your creativity? Upload your first video to get started!"
+                      : `${profileUser.username} hasn't uploaded any videos yet.`}
+                  </p>
+                  {isOwnProfile && (
+                    <Button
+                      onClick={() => navigate("/community")}
+                      size="lg"
+                      className="bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70"
+                    >
+                      Upload Your First Video
+                    </Button>
+                  )}
+                </div>
+              </div>
+            )}
           </TabsContent>
 
           {/* Bio Tab */}
