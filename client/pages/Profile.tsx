@@ -148,25 +148,17 @@ export default function Profile() {
     }
   }, [user, username, navigate]);
 
-  const loadUserProfile = async (targetIdentifier: string) => {
+  const loadUserProfile = async (username: string) => {
     try {
       setIsLoadingProfile(true);
 
       // In a real application, you would make an API call here
-      // The API would handle both userId and username lookups
-
-      // Mock data for demonstration - determine if it's a username or userId
-      const isUsername =
-        targetIdentifier.includes("/user/") ||
-        !targetIdentifier.match(/^[0-9]+$/);
-      const actualUsername = isUsername
-        ? targetIdentifier.replace("/user/", "")
-        : `User${targetIdentifier}`;
+      // For now, using mock data for demonstration
 
       const mockProfile: ProfileUser = {
-        id: isUsername ? `user_${actualUsername}` : targetIdentifier,
-        username: actualUsername,
-        bio: `${actualUsername} is a Minecraft enthusiast and content creator. Love building epic structures and sharing tutorials!`,
+        id: `user_${username}`,
+        username: username,
+        bio: `${username} is a Minecraft enthusiast and content creator. Love building epic structures and sharing tutorials!`,
         joinedAt: new Date(Date.now() - 31536000000).toISOString(), // 1 year ago
         followers: Math.floor(Math.random() * 2000) + 500,
         following: Math.floor(Math.random() * 500) + 50,
