@@ -250,8 +250,12 @@ export default function Dashboard() {
         }
       }
 
-      if (isMounted) {
-        setLoading(false);
+      if (isMounted && !abortController.signal.aborted) {
+        try {
+          setLoading(false);
+        } catch (e) {
+          // Ignore any errors during state updates
+        }
       }
     };
 
