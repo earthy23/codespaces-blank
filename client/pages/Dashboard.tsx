@@ -482,7 +482,6 @@ export default function Dashboard() {
           <Card className="minecraft-panel bg-card/20 backdrop-blur-sm border-border/40">
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
-                <Users className="w-5 h-5" />
                 <span>Friends Online</span>
                 {onlineFriends.length > 0 && (
                   <Badge className="bg-green-500 text-white">
