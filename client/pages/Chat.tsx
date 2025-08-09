@@ -473,29 +473,32 @@ export default function Chat() {
 
   return (
     <UserLayout>
-      <div className="max-w-6xl">
-        <div className="flex items-center justify-between mb-6">
+      <div className="h-[calc(100vh-120px)]">
+        {/* Header */}
+        <div className="flex items-center justify-between p-4 border-b border-border bg-card/50">
           <div>
-            <h1 className="text-3xl font-bold text-foreground">Chat</h1>
+            <h1 className="text-2xl font-bold text-foreground">Chat</h1>
           </div>
-          <div className="flex items-center space-x-4">
-            <div
-              className={`w-3 h-3 rounded-full ${isConnected ? "bg-green-500" : "bg-red-500"}`}
-            ></div>
-            <span className="text-sm font-medium">
-              {isConnected ? "Connected" : "Disconnected"}
-            </span>
+          <div className="flex items-center space-x-3">
+            <div className="flex items-center space-x-2">
+              <div
+                className={`w-2 h-2 rounded-full ${isConnected ? "bg-green-500" : "bg-red-500"}`}
+              ></div>
+              <span className="text-sm text-muted-foreground">
+                {isConnected ? "Online" : "Offline"}
+              </span>
+            </div>
             {isInCall && (
-              <div className="flex items-center space-x-2 bg-green-100 dark:bg-green-900 px-3 py-1 rounded-full">
+              <div className="flex items-center space-x-2 bg-green-500/10 border border-green-500/20 px-3 py-1 rounded-full">
                 <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                <span className="text-sm font-medium text-green-700 dark:text-green-300">
+                <span className="text-sm font-medium text-green-400">
                   In Call ({callParticipants.length})
                 </span>
                 <Button
                   size="sm"
                   variant="outline"
                   onClick={handleEndCall}
-                  className="h-6 px-2"
+                  className="h-6 px-2 border-green-500/20 hover:bg-green-500/10"
                 >
                   End
                 </Button>
