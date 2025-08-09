@@ -785,10 +785,10 @@ export default function Chat() {
             </ScrollArea>
 
             {/* Typing Indicator */}
-            {activeTab === "direct" && chatId && typingUsers[chatId]?.length > 0 && (
+            {activeTab === "direct" && chatId && (typingUsers[chatId] || []).length > 0 && (
               <div className="px-4 py-2 border-t border-border">
                 <p className="text-sm text-muted-foreground">
-                  {typingUsers[chatId].join(", ")} {typingUsers[chatId].length === 1 ? "is" : "are"} typing...
+                  {(typingUsers[chatId] || []).join(", ")} {(typingUsers[chatId] || []).length === 1 ? "is" : "are"} typing...
                 </p>
               </div>
             )}
