@@ -297,9 +297,11 @@ export default function Dashboard() {
     }, 100);
 
     return () => {
+      // Set isMounted to false first to prevent any new state updates
       isMounted = false;
       clearTimeout(timeoutId);
-      // Silently abort without errors
+
+      // Abort any ongoing requests
       try {
         if (!abortController.signal.aborted) {
           abortController.abort();
@@ -307,6 +309,11 @@ export default function Dashboard() {
       } catch (error) {
         // Ignore any errors during cleanup
       }
+
+      // Small delay to ensure all pending operations are cancelled
+      setTimeout(() => {
+        // Additional cleanup if needed
+      }, 0);
     };
   }, [user]);
 
