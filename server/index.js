@@ -365,6 +365,15 @@ if (process.env.NODE_ENV !== "test") {
     );
     console.log(`📱 Environment: ${process.env.NODE_ENV || "development"}`);
 
+    if (MULTI_DOMAIN_ENABLED) {
+      console.log(`🌐 Multi-domain support: ENABLED`);
+      console.log(`🏠 Primary domain: ${PRIMARY_DOMAIN}`);
+      console.log(`📋 Allowed domains: ${ALLOWED_DOMAINS.join(', ')}`);
+      console.log(`🔗 Domain info endpoint: http://localhost:${PORT}/api/domain-info`);
+    } else {
+      console.log(`🌐 Multi-domain support: DISABLED`);
+    }
+
     // Create default admin user if none exists
     createDefaultAdmin();
 
