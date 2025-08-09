@@ -252,7 +252,6 @@ export default function UsersAdmin() {
               <CardTitle className="text-sm font-medium text-gray-400">
                 Total Users
               </CardTitle>
-              <Users className="h-4 w-4 text-gray-500" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-white">{stats.total}</div>
@@ -264,7 +263,6 @@ export default function UsersAdmin() {
               <CardTitle className="text-sm font-medium text-gray-400">
                 Active Users
               </CardTitle>
-              <Eye className="h-4 w-4 text-gray-500" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-white">
@@ -278,7 +276,6 @@ export default function UsersAdmin() {
               <CardTitle className="text-sm font-medium text-gray-400">
                 Banned Users
               </CardTitle>
-              <Ban className="h-4 w-4 text-gray-500" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-white">
@@ -292,7 +289,6 @@ export default function UsersAdmin() {
               <CardTitle className="text-sm font-medium text-gray-400">
                 Staff Members
               </CardTitle>
-              <Shield className="h-4 w-4 text-gray-500" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-white">
@@ -310,12 +306,11 @@ export default function UsersAdmin() {
           <CardContent>
             <div className="flex flex-col md:flex-row gap-4">
               <div className="relative flex-1">
-                <Search className="absolute left-2 top-2.5 h-4 w-4 text-gray-400" />
                 <Input
                   placeholder="Search users..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-8 bg-gray-800 border-gray-600 text-white placeholder-gray-400"
+                  className="bg-gray-800 border-gray-600 text-white placeholder-gray-400"
                 />
               </div>
               <select
@@ -399,7 +394,7 @@ export default function UsersAdmin() {
                               variant="ghost"
                               className="h-8 w-8 p-0 text-gray-300 hover:bg-gray-800"
                             >
-                              <MoreHorizontal className="h-4 w-4" />
+                              •••
                             </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent
