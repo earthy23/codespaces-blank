@@ -72,9 +72,9 @@ export default function Index() {
       <section className="relative z-10 py-16 bg-card/80">
         <div className="container mx-auto px-6">
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4 text-primary">Why Choose UEC?</h2>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4 text-primary">Why UEC?</h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Experience Minecraft like never before with our advanced launcher and community features
+              We made this because we got tired of sketchy client sites and wanted something that actually works
             </p>
           </div>
 
