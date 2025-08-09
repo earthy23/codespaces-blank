@@ -434,15 +434,6 @@ export default function Profile() {
                       <Calendar className="w-4 h-4" />
                       <span>Joined {formatDate(profileUser.joinedAt)}</span>
                     </div>
-                    <div className="flex items-center space-x-2">
-                      <Users className="w-4 h-4" />
-                      <span>
-                        {formatNumber(
-                          profileUser.followers + profileUser.following,
-                        )}{" "}
-                        connections
-                      </span>
-                    </div>
                   </div>
                 </div>
 
@@ -482,37 +473,19 @@ export default function Profile() {
               </div>
 
               {/* Simple Stats */}
-              <div className="mt-6 grid grid-cols-2 lg:grid-cols-5 gap-4">
-                <Card className="bg-card/50 border-border/40 text-center p-4">
+              <div className="mt-6 flex items-center space-x-8">
+                <div className="text-center">
                   <div className="text-2xl font-bold text-foreground mb-1">
                     {formatNumber(profileUser.followers)}
                   </div>
                   <div className="text-sm text-muted-foreground">Followers</div>
-                </Card>
-                <Card className="bg-card/50 border-border/40 text-center p-4">
-                  <div className="text-2xl font-bold text-foreground mb-1">
-                    {formatNumber(profileUser.following)}
-                  </div>
-                  <div className="text-sm text-muted-foreground">Following</div>
-                </Card>
-                <Card className="bg-card/50 border-border/40 text-center p-4">
+                </div>
+                <div className="text-center">
                   <div className="text-2xl font-bold text-foreground mb-1">
                     {formatNumber(profileUser.totalVideos)}
                   </div>
                   <div className="text-sm text-muted-foreground">Videos</div>
-                </Card>
-                <Card className="bg-card/50 border-border/40 text-center p-4">
-                  <div className="text-2xl font-bold text-foreground mb-1">
-                    {formatNumber(profileUser.totalViews)}
-                  </div>
-                  <div className="text-sm text-muted-foreground">Total Views</div>
-                </Card>
-                <Card className="bg-card/50 border-border/40 text-center p-4">
-                  <div className="text-2xl font-bold text-foreground mb-1">
-                    {formatNumber(profileUser.totalLikes)}
-                  </div>
-                  <div className="text-sm text-muted-foreground">Total Likes</div>
-                </Card>
+                </div>
               </div>
             </CardContent>
           </Card>
