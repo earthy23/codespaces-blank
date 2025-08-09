@@ -199,8 +199,12 @@ export default function Dashboard() {
             serversResponse.status,
             serversResponse.statusText,
           );
-          if (isMounted) {
-            setTopServers([]);
+          if (isMounted && !abortController.signal.aborted) {
+            try {
+              setTopServers([]);
+            } catch (e) {
+              // Ignore any errors during state updates
+            }
           }
         }
       } catch (error) {
