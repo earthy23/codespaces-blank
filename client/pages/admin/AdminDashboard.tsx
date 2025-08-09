@@ -27,6 +27,22 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
+import {
+  Users,
+  Activity,
+  MessageSquare,
+  AlertTriangle,
+  BarChart3,
+  Settings,
+  Zap,
+  Cpu,
+  HardDrive,
+  Network,
+  TrendingUp,
+  Eye,
+  UserCheck,
+  RefreshCw,
+} from "lucide-react";
 
 interface DashboardStats {
   totalUsers: number;
@@ -50,7 +66,7 @@ interface RecentActivity {
 }
 
 // Enhanced chart components using Recharts
-const MiniLineChart = ({ data, color = "#ffffff" }: { data: any[]; color?: string }) => (
+const MiniLineChart = ({ data, color = "#8b5cf6" }: { data: any[]; color?: string }) => (
   <ResponsiveContainer width="100%" height={60}>
     <LineChart data={data}>
       <Line
@@ -65,7 +81,7 @@ const MiniLineChart = ({ data, color = "#ffffff" }: { data: any[]; color?: strin
   </ResponsiveContainer>
 );
 
-const MiniAreaChart = ({ data, color = "#ffffff" }: { data: any[]; color?: string }) => (
+const MiniAreaChart = ({ data, color = "#8b5cf6" }: { data: any[]; color?: string }) => (
   <ResponsiveContainer width="100%" height={60}>
     <AreaChart data={data}>
       <Area
@@ -79,7 +95,7 @@ const MiniAreaChart = ({ data, color = "#ffffff" }: { data: any[]; color?: strin
   </ResponsiveContainer>
 );
 
-const MiniBarChart = ({ data, color = "#ffffff" }: { data: any[]; color?: string }) => (
+const MiniBarChart = ({ data, color = "#8b5cf6" }: { data: any[]; color?: string }) => (
   <ResponsiveContainer width="100%" height={60}>
     <BarChart data={data}>
       <Bar dataKey="value" fill={color} radius={[2, 2, 0, 0]} stroke={color} strokeWidth={1} />
@@ -557,19 +573,30 @@ export default function AdminDashboard() {
 
   return (
     <AdminLayout>
-      <div className="space-y-6">
+      <div className="space-y-8">
         {/* Header */}
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between space-y-4 sm:space-y-0">
           <div>
-            <h1 className="text-3xl font-bold text-white">Admin Dashboard</h1>
-            <p className="text-gray-300">
+            <h1 className="text-4xl font-bold bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
+              Admin Dashboard
+            </h1>
+            <p className="text-lg text-muted-foreground mt-2">
               Welcome back, {user?.username}. System overview and controls.
             </p>
           </div>
           <div className="flex items-center space-x-3">
+            {/* Connection Status */}
+            <div className="flex items-center space-x-2">
+              <div className={`w-3 h-3 rounded-full ${
+                connectionStatus === "connected" ? "bg-green-500" :
+                connectionStatus === "degraded" ? "bg-yellow-500" : "bg-red-500"
+              }`} />
+              <span className="text-sm font-medium capitalize">{connectionStatus}</span>
+            </div>
+
             {/* Time Range Filter */}
             <select
-              className="bg-white text-black border border-black rounded px-3 py-2 text-sm"
+              className="bg-card border border-border rounded-lg px-4 py-2 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-primary"
               value={timeRange}
               onChange={(e) => setTimeRange(e.target.value)}
             >
@@ -579,156 +606,217 @@ export default function AdminDashboard() {
               <option value="30d">Last 30 Days</option>
             </select>
 
-            <div className="flex space-x-2">
-              <Button
-                onClick={loadDashboardData}
-                className="bg-white text-black hover:bg-gray-200"
-                disabled={isLoading}
-                size="sm"
-              >
-                <span className={`mr-2 ${isLoading ? "animate-spin" : ""}`}>
-                  {isLoading ? "↻" : "↻"}
-                </span>
-                Refresh All
-              </Button>
-
-              <Button
-                onClick={() => {
-                  setLiveActivity([]);
-                  setLastActivityUpdate(Date.now());
-                }}
-                className="bg-white text-black hover:bg-gray-200"
-                size="sm"
-              >
-                Clear Feed
-              </Button>
-            </div>
+            <Button
+              onClick={loadDashboardData}
+              className="bg-primary hover:bg-primary/90"
+              disabled={isLoading}
+              size="sm"
+            >
+              <RefreshCw className={`w-4 h-4 mr-2 ${isLoading ? "animate-spin" : ""}`} />
+              Refresh
+            </Button>
           </div>
         </div>
 
-        {/* Key Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <Card className="bg-white border-black">
-            <CardHeader>
-              <CardTitle className="text-sm font-medium text-black">
-                Total Users
-              </CardTitle>
+        {/* Key Stats Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <Card className="minecraft-panel bg-gradient-to-br from-blue-500/10 to-blue-600/10 border-blue-200 dark:border-blue-800">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Total Users</CardTitle>
+              <Users className="h-5 w-5 text-blue-600" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-black">
+              <div className="text-3xl font-bold text-blue-600">
                 {stats?.totalUsers || 0}
               </div>
-              <p className="text-xs text-gray-600">
-                <span className="text-black font-medium">
+              <p className="text-xs text-muted-foreground mt-1">
+                <span className="text-green-600 font-medium">
                   +{stats?.newUsersToday || 0}
                 </span>{" "}
                 new today
               </p>
               <div className="mt-3">
-                <MiniLineChart data={userGrowthData} color="#ffffff" />
+                <MiniLineChart data={userGrowthData} color="#2563eb" />
               </div>
             </CardContent>
           </Card>
 
-          <Card className="bg-white border-black">
-            <CardHeader>
-              <CardTitle className="text-sm font-medium text-black">
-                Active Sessions
-              </CardTitle>
+          <Card className="minecraft-panel bg-gradient-to-br from-green-500/10 to-green-600/10 border-green-200 dark:border-green-800">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Active Sessions</CardTitle>
+              <Activity className="h-5 w-5 text-green-600" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-black">
+              <div className="text-3xl font-bold text-green-600">
                 {stats?.activeSessions || 0}
               </div>
-              <p className="text-xs text-gray-600">
+              <p className="text-xs text-muted-foreground mt-1">
                 {stats?.activeUsers || 0} users online
               </p>
               <div className="mt-3">
-                <MiniBarChart data={activityData} color="#ffffff" />
+                <MiniBarChart data={activityData} color="#16a34a" />
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="minecraft-panel bg-gradient-to-br from-purple-500/10 to-purple-600/10 border-purple-200 dark:border-purple-800">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Messages</CardTitle>
+              <MessageSquare className="h-5 w-5 text-purple-600" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl font-bold text-purple-600">
+                {stats?.totalMessages || 0}
+              </div>
+              <p className="text-xs text-muted-foreground mt-1">
+                {stats?.flaggedMessages || 0} flagged
+              </p>
+              <div className="mt-3">
+                <MiniAreaChart data={activityData} color="#9333ea" />
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="minecraft-panel bg-gradient-to-br from-orange-500/10 to-orange-600/10 border-orange-200 dark:border-orange-800">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Support Tickets</CardTitle>
+              <AlertTriangle className="h-5 w-5 text-orange-600" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl font-bold text-orange-600">
+                {stats?.supportTickets || 0}
+              </div>
+              <p className="text-xs text-muted-foreground mt-1">
+                <span className="text-orange-600 font-medium">
+                  {stats?.pendingTickets || 0}
+                </span>{" "}
+                pending
+              </p>
+              <div className="mt-3">
+                <MiniBarChart data={userGrowthData} color="#ea580c" />
               </div>
             </CardContent>
           </Card>
         </div>
 
-        {/* Enhanced Analytics Section */}
-        <div className="grid grid-cols-1 gap-6">
+        {/* System Performance */}
+        <Card className="minecraft-panel bg-gradient-to-br from-primary/5 to-primary/10">
+          <CardHeader>
+            <CardTitle className="flex items-center space-x-2">
+              <Cpu className="w-5 h-5 text-primary" />
+              <span>System Performance</span>
+            </CardTitle>
+            <CardDescription>
+              Real-time server metrics and performance indicators
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+              {/* CPU Usage */}
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-2">
+                    <Cpu className="w-4 h-4 text-blue-500" />
+                    <span className="text-sm font-medium">CPU Usage</span>
+                  </div>
+                  <span className="text-sm font-bold">
+                    {systemMetrics?.system?.cpu || 23}%
+                  </span>
+                </div>
+                <Progress value={systemMetrics?.system?.cpu || 23} className="h-2" />
+              </div>
+
+              {/* Memory Usage */}
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-2">
+                    <HardDrive className="w-4 h-4 text-green-500" />
+                    <span className="text-sm font-medium">Memory</span>
+                  </div>
+                  <span className="text-sm font-bold">
+                    {systemMetrics?.system?.memory || 67}%
+                  </span>
+                </div>
+                <Progress value={systemMetrics?.system?.memory || 67} className="h-2" />
+              </div>
+
+              {/* Network I/O */}
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-2">
+                    <Network className="w-4 h-4 text-purple-500" />
+                    <span className="text-sm font-medium">Network</span>
+                  </div>
+                  <span className="text-sm font-bold">
+                    {systemMetrics?.system?.network || 34}%
+                  </span>
+                </div>
+                <Progress value={systemMetrics?.system?.network || 34} className="h-2" />
+              </div>
+            </div>
+
+            <div className="flex justify-between items-center text-xs text-muted-foreground">
+              <span>Last updated: {new Date(lastMetricsUpdate).toLocaleTimeString()}</span>
+              {realTimeData && (
+                <div className="flex space-x-4">
+                  <span>Uptime: {Math.floor((realTimeData.uptime || 0) / 3600)}h</span>
+                  <span>Memory: {realTimeData.memoryUsage?.used || 0}MB</span>
+                </div>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Analytics and Activity */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* User Growth Analytics */}
-          <Card className="bg-white border-black">
+          <Card className="minecraft-panel">
             <CardHeader>
-              <CardTitle className="flex items-center justify-between">
-                <div className="flex items-center space-x-2">
-                  <span className="text-black">User Activity & Growth</span>
-                </div>
-                <div className="flex items-center space-x-4 text-sm">
-                  <div className="flex items-center space-x-2">
-                    <div className="w-3 h-3 bg-black rounded"></div>
-                    <span className="text-gray-600">Daily Registrations</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <div className="w-3 h-3 bg-gray-500 rounded"></div>
-                    <span className="text-gray-600">Active Sessions</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <div className="w-3 h-3 bg-gray-300 rounded"></div>
-                    <span className="text-gray-600">Login Events</span>
-                  </div>
-                </div>
+              <CardTitle className="flex items-center space-x-2">
+                <TrendingUp className="w-5 h-5 text-primary" />
+                <span>User Activity</span>
               </CardTitle>
-              <CardDescription className="text-gray-600">
-                Real-time user engagement metrics and registration trends
-                {dashboardData?.userGrowthData && (
-                  <span className="ml-2 text-black">• Live data</span>
-                )}
+              <CardDescription>
+                Daily user registrations and activity trends
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <ResponsiveContainer width="100%" height={350}>
+              <ResponsiveContainer width="100%" height={300}>
                 <AreaChart data={dashboardData?.userGrowthData || [
-                  { day: "Mon", registrations: stats?.newUsersToday || 0, activeSessions: stats?.activeSessions || 0, logins: (stats?.totalMessages || 0) },
-                  { day: "Tue", registrations: stats?.newUsersToday || 0, activeSessions: stats?.activeSessions || 0, logins: (stats?.totalMessages || 0) },
-                  { day: "Wed", registrations: stats?.newUsersToday || 0, activeSessions: stats?.activeSessions || 0, logins: (stats?.totalMessages || 0) },
-                  { day: "Thu", registrations: stats?.newUsersToday || 0, activeSessions: stats?.activeSessions || 0, logins: (stats?.totalMessages || 0) },
-                  { day: "Fri", registrations: stats?.newUsersToday || 0, activeSessions: stats?.activeSessions || 0, logins: (stats?.totalMessages || 0) },
-                  { day: "Sat", registrations: stats?.newUsersToday || 0, activeSessions: stats?.activeSessions || 0, logins: (stats?.totalMessages || 0) },
-                  { day: "Sun", registrations: stats?.newUsersToday || 0, activeSessions: stats?.activeSessions || 0, logins: (stats?.totalMessages || 0) },
+                  { day: "Mon", registrations: stats?.newUsersToday || 0, activeSessions: stats?.activeSessions || 0 },
+                  { day: "Tue", registrations: stats?.newUsersToday || 0, activeSessions: stats?.activeSessions || 0 },
+                  { day: "Wed", registrations: stats?.newUsersToday || 0, activeSessions: stats?.activeSessions || 0 },
+                  { day: "Thu", registrations: stats?.newUsersToday || 0, activeSessions: stats?.activeSessions || 0 },
+                  { day: "Fri", registrations: stats?.newUsersToday || 0, activeSessions: stats?.activeSessions || 0 },
+                  { day: "Sat", registrations: stats?.newUsersToday || 0, activeSessions: stats?.activeSessions || 0 },
+                  { day: "Sun", registrations: stats?.newUsersToday || 0, activeSessions: stats?.activeSessions || 0 },
                 ]}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#000000" />
-                  <XAxis dataKey="day" stroke="#000000" />
-                  <YAxis stroke="#000000" />
+                  <CartesianGrid strokeDasharray="3 3" className="opacity-30" />
+                  <XAxis dataKey="day" />
+                  <YAxis />
                   <Tooltip
                     contentStyle={{
-                      backgroundColor: "#ffffff",
-                      border: "1px solid #000000",
+                      backgroundColor: "hsl(var(--card))",
+                      border: "1px solid hsl(var(--border))",
                       borderRadius: "8px"
                     }}
-                    formatter={(value, name) => [value, name]}
-                    labelFormatter={(label) => `${label}`}
-                  />
-                  <Area
-                    type="monotone"
-                    dataKey="logins"
-                    stackId="1"
-                    stroke="#d1d5db"
-                    fill="#d1d5db"
-                    fillOpacity={0.4}
-                    name="Login Events"
                   />
                   <Area
                     type="monotone"
                     dataKey="activeSessions"
-                    stackId="2"
-                    stroke="#9ca3af"
-                    fill="#9ca3af"
-                    fillOpacity={0.6}
+                    stackId="1"
+                    stroke="#8b5cf6"
+                    fill="#8b5cf6"
+                    fillOpacity={0.4}
                     name="Active Sessions"
                   />
                   <Area
                     type="monotone"
                     dataKey="registrations"
-                    stackId="3"
-                    stroke="#000000"
-                    fill="#000000"
-                    fillOpacity={0.8}
+                    stackId="2"
+                    stroke="#3b82f6"
+                    fill="#3b82f6"
+                    fillOpacity={0.6}
                     name="New Registrations"
                   />
                 </AreaChart>
@@ -736,299 +824,130 @@ export default function AdminDashboard() {
             </CardContent>
           </Card>
 
-        </div>
-
-        {/* System Status Cards */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-
-          <Card className="bg-white border-black">
+          {/* Recent Activity */}
+          <Card className="minecraft-panel">
             <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <span className="text-black">Support Overview</span>
+              <CardTitle className="flex items-center justify-between">
+                <div className="flex items-center space-x-2">
+                  <Eye className="w-5 h-5 text-primary" />
+                  <span>Recent Activity</span>
+                </div>
+                <Link to="/admin/logs">
+                  <Button variant="outline" size="sm">
+                    View All Logs
+                  </Button>
+                </Link>
               </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-600">Total Tickets</span>
-                <span className="font-bold text-black">
-                  {stats?.supportTickets || 0}
-                </span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-600">Pending Tickets</span>
-                <Badge className="bg-black text-white">
-                  {stats?.pendingTickets || 0}
-                </Badge>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-600">Response Rate</span>
-                <span className="font-bold text-black">98.7%</span>
-              </div>
-              <div className="pt-2">
-                <Button className="w-full bg-black text-white hover:bg-gray-800">
-                  Manage Support
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-
-        </div>
-
-        {/* Real-time System Performance */}
-        <div className="grid grid-cols-1 gap-6">
-          {/* System Performance Metrics */}
-          <Card className="bg-white border-black">
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <span className="text-black">System Performance</span>
-              </CardTitle>
-              <CardDescription className="text-gray-600">
-                Real-time server metrics and performance indicators
-              </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="space-y-6">
-                {/* CPU Usage */}
-                <div>
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-sm text-gray-600">CPU Usage</span>
-                    <span className="text-sm font-medium text-black">
-                      {systemMetrics?.system?.cpu || 23}%
-                    </span>
-                  </div>
-                  <Progress value={systemMetrics?.system?.cpu || 23} className="bg-gray-200" />
-                </div>
-
-                {/* Memory Usage */}
-                <div>
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-sm text-gray-600">Memory Usage</span>
-                    <span className="text-sm font-medium text-black">
-                      {systemMetrics?.system?.memory || 67}%
-                    </span>
-                  </div>
-                  <Progress value={systemMetrics?.system?.memory || 67} className="bg-gray-200" />
-                </div>
-
-                {/* Network I/O */}
-                <div>
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-sm text-gray-600">Network I/O</span>
-                    <span className="text-sm font-medium text-black">
-                      {systemMetrics?.system?.network || 34}%
-                    </span>
-                  </div>
-                  <Progress value={systemMetrics?.system?.network || 34} className="bg-gray-200" />
-                </div>
-
-                {/* Real-time Status with enhanced info */}
-                <div className="flex justify-between items-center text-xs text-gray-600 mt-2">
-                  <span>Last updated: {new Date(lastMetricsUpdate).toLocaleTimeString()}</span>
-                  {realTimeData && (
-                    <div className="flex space-x-2">
-                      <span>Uptime: {Math.floor((realTimeData.uptime || 0) / 3600)}h</span>
-                      <span>Mem: {realTimeData.memoryUsage?.used || 0}MB</span>
+              {(liveActivity.length > 0 || recentActivity.length > 0) ? (
+                <div className="space-y-3 max-h-80 overflow-y-auto">
+                  {/* Live Activity First */}
+                  {liveActivity.slice(0, 4).map((activity) => (
+                    <div
+                      key={activity.id}
+                      className="flex items-center space-x-3 p-3 rounded-lg bg-primary/5 border-l-4 border-primary"
+                    >
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium truncate">
+                          {activity.username || "System"} - {activity.action.replace(/_/g, " ")}
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          {formatTime(activity.timestamp)} • LIVE
+                        </p>
+                      </div>
+                      <Badge variant="secondary" className="text-xs">
+                        {activity.category}
+                      </Badge>
                     </div>
-                  )}
+                  ))}
+                  
+                  {/* Recent Activity */}
+                  {recentActivity.slice(0, Math.max(4, 8 - liveActivity.length)).map((activity) => (
+                    <div
+                      key={activity.id}
+                      className="flex items-center space-x-3 p-3 rounded-lg hover:bg-muted/50 transition-colors"
+                    >
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium truncate">
+                          {activity.username || "System"} - {activity.action.replace(/_/g, " ")}
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          {formatTime(activity.timestamp)}
+                        </p>
+                      </div>
+                      <Badge variant="outline" className="text-xs">
+                        {activity.category}
+                      </Badge>
+                    </div>
+                  ))}
                 </div>
-
-                {/* Performance Chart */}
-                <div className="mt-4">
-                  <ResponsiveContainer width="100%" height={150}>
-                    <LineChart data={(dashboardData?.systemPerformance?.performanceHistory || [
-                      { time: "00:00", cpu: 15, memory: 45, network: 20 },
-                      { time: "04:00", cpu: 25, memory: 52, network: 35 },
-                      { time: "08:00", cpu: 45, memory: 68, network: 55 },
-                      { time: "12:00", cpu: 35, memory: 72, network: 40 },
-                      { time: "16:00", cpu: 28, memory: 65, network: 38 },
-                      { time: "20:00", cpu: systemMetrics?.system?.cpu || 23, memory: systemMetrics?.system?.memory || 67, network: systemMetrics?.system?.network || 34 },
-                    ]).map((item, index, array) => {
-                      // Add real-time data point as the latest entry
-                      if (index === array.length - 1 && realTimeData) {
-                        return {
-                          ...item,
-                          cpu: realTimeData.system?.cpu || item.cpu,
-                          memory: realTimeData.system?.memory || item.memory,
-                          network: realTimeData.system?.network || item.network
-                        };
-                      }
-                      return item;
-                    })}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="#000000" />
-                      <XAxis dataKey="time" stroke="#000000" />
-                      <YAxis stroke="#000000" />
-                      <Tooltip
-                        contentStyle={{
-                          backgroundColor: "#ffffff",
-                          border: "1px solid #000000",
-                          borderRadius: "8px",
-                          color: "#000000"
-                        }}
-                      />
-                      <Line type="monotone" dataKey="cpu" stroke="#000000" strokeWidth={3} name="CPU %" />
-                      <Line type="monotone" dataKey="memory" stroke="#6b7280" strokeWidth={3} name="Memory %" />
-                      <Line type="monotone" dataKey="network" stroke="#d1d5db" strokeWidth={3} name="Network %" />
-                    </LineChart>
-                  </ResponsiveContainer>
+              ) : (
+                <div className="text-center py-8 text-muted-foreground">
+                  <Activity className="w-12 h-12 mx-auto mb-4 opacity-50" />
+                  <p>No recent activity</p>
+                  <p className="text-xs mt-1">Live feed will update automatically</p>
                 </div>
-              </div>
+              )}
+              
+              {/* Live indicator */}
+              {liveActivity.length > 0 && (
+                <div className="flex items-center justify-center mt-4 pt-3 border-t border-border">
+                  <div className="flex items-center space-x-2 text-xs text-muted-foreground">
+                    <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                    <span>Live activity feed active</span>
+                  </div>
+                </div>
+              )}
             </CardContent>
           </Card>
-
         </div>
 
-        {/* Recent Activity */}
-        <Card className="bg-white border-gray-300">
+        {/* Quick Actions */}
+        <Card className="minecraft-panel bg-gradient-to-br from-primary/5 to-primary/10">
           <CardHeader>
-            <CardTitle className="flex items-center justify-between">
-              <div className="flex items-center space-x-2">
-                <span className="text-gray-900">Recent Activity</span>
-              </div>
-              <Link to="/admin/logs">
-                <Button
-                  className="bg-gray-900 text-white hover:bg-gray-800"
-                  size="sm"
-                >
-                  View All Logs
-                </Button>
-              </Link>
+            <CardTitle className="flex items-center space-x-2">
+              <Zap className="w-5 h-5 text-primary" />
+              <span>Quick Actions & System Control</span>
             </CardTitle>
-          </CardHeader>
-          <CardContent>
-            {(liveActivity.length > 0 || recentActivity.length > 0) ? (
-              <div className="space-y-3">
-                {/* Live Activity First */}
-                {liveActivity.slice(0, 4).map((activity) => (
-                  <div
-                    key={activity.id}
-                    className="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-100 border-l-2 border-black bg-gray-50"
-                  >
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium truncate text-gray-900">
-                        {activity.username || "System"} -{" "}
-                        {activity.action.replace(/_/g, " ")}
-                      </p>
-                      <p className="text-xs text-black">
-                        {formatTime(activity.timestamp)} • LIVE
-                      </p>
-                    </div>
-                    <Badge className="text-xs bg-black text-white">
-                      {activity.category}
-                    </Badge>
-                  </div>
-                ))}
-                
-                {/* Recent Activity */}
-                {recentActivity.slice(0, Math.max(4, 8 - liveActivity.length)).map((activity) => (
-                  <div
-                    key={activity.id}
-                    className="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-50"
-                  >
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium truncate text-gray-900">
-                        {activity.username || "System"} -{" "}
-                        {activity.action.replace(/_/g, " ")}
-                      </p>
-                      <p className="text-xs text-gray-600">
-                        {formatTime(activity.timestamp)}
-                      </p>
-                    </div>
-                    <Badge className="text-xs bg-black text-white">
-                      {activity.category}
-                    </Badge>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="text-center py-8 text-gray-600">
-                <p>No recent activity</p>
-                <p className="text-xs mt-1">Live feed will update automatically</p>
-              </div>
-            )}
-            
-            {/* Live indicator */}
-            {liveActivity.length > 0 && (
-              <div className="flex items-center justify-center mt-4 pt-3 border-t border-gray-200">
-                <div className="flex items-center space-x-2 text-xs text-gray-700">
-                  <div className="w-2 h-2 bg-black rounded-full animate-pulse"></div>
-                  <span>Live activity feed active</span>
-                </div>
-              </div>
-            )}
-          </CardContent>
-        </Card>
-
-        {/* Enhanced Quick Actions */}
-        <Card className="bg-white border-black">
-          <CardHeader>
-            <CardTitle className="text-black">Quick Actions & System Control</CardTitle>
-            <CardDescription className="text-gray-600">
-              Administrative tools, system management, and emergency controls
+            <CardDescription>
+              Administrative tools and system management
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="space-y-6">
-              {/* Primary Actions */}
-              <div>
-                <h4 className="text-sm font-medium text-gray-600 mb-3">Management</h4>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  <Link to="/admin/users">
-                    <Button className="w-full bg-black text-white hover:bg-gray-800 h-auto p-4 flex flex-col space-y-2">
-                      <span className="text-sm">Manage Users</span>
-                    </Button>
-                  </Link>
-                  <Link to="/admin/news">
-                    <Button className="w-full bg-black text-white hover:bg-gray-800 h-auto p-4 flex flex-col space-y-2">
-                      <span className="text-sm">Create News</span>
-                    </Button>
-                  </Link>
-                  <Link to="/admin/settings">
-                    <Button className="w-full bg-black text-white hover:bg-gray-800 h-auto p-4 flex flex-col space-y-2">
-                      <span className="text-sm">System Settings</span>
-                    </Button>
-                  </Link>
-                  <Link to="/admin/analytics">
-                    <Button className="w-full bg-black text-white hover:bg-gray-800 h-auto p-4 flex flex-col space-y-2">
-                      <span className="text-sm">View Analytics</span>
-                    </Button>
-                  </Link>
-                </div>
-              </div>
-
-              {/* System Controls */}
-              <div>
-                <h4 className="text-sm font-medium text-gray-600 mb-3">System Controls</h4>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  <Button className="w-full bg-black text-white hover:bg-gray-800 h-auto p-4 flex flex-col space-y-2">
-                    <span className="text-sm">Clear Cache</span>
-                  </Button>
-                  <Button className="w-full bg-black text-white hover:bg-gray-800 h-auto p-4 flex flex-col space-y-2">
-                    <span className="text-sm">Restart Services</span>
-                  </Button>
-                  <Button className="w-full bg-black text-white hover:bg-gray-800 h-auto p-4 flex flex-col space-y-2">
-                    <span className="text-sm">Maintenance Mode</span>
-                  </Button>
-                  <Button className="w-full bg-black text-white hover:bg-gray-800 h-auto p-4 flex flex-col space-y-2">
-                    <span className="text-sm">Health Check</span>
-                  </Button>
-                </div>
-              </div>
-
-              {/* Real-time Actions */}
-              <div>
-                <h4 className="text-sm font-medium text-gray-600 mb-3">Real-time Actions</h4>
-                <div className="flex flex-wrap gap-2">
-                  <Button size="sm" className="bg-black hover:bg-gray-800 text-white">
-                    Broadcast Message
-                  </Button>
-                  <Button size="sm" className="bg-black hover:bg-gray-800 text-white">
-                    View Live Sessions
-                  </Button>
-                  <Button size="sm" className="bg-black hover:bg-gray-800 text-white">
-                    Server Status
-                  </Button>
-                </div>
-              </div>
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+              <Link to="/admin/users">
+                <Button className="w-full h-auto p-4 flex flex-col space-y-2 bg-blue-500 hover:bg-blue-600 text-white">
+                  <Users className="w-5 h-5" />
+                  <span className="text-sm">Users</span>
+                </Button>
+              </Link>
+              <Link to="/admin/news">
+                <Button className="w-full h-auto p-4 flex flex-col space-y-2 bg-green-500 hover:bg-green-600 text-white">
+                  <MessageSquare className="w-5 h-5" />
+                  <span className="text-sm">News</span>
+                </Button>
+              </Link>
+              <Link to="/admin/settings">
+                <Button className="w-full h-auto p-4 flex flex-col space-y-2 bg-purple-500 hover:bg-purple-600 text-white">
+                  <Settings className="w-5 h-5" />
+                  <span className="text-sm">Settings</span>
+                </Button>
+              </Link>
+              <Link to="/admin/analytics">
+                <Button className="w-full h-auto p-4 flex flex-col space-y-2 bg-orange-500 hover:bg-orange-600 text-white">
+                  <BarChart3 className="w-5 h-5" />
+                  <span className="text-sm">Analytics</span>
+                </Button>
+              </Link>
+              <Button className="w-full h-auto p-4 flex flex-col space-y-2 bg-yellow-500 hover:bg-yellow-600 text-white">
+                <AlertTriangle className="w-5 h-5" />
+                <span className="text-sm">Support</span>
+              </Button>
+              <Button className="w-full h-auto p-4 flex flex-col space-y-2 bg-red-500 hover:bg-red-600 text-white">
+                <Zap className="w-5 h-5" />
+                <span className="text-sm">System</span>
+              </Button>
             </div>
           </CardContent>
         </Card>
