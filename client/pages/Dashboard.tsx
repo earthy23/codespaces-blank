@@ -208,8 +208,12 @@ export default function Dashboard() {
               return;
             }
             console.warn("Failed to parse partners response:", error);
-            if (isMounted) {
-              setPartners([]);
+            if (isMounted && !abortController.signal.aborted) {
+              try {
+                setPartners([]);
+              } catch (e) {
+                // Ignore any errors during state updates
+              }
             }
           }
         } else {
