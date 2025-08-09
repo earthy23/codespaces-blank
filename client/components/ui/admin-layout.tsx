@@ -18,7 +18,7 @@ const adminNavItems = [
     ],
   },
   {
-    section: "Management", 
+    section: "Management",
     items: [
       { label: "Users", path: "/admin/users" },
       { label: "News", path: "/admin/news" },

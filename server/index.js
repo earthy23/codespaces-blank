@@ -34,26 +34,26 @@ dotenv.config();
 
 // Multi-domain support configuration
 const ALLOWED_DOMAINS = process.env.ALLOWED_DOMAINS
-  ? process.env.ALLOWED_DOMAINS.split(',').map(d => d.trim())
+  ? process.env.ALLOWED_DOMAINS.split(",").map((d) => d.trim())
   : [
-    "localhost:3000",
-    "localhost:5173",
-    "localhost:8080",
-    "ueclub.com",
-    "www.ueclub.com",
-    "play.ueclub.com",
-    "api.ueclub.com",
-    "admin.ueclub.com",
-    "7b10610db8d44756a9e9dc629f6481f1-30e9842434a9496282981b9c3.fly.dev"
-  ];
+      "localhost:3000",
+      "localhost:5173",
+      "localhost:8080",
+      "ueclub.com",
+      "www.ueclub.com",
+      "play.ueclub.com",
+      "api.ueclub.com",
+      "admin.ueclub.com",
+      "7b10610db8d44756a9e9dc629f6481f1-30e9842434a9496282981b9c3.fly.dev",
+    ];
 
 const PRIMARY_DOMAIN = process.env.PRIMARY_DOMAIN || "ueclub.com";
-const MULTI_DOMAIN_ENABLED = process.env.MULTI_DOMAIN_ENABLED === 'true';
+const MULTI_DOMAIN_ENABLED = process.env.MULTI_DOMAIN_ENABLED === "true";
 
-console.log('🌐 Multi-domain configuration:');
-console.log('  - Enabled:', MULTI_DOMAIN_ENABLED);
-console.log('  - Primary domain:', PRIMARY_DOMAIN);
-console.log('  - Allowed domains:', ALLOWED_DOMAINS.join(', '));
+console.log("🌐 Multi-domain configuration:");
+console.log("  - Enabled:", MULTI_DOMAIN_ENABLED);
+console.log("  - Primary domain:", PRIMARY_DOMAIN);
+console.log("  - Allowed domains:", ALLOWED_DOMAINS.join(", "));
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -61,30 +61,30 @@ const __dirname = path.dirname(__filename);
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-
 // Dynamic domain detection middleware
 app.use((req, res, next) => {
-  const host = req.get('host');
-  const protocol = req.get('x-forwarded-proto') || req.protocol || 'http';
+  const host = req.get("host");
+  const protocol = req.get("x-forwarded-proto") || req.protocol || "http";
   const currentDomain = `${protocol}://${host}`;
 
   // Check if domain is allowed
-  const isAllowedDomain = MULTI_DOMAIN_ENABLED && host && (
-    ALLOWED_DOMAINS.includes(host) ||
-    ALLOWED_DOMAINS.some(domain => host.includes(domain)) ||
-    host.includes('ueclub.com') ||
-    host.includes('localhost') ||
-    host.includes('fly.dev')
-  );
+  const isAllowedDomain =
+    MULTI_DOMAIN_ENABLED &&
+    host &&
+    (ALLOWED_DOMAINS.includes(host) ||
+      ALLOWED_DOMAINS.some((domain) => host.includes(domain)) ||
+      host.includes("ueclub.com") ||
+      host.includes("localhost") ||
+      host.includes("fly.dev"));
 
   req.currentDomain = currentDomain;
   req.isAllowedDomain = isAllowedDomain;
   req.primaryDomain = PRIMARY_DOMAIN;
 
   // Add domain info to headers for debugging
-  if (process.env.NODE_ENV === 'development') {
-    res.set('X-Current-Domain', currentDomain);
-    res.set('X-Domain-Allowed', isAllowedDomain.toString());
+  if (process.env.NODE_ENV === "development") {
+    res.set("X-Current-Domain", currentDomain);
+    res.set("X-Domain-Allowed", isAllowedDomain.toString());
   }
 
   next();
@@ -92,8 +92,8 @@ app.use((req, res, next) => {
 
 // Security middleware with dynamic CSP
 app.use((req, res, next) => {
-  const host = req.get('host');
-  const protocol = req.get('x-forwarded-proto') || req.protocol || 'http';
+  const host = req.get("host");
+  const protocol = req.get("x-forwarded-proto") || req.protocol || "http";
 
   // Build dynamic CSP based on current domain
   const cspDirectives = {
@@ -108,8 +108,8 @@ app.use((req, res, next) => {
   // Add current domain to connect sources for websockets
   if (host) {
     cspDirectives.connectSrc.push(`ws://${host}`, `wss://${host}`);
-    if (host.includes('ueclub.com')) {
-      cspDirectives.connectSrc.push('wss://*.ueclub.com', 'ws://*.ueclub.com');
+    if (host.includes("ueclub.com")) {
+      cspDirectives.connectSrc.push("wss://*.ueclub.com", "ws://*.ueclub.com");
     }
   }
 
@@ -189,22 +189,29 @@ app.use(
       }
 
       // Check if origin is allowed or matches domain patterns
-      const isAllowed = allowedOrigins.includes(origin) ||
-                       origin.includes('ueclub.com') ||
-                       origin.includes('localhost') ||
-                       origin.includes('fly.dev');
+      const isAllowed =
+        allowedOrigins.includes(origin) ||
+        origin.includes("ueclub.com") ||
+        origin.includes("localhost") ||
+        origin.includes("fly.dev");
 
       if (isAllowed) {
         callback(null, true);
       } else {
         console.log(`CORS: Rejected origin: ${origin}`);
-        callback(new Error('Not allowed by CORS'));
+        callback(new Error("Not allowed by CORS"));
       }
     },
     credentials: true,
     optionsSuccessStatus: 200,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin'],
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
+    allowedHeaders: [
+      "Content-Type",
+      "Authorization",
+      "X-Requested-With",
+      "Accept",
+      "Origin",
+    ],
   }),
 );
 
@@ -213,10 +220,10 @@ app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 
 // Trust proxy for accurate IP addresses
-app.set('trust proxy', 1);
+app.set("trust proxy", 1);
 
 // Domain information endpoint
-app.get('/api/domain-info', (req, res) => {
+app.get("/api/domain-info", (req, res) => {
   res.json({
     currentDomain: req.currentDomain,
     isAllowed: req.isAllowedDomain,
@@ -224,19 +231,27 @@ app.get('/api/domain-info', (req, res) => {
     multiDomainEnabled: MULTI_DOMAIN_ENABLED,
     allowedDomains: ALLOWED_DOMAINS,
     websocketUrls: {
-      development: process.env.WS_DEVELOPMENT_URL || `ws://${req.get('host')}`,
-      production: process.env.WS_PRODUCTION_URL || `wss://${PRIMARY_DOMAIN}`
-    }
+      development: process.env.WS_DEVELOPMENT_URL || `ws://${req.get("host")}`,
+      production: process.env.WS_PRODUCTION_URL || `wss://${PRIMARY_DOMAIN}`,
+    },
   });
 });
 
 // Redirect non-primary domains to primary (optional)
-if (MULTI_DOMAIN_ENABLED && process.env.REDIRECT_TO_PRIMARY === 'true') {
+if (MULTI_DOMAIN_ENABLED && process.env.REDIRECT_TO_PRIMARY === "true") {
   app.use((req, res, next) => {
-    const host = req.get('host');
-    if (host && host !== PRIMARY_DOMAIN && !host.includes('localhost') && !host.includes('fly.dev')) {
-      const protocol = req.get('x-forwarded-proto') || 'https';
-      return res.redirect(301, `${protocol}://${PRIMARY_DOMAIN}${req.originalUrl}`);
+    const host = req.get("host");
+    if (
+      host &&
+      host !== PRIMARY_DOMAIN &&
+      !host.includes("localhost") &&
+      !host.includes("fly.dev")
+    ) {
+      const protocol = req.get("x-forwarded-proto") || "https";
+      return res.redirect(
+        301,
+        `${protocol}://${PRIMARY_DOMAIN}${req.originalUrl}`,
+      );
     }
     next();
   });
@@ -368,8 +383,10 @@ if (process.env.NODE_ENV !== "test") {
     if (MULTI_DOMAIN_ENABLED) {
       console.log(`🌐 Multi-domain support: ENABLED`);
       console.log(`🏠 Primary domain: ${PRIMARY_DOMAIN}`);
-      console.log(`📋 Allowed domains: ${ALLOWED_DOMAINS.join(', ')}`);
-      console.log(`🔗 Domain info endpoint: http://localhost:${PORT}/api/domain-info`);
+      console.log(`📋 Allowed domains: ${ALLOWED_DOMAINS.join(", ")}`);
+      console.log(
+        `🔗 Domain info endpoint: http://localhost:${PORT}/api/domain-info`,
+      );
     } else {
       console.log(`🌐 Multi-domain support: DISABLED`);
     }

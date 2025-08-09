@@ -221,11 +221,15 @@ export default function Servers() {
   };
 
   const validateWebSocketUrl = (url: string) => {
-    if (!url || url.trim().length === 0) return { valid: false, error: "WebSocket URL is required" };
+    if (!url || url.trim().length === 0)
+      return { valid: false, error: "WebSocket URL is required" };
 
     // Must start with wss:// for security
     if (!url.startsWith("wss://")) {
-      return { valid: false, error: "WebSocket URL must use secure protocol (wss://)" };
+      return {
+        valid: false,
+        error: "WebSocket URL must use secure protocol (wss://)",
+      };
     }
 
     try {
@@ -299,11 +303,14 @@ export default function Servers() {
       description: "Verifying secure WebSocket connection...",
     });
 
-    const isWebSocketConnectable = await testWebSocketConnection(newServerData.websocketUrl);
+    const isWebSocketConnectable = await testWebSocketConnection(
+      newServerData.websocketUrl,
+    );
     if (!isWebSocketConnectable) {
       toast({
         title: "Connection Failed",
-        description: "Unable to establish secure WebSocket connection. Please check your URL and server configuration.",
+        description:
+          "Unable to establish secure WebSocket connection. Please check your URL and server configuration.",
         variant: "destructive",
       });
       return;
@@ -607,7 +614,8 @@ export default function Servers() {
                       required
                     />
                     <p className="text-xs text-muted-foreground mt-1">
-                      Must use secure WebSocket protocol (wss://). Connection will be tested before approval.
+                      Must use secure WebSocket protocol (wss://). Connection
+                      will be tested before approval.
                     </p>
                   </div>
 

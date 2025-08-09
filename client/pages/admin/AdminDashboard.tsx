@@ -604,9 +604,7 @@ export default function AdminDashboard() {
           <CardHeader>
             <CardTitle className="flex items-center justify-between">
               <span>Video Monitoring & User Features</span>
-              <Badge className="bg-green-500/20 text-green-600">
-                Live
-              </Badge>
+              <Badge className="bg-green-500/20 text-green-600">Live</Badge>
             </CardTitle>
             <CardDescription>
               Real-time monitoring of video content and user feature usage
@@ -619,19 +617,27 @@ export default function AdminDashboard() {
                 <h4 className="font-semibold text-primary">Video Platform</h4>
                 <div className="space-y-3">
                   <div className="flex justify-between items-center">
-                    <span className="text-sm text-muted-foreground">Total Videos</span>
+                    <span className="text-sm text-muted-foreground">
+                      Total Videos
+                    </span>
                     <span className="font-bold">247</span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="text-sm text-muted-foreground">Active Streams</span>
+                    <span className="text-sm text-muted-foreground">
+                      Active Streams
+                    </span>
                     <span className="font-bold text-green-600">12</span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="text-sm text-muted-foreground">Views Today</span>
+                    <span className="text-sm text-muted-foreground">
+                      Views Today
+                    </span>
                     <span className="font-bold">1,854</span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="text-sm text-muted-foreground">Flagged Content</span>
+                    <span className="text-sm text-muted-foreground">
+                      Flagged Content
+                    </span>
                     <span className="font-bold text-red-600">3</span>
                   </div>
                 </div>
@@ -642,19 +648,27 @@ export default function AdminDashboard() {
                 <h4 className="font-semibold text-primary">User Features</h4>
                 <div className="space-y-3">
                   <div className="flex justify-between items-center">
-                    <span className="text-sm text-muted-foreground">File Uploads</span>
+                    <span className="text-sm text-muted-foreground">
+                      File Uploads
+                    </span>
                     <span className="font-bold">89</span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="text-sm text-muted-foreground">Voice Calls Active</span>
+                    <span className="text-sm text-muted-foreground">
+                      Voice Calls Active
+                    </span>
                     <span className="font-bold text-blue-600">7</span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="text-sm text-muted-foreground">Chat Messages</span>
+                    <span className="text-sm text-muted-foreground">
+                      Chat Messages
+                    </span>
                     <span className="font-bold">2,156</span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="text-sm text-muted-foreground">Server Connections</span>
+                    <span className="text-sm text-muted-foreground">
+                      Server Connections
+                    </span>
                     <span className="font-bold text-green-600">34</span>
                   </div>
                 </div>
@@ -662,18 +676,36 @@ export default function AdminDashboard() {
 
               {/* Monitoring Controls */}
               <div className="space-y-4">
-                <h4 className="font-semibold text-primary">Monitoring Controls</h4>
+                <h4 className="font-semibold text-primary">
+                  Monitoring Controls
+                </h4>
                 <div className="space-y-2">
-                  <Button variant="outline" className="w-full justify-start text-left" size="sm">
+                  <Button
+                    variant="outline"
+                    className="w-full justify-start text-left"
+                    size="sm"
+                  >
                     Review Flagged Videos
                   </Button>
-                  <Button variant="outline" className="w-full justify-start text-left" size="sm">
+                  <Button
+                    variant="outline"
+                    className="w-full justify-start text-left"
+                    size="sm"
+                  >
                     Monitor Live Streams
                   </Button>
-                  <Button variant="outline" className="w-full justify-start text-left" size="sm">
+                  <Button
+                    variant="outline"
+                    className="w-full justify-start text-left"
+                    size="sm"
+                  >
                     User Feature Analytics
                   </Button>
-                  <Button variant="outline" className="w-full justify-start text-left" size="sm">
+                  <Button
+                    variant="outline"
+                    className="w-full justify-start text-left"
+                    size="sm"
+                  >
                     Content Moderation Queue
                   </Button>
                 </div>
