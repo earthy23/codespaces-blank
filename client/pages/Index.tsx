@@ -172,7 +172,7 @@ export default function Index() {
             <div>
               <UECLogo size="md" className="mb-4" />
               <p className="text-sm text-muted-foreground">
-                The ultimate platform for Eaglercraft web clients and community features.
+                Eaglercraft launcher that doesn't suck. Made by players, for players.
               </p>
             </div>
             
