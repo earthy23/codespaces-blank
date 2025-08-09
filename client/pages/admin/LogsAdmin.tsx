@@ -265,7 +265,6 @@ export default function LogsAdmin() {
               <CardTitle className="text-sm font-medium text-gray-400">
                 Total Logs
               </CardTitle>
-              <FileText className="h-4 w-4 text-gray-500" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-white">{stats.total}</div>
@@ -277,7 +276,6 @@ export default function LogsAdmin() {
               <CardTitle className="text-sm font-medium text-gray-400">
                 Errors
               </CardTitle>
-              <AlertCircle className="h-4 w-4 text-red-400" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-white">
@@ -291,7 +289,6 @@ export default function LogsAdmin() {
               <CardTitle className="text-sm font-medium text-gray-400">
                 Warnings
               </CardTitle>
-              <AlertTriangle className="h-4 w-4 text-yellow-400" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-white">
@@ -305,7 +302,6 @@ export default function LogsAdmin() {
               <CardTitle className="text-sm font-medium text-gray-400">
                 Info Logs
               </CardTitle>
-              <Info className="h-4 w-4 text-blue-400" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-white">{stats.info}</div>
@@ -321,12 +317,11 @@ export default function LogsAdmin() {
           <CardContent>
             <div className="flex flex-col md:flex-row gap-4">
               <div className="relative flex-1">
-                <Search className="absolute left-2 top-2.5 h-4 w-4 text-gray-400" />
                 <Input
                   placeholder="Search logs..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-8 bg-gray-800 border-gray-600 text-white placeholder-gray-400"
+                  className="bg-gray-800 border-gray-600 text-white placeholder-gray-400"
                 />
               </div>
               <select
