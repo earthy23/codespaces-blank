@@ -38,21 +38,63 @@ const __dirname = path.dirname(__filename);
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Security middleware
-app.use(
+// Multi-domain support configuration
+const ALLOWED_DOMAINS = [
+  "localhost:3000",
+  "localhost:5173",
+  "localhost:8080",
+  "ueclub.com",
+  "www.ueclub.com",
+  "play.ueclub.com",
+  "api.ueclub.com",
+  "admin.ueclub.com",
+  "7b10610db8d44756a9e9dc629f6481f1-30e9842434a9496282981b9c3.fly.dev"
+];
+
+// Dynamic domain detection middleware
+app.use((req, res, next) => {
+  const host = req.get('host');
+  const protocol = req.get('x-forwarded-proto') || req.protocol || 'http';
+  const currentDomain = `${protocol}://${host}`;
+
+  // Add current domain to allowed origins if it matches pattern
+  if (host && (host.includes('ueclub.com') || host.includes('localhost') || host.includes('fly.dev'))) {
+    req.currentDomain = currentDomain;
+    req.isAllowedDomain = true;
+  }
+
+  next();
+});
+
+// Security middleware with dynamic CSP
+app.use((req, res, next) => {
+  const host = req.get('host');
+  const protocol = req.get('x-forwarded-proto') || req.protocol || 'http';
+
+  // Build dynamic CSP based on current domain
+  const cspDirectives = {
+    defaultSrc: ["'self'"],
+    styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
+    fontSrc: ["'self'", "https://fonts.gstatic.com"],
+    imgSrc: ["'self'", "data:", "https:", "blob:"],
+    scriptSrc: ["'self'"],
+    connectSrc: ["'self'", "ws:", "wss:"],
+  };
+
+  // Add current domain to connect sources for websockets
+  if (host) {
+    cspDirectives.connectSrc.push(`ws://${host}`, `wss://${host}`);
+    if (host.includes('ueclub.com')) {
+      cspDirectives.connectSrc.push('wss://*.ueclub.com', 'ws://*.ueclub.com');
+    }
+  }
+
   helmet({
     contentSecurityPolicy: {
-      directives: {
-        defaultSrc: ["'self'"],
-        styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
-        fontSrc: ["'self'", "https://fonts.gstatic.com"],
-        imgSrc: ["'self'", "data:", "https:", "blob:"],
-        scriptSrc: ["'self'"],
-        connectSrc: ["'self'", "ws:", "wss:"],
-      },
+      directives: cspDirectives,
     },
-  }),
-);
+  })(req, res, next);
+});
 
 // Rate limiting
 const limiter = rateLimit({
