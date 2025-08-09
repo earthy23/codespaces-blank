@@ -831,19 +831,21 @@ export default function Community() {
                     <div className="space-y-4">
                       <div className="flex justify-between items-center">
                         <span className="text-sm text-muted-foreground">Total Videos</span>
-                        <span className="font-semibold">0</span>
+                        <span className="font-semibold">{videos.length}</span>
                       </div>
                       <div className="flex justify-between items-center">
                         <span className="text-sm text-muted-foreground">Active Creators</span>
-                        <span className="font-semibold">0</span>
+                        <span className="font-semibold">{featuredCreators.length}</span>
                       </div>
                       <div className="flex justify-between items-center">
                         <span className="text-sm text-muted-foreground">Total Views</span>
-                        <span className="font-semibold">0</span>
+                        <span className="font-semibold">
+                          {formatNumber(videos.reduce((total, video) => total + video.views, 0))}
+                        </span>
                       </div>
                       <div className="flex justify-between items-center">
                         <span className="text-sm text-muted-foreground">This Week</span>
-                        <span className="font-semibold">0</span>
+                        <span className="font-semibold text-green-500">+{videos.length}</span>
                       </div>
                     </div>
                   </CardContent>
