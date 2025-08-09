@@ -2,22 +2,22 @@
 
 Eaglercraft launcher that doesn't suck. Built because we got tired of broken client sites and sketchy downloads.
 
-## 🎮 Features
+## What's included
 
-### Core Platform
-- **Landing Page** - Professional homepage with features showcase
-- **Authentication System** - Registration, login, password reset with email verification
-- **Dashboard** - Client launcher with dropdown selection
-- **Store** - Tebex-ready purchase system with admin management
-- **Admin Panel** - Complete administration tools
-- **Multi-Domain Support** - Deploy across multiple domains
-- **Email System** - Built-in SMTP email service
-- **Data Management** - Backup/restore system for VPS migration
+### Core stuff
+- **Landing page** that doesn't look like garbage
+- **User accounts** with email verification that actually works
+- **Client launcher** with all the good clients in one place
+- **Store system** if you want to sell ranks or whatever
+- **Admin panel** with tools that don't suck
+- **Multi-domain** support for running multiple sites
+- **Email system** that doesn't end up in spam folders
+- **Backup system** for when you inevitably break something
 
 ### Design
-- **Modern Dark Theme** - Clean, professional design with rounded corners
-- **Responsive Layout** - Works on all screen sizes
-- **Production Ready** - Optimized for 200+ concurrent users
+- **Dark theme** because light mode is for psychopaths
+- **Actually responsive** - works on phones without breaking
+- **Handles load** - tested with 200+ people online
 
 ## 🚀 Quick Start (Development)
 
