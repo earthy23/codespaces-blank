@@ -314,6 +314,7 @@ export default function Servers() {
       formData.append("name", newServerData.name);
       formData.append("description", newServerData.description);
       formData.append("ip", newServerData.ip);
+      formData.append("websocketUrl", newServerData.websocketUrl);
       formData.append("category", newServerData.category);
       formData.append("version", newServerData.version);
 
