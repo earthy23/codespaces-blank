@@ -131,7 +131,10 @@ export default function Dashboard() {
           }
         }
       } catch (error) {
-        if (!isMounted || error.name === "AbortError") return; // Component was unmounted
+        // Silently handle abort errors during cleanup
+        if (!isMounted || error.name === "AbortError" || abortController.signal.aborted) {
+          return; // Component was unmounted or request was aborted
+        }
 
         const errorMsg = error.message;
         console.warn("Failed to fetch clients:", errorMsg);
