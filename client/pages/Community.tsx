@@ -94,93 +94,9 @@ export default function Community() {
     try {
       setIsLoading(true);
 
-      // Mock data for demonstration
-      const mockVideos: Video[] = [
-        {
-          id: "1",
-          title: "Epic Minecraft Castle Build Tutorial",
-          description:
-            "Learn how to build an amazing medieval castle in Minecraft! This tutorial covers everything from foundation to decoration.",
-          thumbnail:
-            "https://via.placeholder.com/320x180/8b5cf6/ffffff?text=Castle+Build",
-          videoUrl: "#",
-          author: "BuildMaster",
-          authorId: "user1",
-          views: 15420,
-          likes: 892,
-          dislikes: 23,
-          createdAt: new Date(Date.now() - 86400000).toISOString(),
-          tags: ["tutorial", "building", "castle", "medieval"],
-          duration: "24:15",
-          liked: false,
-        },
-        {
-          id: "2",
-          title: "Top 10 Minecraft Mods for 2024",
-          description:
-            "Check out the best Minecraft mods that will enhance your gameplay experience this year!",
-          thumbnail:
-            "https://via.placeholder.com/320x180/10b981/ffffff?text=Top+Mods",
-          videoUrl: "#",
-          author: "ModGuru",
-          authorId: "user2",
-          views: 8540,
-          likes: 456,
-          dislikes: 12,
-          createdAt: new Date(Date.now() - 172800000).toISOString(),
-          tags: ["mods", "review", "gameplay"],
-          duration: "18:42",
-          liked: true,
-        },
-        {
-          id: "3",
-          title: "Redstone Computer Build - Part 1",
-          description:
-            "Building a functional computer inside Minecraft using only redstone! This is the first part of a 5-part series.",
-          thumbnail:
-            "https://via.placeholder.com/320x180/f59e0b/ffffff?text=Redstone+PC",
-          videoUrl: "#",
-          author: "RedstoneWiz",
-          authorId: "user3",
-          views: 23100,
-          likes: 1340,
-          dislikes: 56,
-          createdAt: new Date(Date.now() - 259200000).toISOString(),
-          tags: ["redstone", "computer", "engineering", "tutorial"],
-          duration: "32:08",
-          liked: false,
-        },
-      ];
-
-      const mockCreators: User[] = [
-        {
-          id: "user1",
-          username: "BuildMaster",
-          followers: 12500,
-          following: 89,
-          videos: 45,
-          isFollowing: false,
-        },
-        {
-          id: "user2",
-          username: "ModGuru",
-          followers: 8900,
-          following: 124,
-          videos: 23,
-          isFollowing: true,
-        },
-        {
-          id: "user3",
-          username: "RedstoneWiz",
-          followers: 15600,
-          following: 67,
-          videos: 67,
-          isFollowing: false,
-        },
-      ];
-
-      setVideos(mockVideos);
-      setFeaturedCreators(mockCreators);
+      // No videos or creators to display
+      setVideos([]);
+      setFeaturedCreators([]);
     } catch (error) {
       console.error("Failed to load community data:", error);
       toast({
@@ -483,183 +399,44 @@ export default function Community() {
               </TabsList>
 
               <TabsContent value="trending" className="mt-8">
-                <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-6">
-                  {filteredVideos.map((video) => (
-                    <Card
-                      key={video.id}
-                      className="group minecraft-panel hover:shadow-xl hover:shadow-primary/20 hover:-translate-y-1 transition-all duration-300 bg-card/80 backdrop-blur-sm border-border/40"
+                <div className="text-center py-16">
+                  <div className="max-w-md mx-auto">
+                    <div className="w-24 h-24 mx-auto mb-6 rounded-full bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center">
+                      <Video className="w-12 h-12 text-primary" />
+                    </div>
+                    <h3 className="text-2xl font-semibold mb-3">No videos yet</h3>
+                    <p className="text-muted-foreground mb-6 text-lg">
+                      Be the first to upload content to our community!
+                    </p>
+                    <Button
+                      onClick={() => setShowUploadDialog(true)}
+                      size="lg"
+                      className="bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70"
                     >
-                      <div className="relative overflow-hidden rounded-t-lg">
-                        <img
-                          src={video.thumbnail}
-                          alt={video.title}
-                          className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
-                        <Badge className="absolute bottom-3 right-3 bg-black/80 text-white border-0 backdrop-blur-sm">
-                          {video.duration}
-                        </Badge>
-                        <div className="absolute top-3 left-3">
-                          <Badge
-                            variant="secondary"
-                            className="bg-primary/20 text-primary border-0"
-                          >
-                            HD
-                          </Badge>
-                        </div>
-                      </div>
-                      <CardContent className="p-5">
-                        <h3 className="font-semibold text-lg mb-3 line-clamp-2 group-hover:text-primary transition-colors">
-                          {video.title}
-                        </h3>
-                        <div className="flex items-center space-x-3 mb-4">
-                          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary/30 to-primary/10 flex items-center justify-center ring-2 ring-primary/20">
-                            <span className="text-sm font-bold text-primary">
-                              {video.author.charAt(0).toUpperCase()}
-                            </span>
-                          </div>
-                          <div>
-                            <Link
-                              to={`/profile/user/${video.author}`}
-                              className="text-sm font-medium hover:text-primary transition-colors block"
-                            >
-                              {video.author}
-                            </Link>
-                            <p className="text-xs text-muted-foreground">
-                              Content Creator
-                            </p>
-                          </div>
-                        </div>
-                        <div className="flex items-center justify-between text-sm text-muted-foreground mb-4">
-                          <span className="flex items-center gap-1">
-                            👁️ {formatNumber(video.views)} views
-                          </span>
-                          <span>{formatTimeAgo(video.createdAt)}</span>
-                        </div>
-                        <div className="flex items-center justify-between mb-4">
-                          <div className="flex items-center space-x-2">
-                            <Button
-                              size="sm"
-                              variant={video.liked ? "default" : "outline"}
-                              onClick={() => handleLike(video.id, !video.liked)}
-                              className="text-xs h-8"
-                            >
-                              👍 {formatNumber(video.likes)}
-                            </Button>
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              className="text-xs h-8"
-                            >
-                              👎 {formatNumber(video.dislikes)}
-                            </Button>
-                          </div>
-                          <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                              <Button
-                                size="sm"
-                                variant="ghost"
-                                className="h-8 w-8 p-0"
-                              >
-                                ⋯
-                              </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent>
-                              <DropdownMenuItem>
-                                📚 Watch Later
-                              </DropdownMenuItem>
-                              <DropdownMenuItem>📤 Share</DropdownMenuItem>
-                              <DropdownMenuItem className="text-red-600">
-                                🚨 Report
-                              </DropdownMenuItem>
-                            </DropdownMenuContent>
-                          </DropdownMenu>
-                        </div>
-                        <div className="flex flex-wrap gap-1.5">
-                          {video.tags.slice(0, 3).map((tag) => (
-                            <Badge
-                              key={tag}
-                              variant="secondary"
-                              className="text-xs bg-muted/50 hover:bg-muted transition-colors cursor-pointer"
-                            >
-                              #{tag}
-                            </Badge>
-                          ))}
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ))}
+                      🎬 Upload First Video
+                    </Button>
+                  </div>
                 </div>
               </TabsContent>
 
               <TabsContent value="recent" className="mt-6">
-                <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-4">
-                  {[...filteredVideos]
-                    .sort(
-                      (a, b) =>
-                        new Date(b.createdAt).getTime() -
-                        new Date(a.createdAt).getTime(),
-                    )
-                    .map((video) => (
-                      <Card
-                        key={video.id}
-                        className="minecraft-panel hover:shadow-lg transition-shadow"
-                      >
-                        <div className="relative">
-                          <img
-                            src={video.thumbnail}
-                            alt={video.title}
-                            className="w-full h-40 object-cover rounded-t-lg"
-                          />
-                          <Badge className="absolute bottom-2 right-2 bg-black/70 text-white">
-                            {video.duration}
-                          </Badge>
-                        </div>
-                        <CardContent className="p-4">
-                          <h3 className="font-semibold text-lg mb-2 line-clamp-2">
-                            {video.title}
-                          </h3>
-                          <div className="flex items-center space-x-2 mb-2">
-                            <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center">
-                              <span className="text-sm font-semibold">
-                                {video.author.charAt(0).toUpperCase()}
-                              </span>
-                            </div>
-                            <Link
-                              to={`/profile/${video.authorId}`}
-                              className="text-sm font-medium hover:text-primary transition-colors"
-                            >
-                              {video.author}
-                            </Link>
-                          </div>
-                          <div className="flex items-center justify-between text-sm text-muted-foreground mb-3">
-                            <span>{formatNumber(video.views)} views</span>
-                            <span>{formatTimeAgo(video.createdAt)}</span>
-                          </div>
-                          <div className="flex items-center justify-between">
-                            <div className="flex items-center space-x-2">
-                              <Button
-                                size="sm"
-                                variant={video.liked ? "default" : "outline"}
-                                onClick={() =>
-                                  handleLike(video.id, !video.liked)
-                                }
-                                className="text-xs"
-                              >
-                                Like {formatNumber(video.likes)}
-                              </Button>
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                className="text-xs"
-                              >
-                                Dislike {formatNumber(video.dislikes)}
-                              </Button>
-                            </div>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    ))}
+                <div className="text-center py-16">
+                  <div className="max-w-md mx-auto">
+                    <div className="w-24 h-24 mx-auto mb-6 rounded-full bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center">
+                      <Video className="w-12 h-12 text-primary" />
+                    </div>
+                    <h3 className="text-2xl font-semibold mb-3">No recent videos</h3>
+                    <p className="text-muted-foreground mb-6 text-lg">
+                      Upload content to see recent videos here.
+                    </p>
+                    <Button
+                      onClick={() => setShowUploadDialog(true)}
+                      size="lg"
+                      className="bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70"
+                    >
+                      🎬 Upload Video
+                    </Button>
+                  </div>
                 </div>
               </TabsContent>
 
@@ -688,54 +465,16 @@ export default function Community() {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="space-y-4">
-                  {featuredCreators.map((creator, index) => (
-                    <div
-                      key={creator.id}
-                      className="group p-3 rounded-lg bg-muted/30 hover:bg-muted/50 transition-all duration-200 border border-border/30"
-                    >
-                      <div className="flex items-center justify-between mb-2">
-                        <div className="flex items-center space-x-3">
-                          <div className="relative">
-                            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary/30 to-primary/10 flex items-center justify-center ring-2 ring-primary/20">
-                              <span className="font-bold text-primary">
-                                {creator.username.charAt(0).toUpperCase()}
-                              </span>
-                            </div>
-                            {index < 3 && (
-                              <div className="absolute -top-1 -right-1 w-5 h-5 bg-yellow-500 rounded-full flex items-center justify-center text-xs font-bold text-black">
-                                {index + 1}
-                              </div>
-                            )}
-                          </div>
-                          <div className="min-w-0 flex-1">
-                            <Link
-                              to={`/profile/user/${creator.username}`}
-                              className="font-medium hover:text-primary transition-colors block truncate"
-                            >
-                              {creator.username}
-                            </Link>
-                            <p className="text-xs text-muted-foreground">
-                              {formatNumber(creator.followers)} followers
-                            </p>
-                            <p className="text-xs text-muted-foreground">
-                              {creator.videos} videos
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                      <Button
-                        size="sm"
-                        variant={creator.isFollowing ? "outline" : "default"}
-                        onClick={() =>
-                          handleFollow(creator.id, !creator.isFollowing)
-                        }
-                        className="w-full h-8 text-xs"
-                      >
-                        {creator.isFollowing ? "✓ Following" : "➕ Follow"}
-                      </Button>
-                    </div>
-                  ))}
+                <div className="text-center py-8">
+                  <p className="text-muted-foreground mb-4">
+                    No featured creators yet. Upload content to become a featured creator!
+                  </p>
+                  <Button
+                    onClick={() => setShowUploadDialog(true)}
+                    variant="outline"
+                  >
+                    Get Started
+                  </Button>
                 </div>
               </CardContent>
             </Card>
@@ -753,25 +492,25 @@ export default function Community() {
                     <span className="text-sm text-muted-foreground">
                       Total Videos
                     </span>
-                    <span className="font-semibold">1,247</span>
+                    <span className="font-semibold">0</span>
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-sm text-muted-foreground">
                       Active Creators
                     </span>
-                    <span className="font-semibold">89</span>
+                    <span className="font-semibold">0</span>
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-sm text-muted-foreground">
                       Total Views
                     </span>
-                    <span className="font-semibold">2.4M</span>
+                    <span className="font-semibold">0</span>
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-sm text-muted-foreground">
                       This Week
                     </span>
-                    <span className="font-semibold text-green-500">+157</span>
+                    <span className="font-semibold">0</span>
                   </div>
                 </div>
               </CardContent>
