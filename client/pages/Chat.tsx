@@ -419,7 +419,7 @@ export default function Chat() {
                                     </Button>
                                   </div>
                                 ))}
-                                {friends.length === 0 && (
+                                {(friends || []).length === 0 && (
                                   <div className="text-center py-4 text-muted-foreground">
                                     No friends available. Add some friends first!
                                   </div>
@@ -472,7 +472,7 @@ export default function Chat() {
                                       </label>
                                     </div>
                                   ))}
-                                  {friends.length === 0 && (
+                                  {(friends || []).length === 0 && (
                                     <div className="text-center py-4 text-muted-foreground">
                                       No friends available.
                                     </div>
