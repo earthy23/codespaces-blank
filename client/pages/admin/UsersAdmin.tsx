@@ -26,7 +26,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { AdminLayout } from "@/components/ui/admin-layout";
-import { Users, Eye, Ban } from "lucide-react";
 import { useAuth } from "@/lib/auth";
 
 interface User {
