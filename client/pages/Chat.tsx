@@ -695,8 +695,8 @@ export default function Chat() {
                       </div>
                       <p className="text-sm text-muted-foreground">
                         {currentChat.type === "group"
-                          ? `${currentChat.participant_usernames?.length || 0} members`
-                          : "Direct message"}
+                          ? `${currentChat.participant_usernames?.length || 0} members - Testing: File sharing & Voice calls available`
+                          : "Direct message - Testing: File upload & Voice calls ready"}
                       </p>
                     </div>
                   </div>
