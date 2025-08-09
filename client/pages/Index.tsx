@@ -55,7 +55,7 @@ export default function Index() {
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link to="/register">
                 <Button size="lg" className="minecraft-button bg-primary text-primary-foreground hover:bg-primary/90 px-8 py-6 text-lg">
-                  Start Playing Now
+                  Get Started
                 </Button>
               </Link>
               <Link to="/downloads">
