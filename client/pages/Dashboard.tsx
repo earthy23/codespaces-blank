@@ -570,18 +570,16 @@ export default function Dashboard() {
           </Card>
         </div>
 
-        {/* Top Servers */}
-        {topServers.length > 0 && (
-          <Card className="minecraft-panel mb-8">
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <span>Popular Servers</span>
-              </CardTitle>
-              <CardDescription>
-                Most liked servers in the community
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
+        {/* Popular Servers */}
+        <Card className="minecraft-panel mb-8">
+          <CardHeader>
+            <CardTitle>Popular Servers</CardTitle>
+            <CardDescription>
+              Community servers and multiplayer worlds
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            {topServers.length > 0 ? (
               <div className="grid md:grid-cols-3 gap-4">
                 {topServers.map((server) => (
                   <Card
@@ -614,7 +612,7 @@ export default function Dashboard() {
                       <Link to="/servers">
                         <Button
                           size="sm"
-                          className="w-full bg-primary text-primary-foreground hover:bg-primary/90 shadow-md hover:shadow-primary/20"
+                          className="w-full bg-primary text-primary-foreground hover:bg-primary/90"
                         >
                           View Servers
                         </Button>
@@ -623,9 +621,21 @@ export default function Dashboard() {
                   </Card>
                 ))}
               </div>
-            </CardContent>
-          </Card>
-        )}
+            ) : (
+              <div className="text-center py-8">
+                <h3 className="text-lg font-semibold mb-2">No servers available</h3>
+                <p className="text-muted-foreground mb-4">
+                  Server listings will appear here when available
+                </p>
+                <Link to="/servers">
+                  <Button variant="outline">
+                    Browse All Servers
+                  </Button>
+                </Link>
+              </div>
+            )}
+          </CardContent>
+        </Card>
 
         {/* Partners */}
         {partners.length > 0 && (
