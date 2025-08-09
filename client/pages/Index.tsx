@@ -159,7 +159,7 @@ export default function Index() {
           </p>
           <Link to="/register">
             <Button size="lg" className="minecraft-button bg-primary text-primary-foreground hover:bg-primary/90 px-8 py-6 text-lg">
-              Join UEC Now
+              Sign Up
             </Button>
           </Link>
         </div>
