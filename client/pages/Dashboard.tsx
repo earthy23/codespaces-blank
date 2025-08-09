@@ -115,8 +115,12 @@ export default function Dashboard() {
               return;
             }
             console.warn("Failed to parse clients response:", error);
-            if (isMounted) {
-              setClients([]);
+            if (isMounted && !abortController.signal.aborted) {
+              try {
+                setClients([]);
+              } catch (e) {
+                // Ignore any errors during state updates
+              }
             }
           }
         } else {
