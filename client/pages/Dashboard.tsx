@@ -406,74 +406,172 @@ export default function Dashboard() {
           </div>
         )}
 
-        {/* Enhanced Client Launcher */}
-        <Card className="minecraft-panel mb-8 bg-card border-2 border-primary/20 shadow-xl shadow-primary/10">
-          <CardHeader>
-            <CardTitle className="flex items-center space-x-2">
-              <div>
-                <span className="text-xl">Launch Client</span>
-                <p className="text-sm font-normal text-muted-foreground">
-                  Select and launch your preferred Eaglercraft client
-                </p>
-              </div>
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex flex-col sm:flex-row gap-4">
-              <div className="flex-1">
-                <Select
-                  value={selectedClient}
-                  onValueChange={setSelectedClient}
-                  disabled={false}
-                >
-                  <SelectTrigger className="minecraft-input h-12 text-base border-2">
-                    <SelectValue
-                      placeholder={
-                        loading ? "Loading clients..." : "Choose a client..."
-                      }
-                    />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {loading ? (
-                      <SelectItem value="loading" disabled>
-                        Loading clients...
-                      </SelectItem>
-                    ) : clients.length > 0 ? (
-                      clients.map((client) => (
-                        <SelectItem key={client.id} value={client.id}>
-                          <div className="py-1">
-                            <div className="font-medium">
-                              {client.name} v{client.version}
-                            </div>
-                            <div className="text-sm text-muted-foreground">
-                              {client.description}
-                            </div>
-                          </div>
+        {/* Client Launcher and Friends Section */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+          {/* Enhanced Client Launcher */}
+          <Card className="lg:col-span-2 minecraft-panel bg-card border-2 border-primary/20 shadow-xl shadow-primary/10">
+            <CardHeader>
+              <CardTitle className="flex items-center space-x-2">
+                <div>
+                  <span className="text-xl">Launch Client</span>
+                  <p className="text-sm font-normal text-muted-foreground">
+                    Select and launch your preferred Eaglercraft client
+                  </p>
+                </div>
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="flex flex-col sm:flex-row gap-4">
+                <div className="flex-1">
+                  <Select
+                    value={selectedClient}
+                    onValueChange={setSelectedClient}
+                    disabled={false}
+                  >
+                    <SelectTrigger className="minecraft-input h-12 text-base border-2">
+                      <SelectValue
+                        placeholder={
+                          loading ? "Loading clients..." : "Choose a client..."
+                        }
+                      />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {loading ? (
+                        <SelectItem value="loading" disabled>
+                          Loading clients...
                         </SelectItem>
-                      ))
-                    ) : (
-                      <SelectItem value="no-clients" disabled>
-                        No clients available
-                      </SelectItem>
-                    )}
-                  </SelectContent>
-                </Select>
+                      ) : clients.length > 0 ? (
+                        clients.map((client) => (
+                          <SelectItem key={client.id} value={client.id}>
+                            <div className="py-1">
+                              <div className="font-medium">
+                                {client.name} v{client.version}
+                              </div>
+                              <div className="text-sm text-muted-foreground">
+                                {client.description}
+                              </div>
+                            </div>
+                          </SelectItem>
+                        ))
+                      ) : (
+                        <SelectItem value="no-clients" disabled>
+                          No clients available
+                        </SelectItem>
+                      )}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <Button
+                  onClick={launchClient}
+                  disabled={
+                    !selectedClient || selectedClient === "no-clients" || loading
+                  }
+                  size="lg"
+                  className="h-12 px-8 minecraft-button bg-primary text-primary-foreground border-none hover:bg-primary/90 shadow-lg hover:shadow-primary/30"
+                >
+                  <span className="-ml-0.5">
+                    {loading ? "Loading..." : "Launch Game"}
+                  </span>
+                </Button>
               </div>
-              <Button
-                onClick={launchClient}
-                disabled={
-                  !selectedClient || selectedClient === "no-clients" || loading
-                }
-                size="lg"
-                className="h-12 px-8 minecraft-button bg-primary text-primary-foreground border-none hover:bg-primary/90 shadow-lg hover:shadow-primary/30"
-              >
-                <span className="-ml-0.5">
-                  {loading ? "Loading..." : "Launch Game"}
-                </span>
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+
+          {/* Friends Section */}
+          <Card className="minecraft-panel bg-card/20 backdrop-blur-sm border-border/40">
+            <CardHeader>
+              <CardTitle className="flex items-center space-x-2">
+                <Users className="w-5 h-5" />
+                <span>Friends Online</span>
+                {onlineFriends.length > 0 && (
+                  <Badge className="bg-green-500 text-white">
+                    {onlineFriends.length}
+                  </Badge>
+                )}
+              </CardTitle>
+              <CardDescription>
+                Friends currently online and available to play
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {onlineFriends.length > 0 ? (
+                <div className="space-y-3">
+                  {onlineFriends.slice(0, 5).map((friend) => (
+                    <div
+                      key={friend.id}
+                      className="flex items-center space-x-3 p-2 rounded-lg bg-muted/30 hover:bg-muted/50 transition-colors"
+                    >
+                      <div className="relative">
+                        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary/30 to-primary/10 flex items-center justify-center">
+                          <span className="text-sm font-bold text-primary">
+                            {friend.username.charAt(0).toUpperCase()}
+                          </span>
+                        </div>
+                        <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-green-500 rounded-full border-2 border-background"></div>
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <Link
+                          to={`/profile/${friend.username}`}
+                          className="text-sm font-medium hover:text-primary transition-colors block truncate"
+                        >
+                          {friend.username}
+                        </Link>
+                        <p className="text-xs text-muted-foreground">
+                          {friend.status || "Online"}
+                        </p>
+                      </div>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        className="h-8 w-8 p-0"
+                        onClick={() => navigate(`/chat/${friend.id}`)}
+                      >
+                        💬
+                      </Button>
+                    </div>
+                  ))}
+                  {onlineFriends.length > 5 && (
+                    <div className="text-center pt-2">
+                      <Link to="/friends">
+                        <Button variant="outline" size="sm">
+                          View All Friends ({onlineFriends.length})
+                        </Button>
+                      </Link>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div className="text-center py-8">
+                  <div className="w-12 h-12 mx-auto mb-4 rounded-full bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center">
+                    <Users className="w-6 h-6 text-primary" />
+                  </div>
+                  <p className="text-sm text-muted-foreground mb-4">
+                    No friends online right now
+                  </p>
+                  <Link to="/friends">
+                    <Button variant="outline" size="sm">
+                      Find Friends
+                    </Button>
+                  </Link>
+                </div>
+              )}
+
+              {unreadTotal > 0 && (
+                <div className="mt-4 pt-4 border-t border-border">
+                  <Link to="/chat">
+                    <Button
+                      variant="default"
+                      size="sm"
+                      className="w-full bg-primary hover:bg-primary/90"
+                    >
+                      {unreadTotal} New Message{unreadTotal > 1 ? 's' : ''}
+                    </Button>
+                  </Link>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </div>
 
         {/* Top Servers */}
         {topServers.length > 0 && (
