@@ -111,10 +111,7 @@ export default function Profile() {
     }
 
     // Determine if this is the user's own profile
-    const isOwn =
-      (!userId && !username) ||
-      userId === user.id ||
-      username === user.username;
+    const isOwn = !username || username === user.username;
     setIsOwnProfile(isOwn);
 
     if (isOwn) {
@@ -144,10 +141,9 @@ export default function Profile() {
       loadUserVideos(user.id);
     } else {
       // Load other user's profile
-      const targetIdentifier = userId || username;
-      if (targetIdentifier) {
-        loadUserProfile(targetIdentifier);
-        loadUserVideos(targetIdentifier);
+      if (username) {
+        loadUserProfile(username);
+        loadUserVideos(username);
       }
     }
   }, [user, userId, username, navigate]);
