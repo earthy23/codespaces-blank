@@ -86,7 +86,11 @@ export default function Dashboard() {
           return response;
         } catch (error) {
           // Don't log error if component unmounted or request was intentionally aborted
-          if (!isMounted || error.name === "AbortError" || abortController.signal.aborted) {
+          if (
+            !isMounted ||
+            error.name === "AbortError" ||
+            abortController.signal.aborted
+          ) {
             return null;
           }
 
@@ -117,7 +121,11 @@ export default function Dashboard() {
             }
           } catch (error) {
             // Silently handle abort errors during cleanup
-            if (!isMounted || error.name === "AbortError" || abortController.signal.aborted) {
+            if (
+              !isMounted ||
+              error.name === "AbortError" ||
+              abortController.signal.aborted
+            ) {
               return;
             }
             console.warn("Failed to parse clients response:", error);
@@ -150,7 +158,11 @@ export default function Dashboard() {
         }
       } catch (error) {
         // Silently handle abort errors during cleanup
-        if (!isMounted || error.name === "AbortError" || abortController.signal.aborted) {
+        if (
+          !isMounted ||
+          error.name === "AbortError" ||
+          abortController.signal.aborted
+        ) {
           return; // Component was unmounted or request was aborted
         }
 
@@ -187,7 +199,11 @@ export default function Dashboard() {
             }
           } catch (error) {
             // Silently handle abort errors during cleanup
-            if (!isMounted || error.name === "AbortError" || abortController.signal.aborted) {
+            if (
+              !isMounted ||
+              error.name === "AbortError" ||
+              abortController.signal.aborted
+            ) {
               return;
             }
             console.warn("Failed to parse servers response:", error);
@@ -215,7 +231,11 @@ export default function Dashboard() {
         }
       } catch (error) {
         // Silently handle abort errors during cleanup
-        if (!isMounted || error.name === "AbortError" || abortController.signal.aborted) {
+        if (
+          !isMounted ||
+          error.name === "AbortError" ||
+          abortController.signal.aborted
+        ) {
           return; // Component was unmounted or request was aborted
         }
 
@@ -246,7 +266,11 @@ export default function Dashboard() {
             }
           } catch (error) {
             // Silently handle abort errors during cleanup
-            if (!isMounted || error.name === "AbortError" || abortController.signal.aborted) {
+            if (
+              !isMounted ||
+              error.name === "AbortError" ||
+              abortController.signal.aborted
+            ) {
               return;
             }
             console.warn("Failed to parse partners response:", error);
@@ -274,7 +298,11 @@ export default function Dashboard() {
         }
       } catch (error) {
         // Silently handle abort errors during cleanup
-        if (!isMounted || error.name === "AbortError" || abortController.signal.aborted) {
+        if (
+          !isMounted ||
+          error.name === "AbortError" ||
+          abortController.signal.aborted
+        ) {
           return; // Component was unmounted or request was aborted
         }
 
@@ -465,7 +493,9 @@ export default function Dashboard() {
                 <Button
                   onClick={launchClient}
                   disabled={
-                    !selectedClient || selectedClient === "no-clients" || loading
+                    !selectedClient ||
+                    selectedClient === "no-clients" ||
+                    loading
                   }
                   size="lg"
                   className="h-12 px-8 minecraft-button bg-primary text-primary-foreground border-none hover:bg-primary/90 shadow-lg hover:shadow-primary/30"
@@ -561,7 +591,7 @@ export default function Dashboard() {
                       size="sm"
                       className="w-full bg-primary hover:bg-primary/90"
                     >
-                      {unreadTotal} New Message{unreadTotal > 1 ? 's' : ''}
+                      {unreadTotal} New Message{unreadTotal > 1 ? "s" : ""}
                     </Button>
                   </Link>
                 </div>
@@ -623,14 +653,14 @@ export default function Dashboard() {
               </div>
             ) : (
               <div className="text-center py-8">
-                <h3 className="text-lg font-semibold mb-2">No servers available</h3>
+                <h3 className="text-lg font-semibold mb-2">
+                  No servers available
+                </h3>
                 <p className="text-muted-foreground mb-4">
                   Server listings will appear here when available
                 </p>
                 <Link to="/servers">
-                  <Button variant="outline">
-                    Browse All Servers
-                  </Button>
+                  <Button variant="outline">Browse All Servers</Button>
                 </Link>
               </div>
             )}

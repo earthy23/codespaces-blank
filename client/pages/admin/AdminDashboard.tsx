@@ -48,7 +48,13 @@ interface RecentActivity {
 }
 
 // Enhanced chart components using Recharts
-const MiniLineChart = ({ data, color = "#8b5cf6" }: { data: any[]; color?: string }) => (
+const MiniLineChart = ({
+  data,
+  color = "#8b5cf6",
+}: {
+  data: any[];
+  color?: string;
+}) => (
   <ResponsiveContainer width="100%" height={60}>
     <LineChart data={data}>
       <Line
@@ -63,7 +69,13 @@ const MiniLineChart = ({ data, color = "#8b5cf6" }: { data: any[]; color?: strin
   </ResponsiveContainer>
 );
 
-const MiniAreaChart = ({ data, color = "#8b5cf6" }: { data: any[]; color?: string }) => (
+const MiniAreaChart = ({
+  data,
+  color = "#8b5cf6",
+}: {
+  data: any[];
+  color?: string;
+}) => (
   <ResponsiveContainer width="100%" height={60}>
     <AreaChart data={data}>
       <Area
@@ -95,7 +107,9 @@ export default function AdminDashboard() {
   const [systemMetrics, setSystemMetrics] = useState<any>(null);
   const [lastMetricsUpdate, setLastMetricsUpdate] = useState(Date.now());
   const [timeRange, setTimeRange] = useState("24h");
-  const [connectionStatus, setConnectionStatus] = useState<"connected" | "degraded" | "offline">("connected");
+  const [connectionStatus, setConnectionStatus] = useState<
+    "connected" | "degraded" | "offline"
+  >("connected");
   const [realTimeData, setRealTimeData] = useState<any>(null);
   const [liveActivity, setLiveActivity] = useState<RecentActivity[]>([]);
   const abortControllerRef = useRef<AbortController | null>(null);
@@ -160,16 +174,16 @@ export default function AdminDashboard() {
 
     try {
       setIsLoading(true);
-      
+
       if (abortControllerRef.current) {
         abortControllerRef.current.abort();
       }
-      
+
       const controller = new AbortController();
       abortControllerRef.current = controller;
 
       const timeoutId = setTimeout(() => {
-        controller.abort(new Error('Dashboard data loading timeout'));
+        controller.abort(new Error("Dashboard data loading timeout"));
       }, 10000);
 
       try {
@@ -192,7 +206,7 @@ export default function AdminDashboard() {
 
         clearTimeout(timeoutId);
 
-        if (statsRes.status === 'fulfilled' && statsRes.value.ok) {
+        if (statsRes.status === "fulfilled" && statsRes.value.ok) {
           const statsData = await statsRes.value.json();
           const stats = statsData.stats;
 
@@ -212,7 +226,7 @@ export default function AdminDashboard() {
           cacheManager.set(CACHE_KEYS.ADMIN_STATS, enhancedStats);
         }
 
-        if (activityRes.status === 'fulfilled' && activityRes.value.ok) {
+        if (activityRes.status === "fulfilled" && activityRes.value.ok) {
           const activityData = await activityRes.value.json();
           const logs = activityData.logs || [];
           setRecentActivity(logs);
@@ -283,11 +297,18 @@ export default function AdminDashboard() {
           </div>
           <div className="flex items-center space-x-3">
             <div className="flex items-center space-x-2">
-              <div className={`w-3 h-3 rounded-full ${
-                connectionStatus === "connected" ? "bg-green-500" :
-                connectionStatus === "degraded" ? "bg-yellow-500" : "bg-red-500"
-              }`} />
-              <span className="text-sm font-medium capitalize">{connectionStatus}</span>
+              <div
+                className={`w-3 h-3 rounded-full ${
+                  connectionStatus === "connected"
+                    ? "bg-green-500"
+                    : connectionStatus === "degraded"
+                      ? "bg-yellow-500"
+                      : "bg-red-500"
+                }`}
+              />
+              <span className="text-sm font-medium capitalize">
+                {connectionStatus}
+              </span>
             </div>
 
             <select
@@ -336,7 +357,9 @@ export default function AdminDashboard() {
 
           <Card className="minecraft-panel">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Active Sessions</CardTitle>
+              <CardTitle className="text-sm font-medium">
+                Active Sessions
+              </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-3xl font-bold text-primary">
@@ -370,7 +393,9 @@ export default function AdminDashboard() {
 
           <Card className="minecraft-panel">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Support Tickets</CardTitle>
+              <CardTitle className="text-sm font-medium">
+                Support Tickets
+              </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-3xl font-bold text-primary">
@@ -406,7 +431,10 @@ export default function AdminDashboard() {
                     {systemMetrics?.system?.cpu || 23}%
                   </span>
                 </div>
-                <Progress value={systemMetrics?.system?.cpu || 23} className="h-2" />
+                <Progress
+                  value={systemMetrics?.system?.cpu || 23}
+                  className="h-2"
+                />
               </div>
 
               <div className="space-y-2">
@@ -416,7 +444,10 @@ export default function AdminDashboard() {
                     {systemMetrics?.system?.memory || 67}%
                   </span>
                 </div>
-                <Progress value={systemMetrics?.system?.memory || 67} className="h-2" />
+                <Progress
+                  value={systemMetrics?.system?.memory || 67}
+                  className="h-2"
+                />
               </div>
 
               <div className="space-y-2">
@@ -426,15 +457,22 @@ export default function AdminDashboard() {
                     {systemMetrics?.system?.network || 34}%
                   </span>
                 </div>
-                <Progress value={systemMetrics?.system?.network || 34} className="h-2" />
+                <Progress
+                  value={systemMetrics?.system?.network || 34}
+                  className="h-2"
+                />
               </div>
             </div>
 
             <div className="flex justify-between items-center text-xs text-muted-foreground">
-              <span>Last updated: {new Date(lastMetricsUpdate).toLocaleTimeString()}</span>
+              <span>
+                Last updated: {new Date(lastMetricsUpdate).toLocaleTimeString()}
+              </span>
               {realTimeData && (
                 <div className="flex space-x-4">
-                  <span>Uptime: {Math.floor((realTimeData.uptime || 0) / 3600)}h</span>
+                  <span>
+                    Uptime: {Math.floor((realTimeData.uptime || 0) / 3600)}h
+                  </span>
                   <span>Memory: {realTimeData.memoryUsage?.used || 0}MB</span>
                 </div>
               )}
@@ -458,22 +496,30 @@ export default function AdminDashboard() {
                   <div className="p-3 bg-muted/50 rounded-lg">
                     <p className="font-medium">ueclub.com</p>
                     <div className="flex items-center space-x-4 mt-2 text-sm">
-                      <Badge className="bg-green-500/20 text-green-600">SSL Valid</Badge>
-                      <span className="text-muted-foreground">Expires: Dec 2024</span>
+                      <Badge className="bg-green-500/20 text-green-600">
+                        SSL Valid
+                      </Badge>
+                      <span className="text-muted-foreground">
+                        Expires: Dec 2024
+                      </span>
                     </div>
                   </div>
                 </div>
-                
+
                 <div>
                   <h4 className="font-semibold mb-2">Custom Domains</h4>
                   <div className="space-y-2">
                     <div className="p-3 bg-muted/50 rounded-lg">
                       <p className="font-medium">play.ueclub.com</p>
-                      <Badge className="bg-green-500/20 text-green-600 text-xs">Active</Badge>
+                      <Badge className="bg-green-500/20 text-green-600 text-xs">
+                        Active
+                      </Badge>
                     </div>
                     <div className="p-3 bg-muted/50 rounded-lg">
                       <p className="font-medium">api.ueclub.com</p>
-                      <Badge className="bg-green-500/20 text-green-600 text-xs">Active</Badge>
+                      <Badge className="bg-green-500/20 text-green-600 text-xs">
+                        Active
+                      </Badge>
                     </div>
                   </div>
                 </div>
@@ -562,7 +608,7 @@ export default function AdminDashboard() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            {(liveActivity.length > 0 || recentActivity.length > 0) ? (
+            {liveActivity.length > 0 || recentActivity.length > 0 ? (
               <div className="space-y-3 max-h-80 overflow-y-auto">
                 {liveActivity.slice(0, 4).map((activity) => (
                   <div
@@ -571,7 +617,8 @@ export default function AdminDashboard() {
                   >
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-medium truncate">
-                        {activity.username || "System"} - {activity.action.replace(/_/g, " ")}
+                        {activity.username || "System"} -{" "}
+                        {activity.action.replace(/_/g, " ")}
                       </p>
                       <p className="text-xs text-muted-foreground">
                         {formatTime(activity.timestamp)} • LIVE
@@ -582,33 +629,38 @@ export default function AdminDashboard() {
                     </Badge>
                   </div>
                 ))}
-                
-                {recentActivity.slice(0, Math.max(4, 8 - liveActivity.length)).map((activity) => (
-                  <div
-                    key={activity.id}
-                    className="flex items-center space-x-3 p-3 rounded-lg hover:bg-muted/50 transition-colors"
-                  >
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium truncate">
-                        {activity.username || "System"} - {activity.action.replace(/_/g, " ")}
-                      </p>
-                      <p className="text-xs text-muted-foreground">
-                        {formatTime(activity.timestamp)}
-                      </p>
+
+                {recentActivity
+                  .slice(0, Math.max(4, 8 - liveActivity.length))
+                  .map((activity) => (
+                    <div
+                      key={activity.id}
+                      className="flex items-center space-x-3 p-3 rounded-lg hover:bg-muted/50 transition-colors"
+                    >
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium truncate">
+                          {activity.username || "System"} -{" "}
+                          {activity.action.replace(/_/g, " ")}
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          {formatTime(activity.timestamp)}
+                        </p>
+                      </div>
+                      <Badge variant="outline" className="text-xs">
+                        {activity.category}
+                      </Badge>
                     </div>
-                    <Badge variant="outline" className="text-xs">
-                      {activity.category}
-                    </Badge>
-                  </div>
-                ))}
+                  ))}
               </div>
             ) : (
               <div className="text-center py-8 text-muted-foreground">
                 <p>No recent activity</p>
-                <p className="text-xs mt-1">Live feed will update automatically</p>
+                <p className="text-xs mt-1">
+                  Live feed will update automatically
+                </p>
               </div>
             )}
-            
+
             {liveActivity.length > 0 && (
               <div className="flex items-center justify-center mt-4 pt-3 border-t border-border">
                 <div className="flex items-center space-x-2 text-xs text-muted-foreground">

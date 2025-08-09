@@ -177,7 +177,8 @@ export default function Profile() {
           id: "1",
           slug: "epic-castle-build-tutorial",
           title: "My Epic Build Showcase",
-          thumbnail: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=320&h=180&fit=crop",
+          thumbnail:
+            "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=320&h=180&fit=crop",
           views: 2400,
           createdAt: new Date(Date.now() - 86400000).toISOString(),
           duration: "8:32",
@@ -186,7 +187,8 @@ export default function Profile() {
           id: "2",
           slug: "redstone-computer-build",
           title: "Tutorial: Advanced Redstone",
-          thumbnail: "https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=320&h=180&fit=crop",
+          thumbnail:
+            "https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=320&h=180&fit=crop",
           views: 1890,
           createdAt: new Date(Date.now() - 172800000).toISOString(),
           duration: "15:45",
@@ -195,7 +197,8 @@ export default function Profile() {
           id: "3",
           slug: "modern-house-speed-build",
           title: "Server Tour & Review",
-          thumbnail: "https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=320&h=180&fit=crop",
+          thumbnail:
+            "https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=320&h=180&fit=crop",
           views: 3200,
           createdAt: new Date(Date.now() - 259200000).toISOString(),
           duration: "12:18",
@@ -463,7 +466,9 @@ export default function Profile() {
 
         {/* Content Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className={`grid w-full ${isOwnProfile ? 'grid-cols-3' : 'grid-cols-2'}`}>
+          <TabsList
+            className={`grid w-full ${isOwnProfile ? "grid-cols-3" : "grid-cols-2"}`}
+          >
             <TabsTrigger value="video" className="flex items-center space-x-2">
               <Video className="w-4 h-4" />
               <span>Video</span>
@@ -473,7 +478,10 @@ export default function Profile() {
               <span>Bio</span>
             </TabsTrigger>
             {isOwnProfile && (
-              <TabsTrigger value="settings" className="flex items-center space-x-2">
+              <TabsTrigger
+                value="settings"
+                className="flex items-center space-x-2"
+              >
                 <Settings className="w-4 h-4" />
                 <span>Settings</span>
               </TabsTrigger>
@@ -515,7 +523,7 @@ export default function Profile() {
                           <h3 className="font-semibold text-base mb-2 line-clamp-2 group-hover:text-primary transition-colors">
                             {video.title}
                           </h3>
-                          
+
                           <div className="flex items-center justify-between text-sm text-muted-foreground mb-2">
                             <span className="flex items-center gap-1">
                               <Eye className="w-4 h-4" />
@@ -596,7 +604,9 @@ export default function Profile() {
                     </div>
                     <div>
                       <span className="text-muted-foreground">Followers:</span>
-                      <span className="ml-2">{formatNumber(profileUser.followers)}</span>
+                      <span className="ml-2">
+                        {formatNumber(profileUser.followers)}
+                      </span>
                     </div>
                   </div>
                 </div>

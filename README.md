@@ -5,6 +5,7 @@ Eaglercraft launcher that doesn't suck. Built because we got tired of broken cli
 ## What's included
 
 ### Core stuff
+
 - **Landing page** that doesn't look like garbage
 - **User accounts** with email verification that actually works
 - **Client launcher** with all the good clients in one place
@@ -15,6 +16,7 @@ Eaglercraft launcher that doesn't suck. Built because we got tired of broken cli
 - **Backup system** for when you inevitably break something
 
 ### Design
+
 - **Dark theme** because light mode is for psychopaths
 - **Actually responsive** - works on phones without breaking
 - **Handles load** - tested with 200+ people online
@@ -22,6 +24,7 @@ Eaglercraft launcher that doesn't suck. Built because we got tired of broken cli
 ## Getting started
 
 1. **Clone and install**
+
    ```bash
    git clone https://github.com/yourusername/uec-launcher.git
    cd uec-launcher
@@ -29,11 +32,13 @@ Eaglercraft launcher that doesn't suck. Built because we got tired of broken cli
    ```
 
 2. **Create admin account**
+
    ```bash
    npm run create-admin
    ```
 
 3. **Start it up**
+
    ```bash
    npm run dev
    ```
@@ -50,6 +55,7 @@ For production deployment on a VPS with support for 200+ users, see our comprehe
 **📖 [PRODUCTION_DEPLOYMENT.md](./PRODUCTION_DEPLOYMENT.md)**
 
 This guide covers:
+
 - VPS setup and system requirements
 - PM2 process management with clustering
 - Nginx configuration with SSL
@@ -60,6 +66,7 @@ This guide covers:
 - Troubleshooting
 
 ### Quick Production Setup
+
 ```bash
 # 1. Setup VPS (Ubuntu 20.04+)
 sudo apt update && sudo apt upgrade -y
@@ -88,6 +95,7 @@ pm2 startup
 ## 🔧 Admin Panel Features
 
 ### Store Management
+
 - Add/Edit/Delete store items
 - Configure Tebex integration
 - Set prices, descriptions, and features
@@ -95,23 +103,27 @@ pm2 startup
 - Active/Inactive item control
 
 ### User Management
+
 - View all registered users
 - Ban/unban users with duration and reason
 - Search and filter users
 - User activity monitoring
 
 ### Domain Management
+
 - Configure allowed domains for multi-domain deployment
 - Domain verification and SSL status
 - Security settings and access control
 
 ### Email System
+
 - SMTP configuration through admin panel
 - Email templates for user registration, password reset
 - Email queue management and delivery tracking
 - Test email functionality
 
 ### System Monitoring
+
 - Real-time analytics dashboard
 - Server logs and activity monitoring
 - Backup management and restoration
@@ -120,13 +132,15 @@ pm2 startup
 ## 📱 User Flow
 
 ### New Users
+
 1. Land on homepage → Register account
 2. Email verification (if enabled)
 3. Redirected to dashboard
 4. Select client from dropdown → Launch game
 5. Access store, friends, chat features
 
-### Admin Users  
+### Admin Users
+
 1. Login with admin credentials
 2. Access admin panel from dashboard
 3. Manage store items, users, and settings
@@ -135,6 +149,7 @@ pm2 startup
 ## 🛒 Store Configuration
 
 ### Adding Store Items
+
 1. Access Admin Panel → Store Management
 2. Click "Add Item" button
 3. Fill in details:
@@ -145,6 +160,7 @@ pm2 startup
 4. Save and activate
 
 ### Tebex Integration
+
 1. Configure store URL in admin panel
 2. Set webhook secret for payment verification
 3. Link items to Tebex package IDs
@@ -153,6 +169,7 @@ pm2 startup
 ## 🎯 Architecture
 
 ### Frontend (React + TypeScript)
+
 - Vite build system with hot reload
 - TailwindCSS styling with custom theme
 - React Router navigation
@@ -160,6 +177,7 @@ pm2 startup
 - Production-optimized builds
 
 ### Backend (Node.js + Express)
+
 - SQLite database with performance optimization
 - JWT authentication with session management
 - Email service with SMTP support
@@ -167,6 +185,7 @@ pm2 startup
 - Rate limiting and security middleware
 
 ### Database Schema
+
 - Users, sessions, and authentication
 - Friends and chat messaging
 - Store items and purchase tracking
@@ -177,6 +196,7 @@ pm2 startup
 ## 🔧 Development
 
 ### Available Scripts
+
 ```bash
 npm run dev              # Start development server
 npm run build            # Build for production
@@ -189,12 +209,14 @@ npm run typecheck        # TypeScript validation
 ```
 
 ### Adding Features
+
 - All pages ready for expansion
 - Modular component structure
 - Consistent styling system
 - Database-backed data persistence
 
 ### Customization
+
 - Theme colors in `client/global.css`
 - Store items via admin panel
 - Email templates in admin settings
@@ -203,12 +225,14 @@ npm run typecheck        # TypeScript validation
 ## 📊 Performance & Scaling
 
 ### Single Server (Recommended Specs)
+
 - **CPU**: 4+ vCPUs
 - **RAM**: 8GB+
 - **Storage**: 50GB+ SSD
 - **Users**: 200+ concurrent
 
 ### Load Balancing (Enterprise)
+
 - Multiple app server instances
 - Redis session store
 - Database clustering
@@ -228,6 +252,7 @@ npm run typecheck        # TypeScript validation
 ## 🗄️ Data Management
 
 ### Backup System
+
 ```bash
 # Create backup
 npm run backup-data create
@@ -240,6 +265,7 @@ npm run restore-data interactive
 ```
 
 ### Database Migration
+
 - Automated backup before VPS migration
 - Data integrity verification
 - Zero-downtime migration support
@@ -247,12 +273,14 @@ npm run restore-data interactive
 ## 📧 Email Configuration
 
 Configure SMTP through the admin panel:
+
 1. Admin Panel → Email Settings
 2. Enter SMTP credentials
 3. Test connection
 4. Enable email service
 
 Supported providers:
+
 - Gmail (with app passwords)
 - SendGrid
 - Mailgun
@@ -282,6 +310,7 @@ Supported providers:
 ## 🛠️ Troubleshooting
 
 ### Common Issues
+
 1. **Application won't start**: Check PM2 logs and port availability
 2. **Database errors**: Verify permissions and disk space
 3. **Email not sending**: Check SMTP configuration and credentials
@@ -289,6 +318,7 @@ Supported providers:
 5. **SSL certificate issues**: Renew with Certbot
 
 ### Getting Help
+
 1. Check logs: `pm2 logs uec-launcher`
 2. Review [PRODUCTION_DEPLOYMENT.md](./PRODUCTION_DEPLOYMENT.md)
 3. Verify system requirements and configuration
@@ -304,6 +334,7 @@ Supported providers:
 ## 🎨 Theme
 
 The platform uses a **modern dark design** with:
+
 - Clean typography and spacing
 - Smooth animations and transitions
 - Consistent component design

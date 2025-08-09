@@ -19,7 +19,16 @@ import {
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Video, Upload, Search, Clock, Users, Plus, Eye, User } from "lucide-react";
+import {
+  Video,
+  Upload,
+  Search,
+  Clock,
+  Users,
+  Plus,
+  Eye,
+  User,
+} from "lucide-react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "@/lib/auth";
 import { useToast } from "@/hooks/use-toast";
@@ -80,8 +89,10 @@ export default function Community() {
           id: "1",
           slug: "epic-castle-build-tutorial",
           title: "Epic Castle Build Tutorial",
-          description: "Learn how to build an amazing medieval castle in Minecraft! This tutorial covers everything from foundation to towers.",
-          thumbnail: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=320&h=180&fit=crop",
+          description:
+            "Learn how to build an amazing medieval castle in Minecraft! This tutorial covers everything from foundation to towers.",
+          thumbnail:
+            "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=320&h=180&fit=crop",
           videoUrl: "#",
           author: "BuildMaster",
           authorId: "user1",
@@ -94,8 +105,10 @@ export default function Community() {
           id: "2",
           slug: "redstone-computer-build",
           title: "Redstone Computer Build",
-          description: "Building a functional computer inside Minecraft using only redstone! First part of a series.",
-          thumbnail: "https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=320&h=180&fit=crop",
+          description:
+            "Building a functional computer inside Minecraft using only redstone! First part of a series.",
+          thumbnail:
+            "https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=320&h=180&fit=crop",
           videoUrl: "#",
           author: "RedstoneWiz",
           authorId: "user2",
@@ -108,8 +121,10 @@ export default function Community() {
           id: "3",
           slug: "modern-house-speed-build",
           title: "Modern House Speed Build",
-          description: "Quick modern house build with interior design. Perfect for survival mode!",
-          thumbnail: "https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=320&h=180&fit=crop",
+          description:
+            "Quick modern house build with interior design. Perfect for survival mode!",
+          thumbnail:
+            "https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=320&h=180&fit=crop",
           videoUrl: "#",
           author: "ArchitectPro",
           authorId: "user3",
@@ -122,8 +137,10 @@ export default function Community() {
           id: "4",
           slug: "pvp-tips-and-tricks",
           title: "PvP Tips and Tricks",
-          description: "Improve your PvP skills with these advanced techniques and strategies.",
-          thumbnail: "https://images.unsplash.com/photo-1542751371-adc38448a05e?w=320&h=180&fit=crop",
+          description:
+            "Improve your PvP skills with these advanced techniques and strategies.",
+          thumbnail:
+            "https://images.unsplash.com/photo-1542751371-adc38448a05e?w=320&h=180&fit=crop",
           videoUrl: "#",
           author: "PvPGod",
           authorId: "user4",
@@ -136,8 +153,10 @@ export default function Community() {
           id: "5",
           slug: "automatic-farm-tutorial",
           title: "Automatic Farm Tutorial",
-          description: "Build this fully automatic farm that works in 1.8! Great for servers.",
-          thumbnail: "https://images.unsplash.com/photo-1574943320219-553eb213f72d?w=320&h=180&fit=crop",
+          description:
+            "Build this fully automatic farm that works in 1.8! Great for servers.",
+          thumbnail:
+            "https://images.unsplash.com/photo-1574943320219-553eb213f72d?w=320&h=180&fit=crop",
           videoUrl: "#",
           author: "FarmExpert",
           authorId: "user5",
@@ -238,7 +257,9 @@ export default function Community() {
         {/* Header */}
         <div className="flex flex-col lg:flex-row lg:items-center justify-between p-6 border-b border-border bg-card/20 backdrop-blur-sm">
           <div>
-            <h1 className="text-3xl font-bold text-foreground mb-2">Community</h1>
+            <h1 className="text-3xl font-bold text-foreground mb-2">
+              Community
+            </h1>
             <p className="text-muted-foreground">
               Share your creations and discover amazing content
             </p>
@@ -254,7 +275,7 @@ export default function Community() {
                 className="pl-10 w-64 bg-background/50"
               />
             </div>
-            
+
             {/* Upload Button */}
             <Dialog open={showUploadDialog} onOpenChange={setShowUploadDialog}>
               <DialogTrigger asChild>
@@ -367,11 +388,17 @@ export default function Community() {
           <div className="p-6">
             <Tabs value={activeTab} onValueChange={setActiveTab}>
               <TabsList className="grid w-full max-w-md grid-cols-2 mb-6">
-                <TabsTrigger value="videos" className="flex items-center space-x-2">
+                <TabsTrigger
+                  value="videos"
+                  className="flex items-center space-x-2"
+                >
                   <Video className="w-4 h-4" />
                   <span>Video</span>
                 </TabsTrigger>
-                <TabsTrigger value="bio" className="flex items-center space-x-2">
+                <TabsTrigger
+                  value="bio"
+                  className="flex items-center space-x-2"
+                >
                   <User className="w-4 h-4" />
                   <span>Bio</span>
                 </TabsTrigger>
@@ -406,13 +433,13 @@ export default function Community() {
                               <h3 className="font-semibold text-lg mb-2 line-clamp-2 group-hover:text-primary transition-colors">
                                 {video.title}
                               </h3>
-                              
+
                               <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
                                 {video.description}
                               </p>
 
                               <div className="flex items-center space-x-3 mb-3">
-                                <Link 
+                                <Link
                                   to={`/profile/${video.author}`}
                                   onClick={(e) => e.stopPropagation()}
                                 >
@@ -472,7 +499,9 @@ export default function Community() {
                       <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center">
                         <Video className="w-10 h-10 text-primary" />
                       </div>
-                      <h3 className="text-2xl font-semibold mb-3">No videos found</h3>
+                      <h3 className="text-2xl font-semibold mb-3">
+                        No videos found
+                      </h3>
                       <p className="text-muted-foreground mb-6 text-lg">
                         Try adjusting your search or check back later!
                       </p>
@@ -487,11 +516,16 @@ export default function Community() {
                     <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center">
                       <User className="w-10 h-10 text-primary" />
                     </div>
-                    <h3 className="text-2xl font-semibold mb-3">Creator Profiles</h3>
+                    <h3 className="text-2xl font-semibold mb-3">
+                      Creator Profiles
+                    </h3>
                     <p className="text-muted-foreground mb-6">
                       Browse creator profiles and their content.
                     </p>
-                    <Button onClick={() => setActiveTab("videos")} variant="outline">
+                    <Button
+                      onClick={() => setActiveTab("videos")}
+                      variant="outline"
+                    >
                       View Videos
                     </Button>
                   </div>

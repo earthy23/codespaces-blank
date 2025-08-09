@@ -38,7 +38,16 @@ import { useFriends } from "@/lib/friends";
 import { useToast } from "@/hooks/use-toast";
 import { useEffect, useState, useRef } from "react";
 import { UserLayout } from "@/components/ui/user-layout";
-import { Send, Phone, PhoneOff, Settings, Plus, Hash, Users, MessageCircle } from "lucide-react";
+import {
+  Send,
+  Phone,
+  PhoneOff,
+  Settings,
+  Plus,
+  Hash,
+  Users,
+  MessageCircle,
+} from "lucide-react";
 
 export default function Chat() {
   const { chatId } = useParams();
@@ -303,7 +312,9 @@ export default function Chat() {
         <div className="flex items-center justify-center h-64">
           <div className="text-center">
             <h2 className="text-xl font-semibold mb-2">Please log in</h2>
-            <p className="text-muted-foreground">You need to be logged in to access chat.</p>
+            <p className="text-muted-foreground">
+              You need to be logged in to access chat.
+            </p>
           </div>
         </div>
       </UserLayout>
@@ -354,10 +365,19 @@ export default function Chat() {
               {/* Sidebar Header */}
               <div className="p-4 border-b border-border">
                 <div className="flex items-center justify-between">
-                  <h2 className="font-semibold text-foreground">Conversations</h2>
-                  <Dialog open={showCreateChatDialog} onOpenChange={setShowCreateChatDialog}>
+                  <h2 className="font-semibold text-foreground">
+                    Conversations
+                  </h2>
+                  <Dialog
+                    open={showCreateChatDialog}
+                    onOpenChange={setShowCreateChatDialog}
+                  >
                     <DialogTrigger asChild>
-                      <Button size="sm" variant="ghost" className="h-8 w-8 p-0 hover:bg-primary/10">
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        className="h-8 w-8 p-0 hover:bg-primary/10"
+                      >
                         <Plus className="h-4 w-4" />
                       </Button>
                     </DialogTrigger>
@@ -371,7 +391,9 @@ export default function Chat() {
                       <div className="space-y-4">
                         <div className="flex space-x-2">
                           <Button
-                            variant={createChatType === "dm" ? "default" : "outline"}
+                            variant={
+                              createChatType === "dm" ? "default" : "outline"
+                            }
                             onClick={() => setCreateChatType("dm")}
                             className="flex-1"
                           >
@@ -379,7 +401,9 @@ export default function Chat() {
                             Direct Message
                           </Button>
                           <Button
-                            variant={createChatType === "group" ? "default" : "outline"}
+                            variant={
+                              createChatType === "group" ? "default" : "outline"
+                            }
                             onClick={() => setCreateChatType("group")}
                             className="flex-1"
                           >
@@ -401,19 +425,27 @@ export default function Chat() {
                                     <div className="flex items-center space-x-3">
                                       <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center">
                                         <span className="text-sm font-semibold">
-                                          {friend.username.charAt(0).toUpperCase()}
+                                          {friend.username
+                                            .charAt(0)
+                                            .toUpperCase()}
                                         </span>
                                       </div>
                                       <div>
-                                        <p className="font-medium">{friend.username}</p>
+                                        <p className="font-medium">
+                                          {friend.username}
+                                        </p>
                                         <p className="text-xs text-muted-foreground">
-                                          {friend.status === "online" ? "🟢 Online" : "⚫ Offline"}
+                                          {friend.status === "online"
+                                            ? "🟢 Online"
+                                            : "⚫ Offline"}
                                         </p>
                                       </div>
                                     </div>
                                     <Button
                                       size="sm"
-                                      onClick={() => handleCreateDM(friend.username)}
+                                      onClick={() =>
+                                        handleCreateDM(friend.username)
+                                      }
                                     >
                                       Message
                                     </Button>
@@ -421,7 +453,8 @@ export default function Chat() {
                                 ))}
                                 {(friends || []).length === 0 && (
                                   <div className="text-center py-4 text-muted-foreground">
-                                    No friends available. Add some friends first!
+                                    No friends available. Add some friends
+                                    first!
                                   </div>
                                 )}
                               </div>
@@ -430,15 +463,21 @@ export default function Chat() {
                         ) : (
                           <div className="space-y-4">
                             <div>
-                              <label className="block text-sm font-medium mb-2">Group Name</label>
+                              <label className="block text-sm font-medium mb-2">
+                                Group Name
+                              </label>
                               <Input
                                 value={groupChatName}
-                                onChange={(e) => setGroupChatName(e.target.value)}
+                                onChange={(e) =>
+                                  setGroupChatName(e.target.value)
+                                }
                                 placeholder="Enter group name..."
                               />
                             </div>
                             <div>
-                              <h4 className="font-medium mb-3">Select friends:</h4>
+                              <h4 className="font-medium mb-3">
+                                Select friends:
+                              </h4>
                               <ScrollArea className="max-h-60">
                                 <div className="space-y-2">
                                   {(friends || []).map((friend) => (
@@ -448,26 +487,42 @@ export default function Chat() {
                                     >
                                       <Checkbox
                                         id={friend.id}
-                                        checked={selectedFriends.includes(friend.id)}
+                                        checked={selectedFriends.includes(
+                                          friend.id,
+                                        )}
                                         onCheckedChange={(checked) => {
                                           if (checked) {
-                                            setSelectedFriends((prev) => [...prev, friend.id]);
+                                            setSelectedFriends((prev) => [
+                                              ...prev,
+                                              friend.id,
+                                            ]);
                                           } else {
                                             setSelectedFriends((prev) =>
-                                              prev.filter((id) => id !== friend.id),
+                                              prev.filter(
+                                                (id) => id !== friend.id,
+                                              ),
                                             );
                                           }
                                         }}
                                       />
                                       <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center">
                                         <span className="text-sm font-semibold">
-                                          {friend.username.charAt(0).toUpperCase()}
+                                          {friend.username
+                                            .charAt(0)
+                                            .toUpperCase()}
                                         </span>
                                       </div>
-                                      <label htmlFor={friend.id} className="flex-1 cursor-pointer">
-                                        <p className="font-medium">{friend.username}</p>
+                                      <label
+                                        htmlFor={friend.id}
+                                        className="flex-1 cursor-pointer"
+                                      >
+                                        <p className="font-medium">
+                                          {friend.username}
+                                        </p>
                                         <p className="text-xs text-muted-foreground">
-                                          {friend.status === "online" ? "🟢 Online" : "⚫ Offline"}
+                                          {friend.status === "online"
+                                            ? "🟢 Online"
+                                            : "⚫ Offline"}
                                         </p>
                                       </label>
                                     </div>
@@ -482,7 +537,10 @@ export default function Chat() {
                             </div>
                             <Button
                               onClick={handleCreateGroupChat}
-                              disabled={selectedFriends.length === 0 || !groupChatName.trim()}
+                              disabled={
+                                selectedFriends.length === 0 ||
+                                !groupChatName.trim()
+                              }
                               className="w-full"
                             >
                               Create Group ({selectedFriends.length} friends)
@@ -516,7 +574,9 @@ export default function Chat() {
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className="font-medium">General</p>
-                        <p className="text-xs opacity-70 truncate">Community chat</p>
+                        <p className="text-xs opacity-70 truncate">
+                          Community chat
+                        </p>
                       </div>
                     </div>
                   </button>
@@ -555,7 +615,10 @@ export default function Chat() {
                                   )}
                             </p>
                             {chat.unread_count > 0 && (
-                              <Badge variant="destructive" className="text-xs h-5 px-1.5">
+                              <Badge
+                                variant="destructive"
+                                className="text-xs h-5 px-1.5"
+                              >
                                 {chat.unread_count}
                               </Badge>
                             )}
@@ -594,7 +657,9 @@ export default function Chat() {
                     </div>
                     <div>
                       <h3 className="font-semibold">General Chat</h3>
-                      <p className="text-sm text-muted-foreground">Community discussion</p>
+                      <p className="text-sm text-muted-foreground">
+                        Community discussion
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -663,7 +728,10 @@ export default function Chat() {
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent>
-                          <DropdownMenuItem onClick={handleLeaveGroup} className="text-red-600">
+                          <DropdownMenuItem
+                            onClick={handleLeaveGroup}
+                            className="text-red-600"
+                          >
                             Leave Group
                           </DropdownMenuItem>
                         </DropdownMenuContent>
@@ -684,114 +752,134 @@ export default function Chat() {
             {/* Messages Area */}
             <ScrollArea className="flex-1 p-4">
               <div className="space-y-4">
-                {activeTab === "general" ? (
-                  (generalMessages || []).map((message) => (
-                    <div key={message.id} className="flex items-start space-x-3">
-                      <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0">
-                        <span className="text-sm font-semibold">
-                          {message.username.charAt(0).toUpperCase()}
-                        </span>
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center space-x-2 mb-1">
-                          <span className="font-medium text-sm">{message.username}</span>
-                          <span className="text-xs text-muted-foreground">
-                            {formatTime(message.timestamp)}
+                {activeTab === "general"
+                  ? (generalMessages || []).map((message) => (
+                      <div
+                        key={message.id}
+                        className="flex items-start space-x-3"
+                      >
+                        <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0">
+                          <span className="text-sm font-semibold">
+                            {message.username.charAt(0).toUpperCase()}
                           </span>
                         </div>
-                        <p className="text-sm">{message.content}</p>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center space-x-2 mb-1">
+                            <span className="font-medium text-sm">
+                              {message.username}
+                            </span>
+                            <span className="text-xs text-muted-foreground">
+                              {formatTime(message.timestamp)}
+                            </span>
+                          </div>
+                          <p className="text-sm">{message.content}</p>
+                        </div>
                       </div>
-                    </div>
-                  ))
-                ) : (
-                  (currentMessages || []).map((message) => (
-                    <div key={message.id} className="flex items-start space-x-3">
-                      <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0">
-                        <span className="text-sm font-semibold">
-                          {message.sender_username.charAt(0).toUpperCase()}
-                        </span>
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center space-x-2 mb-1">
-                          <span className="font-medium text-sm">{message.sender_username}</span>
-                          <span className="text-xs text-muted-foreground">
-                            {formatTime(message.timestamp)}
+                    ))
+                  : (currentMessages || []).map((message) => (
+                      <div
+                        key={message.id}
+                        className="flex items-start space-x-3"
+                      >
+                        <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0">
+                          <span className="text-sm font-semibold">
+                            {message.sender_username.charAt(0).toUpperCase()}
                           </span>
-                          {message.sender_username === user.username && (
-                            <DropdownMenu>
-                              <DropdownMenuTrigger asChild>
-                                <Button size="sm" variant="ghost" className="h-5 w-5 p-0">
-                                  ⋯
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center space-x-2 mb-1">
+                            <span className="font-medium text-sm">
+                              {message.sender_username}
+                            </span>
+                            <span className="text-xs text-muted-foreground">
+                              {formatTime(message.timestamp)}
+                            </span>
+                            {message.sender_username === user.username && (
+                              <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                  <Button
+                                    size="sm"
+                                    variant="ghost"
+                                    className="h-5 w-5 p-0"
+                                  >
+                                    ⋯
+                                  </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent>
+                                  <DropdownMenuItem
+                                    onClick={() => {
+                                      setEditingMessageId(message.id);
+                                      setEditingContent(message.content);
+                                    }}
+                                  >
+                                    Edit
+                                  </DropdownMenuItem>
+                                  <DropdownMenuItem
+                                    onClick={() =>
+                                      handleDeleteMessage(message.id)
+                                    }
+                                    className="text-red-600"
+                                  >
+                                    Delete
+                                  </DropdownMenuItem>
+                                </DropdownMenuContent>
+                              </DropdownMenu>
+                            )}
+                          </div>
+                          {editingMessageId === message.id ? (
+                            <form
+                              onSubmit={(e) => {
+                                e.preventDefault();
+                                handleEditMessage(message.id, editingContent);
+                              }}
+                              className="space-y-2"
+                            >
+                              <Input
+                                value={editingContent}
+                                onChange={(e) =>
+                                  setEditingContent(e.target.value)
+                                }
+                                className="text-sm"
+                              />
+                              <div className="flex space-x-2">
+                                <Button type="submit" size="sm">
+                                  Save
                                 </Button>
-                              </DropdownMenuTrigger>
-                              <DropdownMenuContent>
-                                <DropdownMenuItem
+                                <Button
+                                  type="button"
+                                  size="sm"
+                                  variant="outline"
                                   onClick={() => {
-                                    setEditingMessageId(message.id);
-                                    setEditingContent(message.content);
+                                    setEditingMessageId(null);
+                                    setEditingContent("");
                                   }}
                                 >
-                                  Edit
-                                </DropdownMenuItem>
-                                <DropdownMenuItem
-                                  onClick={() => handleDeleteMessage(message.id)}
-                                  className="text-red-600"
-                                >
-                                  Delete
-                                </DropdownMenuItem>
-                              </DropdownMenuContent>
-                            </DropdownMenu>
+                                  Cancel
+                                </Button>
+                              </div>
+                            </form>
+                          ) : (
+                            <p className="text-sm">{message.content}</p>
                           )}
                         </div>
-                        {editingMessageId === message.id ? (
-                          <form
-                            onSubmit={(e) => {
-                              e.preventDefault();
-                              handleEditMessage(message.id, editingContent);
-                            }}
-                            className="space-y-2"
-                          >
-                            <Input
-                              value={editingContent}
-                              onChange={(e) => setEditingContent(e.target.value)}
-                              className="text-sm"
-                            />
-                            <div className="flex space-x-2">
-                              <Button type="submit" size="sm">
-                                Save
-                              </Button>
-                              <Button
-                                type="button"
-                                size="sm"
-                                variant="outline"
-                                onClick={() => {
-                                  setEditingMessageId(null);
-                                  setEditingContent("");
-                                }}
-                              >
-                                Cancel
-                              </Button>
-                            </div>
-                          </form>
-                        ) : (
-                          <p className="text-sm">{message.content}</p>
-                        )}
                       </div>
-                    </div>
-                  ))
-                )}
+                    ))}
                 <div ref={messagesEndRef} />
               </div>
             </ScrollArea>
 
             {/* Typing Indicator */}
-            {activeTab === "direct" && chatId && (typingUsers[chatId] || []).length > 0 && (
-              <div className="px-4 py-2 border-t border-border">
-                <p className="text-sm text-muted-foreground">
-                  {(typingUsers[chatId] || []).join(", ")} {(typingUsers[chatId] || []).length === 1 ? "is" : "are"} typing...
-                </p>
-              </div>
-            )}
+            {activeTab === "direct" &&
+              chatId &&
+              (typingUsers[chatId] || []).length > 0 && (
+                <div className="px-4 py-2 border-t border-border">
+                  <p className="text-sm text-muted-foreground">
+                    {(typingUsers[chatId] || []).join(", ")}{" "}
+                    {(typingUsers[chatId] || []).length === 1 ? "is" : "are"}{" "}
+                    typing...
+                  </p>
+                </div>
+              )}
 
             {/* Message Input */}
             <div className="p-4 border-t border-border bg-card/20 backdrop-blur-sm">
@@ -806,21 +894,25 @@ export default function Chat() {
                     activeTab === "general"
                       ? "Message #general..."
                       : currentChat
-                      ? `Message ${
-                          currentChat.type === "group"
-                            ? currentChat.name || "group"
-                            : currentChat.participant_usernames?.find(
-                                (username) => username !== user.username,
-                              )
-                        }...`
-                      : "Select a chat to start messaging..."
+                        ? `Message ${
+                            currentChat.type === "group"
+                              ? currentChat.name || "group"
+                              : currentChat.participant_usernames?.find(
+                                  (username) => username !== user.username,
+                                )
+                          }...`
+                        : "Select a chat to start messaging..."
                   }
                   disabled={!activeTab || (activeTab === "direct" && !chatId)}
                   className="flex-1"
                 />
                 <Button
                   type="submit"
-                  disabled={!messageContent.trim() || (!activeTab || (activeTab === "direct" && !chatId))}
+                  disabled={
+                    !messageContent.trim() ||
+                    !activeTab ||
+                    (activeTab === "direct" && !chatId)
+                  }
                   size="sm"
                 >
                   <Send className="w-4 h-4" />

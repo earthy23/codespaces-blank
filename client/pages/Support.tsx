@@ -221,7 +221,8 @@ export default function Support() {
             Support Center
           </h1>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Get help with your account, report issues, or find answers to common questions.
+            Get help with your account, report issues, or find answers to common
+            questions.
           </p>
         </div>
 
@@ -257,7 +258,9 @@ export default function Support() {
             <div className="grid md:grid-cols-3 gap-6">
               <Card className="minecraft-panel hover:shadow-lg transition-shadow cursor-pointer">
                 <CardHeader>
-                  <CardTitle className="text-blue-600">Technical Support</CardTitle>
+                  <CardTitle className="text-blue-600">
+                    Technical Support
+                  </CardTitle>
                   <CardDescription>
                     Client issues, loading problems, connectivity
                   </CardDescription>
@@ -312,7 +315,8 @@ export default function Support() {
               <CardHeader>
                 <CardTitle>Frequently Asked Questions</CardTitle>
                 <CardDescription>
-                  {filteredFAQs.length} {filteredFAQs.length === 1 ? "article" : "articles"} found
+                  {filteredFAQs.length}{" "}
+                  {filteredFAQs.length === 1 ? "article" : "articles"} found
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -347,7 +351,9 @@ export default function Support() {
                 ) : (
                   <div className="text-center py-8 text-muted-foreground">
                     <p className="text-lg font-medium mb-2">No results found</p>
-                    <p>Try a different search term or contact support directly.</p>
+                    <p>
+                      Try a different search term or contact support directly.
+                    </p>
                   </div>
                 )}
               </CardContent>
@@ -536,7 +542,8 @@ export default function Support() {
                               {ticket.subject}
                             </h4>
                             <p className="text-sm text-muted-foreground mt-1">
-                              Category: {supportCategories.find(
+                              Category:{" "}
+                              {supportCategories.find(
                                 (c) => c.value === ticket.category,
                               )?.label || ticket.category}
                             </p>
@@ -544,7 +551,9 @@ export default function Support() {
                           <div className="flex flex-col items-end space-y-2">
                             <Badge
                               variant={
-                                ticket.status === "closed" ? "outline" : "default"
+                                ticket.status === "closed"
+                                  ? "outline"
+                                  : "default"
                               }
                               className={
                                 ticket.status === "open"
@@ -572,7 +581,8 @@ export default function Support() {
                           <span>Ticket ID: {ticket.id}</span>
                           {ticket.responseCount > 0 && (
                             <span>
-                              {ticket.responseCount} response{ticket.responseCount !== 1 ? "s" : ""}
+                              {ticket.responseCount} response
+                              {ticket.responseCount !== 1 ? "s" : ""}
                             </span>
                           )}
                         </div>

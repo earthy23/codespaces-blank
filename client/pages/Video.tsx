@@ -42,7 +42,7 @@ export default function Video() {
   const loadVideo = async (videoSlug: string) => {
     try {
       setIsLoading(true);
-      
+
       // Mock video data based on slug
       const videoData: VideoData = {
         id: videoSlug,
@@ -58,7 +58,7 @@ export default function Video() {
         tags: getVideoTags(videoSlug),
         duration: "12:34",
       };
-      
+
       setVideo(videoData);
     } catch (error) {
       console.error("Failed to load video:", error);
@@ -81,24 +81,37 @@ export default function Video() {
 
   const getVideoDescription = (slug: string) => {
     const descriptions: { [key: string]: string } = {
-      "epic-castle-build-tutorial": "Learn how to build an amazing medieval castle in Minecraft! This tutorial covers everything from foundation to towers.",
-      "redstone-computer-build": "Building a functional computer inside Minecraft using only redstone! First part of a series.",
-      "modern-house-speed-build": "Quick modern house build with interior design. Perfect for survival mode!",
-      "pvp-tips-and-tricks": "Improve your PvP skills with these advanced techniques and strategies.",
-      "automatic-farm-tutorial": "Build this fully automatic farm that works in 1.8! Great for servers.",
+      "epic-castle-build-tutorial":
+        "Learn how to build an amazing medieval castle in Minecraft! This tutorial covers everything from foundation to towers.",
+      "redstone-computer-build":
+        "Building a functional computer inside Minecraft using only redstone! First part of a series.",
+      "modern-house-speed-build":
+        "Quick modern house build with interior design. Perfect for survival mode!",
+      "pvp-tips-and-tricks":
+        "Improve your PvP skills with these advanced techniques and strategies.",
+      "automatic-farm-tutorial":
+        "Build this fully automatic farm that works in 1.8! Great for servers.",
     };
     return descriptions[slug] || "Video description not available.";
   };
 
   const getVideoThumbnail = (slug: string) => {
     const thumbnails: { [key: string]: string } = {
-      "epic-castle-build-tutorial": "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800&h=450&fit=crop",
-      "redstone-computer-build": "https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=800&h=450&fit=crop",
-      "modern-house-speed-build": "https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=800&h=450&fit=crop",
-      "pvp-tips-and-tricks": "https://images.unsplash.com/photo-1542751371-adc38448a05e?w=800&h=450&fit=crop",
-      "automatic-farm-tutorial": "https://images.unsplash.com/photo-1574943320219-553eb213f72d?w=800&h=450&fit=crop",
+      "epic-castle-build-tutorial":
+        "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800&h=450&fit=crop",
+      "redstone-computer-build":
+        "https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=800&h=450&fit=crop",
+      "modern-house-speed-build":
+        "https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=800&h=450&fit=crop",
+      "pvp-tips-and-tricks":
+        "https://images.unsplash.com/photo-1542751371-adc38448a05e?w=800&h=450&fit=crop",
+      "automatic-farm-tutorial":
+        "https://images.unsplash.com/photo-1574943320219-553eb213f72d?w=800&h=450&fit=crop",
     };
-    return thumbnails[slug] || "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800&h=450&fit=crop";
+    return (
+      thumbnails[slug] ||
+      "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800&h=450&fit=crop"
+    );
   };
 
   const getVideoAuthor = (slug: string) => {
@@ -136,8 +149,18 @@ export default function Video() {
 
   const getVideoTags = (slug: string) => {
     const tags: { [key: string]: string[] } = {
-      "epic-castle-build-tutorial": ["tutorial", "building", "castle", "medieval"],
-      "redstone-computer-build": ["redstone", "computer", "engineering", "tutorial"],
+      "epic-castle-build-tutorial": [
+        "tutorial",
+        "building",
+        "castle",
+        "medieval",
+      ],
+      "redstone-computer-build": [
+        "redstone",
+        "computer",
+        "engineering",
+        "tutorial",
+      ],
       "modern-house-speed-build": ["modern", "house", "speedbuild", "survival"],
       "pvp-tips-and-tricks": ["pvp", "combat", "tips", "strategy"],
       "automatic-farm-tutorial": ["farm", "automatic", "tutorial", "redstone"],
@@ -218,7 +241,7 @@ export default function Video() {
               <Card className="minecraft-panel">
                 <CardContent className="p-6">
                   <h1 className="text-2xl font-bold mb-4">{video.title}</h1>
-                  
+
                   <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center space-x-4">
                       <Link to={`/profile/${video.author}`}>
@@ -235,10 +258,12 @@ export default function Video() {
                         >
                           {video.author}
                         </Link>
-                        <p className="text-sm text-muted-foreground">Content Creator</p>
+                        <p className="text-sm text-muted-foreground">
+                          Content Creator
+                        </p>
                       </div>
                     </div>
-                    
+
                     <div className="flex items-center space-x-4 text-sm text-muted-foreground">
                       <div className="flex items-center gap-2">
                         <Eye className="w-4 h-4" />
@@ -276,7 +301,9 @@ export default function Video() {
             <div className="space-y-4">
               <Card className="minecraft-panel">
                 <CardContent className="p-4">
-                  <h3 className="font-semibold mb-4">More from {video.author}</h3>
+                  <h3 className="font-semibold mb-4">
+                    More from {video.author}
+                  </h3>
                   <div className="space-y-3">
                     <div className="flex space-x-3">
                       <img
@@ -285,8 +312,12 @@ export default function Video() {
                         className="w-20 h-12 object-cover rounded"
                       />
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium line-clamp-2">Another Great Build</p>
-                        <p className="text-xs text-muted-foreground">5.2K views</p>
+                        <p className="text-sm font-medium line-clamp-2">
+                          Another Great Build
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          5.2K views
+                        </p>
                       </div>
                     </div>
                   </div>
@@ -304,8 +335,12 @@ export default function Video() {
                         className="w-20 h-12 object-cover rounded"
                       />
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium line-clamp-2">Similar Tutorial</p>
-                        <p className="text-xs text-muted-foreground">12K views</p>
+                        <p className="text-sm font-medium line-clamp-2">
+                          Similar Tutorial
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          12K views
+                        </p>
                       </div>
                     </div>
                   </div>

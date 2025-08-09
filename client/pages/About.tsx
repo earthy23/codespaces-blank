@@ -1,5 +1,11 @@
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { ArrowLeft, Gamepad2, Users, Shield, Zap } from "lucide-react";
 import { Link } from "react-router-dom";
 import { MinecraftBackground } from "@/components/ui/minecraft-background";
@@ -12,7 +18,10 @@ export default function About() {
         <nav className="border-b border-border bg-card/50 backdrop-blur-sm">
           <div className="px-6 py-4">
             <div className="flex items-center justify-between">
-              <Link to="/dashboard" className="inline-flex items-center text-muted-foreground hover:text-primary transition-colors">
+              <Link
+                to="/dashboard"
+                className="inline-flex items-center text-muted-foreground hover:text-primary transition-colors"
+              >
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 Back to Dashboard
               </Link>
@@ -27,9 +36,12 @@ export default function About() {
             <div className="w-20 h-20 bg-primary/20 rounded-xl flex items-center justify-center mx-auto">
               <Gamepad2 className="w-10 h-10 text-primary" />
             </div>
-            <h1 className="text-4xl font-bold text-primary">About UEC Launcher</h1>
+            <h1 className="text-4xl font-bold text-primary">
+              About UEC Launcher
+            </h1>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              We built this because we got sick of broken Eaglercraft sites and wanted something that actually works.
+              We built this because we got sick of broken Eaglercraft sites and
+              wanted something that actually works.
             </p>
           </div>
 
@@ -54,7 +66,8 @@ export default function About() {
               </CardHeader>
               <CardContent>
                 <p className="text-sm text-muted-foreground text-center">
-                  Chat that doesn't lag out, friends list that works, forums that aren't dead.
+                  Chat that doesn't lag out, friends list that works, forums
+                  that aren't dead.
                 </p>
               </CardContent>
             </Card>
@@ -66,7 +79,8 @@ export default function About() {
               </CardHeader>
               <CardContent>
                 <p className="text-sm text-muted-foreground text-center">
-                  Tools that help admins actually moderate without wanting to quit.
+                  Tools that help admins actually moderate without wanting to
+                  quit.
                 </p>
               </CardContent>
             </Card>
@@ -78,7 +92,8 @@ export default function About() {
               </CardHeader>
               <CardContent>
                 <p className="text-sm text-muted-foreground text-center">
-                  Built-in store with Tebex integration for ranks, cosmetics, and features.
+                  Built-in store with Tebex integration for ranks, cosmetics,
+                  and features.
                 </p>
               </CardContent>
             </Card>
@@ -92,12 +107,15 @@ export default function About() {
               </CardHeader>
               <CardContent className="space-y-4">
                 <p className="text-muted-foreground">
-                  UEC Launcher was created to provide the best possible Eaglercraft experience directly in your browser. 
-                  We believe in making Minecraft accessible to everyone, anywhere, without the need for downloads or installations.
+                  UEC Launcher was created to provide the best possible
+                  Eaglercraft experience directly in your browser. We believe in
+                  making Minecraft accessible to everyone, anywhere, without the
+                  need for downloads or installations.
                 </p>
                 <p className="text-muted-foreground">
-                  Our platform combines the classic Minecraft experience with modern web technologies and social features 
-                  to create a comprehensive gaming platform that brings players together.
+                  Our platform combines the classic Minecraft experience with
+                  modern web technologies and social features to create a
+                  comprehensive gaming platform that brings players together.
                 </p>
               </CardContent>
             </Card>
@@ -132,12 +150,20 @@ export default function About() {
                 <p className="text-muted-foreground">UEC Launcher v2.0</p>
               </div>
               <div>
-                <h4 className="font-semibold text-primary mb-2">Supported Clients</h4>
-                <p className="text-muted-foreground">Eaglercraft 1.5.2, 1.8.8</p>
+                <h4 className="font-semibold text-primary mb-2">
+                  Supported Clients
+                </h4>
+                <p className="text-muted-foreground">
+                  Eaglercraft 1.5.2, 1.8.8
+                </p>
               </div>
               <div>
-                <h4 className="font-semibold text-primary mb-2">Browser Support</h4>
-                <p className="text-muted-foreground">Chrome, Firefox, Safari, Edge</p>
+                <h4 className="font-semibold text-primary mb-2">
+                  Browser Support
+                </h4>
+                <p className="text-muted-foreground">
+                  Chrome, Firefox, Safari, Edge
+                </p>
               </div>
             </CardContent>
           </Card>
@@ -145,7 +171,10 @@ export default function About() {
           {/* CTA */}
           <div className="text-center">
             <Link to="/dashboard">
-              <Button className="minecraft-button bg-primary text-primary-foreground hover:bg-primary/90" size="lg">
+              <Button
+                className="minecraft-button bg-primary text-primary-foreground hover:bg-primary/90"
+                size="lg"
+              >
                 Start Playing Now
               </Button>
             </Link>

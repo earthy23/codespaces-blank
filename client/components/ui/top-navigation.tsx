@@ -27,7 +27,7 @@ interface Notification {
 function ShieldIcon() {
   return (
     <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-      <path d="M12 1L3 5V11C3 16.55 6.84 21.74 12 23C17.16 21.74 21 16.55 21 11V5L12 1ZM12 7C13.4 7 14.8 8.6 14.8 10V11.5C15.4 11.9 16 12.4 16 13V17C16 18.1 15.1 19 14 19H10C8.9 19 8 18.1 8 17V13C8 12.4 8.4 11.9 9 11.5V10C9 8.6 10.6 7 12 7ZM12 8.2C11.2 8.2 10.2 8.7 10.2 10V11.5H13.8V10C13.8 8.7 12.8 8.2 12 8.2Z"/>
+      <path d="M12 1L3 5V11C3 16.55 6.84 21.74 12 23C17.16 21.74 21 16.55 21 11V5L12 1ZM12 7C13.4 7 14.8 8.6 14.8 10V11.5C15.4 11.9 16 12.4 16 13V17C16 18.1 15.1 19 14 19H10C8.9 19 8 18.1 8 17V13C8 12.4 8.4 11.9 9 11.5V10C9 8.6 10.6 7 12 7ZM12 8.2C11.2 8.2 10.2 8.7 10.2 10V11.5H13.8V10C13.8 8.7 12.8 8.2 12 8.2Z" />
     </svg>
   );
 }
@@ -198,7 +198,9 @@ export function TopNavigation() {
                   </div>
                   {notifications.length === 0 ? (
                     <div className="text-center py-4 text-muted-foreground">
-                      <span className="text-2xl block mb-2">No notifications</span>
+                      <span className="text-2xl block mb-2">
+                        No notifications
+                      </span>
                       <p className="text-sm">All caught up!</p>
                     </div>
                   ) : (
@@ -256,7 +258,7 @@ export function TopNavigation() {
             </DropdownMenu>
 
             {/* Admin button for admin users */}
-            {user.role === 'admin' && (
+            {user.role === "admin" && (
               <Link to="/admin">
                 <Button
                   variant="destructive"
