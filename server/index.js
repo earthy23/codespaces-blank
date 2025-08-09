@@ -213,6 +213,36 @@ app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 
 // Trust proxy for accurate IP addresses
+app.set('trust proxy', 1);
+
+// Domain information endpoint
+app.get('/api/domain-info', (req, res) => {
+  res.json({
+    currentDomain: req.currentDomain,
+    isAllowed: req.isAllowedDomain,
+    primaryDomain: req.primaryDomain,
+    multiDomainEnabled: MULTI_DOMAIN_ENABLED,
+    allowedDomains: ALLOWED_DOMAINS,
+    websocketUrls: {
+      development: process.env.WS_DEVELOPMENT_URL || `ws://${req.get('host')}`,
+      production: process.env.WS_PRODUCTION_URL || `wss://${PRIMARY_DOMAIN}`
+    }
+  });
+});
+
+// Redirect non-primary domains to primary (optional)
+if (MULTI_DOMAIN_ENABLED && process.env.REDIRECT_TO_PRIMARY === 'true') {
+  app.use((req, res, next) => {
+    const host = req.get('host');
+    if (host && host !== PRIMARY_DOMAIN && !host.includes('localhost') && !host.includes('fly.dev')) {
+      const protocol = req.get('x-forwarded-proto') || 'https';
+      return res.redirect(301, `${protocol}://${PRIMARY_DOMAIN}${req.originalUrl}`);
+    }
+    next();
+  });
+}
+
+// Trust proxy for accurate IP addresses
 app.set("trust proxy", 1);
 
 // Request logging middleware
