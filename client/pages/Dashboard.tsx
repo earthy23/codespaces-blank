@@ -129,12 +129,16 @@ export default function Dashboard() {
             clientsResponse.status,
             clientsResponse.statusText,
           );
-          if (isMounted) {
-            setClients([]);
-            if (clientsResponse.status >= 500) {
-              setFetchError(
-                "Server is experiencing issues. Some features may be unavailable.",
-              );
+          if (isMounted && !abortController.signal.aborted) {
+            try {
+              setClients([]);
+              if (clientsResponse.status >= 500) {
+                setFetchError(
+                  "Server is experiencing issues. Some features may be unavailable.",
+                );
+              }
+            } catch (e) {
+              // Ignore any errors during state updates
             }
           }
         }
