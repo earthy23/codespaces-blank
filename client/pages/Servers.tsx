@@ -220,6 +220,47 @@ export default function Servers() {
     return hostnameRegex.test(ip) || ipv4Regex.test(ip);
   };
 
+  const validateWebSocketUrl = (url: string) => {
+    if (!url || url.trim().length === 0) return { valid: false, error: "WebSocket URL is required" };
+
+    // Must start with wss:// for security
+    if (!url.startsWith("wss://")) {
+      return { valid: false, error: "WebSocket URL must use secure protocol (wss://)" };
+    }
+
+    try {
+      new URL(url);
+      return { valid: true, error: null };
+    } catch {
+      return { valid: false, error: "Invalid WebSocket URL format" };
+    }
+  };
+
+  const testWebSocketConnection = async (url: string): Promise<boolean> => {
+    return new Promise((resolve) => {
+      try {
+        const ws = new WebSocket(url);
+        const timeout = setTimeout(() => {
+          ws.close();
+          resolve(false);
+        }, 5000); // 5 second timeout
+
+        ws.onopen = () => {
+          clearTimeout(timeout);
+          ws.close();
+          resolve(true);
+        };
+
+        ws.onerror = () => {
+          clearTimeout(timeout);
+          resolve(false);
+        };
+      } catch {
+        resolve(false);
+      }
+    });
+  };
+
   const handleSubmitServer = async (e: React.FormEvent) => {
     e.preventDefault();
 
