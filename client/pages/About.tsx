@@ -54,7 +54,7 @@ export default function About() {
               </CardHeader>
               <CardContent>
                 <p className="text-sm text-muted-foreground text-center">
-                  Friend system, real-time chat, and community forums to connect players.
+                  Chat that doesn't lag out, friends list that works, forums that aren't dead.
                 </p>
               </CardContent>
             </Card>
