@@ -704,7 +704,7 @@ export default function Chat() {
                     </div>
                   ))
                 ) : (
-                  currentMessages.map((message) => (
+                  (currentMessages || []).map((message) => (
                     <div key={message.id} className="flex items-start space-x-3">
                       <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0">
                         <span className="text-sm font-semibold">
