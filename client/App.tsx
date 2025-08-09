@@ -91,6 +91,7 @@ function App() {
                           <Route path="/news" element={<News />} />
                           <Route path="/servers" element={<Servers />} />
                           <Route path="/community" element={<Community />} />
+                          <Route path="/video/:slug" element={<Video />} />
 
                           {/* Info Pages */}
                           <Route path="/about" element={<About />} />
