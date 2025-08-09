@@ -150,12 +150,16 @@ export default function Dashboard() {
 
         const errorMsg = error.message;
         console.warn("Failed to fetch clients:", errorMsg);
-        if (isMounted) {
-          setClients([]);
-          if (error.message.includes("fetch")) {
-            setFetchError(
-              "Unable to connect to server. Please check your internet connection.",
-            );
+        if (isMounted && !abortController.signal.aborted) {
+          try {
+            setClients([]);
+            if (error.message.includes("fetch")) {
+              setFetchError(
+                "Unable to connect to server. Please check your internet connection.",
+              );
+            }
+          } catch (e) {
+            // Ignore any errors during state updates
           }
         }
       }
