@@ -393,7 +393,7 @@ export default function Chat() {
                             <h4 className="font-medium">Select a friend:</h4>
                             <ScrollArea className="max-h-60">
                               <div className="space-y-2">
-                                {friends.map((friend) => (
+                                {(friends || []).map((friend) => (
                                   <div
                                     key={friend.id}
                                     className="flex items-center justify-between p-2 hover:bg-muted/50 rounded-lg transition-colors"
