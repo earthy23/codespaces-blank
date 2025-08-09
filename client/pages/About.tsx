@@ -66,7 +66,7 @@ export default function About() {
               </CardHeader>
               <CardContent>
                 <p className="text-sm text-muted-foreground text-center">
-                  Comprehensive administration panel with user management and analytics.
+                  Tools that help admins actually moderate without wanting to quit.
                 </p>
               </CardContent>
             </Card>
