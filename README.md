@@ -1,6 +1,6 @@
-# UEC Launcher - Minecraft Web Client Platform
+# UEC Launcher
 
-A complete React-based platform for launching Eaglercraft web clients with admin management, store integration, and social features.
+Eaglercraft launcher that doesn't suck. Built because we got tired of broken client sites and sketchy downloads.
 
 ## 🎮 Features
 
