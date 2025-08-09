@@ -102,8 +102,12 @@ export default function Dashboard() {
         if (clientsResponse.ok) {
           try {
             const clientsData = await clientsResponse.json();
-            if (isMounted) {
-              setClients(clientsData.clients || []);
+            if (isMounted && !abortController.signal.aborted) {
+              try {
+                setClients(clientsData.clients || []);
+              } catch (e) {
+                // Ignore any errors during state updates
+              }
             }
           } catch (error) {
             // Silently handle abort errors during cleanup
