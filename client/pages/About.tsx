@@ -42,7 +42,7 @@ export default function About() {
               </CardHeader>
               <CardContent>
                 <p className="text-sm text-muted-foreground text-center">
-                  Support for Vanilla, PvP, and Creative Eaglercraft clients with easy switching.
+                  All the clients you need in one place. No more bookmark hell.
                 </p>
               </CardContent>
             </Card>
