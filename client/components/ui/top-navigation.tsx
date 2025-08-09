@@ -23,6 +23,15 @@ interface Notification {
   read: boolean;
 }
 
+// Simple shield SVG component
+function ShieldIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M12 1L3 5V11C3 16.55 6.84 21.74 12 23C17.16 21.74 21 16.55 21 11V5L12 1ZM12 7C13.4 7 14.8 8.6 14.8 10V11.5C15.4 11.9 16 12.4 16 13V17C16 18.1 15.1 19 14 19H10C8.9 19 8 18.1 8 17V13C8 12.4 8.4 11.9 9 11.5V10C9 8.6 10.6 7 12 7ZM12 8.2C11.2 8.2 10.2 8.7 10.2 10V11.5H13.8V10C13.8 8.7 12.8 8.2 12 8.2Z"/>
+    </svg>
+  );
+}
+
 export function TopNavigation() {
   const { user } = useAuth();
   const { unreadTotal, chats } = useChat();
@@ -119,15 +128,15 @@ export function TopNavigation() {
   const getNotificationIcon = (type: string) => {
     switch (type) {
       case "ping":
-        return "🔔";
+        return "Bell";
       case "message":
-        return "💬";
+        return "Message";
       case "follow":
-        return "👤";
+        return "User";
       case "like":
-        return "❤️";
+        return "Heart";
       default:
-        return "🔔";
+        return "Bell";
     }
   };
 
@@ -189,8 +198,8 @@ export function TopNavigation() {
                   </div>
                   {notifications.length === 0 ? (
                     <div className="text-center py-4 text-muted-foreground">
-                      <span className="text-2xl block mb-2">📭</span>
-                      <p className="text-sm">No notifications</p>
+                      <span className="text-2xl block mb-2">No notifications</span>
+                      <p className="text-sm">All caught up!</p>
                     </div>
                   ) : (
                     <div className="space-y-1">
@@ -252,29 +261,29 @@ export function TopNavigation() {
                 <Button
                   variant="destructive"
                   size="sm"
-                  className="bg-red-600 hover:bg-red-700 text-white"
+                  className="bg-red-600 hover:bg-red-700 text-white flex items-center space-x-2"
                 >
-                  Admin
+                  <ShieldIcon />
+                  <span>Admin</span>
                 </Button>
               </Link>
             )}
 
-            {/* Profile section */}
+            {/* Profile section - moved to the right */}
             <Link to="/profile">
               <Button
                 variant="ghost"
                 className="flex items-center space-x-3 hover:bg-primary/10 rounded-full px-4 py-2"
               >
-                {/* Circular profile avatar */}
+                <span className="text-sm font-medium text-foreground">
+                  {user.username}
+                </span>
+                {/* Circular profile avatar - on the right */}
                 <div className="w-8 h-8 bg-primary/20 rounded-full flex items-center justify-center border-2 border-primary/30">
                   <span className="text-sm font-semibold text-primary">
                     {user.username?.charAt(0).toUpperCase() || "U"}
                   </span>
                 </div>
-                {/* Username */}
-                <span className="text-sm font-medium text-foreground">
-                  {user.username}
-                </span>
               </Button>
             </Link>
           </div>
