@@ -19,30 +19,12 @@ import {
   Line,
   AreaChart,
   Area,
-  BarChart,
-  Bar,
   XAxis,
   YAxis,
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
-import {
-  Users,
-  Activity,
-  MessageSquare,
-  AlertTriangle,
-  BarChart3,
-  Settings,
-  Zap,
-  Cpu,
-  HardDrive,
-  Network,
-  TrendingUp,
-  Eye,
-  UserCheck,
-  RefreshCw,
-} from "lucide-react";
 
 interface DashboardStats {
   totalUsers: number;
@@ -95,14 +77,6 @@ const MiniAreaChart = ({ data, color = "#8b5cf6" }: { data: any[]; color?: strin
   </ResponsiveContainer>
 );
 
-const MiniBarChart = ({ data, color = "#8b5cf6" }: { data: any[]; color?: string }) => (
-  <ResponsiveContainer width="100%" height={60}>
-    <BarChart data={data}>
-      <Bar dataKey="value" fill={color} radius={[2, 2, 0, 0]} stroke={color} strokeWidth={1} />
-    </BarChart>
-  </ResponsiveContainer>
-);
-
 export default function AdminDashboard() {
   const { user, token } = useAuth();
   const { isConnected, getOnlineUsers } = useWebSocket();
@@ -124,7 +98,6 @@ export default function AdminDashboard() {
   const [connectionStatus, setConnectionStatus] = useState<"connected" | "degraded" | "offline">("connected");
   const [realTimeData, setRealTimeData] = useState<any>(null);
   const [liveActivity, setLiveActivity] = useState<RecentActivity[]>([]);
-  const [lastActivityUpdate, setLastActivityUpdate] = useState(Date.now());
   const abortControllerRef = useRef<AbortController | null>(null);
 
   useEffect(() => {
@@ -143,207 +116,6 @@ export default function AdminDashboard() {
       setStats(fallbackStats);
     }
     loadDashboardData();
-
-    // Set up real-time metrics updates every 30 seconds with robust error handling
-    const metricsInterval = setInterval(async () => {
-      if (!token || !user) return;
-
-      try {
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 second timeout
-
-        // Check for FullStory interference
-        const isFullStoryBlocking = () => {
-          try {
-            return window.fetch !== fetch ||
-                   (window.fetch.toString().includes('fullstory') ||
-                    document.querySelector('script[src*="fullstory"]') !== null);
-          } catch {
-            return false;
-          }
-        };
-
-        let response;
-        if (isFullStoryBlocking()) {
-          // Use XMLHttpRequest as fallback when FullStory is interfering
-          response = await new Promise((resolve) => {
-            const xhr = new XMLHttpRequest();
-            xhr.open('GET', '/api/admin/metrics/realtime');
-            xhr.setRequestHeader('Authorization', `Bearer ${token}`);
-            xhr.setRequestHeader('Content-Type', 'application/json');
-            xhr.timeout = 15000;
-
-            xhr.onload = () => {
-              try {
-                if (xhr.status >= 200 && xhr.status < 300) {
-                  resolve({
-                    ok: true,
-                    status: xhr.status,
-                    json: () => Promise.resolve(JSON.parse(xhr.responseText))
-                  });
-                } else {
-                  resolve({ ok: false, status: xhr.status });
-                }
-              } catch (parseError) {
-                resolve({ ok: false, status: xhr.status });
-              }
-            };
-
-            xhr.onerror = () => resolve({ ok: false, status: 0 });
-            xhr.ontimeout = () => resolve({ ok: false, status: 408 });
-
-            try {
-              xhr.send();
-            } catch (sendError) {
-              resolve({ ok: false, status: 0 });
-            }
-          });
-        } else {
-          try {
-            response = await fetch("/api/admin/metrics/realtime", {
-              headers: {
-                Authorization: `Bearer ${token}`,
-                "Content-Type": "application/json",
-              },
-              signal: controller.signal,
-            });
-          } catch (fetchError) {
-            response = { ok: false, status: 0 };
-          }
-        }
-
-        clearTimeout(timeoutId);
-
-          if (response.ok) {
-            const data = await response.json();
-            setSystemMetrics(data.metrics);
-            setRealTimeData(data.metrics);
-            setLastMetricsUpdate(Date.now());
-            setConnectionStatus("connected");
-
-            // Update live stats if we have real-time user data
-            if (data.metrics.userActivity) {
-              setStats(prevStats => {
-                if (prevStats) {
-                  return {
-                    ...prevStats,
-                    totalUsers: data.metrics.userActivity.totalUsers,
-                    activeUsers: data.metrics.userActivity.activeUsers,
-                    activeSessions: data.metrics.activeConnections,
-                  };
-                }
-                return prevStats;
-              });
-            }
-          } else {
-            console.warn("Metrics update failed, keeping previous data");
-            setConnectionStatus("degraded");
-          }
-      } catch (error) {
-        // Silently handle all errors to prevent console spam
-        setConnectionStatus("degraded");
-      }
-    }, 30000); // Increased interval to 30 seconds
-
-    // Set up live activity feed updates every 30 seconds with robust error handling
-    const activityInterval = setInterval(async () => {
-      if (!token || !user) return;
-
-      let controller;
-      let timeoutId;
-      try {
-        controller = new AbortController();
-        timeoutId = setTimeout(() => {
-          controller.abort();
-        }, 15000); // 15 second timeout
-
-          // Check for FullStory interference
-          const isFullStoryBlocking = () => {
-            try {
-              return window.fetch !== fetch ||
-                     (window.fetch.toString().includes('fullstory') ||
-                      document.querySelector('script[src*="fullstory"]') !== null);
-            } catch {
-              return false;
-            }
-          };
-
-          let response;
-          if (isFullStoryBlocking()) {
-            // Use XMLHttpRequest as fallback
-            response = await new Promise((resolve) => {
-              const xhr = new XMLHttpRequest();
-              xhr.open('GET', `/api/admin/activity/live?since=${lastActivityUpdate}&limit=10`);
-              xhr.setRequestHeader('Authorization', `Bearer ${token}`);
-              xhr.setRequestHeader('Content-Type', 'application/json');
-              xhr.timeout = 15000;
-
-              xhr.onload = () => {
-                try {
-                  if (xhr.status >= 200 && xhr.status < 300) {
-                    resolve({
-                      ok: true,
-                      json: () => Promise.resolve(JSON.parse(xhr.responseText))
-                    });
-                  } else {
-                    resolve({ ok: false });
-                  }
-                } catch (parseError) {
-                  resolve({ ok: false });
-                }
-              };
-
-              xhr.onerror = () => resolve({ ok: false });
-              xhr.ontimeout = () => resolve({ ok: false });
-
-              try {
-                xhr.send();
-              } catch (sendError) {
-                resolve({ ok: false });
-              }
-            });
-          } else {
-            try {
-              response = await fetch(`/api/admin/activity/live?since=${lastActivityUpdate}&limit=10`, {
-                headers: {
-                  Authorization: `Bearer ${token}`,
-                  "Content-Type": "application/json",
-                },
-                signal: controller.signal,
-              });
-            } catch (fetchError) {
-              response = { ok: false };
-            }
-          }
-
-          clearTimeout(timeoutId);
-
-          if (response.ok) {
-            const data = await response.json();
-            if (data.activity && data.activity.length > 0) {
-              setLiveActivity(prev => {
-                const newActivity = data.activity.filter(activity =>
-                  !prev.some(existing => existing.id === activity.id)
-                );
-                return [...newActivity, ...prev].slice(0, 10);
-              });
-              setLastActivityUpdate(data.timestamp);
-            }
-          }
-      } catch (error) {
-        if (timeoutId) clearTimeout(timeoutId);
-        // Silently handle all errors to prevent console spam
-      }
-    }, 30000); // Increased interval to 30 seconds
-
-    return () => {
-      clearInterval(metricsInterval);
-      clearInterval(activityInterval);
-      // Abort any pending requests when component unmounts
-      if (abortControllerRef.current) {
-        abortControllerRef.current.abort();
-      }
-    };
   }, [token]);
 
   // Real-time updates
@@ -389,7 +161,6 @@ export default function AdminDashboard() {
     try {
       setIsLoading(true);
       
-      // Abort any existing request
       if (abortControllerRef.current) {
         abortControllerRef.current.abort();
       }
@@ -397,13 +168,12 @@ export default function AdminDashboard() {
       const controller = new AbortController();
       abortControllerRef.current = controller;
 
-      // Set timeout for the entire operation
       const timeoutId = setTimeout(() => {
         controller.abort(new Error('Dashboard data loading timeout'));
-      }, 10000); // 10 second timeout
+      }, 10000);
 
       try {
-        const [statsRes, activityRes, metricsRes] = await Promise.allSettled([
+        const [statsRes, activityRes] = await Promise.allSettled([
           fetch("/api/admin/dashboard/stats", {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -418,36 +188,14 @@ export default function AdminDashboard() {
             },
             signal: controller.signal,
           }),
-          fetch("/api/admin/metrics/realtime", {
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json",
-            },
-            signal: controller.signal,
-          }),
         ]);
 
         clearTimeout(timeoutId);
 
-        // Check overall connection status
-        const successCount = [statsRes, activityRes, metricsRes].filter(
-          (res) => res.status === 'fulfilled' && res.value.ok
-        ).length;
-
-        if (successCount === 3) {
-          setConnectionStatus("connected");
-        } else if (successCount >= 1) {
-          setConnectionStatus("degraded");
-        } else {
-          setConnectionStatus("offline");
-        }
-
-        // Handle stats response
         if (statsRes.status === 'fulfilled' && statsRes.value.ok) {
           const statsData = await statsRes.value.json();
           const stats = statsData.stats;
 
-          // Set enhanced stats with better real data integration
           const enhancedStats: DashboardStats = {
             totalUsers: stats?.totalUsers || 0,
             activeUsers: stats?.activeUsers || 0,
@@ -462,48 +210,13 @@ export default function AdminDashboard() {
           setStats(enhancedStats);
           setDashboardData(stats);
           cacheManager.set(CACHE_KEYS.ADMIN_STATS, enhancedStats);
-          
-          console.log("Dashboard stats loaded successfully:", {
-            users: enhancedStats.totalUsers,
-            active: enhancedStats.activeUsers,
-          });
-        } else {
-          console.warn("Failed to load dashboard stats, using cached/fallback data");
-          // Use cached data if available, otherwise set minimal fallback
-          if (!stats) {
-            const fallbackStats: DashboardStats = {
-              totalUsers: 0,
-              activeUsers: 0,
-              newUsersToday: 0,
-              activeSessions: 0,
-              totalMessages: 0,
-              flaggedMessages: 0,
-              supportTickets: 0,
-              pendingTickets: 0,
-              forumPosts: 0,
-            };
-            setStats(fallbackStats);
-            console.warn("Using fallback stats due to API failure");
-          }
         }
 
-        // Handle activity response
         if (activityRes.status === 'fulfilled' && activityRes.value.ok) {
           const activityData = await activityRes.value.json();
           const logs = activityData.logs || [];
           setRecentActivity(logs);
           cacheManager.set(CACHE_KEYS.ADMIN_LOGS, logs);
-        } else {
-          console.warn("Failed to load activity logs, keeping existing data");
-        }
-
-        // Handle metrics response
-        if (metricsRes.status === 'fulfilled' && metricsRes.value.ok) {
-          const metricsData = await metricsRes.value.json();
-          setSystemMetrics(metricsData.metrics);
-          setLastMetricsUpdate(Date.now());
-        } else {
-          console.warn("Failed to load system metrics, using fallback");
         }
       } catch (fetchError) {
         clearTimeout(timeoutId);
@@ -512,21 +225,6 @@ export default function AdminDashboard() {
     } catch (error) {
       console.error("Error loading dashboard data:", error);
 
-      // Show user-friendly error handling and update connection status
-      if (error.name === 'AbortError') {
-        if (process.env.NODE_ENV === 'development') {
-          console.warn("Dashboard data loading timed out, using cached data");
-        }
-        setConnectionStatus("degraded");
-      } else if (error.message?.includes('Failed to fetch')) {
-        console.warn("Network connectivity issue, using cached/fallback data");
-        setConnectionStatus("offline");
-      } else {
-        console.error("Unexpected error loading dashboard data:", error.message);
-        setConnectionStatus("degraded");
-      }
-
-      // Ensure we have some data even on error
       if (!stats) {
         const emergencyFallback: DashboardStats = {
           totalUsers: 0,
@@ -550,7 +248,6 @@ export default function AdminDashboard() {
     return new Date(timestamp).toLocaleString();
   };
 
-  // Enhanced chart data with proper structure for Recharts - use API data when available
   const userGrowthData = dashboardData?.userGrowthData || [
     { day: "Mon", value: stats?.newUsersToday || 0 },
     { day: "Tue", value: stats?.newUsersToday || 0 },
@@ -573,11 +270,11 @@ export default function AdminDashboard() {
 
   return (
     <AdminLayout>
-      <div className="space-y-8">
+      <div className="max-w-7xl mx-auto space-y-8">
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between space-y-4 sm:space-y-0">
           <div>
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
+            <h1 className="text-4xl font-bold text-foreground">
               Admin Dashboard
             </h1>
             <p className="text-lg text-muted-foreground mt-2">
@@ -585,7 +282,6 @@ export default function AdminDashboard() {
             </p>
           </div>
           <div className="flex items-center space-x-3">
-            {/* Connection Status */}
             <div className="flex items-center space-x-2">
               <div className={`w-3 h-3 rounded-full ${
                 connectionStatus === "connected" ? "bg-green-500" :
@@ -594,9 +290,8 @@ export default function AdminDashboard() {
               <span className="text-sm font-medium capitalize">{connectionStatus}</span>
             </div>
 
-            {/* Time Range Filter */}
             <select
-              className="bg-card border border-border rounded-lg px-4 py-2 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-primary"
+              className="bg-card border border-border rounded-lg px-4 py-2 text-sm font-medium"
               value={timeRange}
               onChange={(e) => setTimeRange(e.target.value)}
             >
@@ -612,21 +307,19 @@ export default function AdminDashboard() {
               disabled={isLoading}
               size="sm"
             >
-              <RefreshCw className={`w-4 h-4 mr-2 ${isLoading ? "animate-spin" : ""}`} />
-              Refresh
+              {isLoading ? "Loading..." : "Refresh"}
             </Button>
           </div>
         </div>
 
         {/* Key Stats Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          <Card className="minecraft-panel bg-gradient-to-br from-blue-500/10 to-blue-600/10 border-blue-200 dark:border-blue-800">
+          <Card className="minecraft-panel">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Total Users</CardTitle>
-              <Users className="h-5 w-5 text-blue-600" />
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold text-blue-600">
+              <div className="text-3xl font-bold text-primary">
                 {stats?.totalUsers || 0}
               </div>
               <p className="text-xs text-muted-foreground mt-1">
@@ -636,54 +329,51 @@ export default function AdminDashboard() {
                 new today
               </p>
               <div className="mt-3">
-                <MiniLineChart data={userGrowthData} color="#2563eb" />
+                <MiniLineChart data={userGrowthData} color="#8b5cf6" />
               </div>
             </CardContent>
           </Card>
 
-          <Card className="minecraft-panel bg-gradient-to-br from-green-500/10 to-green-600/10 border-green-200 dark:border-green-800">
+          <Card className="minecraft-panel">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Active Sessions</CardTitle>
-              <Activity className="h-5 w-5 text-green-600" />
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold text-green-600">
+              <div className="text-3xl font-bold text-primary">
                 {stats?.activeSessions || 0}
               </div>
               <p className="text-xs text-muted-foreground mt-1">
                 {stats?.activeUsers || 0} users online
               </p>
               <div className="mt-3">
-                <MiniBarChart data={activityData} color="#16a34a" />
+                <MiniAreaChart data={activityData} color="#8b5cf6" />
               </div>
             </CardContent>
           </Card>
 
-          <Card className="minecraft-panel bg-gradient-to-br from-purple-500/10 to-purple-600/10 border-purple-200 dark:border-purple-800">
+          <Card className="minecraft-panel">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Messages</CardTitle>
-              <MessageSquare className="h-5 w-5 text-purple-600" />
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold text-purple-600">
+              <div className="text-3xl font-bold text-primary">
                 {stats?.totalMessages || 0}
               </div>
               <p className="text-xs text-muted-foreground mt-1">
                 {stats?.flaggedMessages || 0} flagged
               </p>
               <div className="mt-3">
-                <MiniAreaChart data={activityData} color="#9333ea" />
+                <MiniAreaChart data={activityData} color="#8b5cf6" />
               </div>
             </CardContent>
           </Card>
 
-          <Card className="minecraft-panel bg-gradient-to-br from-orange-500/10 to-orange-600/10 border-orange-200 dark:border-orange-800">
+          <Card className="minecraft-panel">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Support Tickets</CardTitle>
-              <AlertTriangle className="h-5 w-5 text-orange-600" />
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold text-orange-600">
+              <div className="text-3xl font-bold text-primary">
                 {stats?.supportTickets || 0}
               </div>
               <p className="text-xs text-muted-foreground mt-1">
@@ -693,32 +383,25 @@ export default function AdminDashboard() {
                 pending
               </p>
               <div className="mt-3">
-                <MiniBarChart data={userGrowthData} color="#ea580c" />
+                <MiniLineChart data={userGrowthData} color="#8b5cf6" />
               </div>
             </CardContent>
           </Card>
         </div>
 
         {/* System Performance */}
-        <Card className="minecraft-panel bg-gradient-to-br from-primary/5 to-primary/10">
+        <Card className="minecraft-panel">
           <CardHeader>
-            <CardTitle className="flex items-center space-x-2">
-              <Cpu className="w-5 h-5 text-primary" />
-              <span>System Performance</span>
-            </CardTitle>
+            <CardTitle>System Performance</CardTitle>
             <CardDescription>
               Real-time server metrics and performance indicators
             </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-              {/* CPU Usage */}
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-2">
-                    <Cpu className="w-4 h-4 text-blue-500" />
-                    <span className="text-sm font-medium">CPU Usage</span>
-                  </div>
+                  <span className="text-sm font-medium">CPU Usage</span>
                   <span className="text-sm font-bold">
                     {systemMetrics?.system?.cpu || 23}%
                   </span>
@@ -726,13 +409,9 @@ export default function AdminDashboard() {
                 <Progress value={systemMetrics?.system?.cpu || 23} className="h-2" />
               </div>
 
-              {/* Memory Usage */}
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-2">
-                    <HardDrive className="w-4 h-4 text-green-500" />
-                    <span className="text-sm font-medium">Memory</span>
-                  </div>
+                  <span className="text-sm font-medium">Memory</span>
                   <span className="text-sm font-bold">
                     {systemMetrics?.system?.memory || 67}%
                   </span>
@@ -740,13 +419,9 @@ export default function AdminDashboard() {
                 <Progress value={systemMetrics?.system?.memory || 67} className="h-2" />
               </div>
 
-              {/* Network I/O */}
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-2">
-                    <Network className="w-4 h-4 text-purple-500" />
-                    <span className="text-sm font-medium">Network</span>
-                  </div>
+                  <span className="text-sm font-medium">Network</span>
                   <span className="text-sm font-bold">
                     {systemMetrics?.system?.network || 34}%
                   </span>
@@ -767,188 +442,181 @@ export default function AdminDashboard() {
           </CardContent>
         </Card>
 
-        {/* Analytics and Activity */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* User Growth Analytics */}
-          <Card className="minecraft-panel">
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <TrendingUp className="w-5 h-5 text-primary" />
-                <span>User Activity</span>
-              </CardTitle>
-              <CardDescription>
-                Daily user registrations and activity trends
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <ResponsiveContainer width="100%" height={300}>
-                <AreaChart data={dashboardData?.userGrowthData || [
-                  { day: "Mon", registrations: stats?.newUsersToday || 0, activeSessions: stats?.activeSessions || 0 },
-                  { day: "Tue", registrations: stats?.newUsersToday || 0, activeSessions: stats?.activeSessions || 0 },
-                  { day: "Wed", registrations: stats?.newUsersToday || 0, activeSessions: stats?.activeSessions || 0 },
-                  { day: "Thu", registrations: stats?.newUsersToday || 0, activeSessions: stats?.activeSessions || 0 },
-                  { day: "Fri", registrations: stats?.newUsersToday || 0, activeSessions: stats?.activeSessions || 0 },
-                  { day: "Sat", registrations: stats?.newUsersToday || 0, activeSessions: stats?.activeSessions || 0 },
-                  { day: "Sun", registrations: stats?.newUsersToday || 0, activeSessions: stats?.activeSessions || 0 },
-                ]}>
-                  <CartesianGrid strokeDasharray="3 3" className="opacity-30" />
-                  <XAxis dataKey="day" />
-                  <YAxis />
-                  <Tooltip
-                    contentStyle={{
-                      backgroundColor: "hsl(var(--card))",
-                      border: "1px solid hsl(var(--border))",
-                      borderRadius: "8px"
-                    }}
-                  />
-                  <Area
-                    type="monotone"
-                    dataKey="activeSessions"
-                    stackId="1"
-                    stroke="#8b5cf6"
-                    fill="#8b5cf6"
-                    fillOpacity={0.4}
-                    name="Active Sessions"
-                  />
-                  <Area
-                    type="monotone"
-                    dataKey="registrations"
-                    stackId="2"
-                    stroke="#3b82f6"
-                    fill="#3b82f6"
-                    fillOpacity={0.6}
-                    name="New Registrations"
-                  />
-                </AreaChart>
-              </ResponsiveContainer>
-            </CardContent>
-          </Card>
-
-          {/* Recent Activity */}
-          <Card className="minecraft-panel">
-            <CardHeader>
-              <CardTitle className="flex items-center justify-between">
-                <div className="flex items-center space-x-2">
-                  <Eye className="w-5 h-5 text-primary" />
-                  <span>Recent Activity</span>
-                </div>
-                <Link to="/admin/logs">
-                  <Button variant="outline" size="sm">
-                    View All Logs
-                  </Button>
-                </Link>
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              {(liveActivity.length > 0 || recentActivity.length > 0) ? (
-                <div className="space-y-3 max-h-80 overflow-y-auto">
-                  {/* Live Activity First */}
-                  {liveActivity.slice(0, 4).map((activity) => (
-                    <div
-                      key={activity.id}
-                      className="flex items-center space-x-3 p-3 rounded-lg bg-primary/5 border-l-4 border-primary"
-                    >
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium truncate">
-                          {activity.username || "System"} - {activity.action.replace(/_/g, " ")}
-                        </p>
-                        <p className="text-xs text-muted-foreground">
-                          {formatTime(activity.timestamp)} • LIVE
-                        </p>
-                      </div>
-                      <Badge variant="secondary" className="text-xs">
-                        {activity.category}
-                      </Badge>
-                    </div>
-                  ))}
-                  
-                  {/* Recent Activity */}
-                  {recentActivity.slice(0, Math.max(4, 8 - liveActivity.length)).map((activity) => (
-                    <div
-                      key={activity.id}
-                      className="flex items-center space-x-3 p-3 rounded-lg hover:bg-muted/50 transition-colors"
-                    >
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium truncate">
-                          {activity.username || "System"} - {activity.action.replace(/_/g, " ")}
-                        </p>
-                        <p className="text-xs text-muted-foreground">
-                          {formatTime(activity.timestamp)}
-                        </p>
-                      </div>
-                      <Badge variant="outline" className="text-xs">
-                        {activity.category}
-                      </Badge>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="text-center py-8 text-muted-foreground">
-                  <Activity className="w-12 h-12 mx-auto mb-4 opacity-50" />
-                  <p>No recent activity</p>
-                  <p className="text-xs mt-1">Live feed will update automatically</p>
-                </div>
-              )}
-              
-              {/* Live indicator */}
-              {liveActivity.length > 0 && (
-                <div className="flex items-center justify-center mt-4 pt-3 border-t border-border">
-                  <div className="flex items-center space-x-2 text-xs text-muted-foreground">
-                    <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                    <span>Live activity feed active</span>
-                  </div>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Quick Actions */}
-        <Card className="minecraft-panel bg-gradient-to-br from-primary/5 to-primary/10">
+        {/* Domain Management */}
+        <Card className="minecraft-panel">
           <CardHeader>
-            <CardTitle className="flex items-center space-x-2">
-              <Zap className="w-5 h-5 text-primary" />
-              <span>Quick Actions & System Control</span>
-            </CardTitle>
+            <CardTitle>Domain Management</CardTitle>
             <CardDescription>
-              Administrative tools and system management
+              Manage domains, SSL certificates, and DNS settings
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-4">
+                <div>
+                  <h4 className="font-semibold mb-2">Primary Domain</h4>
+                  <div className="p-3 bg-muted/50 rounded-lg">
+                    <p className="font-medium">ueclub.com</p>
+                    <div className="flex items-center space-x-4 mt-2 text-sm">
+                      <Badge className="bg-green-500/20 text-green-600">SSL Valid</Badge>
+                      <span className="text-muted-foreground">Expires: Dec 2024</span>
+                    </div>
+                  </div>
+                </div>
+                
+                <div>
+                  <h4 className="font-semibold mb-2">Custom Domains</h4>
+                  <div className="space-y-2">
+                    <div className="p-3 bg-muted/50 rounded-lg">
+                      <p className="font-medium">play.ueclub.com</p>
+                      <Badge className="bg-green-500/20 text-green-600 text-xs">Active</Badge>
+                    </div>
+                    <div className="p-3 bg-muted/50 rounded-lg">
+                      <p className="font-medium">api.ueclub.com</p>
+                      <Badge className="bg-green-500/20 text-green-600 text-xs">Active</Badge>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <div>
+                  <h4 className="font-semibold mb-2">DNS Settings</h4>
+                  <div className="space-y-2 text-sm">
+                    <div className="flex justify-between">
+                      <span>A Record</span>
+                      <span className="font-mono text-xs">192.168.1.100</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>CNAME</span>
+                      <span className="font-mono text-xs">www.ueclub.com</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>MX Record</span>
+                      <span className="font-mono text-xs">mail.ueclub.com</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Button variant="outline" className="w-full">
+                    Add Custom Domain
+                  </Button>
+                  <Button variant="outline" className="w-full">
+                    Renew SSL Certificate
+                  </Button>
+                  <Button variant="outline" className="w-full">
+                    Update DNS Records
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Management Actions */}
+        <Card className="minecraft-panel">
+          <CardHeader>
+            <CardTitle>System Management</CardTitle>
+            <CardDescription>
+              Administrative tools and system controls
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
               <Link to="/admin/users">
-                <Button className="w-full h-auto p-4 flex flex-col space-y-2 bg-blue-500 hover:bg-blue-600 text-white">
-                  <Users className="w-5 h-5" />
+                <Button className="w-full h-auto p-4 flex flex-col space-y-2">
                   <span className="text-sm">Users</span>
                 </Button>
               </Link>
               <Link to="/admin/news">
-                <Button className="w-full h-auto p-4 flex flex-col space-y-2 bg-green-500 hover:bg-green-600 text-white">
-                  <MessageSquare className="w-5 h-5" />
+                <Button className="w-full h-auto p-4 flex flex-col space-y-2">
                   <span className="text-sm">News</span>
                 </Button>
               </Link>
               <Link to="/admin/settings">
-                <Button className="w-full h-auto p-4 flex flex-col space-y-2 bg-purple-500 hover:bg-purple-600 text-white">
-                  <Settings className="w-5 h-5" />
+                <Button className="w-full h-auto p-4 flex flex-col space-y-2">
                   <span className="text-sm">Settings</span>
                 </Button>
               </Link>
-              <Link to="/admin/analytics">
-                <Button className="w-full h-auto p-4 flex flex-col space-y-2 bg-orange-500 hover:bg-orange-600 text-white">
-                  <BarChart3 className="w-5 h-5" />
-                  <span className="text-sm">Analytics</span>
-                </Button>
-              </Link>
-              <Button className="w-full h-auto p-4 flex flex-col space-y-2 bg-yellow-500 hover:bg-yellow-600 text-white">
-                <AlertTriangle className="w-5 h-5" />
+              <Button className="w-full h-auto p-4 flex flex-col space-y-2">
                 <span className="text-sm">Support</span>
               </Button>
-              <Button className="w-full h-auto p-4 flex flex-col space-y-2 bg-red-500 hover:bg-red-600 text-white">
-                <Zap className="w-5 h-5" />
-                <span className="text-sm">System</span>
+              <Button className="w-full h-auto p-4 flex flex-col space-y-2">
+                <span className="text-sm">Logs</span>
               </Button>
             </div>
+          </CardContent>
+        </Card>
+
+        {/* Recent Activity */}
+        <Card className="minecraft-panel">
+          <CardHeader>
+            <CardTitle className="flex items-center justify-between">
+              <span>Recent Activity</span>
+              <Link to="/admin/logs">
+                <Button variant="outline" size="sm">
+                  View All Logs
+                </Button>
+              </Link>
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {(liveActivity.length > 0 || recentActivity.length > 0) ? (
+              <div className="space-y-3 max-h-80 overflow-y-auto">
+                {liveActivity.slice(0, 4).map((activity) => (
+                  <div
+                    key={activity.id}
+                    className="flex items-center space-x-3 p-3 rounded-lg bg-primary/5 border-l-4 border-primary"
+                  >
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium truncate">
+                        {activity.username || "System"} - {activity.action.replace(/_/g, " ")}
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        {formatTime(activity.timestamp)} • LIVE
+                      </p>
+                    </div>
+                    <Badge variant="secondary" className="text-xs">
+                      {activity.category}
+                    </Badge>
+                  </div>
+                ))}
+                
+                {recentActivity.slice(0, Math.max(4, 8 - liveActivity.length)).map((activity) => (
+                  <div
+                    key={activity.id}
+                    className="flex items-center space-x-3 p-3 rounded-lg hover:bg-muted/50 transition-colors"
+                  >
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium truncate">
+                        {activity.username || "System"} - {activity.action.replace(/_/g, " ")}
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        {formatTime(activity.timestamp)}
+                      </p>
+                    </div>
+                    <Badge variant="outline" className="text-xs">
+                      {activity.category}
+                    </Badge>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-8 text-muted-foreground">
+                <p>No recent activity</p>
+                <p className="text-xs mt-1">Live feed will update automatically</p>
+              </div>
+            )}
+            
+            {liveActivity.length > 0 && (
+              <div className="flex items-center justify-center mt-4 pt-3 border-t border-border">
+                <div className="flex items-center space-x-2 text-xs text-muted-foreground">
+                  <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                  <span>Live activity feed active</span>
+                </div>
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>
