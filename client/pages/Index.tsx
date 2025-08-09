@@ -60,7 +60,7 @@ export default function Index() {
               </Link>
               <Link to="/downloads">
                 <Button size="lg" variant="outline" className="minecraft-button px-8 py-6 text-lg">
-                  Download Clients
+                  Browse Clients
                 </Button>
               </Link>
             </div>
