@@ -68,10 +68,23 @@ app.use((req, res, next) => {
   const protocol = req.get('x-forwarded-proto') || req.protocol || 'http';
   const currentDomain = `${protocol}://${host}`;
 
-  // Add current domain to allowed origins if it matches pattern
-  if (host && (host.includes('ueclub.com') || host.includes('localhost') || host.includes('fly.dev'))) {
-    req.currentDomain = currentDomain;
-    req.isAllowedDomain = true;
+  // Check if domain is allowed
+  const isAllowedDomain = MULTI_DOMAIN_ENABLED && host && (
+    ALLOWED_DOMAINS.includes(host) ||
+    ALLOWED_DOMAINS.some(domain => host.includes(domain)) ||
+    host.includes('ueclub.com') ||
+    host.includes('localhost') ||
+    host.includes('fly.dev')
+  );
+
+  req.currentDomain = currentDomain;
+  req.isAllowedDomain = isAllowedDomain;
+  req.primaryDomain = PRIMARY_DOMAIN;
+
+  // Add domain info to headers for debugging
+  if (process.env.NODE_ENV === 'development') {
+    res.set('X-Current-Domain', currentDomain);
+    res.set('X-Domain-Allowed', isAllowedDomain.toString());
   }
 
   next();
