@@ -174,8 +174,38 @@ export default function Profile() {
 
   const loadUserVideos = async (targetUserId: string) => {
     try {
-      // No videos - empty array
-      setUserVideos([]);
+      // Placeholder videos for testing
+      const placeholderVideos: ProfileVideo[] = [
+        {
+          id: "1",
+          title: "My Epic Build Showcase",
+          thumbnail: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=320&h=180&fit=crop",
+          views: 2400,
+          likes: 156,
+          createdAt: new Date(Date.now() - 86400000).toISOString(),
+          duration: "8:32",
+        },
+        {
+          id: "2",
+          title: "Tutorial: Advanced Redstone",
+          thumbnail: "https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=320&h=180&fit=crop",
+          views: 1890,
+          likes: 234,
+          createdAt: new Date(Date.now() - 172800000).toISOString(),
+          duration: "15:45",
+        },
+        {
+          id: "3",
+          title: "Server Tour & Review",
+          thumbnail: "https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=320&h=180&fit=crop",
+          views: 3200,
+          likes: 189,
+          createdAt: new Date(Date.now() - 259200000).toISOString(),
+          duration: "12:18",
+        },
+      ];
+
+      setUserVideos(placeholderVideos);
     } catch (error) {
       console.error("Failed to load user videos:", error);
     }
