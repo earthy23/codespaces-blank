@@ -146,7 +146,7 @@ export default function Profile() {
         loadUserVideos(username);
       }
     }
-  }, [user, userId, username, navigate]);
+  }, [user, username, navigate]);
 
   const loadUserProfile = async (targetIdentifier: string) => {
     try {
