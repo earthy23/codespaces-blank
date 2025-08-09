@@ -84,7 +84,6 @@ export default function Profile() {
     currentPassword: "",
     newPassword: "",
     confirmPassword: "",
-    banner: "",
     avatar: "",
   });
 
@@ -102,9 +101,7 @@ export default function Profile() {
     confirm: false,
   });
 
-  const [uploadingBanner, setUploadingBanner] = useState(false);
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
-  const [showBannerDialog, setShowBannerDialog] = useState(false);
   const [showAvatarDialog, setShowAvatarDialog] = useState(false);
 
   useEffect(() => {
@@ -129,7 +126,6 @@ export default function Profile() {
         currentPassword: "",
         newPassword: "",
         confirmPassword: "",
-        banner: "",
         avatar: "",
       });
       setProfileUser({
@@ -199,41 +195,8 @@ export default function Profile() {
 
   const loadUserVideos = async (targetUserId: string) => {
     try {
-      // Mock videos for demonstration
-      const mockVideos: ProfileVideo[] = [
-        {
-          id: "1",
-          title: "How to Build a Modern House in Minecraft",
-          thumbnail:
-            "https://via.placeholder.com/320x180/8b5cf6/ffffff?text=Modern+House",
-          views: 12400,
-          likes: 456,
-          createdAt: new Date(Date.now() - 86400000).toISOString(),
-          duration: "15:32",
-        },
-        {
-          id: "2",
-          title: "Redstone Tutorial: Automatic Farm",
-          thumbnail:
-            "https://via.placeholder.com/320x180/10b981/ffffff?text=Auto+Farm",
-          views: 8900,
-          likes: 234,
-          createdAt: new Date(Date.now() - 172800000).toISOString(),
-          duration: "22:45",
-        },
-        {
-          id: "3",
-          title: "Epic Castle Build Timelapse",
-          thumbnail:
-            "https://via.placeholder.com/320x180/f59e0b/ffffff?text=Castle+Build",
-          views: 23500,
-          likes: 1890,
-          createdAt: new Date(Date.now() - 259200000).toISOString(),
-          duration: "8:12",
-        },
-      ];
-
-      setUserVideos(mockVideos);
+      // No videos - empty array
+      setUserVideos([]);
     } catch (error) {
       console.error("Failed to load user videos:", error);
     }
@@ -295,54 +258,6 @@ export default function Profile() {
     if (days > 0) return `${days} day${days > 1 ? "s" : ""} ago`;
     if (hours > 0) return `${hours} hour${hours > 1 ? "s" : ""} ago`;
     return "Just now";
-  };
-
-  const handleBannerUpload = async (
-    event: React.ChangeEvent<HTMLInputElement>,
-  ) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
-
-    // Validate file
-    if (!file.type.startsWith("image/")) {
-      toast({
-        title: "Invalid file type",
-        description: "Please select an image file",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    if (file.size > 5 * 1024 * 1024) {
-      // 5MB limit
-      toast({
-        title: "File too large",
-        description: "Please select an image smaller than 5MB",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    try {
-      setUploadingBanner(true);
-      // In a real app, you'd upload to a server here
-      const fakeUrl = URL.createObjectURL(file);
-      setFormData((prev) => ({ ...prev, banner: fakeUrl }));
-      setShowBannerDialog(false);
-
-      toast({
-        title: "Banner Updated",
-        description: "Your profile banner has been updated successfully",
-      });
-    } catch (error) {
-      toast({
-        title: "Upload Failed",
-        description: "Failed to upload banner image",
-        variant: "destructive",
-      });
-    } finally {
-      setUploadingBanner(false);
-    }
   };
 
   const handleAvatarUpload = async (
@@ -436,152 +351,103 @@ export default function Profile() {
       <div className="max-w-7xl mx-auto px-4">
         {/* Profile Header */}
         <div className="mb-8">
-          <Card className="minecraft-panel overflow-hidden bg-card/80 backdrop-blur-sm border-border/40">
-            {/* Profile Banner */}
-            <div className="relative h-64 lg:h-80 bg-gradient-to-br from-primary/30 via-primary/20 to-primary/10 overflow-hidden">
-              {formData.banner && (
-                <img
-                  src={formData.banner}
-                  alt="Profile Banner"
-                  className="w-full h-full object-cover"
-                />
-              )}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
-              {isOwnProfile && (
-                <Dialog
-                  open={showBannerDialog}
-                  onOpenChange={setShowBannerDialog}
-                >
-                  <DialogTrigger asChild>
-                    <Button
-                      variant="secondary"
-                      size="sm"
-                      className="absolute top-4 right-4 bg-black/20 backdrop-blur-sm border-white/20 hover:bg-black/30"
-                    >
-                      ✏️ Edit Banner
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent>
-                    <DialogHeader>
-                      <DialogTitle>Update Profile Banner</DialogTitle>
-                      <DialogDescription>
-                        Upload a new banner image for your profile
-                      </DialogDescription>
-                    </DialogHeader>
-                    <div className="space-y-4">
-                      <Input
-                        type="file"
-                        accept="image/*"
-                        onChange={handleBannerUpload}
-                        disabled={uploadingBanner}
+          <Card className="minecraft-panel bg-card/80 backdrop-blur-sm border-border/40">
+            <CardContent className="p-8">
+              <div className="flex items-center space-x-6">
+                {/* Profile Avatar */}
+                <div className="relative">
+                  <div className="w-24 h-24 rounded-full bg-gradient-to-br from-primary/30 to-primary/10 border-2 border-background overflow-hidden shadow-lg">
+                    {formData.avatar ? (
+                      <img
+                        src={formData.avatar}
+                        alt={profileUser.username}
+                        className="w-full h-full object-cover"
                       />
-                      <p className="text-sm text-muted-foreground">
-                        Recommended size: 1200x300px. Max file size: 5MB
-                      </p>
-                    </div>
-                  </DialogContent>
-                </Dialog>
-              )}
-            </div>
-
-            <CardContent className="p-8 -mt-16 relative">
-              <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6">
-                <div className="flex flex-col lg:flex-row lg:items-center space-y-4 lg:space-y-0 lg:space-x-8">
-                  {/* Profile Avatar */}
-                  <div className="relative mx-auto lg:mx-0">
-                    <div className="w-32 h-32 rounded-full bg-gradient-to-br from-primary/30 to-primary/10 border-4 border-background overflow-hidden shadow-xl ring-4 ring-primary/20">
-                      {formData.avatar ? (
-                        <img
-                          src={formData.avatar}
-                          alt={profileUser.username}
-                          className="w-full h-full object-cover"
-                        />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center">
-                          <span className="text-4xl font-bold text-primary">
-                            {profileUser.username.charAt(0).toUpperCase()}
-                          </span>
-                        </div>
-                      )}
-                    </div>
-                    {isOwnProfile && (
-                      <Dialog
-                        open={showAvatarDialog}
-                        onOpenChange={setShowAvatarDialog}
-                      >
-                        <DialogTrigger asChild>
-                          <Button
-                            variant="secondary"
-                            size="sm"
-                            className="absolute -bottom-2 -right-2 h-10 w-10 rounded-full p-0 bg-primary text-primary-foreground hover:bg-primary/90 shadow-lg"
-                          >
-                            ✏️
-                          </Button>
-                        </DialogTrigger>
-                        <DialogContent>
-                          <DialogHeader>
-                            <DialogTitle>Update Profile Picture</DialogTitle>
-                            <DialogDescription>
-                              Upload a new profile picture
-                            </DialogDescription>
-                          </DialogHeader>
-                          <div className="space-y-4">
-                            <Input
-                              type="file"
-                              accept="image/*"
-                              onChange={handleAvatarUpload}
-                              disabled={uploadingAvatar}
-                            />
-                            <p className="text-sm text-muted-foreground">
-                              Recommended size: 400x400px. Max file size: 2MB
-                            </p>
-                          </div>
-                        </DialogContent>
-                      </Dialog>
-                    )}
-                  </div>
-
-                  {/* Profile Info */}
-                  <div className="space-y-3 text-center lg:text-left">
-                    <div className="flex flex-col lg:flex-row lg:items-center lg:space-x-3 space-y-2 lg:space-y-0">
-                      <h1 className="text-4xl lg:text-5xl font-bold bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
-                        {profileUser.username}
-                      </h1>
-                      {profileUser.role === "admin" && (
-                        <Badge
-                          variant="default"
-                          className="bg-gradient-to-r from-yellow-500 to-yellow-600 text-black border-0 mx-auto lg:mx-0 w-fit"
-                        >
-                          <Shield className="w-3 h-3 mr-1" />
-                          Admin
-                        </Badge>
-                      )}
-                    </div>
-                    {profileUser.bio && (
-                      <p className="text-lg text-muted-foreground max-w-2xl leading-relaxed">
-                        {profileUser.bio}
-                      </p>
-                    )}
-                    <div className="flex flex-col lg:flex-row lg:items-center space-y-2 lg:space-y-0 lg:space-x-6 text-sm text-muted-foreground">
-                      <div className="flex items-center justify-center lg:justify-start space-x-2">
-                        <Calendar className="w-4 h-4" />
-                        <span>Joined {formatDate(profileUser.joinedAt)}</span>
-                      </div>
-                      <div className="flex items-center justify-center lg:justify-start space-x-2">
-                        <Users className="w-4 h-4" />
-                        <span>
-                          {formatNumber(
-                            profileUser.followers + profileUser.following,
-                          )}{" "}
-                          connections
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center">
+                        <span className="text-2xl font-bold text-primary">
+                          {profileUser.username.charAt(0).toUpperCase()}
                         </span>
                       </div>
+                    )}
+                  </div>
+                  {isOwnProfile && (
+                    <Dialog
+                      open={showAvatarDialog}
+                      onOpenChange={setShowAvatarDialog}
+                    >
+                      <DialogTrigger asChild>
+                        <Button
+                          variant="secondary"
+                          size="sm"
+                          className="absolute -bottom-1 -right-1 h-8 w-8 rounded-full p-0 bg-primary text-primary-foreground hover:bg-primary/90 shadow-lg"
+                        >
+                          ✏️
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent>
+                        <DialogHeader>
+                          <DialogTitle>Update Profile Picture</DialogTitle>
+                          <DialogDescription>
+                            Upload a new profile picture
+                          </DialogDescription>
+                        </DialogHeader>
+                        <div className="space-y-4">
+                          <Input
+                            type="file"
+                            accept="image/*"
+                            onChange={handleAvatarUpload}
+                            disabled={uploadingAvatar}
+                          />
+                          <p className="text-sm text-muted-foreground">
+                            Recommended size: 400x400px. Max file size: 2MB
+                          </p>
+                        </div>
+                      </DialogContent>
+                    </Dialog>
+                  )}
+                </div>
+
+                {/* Profile Info */}
+                <div className="flex-1">
+                  <div className="flex items-center space-x-3 mb-2">
+                    <h1 className="text-3xl font-bold text-foreground">
+                      {profileUser.username}
+                    </h1>
+                    {profileUser.role === "admin" && (
+                      <Badge
+                        variant="default"
+                        className="bg-yellow-500 text-black border-0"
+                      >
+                        <Shield className="w-3 h-3 mr-1" />
+                        Admin
+                      </Badge>
+                    )}
+                  </div>
+                  {profileUser.bio && (
+                    <p className="text-muted-foreground mb-2">
+                      {profileUser.bio}
+                    </p>
+                  )}
+                  <div className="flex items-center space-x-6 text-sm text-muted-foreground">
+                    <div className="flex items-center space-x-2">
+                      <Calendar className="w-4 h-4" />
+                      <span>Joined {formatDate(profileUser.joinedAt)}</span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <Users className="w-4 h-4" />
+                      <span>
+                        {formatNumber(
+                          profileUser.followers + profileUser.following,
+                        )}{" "}
+                        connections
+                      </span>
                     </div>
                   </div>
                 </div>
 
                 {/* Actions */}
-                <div className="flex flex-col lg:flex-row items-center space-y-3 lg:space-y-0 lg:space-x-3">
+                <div className="flex items-center space-x-3">
                   {!isOwnProfile ? (
                     <>
                       <Button
@@ -590,14 +456,14 @@ export default function Profile() {
                         variant={
                           profileUser.isFollowing ? "outline" : "default"
                         }
-                        className="min-w-[140px] h-12 text-base"
+                        className="min-w-[140px]"
                       >
                         {profileUser.isFollowing ? "✓ Following" : "➕ Follow"}
                       </Button>
                       <Button
                         size="lg"
                         variant="outline"
-                        className="min-w-[100px] h-12 text-base"
+                        className="min-w-[100px]"
                       >
                         💬 Message
                       </Button>
@@ -607,7 +473,6 @@ export default function Profile() {
                       onClick={() => setActiveTab("settings")}
                       size="lg"
                       variant="outline"
-                      className="h-12 text-base"
                     >
                       <Settings className="w-4 h-4 mr-2" />
                       Edit Profile
@@ -616,37 +481,37 @@ export default function Profile() {
                 </div>
               </div>
 
-              {/* Enhanced Stats */}
-              <div className="mt-8 grid grid-cols-2 lg:grid-cols-5 gap-6">
-                <Card className="bg-gradient-to-br from-blue-500/10 to-blue-600/10 border-blue-500/20 text-center p-4">
-                  <div className="text-3xl font-bold text-blue-400 mb-1">
+              {/* Simple Stats */}
+              <div className="mt-6 grid grid-cols-2 lg:grid-cols-5 gap-4">
+                <Card className="bg-card/50 border-border/40 text-center p-4">
+                  <div className="text-2xl font-bold text-foreground mb-1">
                     {formatNumber(profileUser.followers)}
                   </div>
-                  <div className="text-sm text-blue-300/80">Followers</div>
+                  <div className="text-sm text-muted-foreground">Followers</div>
                 </Card>
-                <Card className="bg-gradient-to-br from-green-500/10 to-green-600/10 border-green-500/20 text-center p-4">
-                  <div className="text-3xl font-bold text-green-400 mb-1">
+                <Card className="bg-card/50 border-border/40 text-center p-4">
+                  <div className="text-2xl font-bold text-foreground mb-1">
                     {formatNumber(profileUser.following)}
                   </div>
-                  <div className="text-sm text-green-300/80">Following</div>
+                  <div className="text-sm text-muted-foreground">Following</div>
                 </Card>
-                <Card className="bg-gradient-to-br from-purple-500/10 to-purple-600/10 border-purple-500/20 text-center p-4">
-                  <div className="text-3xl font-bold text-purple-400 mb-1">
+                <Card className="bg-card/50 border-border/40 text-center p-4">
+                  <div className="text-2xl font-bold text-foreground mb-1">
                     {formatNumber(profileUser.totalVideos)}
                   </div>
-                  <div className="text-sm text-purple-300/80">Videos</div>
+                  <div className="text-sm text-muted-foreground">Videos</div>
                 </Card>
-                <Card className="bg-gradient-to-br from-orange-500/10 to-orange-600/10 border-orange-500/20 text-center p-4">
-                  <div className="text-3xl font-bold text-orange-400 mb-1">
+                <Card className="bg-card/50 border-border/40 text-center p-4">
+                  <div className="text-2xl font-bold text-foreground mb-1">
                     {formatNumber(profileUser.totalViews)}
                   </div>
-                  <div className="text-sm text-orange-300/80">Total Views</div>
+                  <div className="text-sm text-muted-foreground">Total Views</div>
                 </Card>
-                <Card className="bg-gradient-to-br from-red-500/10 to-red-600/10 border-red-500/20 text-center p-4">
-                  <div className="text-3xl font-bold text-red-400 mb-1">
+                <Card className="bg-card/50 border-border/40 text-center p-4">
+                  <div className="text-2xl font-bold text-foreground mb-1">
                     {formatNumber(profileUser.totalLikes)}
                   </div>
-                  <div className="text-sm text-red-300/80">Total Likes</div>
+                  <div className="text-sm text-muted-foreground">Total Likes</div>
                 </Card>
               </div>
             </CardContent>
@@ -674,85 +539,28 @@ export default function Profile() {
 
           {/* Videos Tab */}
           <TabsContent value="videos" className="mt-8">
-            {userVideos.length > 0 ? (
-              <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                {userVideos.map((video) => (
-                  <Card
-                    key={video.id}
-                    className="group minecraft-panel hover:shadow-xl hover:shadow-primary/20 hover:-translate-y-1 transition-all duration-300 bg-card/80 backdrop-blur-sm border-border/40"
-                  >
-                    <div className="relative overflow-hidden rounded-t-lg">
-                      <img
-                        src={video.thumbnail}
-                        alt={video.title}
-                        className="w-full h-44 object-cover group-hover:scale-105 transition-transform duration-300"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
-                      <Badge className="absolute bottom-3 right-3 bg-black/80 text-white border-0 backdrop-blur-sm">
-                        {video.duration}
-                      </Badge>
-                      <div className="absolute top-3 left-3">
-                        <Badge
-                          variant="secondary"
-                          className="bg-primary/20 text-primary border-0"
-                        >
-                          HD
-                        </Badge>
-                      </div>
-                    </div>
-                    <CardContent className="p-4">
-                      <h3 className="font-semibold text-base mb-3 line-clamp-2 group-hover:text-primary transition-colors">
-                        {video.title}
-                      </h3>
-                      <div className="flex items-center justify-between text-sm text-muted-foreground mb-3">
-                        <span className="flex items-center gap-1">
-                          👁️ {formatNumber(video.views)}
-                        </span>
-                        <span>{formatTimeAgo(video.createdAt)}</span>
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center space-x-2 text-sm">
-                          <Heart className="w-4 h-4 text-red-500" />
-                          <span className="font-medium">
-                            {formatNumber(video.likes)}
-                          </span>
-                        </div>
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          className="h-8 w-8 p-0"
-                        >
-                          ▶️
-                        </Button>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            ) : (
-              <div className="text-center py-16">
-                <div className="max-w-md mx-auto">
-                  <div className="w-24 h-24 mx-auto mb-6 rounded-full bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center">
-                    <Video className="w-12 h-12 text-primary" />
-                  </div>
-                  <h3 className="text-2xl font-semibold mb-3">No videos yet</h3>
-                  <p className="text-muted-foreground mb-6 text-lg">
-                    {isOwnProfile
-                      ? "Ready to share your creativity? Upload your first video to get started!"
-                      : `${profileUser.username} hasn't uploaded any videos yet.`}
-                  </p>
-                  {isOwnProfile && (
-                    <Button
-                      onClick={() => navigate("/community")}
-                      size="lg"
-                      className="bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70"
-                    >
-                      🎬 Upload Your First Video
-                    </Button>
-                  )}
+            <div className="text-center py-16">
+              <div className="max-w-md mx-auto">
+                <div className="w-24 h-24 mx-auto mb-6 rounded-full bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center">
+                  <Video className="w-12 h-12 text-primary" />
                 </div>
+                <h3 className="text-2xl font-semibold mb-3">No videos yet</h3>
+                <p className="text-muted-foreground mb-6 text-lg">
+                  {isOwnProfile
+                    ? "Ready to share your creativity? Upload your first video to get started!"
+                    : `${profileUser.username} hasn't uploaded any videos yet.`}
+                </p>
+                {isOwnProfile && (
+                  <Button
+                    onClick={() => navigate("/community")}
+                    size="lg"
+                    className="bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70"
+                  >
+                    🎬 Upload Your First Video
+                  </Button>
+                )}
               </div>
-            )}
+            </div>
           </TabsContent>
 
           {/* About Tab */}
