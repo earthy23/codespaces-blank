@@ -83,9 +83,9 @@ export default function Index() {
               <CardContent className="p-6 text-center">
                 <div className="w-16 h-16 bg-primary/20 rounded-xl flex items-center justify-center mx-auto mb-4">
                 </div>
-                <h3 className="text-xl font-semibold mb-3">Instant Launch</h3>
+                <h3 className="text-xl font-semibold mb-3">Quick Access</h3>
                 <p className="text-muted-foreground">
-                  Launch multiple Eaglercraft clients instantly from your browser. No downloads required.
+                  Launch clients straight from your browser. No more hunting around for working links.
                 </p>
               </CardContent>
             </Card>
