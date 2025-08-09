@@ -18,7 +18,6 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { AdminLayout } from "@/components/ui/admin-layout";
-// SVG icons removed as requested
 import { useAuth } from "@/lib/auth";
 
 interface LogEntry {
