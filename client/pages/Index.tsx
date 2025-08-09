@@ -105,9 +105,9 @@ export default function Index() {
               <CardContent className="p-6 text-center">
                 <div className="w-16 h-16 bg-primary/20 rounded-xl flex items-center justify-center mx-auto mb-4">
                 </div>
-                <h3 className="text-xl font-semibold mb-3">Secure & Safe</h3>
+                <h3 className="text-xl font-semibold mb-3">No BS</h3>
                 <p className="text-muted-foreground">
-                  Advanced moderation tools and secure infrastructure keep your gaming experience safe.
+                  Clean interface, no ads, no crypto miners. Just works like it should.
                 </p>
               </CardContent>
             </Card>
