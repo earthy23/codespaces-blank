@@ -106,7 +106,10 @@ export default function Dashboard() {
               setClients(clientsData.clients || []);
             }
           } catch (error) {
-            if (!isMounted || error.name === "AbortError") return;
+            // Silently handle abort errors during cleanup
+            if (!isMounted || error.name === "AbortError" || abortController.signal.aborted) {
+              return;
+            }
             console.warn("Failed to parse clients response:", error);
             if (isMounted) {
               setClients([]);
