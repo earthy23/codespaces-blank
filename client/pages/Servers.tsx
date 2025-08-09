@@ -282,6 +282,33 @@ export default function Servers() {
       return;
     }
 
+    // Validate WebSocket URL
+    const wsValidation = validateWebSocketUrl(newServerData.websocketUrl);
+    if (!wsValidation.valid) {
+      toast({
+        title: "WebSocket Error",
+        description: wsValidation.error,
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Test WebSocket connection
+    toast({
+      title: "Testing Connection",
+      description: "Verifying secure WebSocket connection...",
+    });
+
+    const isWebSocketConnectable = await testWebSocketConnection(newServerData.websocketUrl);
+    if (!isWebSocketConnectable) {
+      toast({
+        title: "Connection Failed",
+        description: "Unable to establish secure WebSocket connection. Please check your URL and server configuration.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     try {
       const formData = new FormData();
       formData.append("name", newServerData.name);
