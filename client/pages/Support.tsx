@@ -17,20 +17,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  HelpCircle,
-  Send,
-  MessageSquare,
-  BookOpen,
-  Zap,
-  ChevronDown,
-  ChevronRight,
-  Search,
-  Mail,
-  Clock,
-  CheckCircle,
-  AlertCircle,
-} from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/lib/auth";
 import { useToast } from "@/hooks/use-toast";
@@ -102,42 +89,6 @@ const faqItems = [
     answer:
       "Use the 'Contact Support' form below and select 'Bug Report' as the category. Please include detailed steps to reproduce the issue.",
     category: "bug",
-  },
-];
-
-const quickActions = [
-  {
-    title: "Common Issues",
-    description: "Quick fixes for common problems",
-    icon: Zap,
-    items: [
-      "Client won't load - Clear browser cache",
-      "Can't connect to server - Check network",
-      "Login issues - Reset password",
-      "Performance problems - Update browser",
-    ],
-  },
-  {
-    title: "Account Help",
-    description: "Manage your account settings",
-    icon: HelpCircle,
-    items: [
-      "Change password in Profile",
-      "Update email address",
-      "Manage friend requests",
-      "Privacy settings",
-    ],
-  },
-  {
-    title: "Community",
-    description: "Get help from other users",
-    icon: MessageSquare,
-    items: [
-      "Browse community forums",
-      "Ask questions in discussions",
-      "Share tips and tricks",
-      "Connect with other players",
-    ],
   },
 ];
 
@@ -231,7 +182,6 @@ export default function Support() {
           email: user?.email || "",
         });
 
-        // Reload tickets to show the new one
         loadTickets();
       } else {
         const errorData = await response.json();
@@ -265,87 +215,104 @@ export default function Support() {
 
   return (
     <UserLayout>
-      <div className="max-w-4xl">
+      <div className="max-w-4xl mx-auto">
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-foreground mb-4">
+          <h1 className="text-4xl font-bold text-foreground mb-4">
             Support Center
           </h1>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Get help with your account, report issues, or find answers to common
-            questions.
+            Get help with your account, report issues, or find answers to common questions.
           </p>
         </div>
 
-        {/* Quick Actions */}
-        <div className="grid md:grid-cols-3 gap-6 mb-8">
-          {quickActions.map((action, index) => {
-            const IconComponent = action.icon;
-            return (
-              <Card
-                key={index}
-                className="minecraft-panel bg-card/50 border-2 border-border shadow-lg hover:shadow-primary/10"
-              >
-                <CardHeader>
-                  <CardTitle className="flex items-center space-x-2">
-                    <div className="w-8 h-8 rounded-lg bg-card border border-primary/50 flex items-center justify-center shadow-lg shadow-primary/20">
-                      <IconComponent className="w-5 h-5 text-primary drop-shadow-[0_0_4px_currentColor]" />
-                    </div>
-                    <span>{action.title}</span>
-                  </CardTitle>
-                  <CardDescription>{action.description}</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <ul className="space-y-2 text-sm">
-                    {action.items.map((item, itemIndex) => (
-                      <li
-                        key={itemIndex}
-                        className="flex items-start text-muted-foreground"
-                      >
-                        <CheckCircle className="w-3 h-3 text-primary mr-2 flex-shrink-0 mt-1" />
-                        {item}
-                      </li>
-                    ))}
-                  </ul>
-                </CardContent>
-              </Card>
-            );
-          })}
-        </div>
-
         <Tabs defaultValue="faq" className="w-full">
-          <TabsList className="grid w-full grid-cols-3 minecraft-border">
-            <TabsTrigger value="faq">FAQ & Knowledge Base</TabsTrigger>
-            <TabsTrigger value="contact">Contact Support</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-3 mb-8">
+            <TabsTrigger value="faq">Help Center</TabsTrigger>
+            <TabsTrigger value="contact">Submit Ticket</TabsTrigger>
             <TabsTrigger value="tickets">
               My Tickets ({tickets.length})
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="faq" className="mt-8">
+          <TabsContent value="faq" className="space-y-6">
             {/* Search */}
-            <div className="mb-6">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+            <Card className="minecraft-panel">
+              <CardHeader>
+                <CardTitle>Search Help Articles</CardTitle>
+                <CardDescription>
+                  Find quick answers to common questions
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
                 <Input
-                  placeholder="Search frequently asked questions..."
+                  placeholder="What can we help you with?"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="minecraft-input pl-10"
+                  className="text-lg p-6"
                 />
-              </div>
+              </CardContent>
+            </Card>
+
+            {/* Quick Help Categories */}
+            <div className="grid md:grid-cols-3 gap-6">
+              <Card className="minecraft-panel hover:shadow-lg transition-shadow cursor-pointer">
+                <CardHeader>
+                  <CardTitle className="text-blue-600">Technical Support</CardTitle>
+                  <CardDescription>
+                    Client issues, loading problems, connectivity
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-2 text-sm text-muted-foreground">
+                    <p>• Client won't load</p>
+                    <p>• Connection issues</p>
+                    <p>• Performance problems</p>
+                    <p>• Browser compatibility</p>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="minecraft-panel hover:shadow-lg transition-shadow cursor-pointer">
+                <CardHeader>
+                  <CardTitle className="text-green-600">Account Help</CardTitle>
+                  <CardDescription>
+                    Password, settings, friends, profile
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-2 text-sm text-muted-foreground">
+                    <p>• Reset password</p>
+                    <p>• Update profile</p>
+                    <p>• Manage friends</p>
+                    <p>• Privacy settings</p>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="minecraft-panel hover:shadow-lg transition-shadow cursor-pointer">
+                <CardHeader>
+                  <CardTitle className="text-purple-600">Community</CardTitle>
+                  <CardDescription>
+                    Forums, chat, reporting, guidelines
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-2 text-sm text-muted-foreground">
+                    <p>• Community rules</p>
+                    <p>• Report content</p>
+                    <p>• Forum help</p>
+                    <p>• Chat features</p>
+                  </div>
+                </CardContent>
+              </Card>
             </div>
 
             {/* FAQ Items */}
-            <Card className="minecraft-panel bg-card/50 border-2 border-border shadow-lg">
+            <Card className="minecraft-panel">
               <CardHeader>
-                <CardTitle className="flex items-center space-x-2">
-                  <div className="w-8 h-8 rounded-lg bg-card border border-primary/50 flex items-center justify-center shadow-lg shadow-primary/20">
-                    <BookOpen className="w-5 h-5 text-primary drop-shadow-[0_0_4px_currentColor]" />
-                  </div>
-                  <span>Frequently Asked Questions</span>
-                </CardTitle>
+                <CardTitle>Frequently Asked Questions</CardTitle>
                 <CardDescription>
-                  Find quick answers to common questions
+                  {filteredFAQs.length} {filteredFAQs.length === 1 ? "article" : "articles"} found
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -365,11 +332,9 @@ export default function Support() {
                           className="w-full p-4 text-left flex items-center justify-between hover:bg-muted/50 rounded-lg transition-colors"
                         >
                           <span className="font-medium">{item.question}</span>
-                          {expandedFAQ === item.id ? (
-                            <ChevronDown className="w-4 h-4 text-muted-foreground" />
-                          ) : (
-                            <ChevronRight className="w-4 h-4 text-muted-foreground" />
-                          )}
+                          <span className="text-muted-foreground text-sm">
+                            {expandedFAQ === item.id ? "−" : "+"}
+                          </span>
                         </button>
                         {expandedFAQ === item.id && (
                           <div className="px-4 pb-4 text-muted-foreground border-t border-border">
@@ -381,36 +346,28 @@ export default function Support() {
                   </div>
                 ) : (
                   <div className="text-center py-8 text-muted-foreground">
-                    <BookOpen className="w-16 h-16 mx-auto mb-4 opacity-50" />
                     <p className="text-lg font-medium mb-2">No results found</p>
-                    <p>
-                      Try a different search term or contact support directly.
-                    </p>
+                    <p>Try a different search term or contact support directly.</p>
                   </div>
                 )}
               </CardContent>
             </Card>
           </TabsContent>
 
-          <TabsContent value="contact" className="mt-8">
+          <TabsContent value="contact" className="space-y-6">
             <div className="grid md:grid-cols-2 gap-8">
               {/* Contact Form */}
-              <Card className="minecraft-panel bg-card/50 border-2 border-border shadow-lg">
+              <Card className="minecraft-panel">
                 <CardHeader>
-                  <CardTitle className="flex items-center space-x-2">
-                    <div className="w-8 h-8 rounded-lg bg-card border border-primary/50 flex items-center justify-center shadow-lg shadow-primary/20">
-                      <Send className="w-5 h-5 text-primary drop-shadow-[0_0_4px_currentColor]" />
-                    </div>
-                    <span>Submit Support Ticket</span>
-                  </CardTitle>
+                  <CardTitle>Submit Support Ticket</CardTitle>
                   <CardDescription>
-                    Can't find what you're looking for? Send us a message.
+                    Describe your issue and we'll help you resolve it
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
                   <form onSubmit={handleSubmitTicket} className="space-y-4">
                     <div>
-                      <Label htmlFor="category">Category *</Label>
+                      <Label htmlFor="category">Issue Category</Label>
                       <Select
                         value={supportForm.category}
                         onValueChange={(value) =>
@@ -418,8 +375,8 @@ export default function Support() {
                         }
                         required
                       >
-                        <SelectTrigger className="minecraft-border">
-                          <SelectValue placeholder="Select a category" />
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select category" />
                         </SelectTrigger>
                         <SelectContent>
                           {supportCategories.map((cat) => (
@@ -437,19 +394,12 @@ export default function Support() {
                         id="email"
                         type="email"
                         value={supportForm.email}
-                        onChange={(e) =>
-                          setSupportForm({
-                            ...supportForm,
-                            email: e.target.value,
-                          })
-                        }
-                        className="minecraft-input"
                         disabled
                       />
                     </div>
 
                     <div>
-                      <Label htmlFor="subject">Subject *</Label>
+                      <Label htmlFor="subject">Subject</Label>
                       <Input
                         id="subject"
                         value={supportForm.subject}
@@ -460,13 +410,12 @@ export default function Support() {
                           })
                         }
                         placeholder="Brief description of your issue"
-                        className="minecraft-input"
                         required
                       />
                     </div>
 
                     <div>
-                      <Label htmlFor="message">Message *</Label>
+                      <Label htmlFor="message">Detailed Description</Label>
                       <Textarea
                         id="message"
                         value={supportForm.message}
@@ -476,8 +425,8 @@ export default function Support() {
                             message: e.target.value,
                           })
                         }
-                        placeholder="Please provide detailed information about your issue..."
-                        className="minecraft-input min-h-32"
+                        placeholder="Please provide as much detail as possible about your issue..."
+                        className="min-h-32"
                         required
                       />
                     </div>
@@ -485,9 +434,8 @@ export default function Support() {
                     <Button
                       type="submit"
                       disabled={submittingTicket}
-                      className="w-full minecraft-button bg-primary text-primary-foreground hover:bg-primary/90 shadow-lg hover:shadow-primary/30"
+                      className="w-full"
                     >
-                      <Send className="w-4 h-4 mr-2" />
                       {submittingTicket ? "Submitting..." : "Submit Ticket"}
                     </Button>
                   </form>
@@ -496,89 +444,64 @@ export default function Support() {
 
               {/* Support Info */}
               <div className="space-y-6">
-                <Card className="minecraft-panel bg-card/50 border-2 border-border shadow-lg">
+                <Card className="minecraft-panel">
                   <CardHeader>
-                    <CardTitle className="flex items-center space-x-2">
-                      <div className="w-8 h-8 rounded-lg bg-card border border-primary/50 flex items-center justify-center shadow-lg shadow-primary/20">
-                        <Clock className="w-5 h-5 text-primary drop-shadow-[0_0_4px_currentColor]" />
-                      </div>
-                      <span>Response Times</span>
-                    </CardTitle>
+                    <CardTitle>Response Times</CardTitle>
+                    <CardDescription>
+                      Expected response times by category
+                    </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-3">
                     <div className="flex justify-between">
-                      <span className="text-muted-foreground">
-                        Technical Issues:
-                      </span>
+                      <span>Technical Issues</span>
                       <span className="font-medium">4-6 hours</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-muted-foreground">
-                        Account Problems:
-                      </span>
+                      <span>Account Problems</span>
                       <span className="font-medium">2-4 hours</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-muted-foreground">
-                        Billing Questions:
-                      </span>
+                      <span>Billing Questions</span>
                       <span className="font-medium">1-2 hours</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-muted-foreground">
-                        General Inquiries:
-                      </span>
+                      <span>General Inquiries</span>
                       <span className="font-medium">12-24 hours</span>
                     </div>
                   </CardContent>
                 </Card>
 
-                <Card className="minecraft-panel bg-card/50 border-2 border-border shadow-lg">
+                <Card className="minecraft-panel">
                   <CardHeader>
-                    <CardTitle className="flex items-center space-x-2">
-                      <div className="w-8 h-8 rounded-lg bg-card border border-primary/50 flex items-center justify-center shadow-lg shadow-primary/20">
-                        <MessageSquare className="w-5 h-5 text-primary drop-shadow-[0_0_4px_currentColor]" />
-                      </div>
-                      <span>Other Ways to Get Help</span>
-                    </CardTitle>
+                    <CardTitle>Other Contact Methods</CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <Link to="/forums">
-                      <Button
-                        variant="outline"
-                        className="w-full minecraft-border hover:shadow-primary/20"
-                      >
-                        <MessageSquare className="w-4 h-4 mr-2" />
+                      <Button variant="outline" className="w-full">
                         Community Forums
                       </Button>
                     </Link>
                     <Button
                       variant="outline"
-                      className="w-full minecraft-border hover:shadow-primary/20"
+                      className="w-full"
                       onClick={() => window.open("mailto:support@ueclub.com")}
                     >
-                      <Mail className="w-4 h-4 mr-2" />
                       Email Support
                     </Button>
                   </CardContent>
                 </Card>
 
-                <Card className="minecraft-panel bg-card/50 border-2 border-border shadow-lg">
+                <Card className="minecraft-panel">
                   <CardHeader>
-                    <CardTitle className="flex items-center space-x-2">
-                      <div className="w-8 h-8 rounded-lg bg-card border border-primary/50 flex items-center justify-center shadow-lg shadow-primary/20">
-                        <AlertCircle className="w-5 h-5 text-primary drop-shadow-[0_0_4px_currentColor]" />
-                      </div>
-                      <span>Before You Contact Us</span>
-                    </CardTitle>
+                    <CardTitle>Before Contacting Support</CardTitle>
                   </CardHeader>
                   <CardContent>
                     <ul className="space-y-2 text-sm text-muted-foreground">
-                      <li>• Check our FAQ section above</li>
-                      <li>• Search the community forums</li>
-                      <li>• Try clearing your browser cache</li>
-                      <li>• Include detailed error messages</li>
-                      <li>• Mention your browser and version</li>
+                      <li>• Check the FAQ section</li>
+                      <li>• Search community forums</li>
+                      <li>• Try clearing browser cache</li>
+                      <li>• Include error messages</li>
+                      <li>• Mention your browser version</li>
                     </ul>
                   </CardContent>
                 </Card>
@@ -586,15 +509,10 @@ export default function Support() {
             </div>
           </TabsContent>
 
-          <TabsContent value="tickets" className="mt-8">
-            <Card className="minecraft-panel bg-card/50 border-2 border-border shadow-lg">
+          <TabsContent value="tickets">
+            <Card className="minecraft-panel">
               <CardHeader>
-                <CardTitle className="flex items-center space-x-2">
-                  <div className="w-8 h-8 rounded-lg bg-card border border-primary/50 flex items-center justify-center shadow-lg shadow-primary/20">
-                    <MessageSquare className="w-5 h-5 text-primary drop-shadow-[0_0_4px_currentColor]" />
-                  </div>
-                  <span>My Support Tickets</span>
-                </CardTitle>
+                <CardTitle>My Support Tickets</CardTitle>
                 <CardDescription>
                   View and track your support requests
                 </CardDescription>
@@ -618,8 +536,7 @@ export default function Support() {
                               {ticket.subject}
                             </h4>
                             <p className="text-sm text-muted-foreground mt-1">
-                              Category:{" "}
-                              {supportCategories.find(
+                              Category: {supportCategories.find(
                                 (c) => c.value === ticket.category,
                               )?.label || ticket.category}
                             </p>
@@ -627,18 +544,16 @@ export default function Support() {
                           <div className="flex flex-col items-end space-y-2">
                             <Badge
                               variant={
-                                ticket.status === "closed"
-                                  ? "outline"
-                                  : "default"
+                                ticket.status === "closed" ? "outline" : "default"
                               }
                               className={
                                 ticket.status === "open"
-                                  ? "bg-green-500/20 text-green-600 border-green-500/50"
+                                  ? "bg-green-500/20 text-green-600"
                                   : ticket.status === "in_progress"
-                                    ? "bg-blue-500/20 text-blue-600 border-blue-500/50"
+                                    ? "bg-blue-500/20 text-blue-600"
                                     : ticket.status === "pending"
-                                      ? "bg-yellow-500/20 text-yellow-600 border-yellow-500/50"
-                                      : "bg-gray-500/20 text-gray-600 border-gray-500/50"
+                                      ? "bg-yellow-500/20 text-yellow-600"
+                                      : "bg-gray-500/20 text-gray-600"
                               }
                             >
                               {ticket.status.replace("_", " ").toUpperCase()}
@@ -649,35 +564,23 @@ export default function Support() {
                           </div>
                         </div>
 
-                        <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
+                        <p className="text-sm text-muted-foreground mb-3">
                           {ticket.message}
                         </p>
 
                         <div className="flex items-center justify-between text-xs text-muted-foreground">
                           <span>Ticket ID: {ticket.id}</span>
-                          <div className="flex items-center space-x-3">
-                            {ticket.responseCount > 0 && (
-                              <span>
-                                {ticket.responseCount} response
-                                {ticket.responseCount !== 1 ? "s" : ""}
-                              </span>
-                            )}
-                            {ticket.lastResponse && (
-                              <span>
-                                Last reply:{" "}
-                                {new Date(
-                                  ticket.lastResponse.created_at,
-                                ).toLocaleDateString()}
-                              </span>
-                            )}
-                          </div>
+                          {ticket.responseCount > 0 && (
+                            <span>
+                              {ticket.responseCount} response{ticket.responseCount !== 1 ? "s" : ""}
+                            </span>
+                          )}
                         </div>
                       </div>
                     ))}
                   </div>
                 ) : (
                   <div className="text-center py-8 text-muted-foreground">
-                    <MessageSquare className="w-16 h-16 mx-auto mb-4 opacity-50" />
                     <p className="text-lg font-medium mb-2">
                       No support tickets yet
                     </p>
