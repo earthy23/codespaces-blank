@@ -408,9 +408,9 @@ export default function Dashboard() {
         )}
 
         {/* Client Launcher and Friends Section */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
           {/* Enhanced Client Launcher */}
-          <Card className="lg:col-span-2 minecraft-panel bg-card border-2 border-primary/20 shadow-xl shadow-primary/10">
+          <Card className="minecraft-panel bg-card border-2 border-primary/20 shadow-xl shadow-primary/10">
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
                 <div>
