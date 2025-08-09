@@ -172,8 +172,12 @@ export default function Dashboard() {
         if (serversResponse.ok) {
           try {
             const serversData = await serversResponse.json();
-            if (isMounted) {
-              setTopServers(serversData.servers || []);
+            if (isMounted && !abortController.signal.aborted) {
+              try {
+                setTopServers(serversData.servers || []);
+              } catch (e) {
+                // Ignore any errors during state updates
+              }
             }
           } catch (error) {
             // Silently handle abort errors during cleanup
