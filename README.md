@@ -312,4 +312,4 @@ The platform uses a **modern dark design** with:
 
 ---
 
-**UEC Launcher** - The ultimate platform for Eaglercraft web clients with complete administration, multi-domain support, and enterprise-grade scalability.
+**UEC Launcher** - Eaglercraft launcher made by people who actually play the game.
