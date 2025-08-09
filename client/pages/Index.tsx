@@ -119,25 +119,25 @@ export default function Index() {
       <section className="relative z-10 py-16">
         <div className="container mx-auto px-6">
           <div className="max-w-4xl mx-auto text-center">
-            <h2 className="text-3xl md:text-4xl font-bold mb-8 text-primary">What is UEC?</h2>
+            <h2 className="text-3xl md:text-4xl font-bold mb-8 text-primary">What's UEC about?</h2>
             <div className="grid md:grid-cols-2 gap-8 items-center">
               <div className="text-left">
                 <p className="text-lg text-muted-foreground mb-6">
-                  UEC (Ultimate Eaglercraft) Launcher is the premier platform for accessing Eaglercraft web clients. 
-                  We provide a seamless, browser-based Minecraft experience with powerful social features.
+                  Started this project because finding decent Eaglercraft clients was a pain. Too many broken sites,
+                  sketchy downloads, and terrible UIs. So we built something better.
                 </p>
                 <ul className="space-y-3 text-muted-foreground">
                   <li className="flex items-center">
-                    Real-time chat and voice communication
+                    • Chat that doesn't suck
                   </li>
                   <li className="flex items-center">
-                    Friend system and social features
+                    • Add friends without jumping through hoops
                   </li>
                   <li className="flex items-center">
-                    Multiple client downloads and versions
+                    • All the good clients in one place
                   </li>
                   <li className="flex items-center">
-                    Advanced moderation and safety tools
+                    • Actually functional moderation
                   </li>
                 </ul>
               </div>
