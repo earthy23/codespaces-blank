@@ -592,6 +592,25 @@ export default function Servers() {
                     />
                   </div>
 
+                  <div>
+                    <Label htmlFor="websocketUrl">Secure WebSocket URL</Label>
+                    <Input
+                      id="websocketUrl"
+                      value={newServerData.websocketUrl}
+                      onChange={(e) =>
+                        setNewServerData({
+                          ...newServerData,
+                          websocketUrl: e.target.value,
+                        })
+                      }
+                      placeholder="wss://yourserver.com:8080"
+                      required
+                    />
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Must use secure WebSocket protocol (wss://). Connection will be tested before approval.
+                    </p>
+                  </div>
+
                   <div className="grid grid-cols-2 gap-4">
                     <div>
                       <Label htmlFor="category">Category</Label>
