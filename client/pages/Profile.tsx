@@ -359,41 +359,6 @@ export default function Profile() {
                       </div>
                     )}
                   </div>
-                  {isOwnProfile && (
-                    <Dialog
-                      open={showAvatarDialog}
-                      onOpenChange={setShowAvatarDialog}
-                    >
-                      <DialogTrigger asChild>
-                        <Button
-                          variant="secondary"
-                          size="sm"
-                          className="absolute -bottom-1 -right-1 h-8 w-8 rounded-full p-0 bg-primary text-primary-foreground hover:bg-primary/90 shadow-lg"
-                        >
-                          ✏️
-                        </Button>
-                      </DialogTrigger>
-                      <DialogContent>
-                        <DialogHeader>
-                          <DialogTitle>Update Profile Picture</DialogTitle>
-                          <DialogDescription>
-                            Upload a new profile picture
-                          </DialogDescription>
-                        </DialogHeader>
-                        <div className="space-y-4">
-                          <Input
-                            type="file"
-                            accept="image/*"
-                            onChange={handleAvatarUpload}
-                            disabled={uploadingAvatar}
-                          />
-                          <p className="text-sm text-muted-foreground">
-                            Recommended size: 400x400px. Max file size: 2MB
-                          </p>
-                        </div>
-                      </DialogContent>
-                    </Dialog>
-                  )}
                 </div>
 
                 {/* Profile Info */}
@@ -481,19 +446,16 @@ export default function Profile() {
 
         {/* Content Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="grid w-full grid-cols-3">
+          <TabsList className={`grid w-full ${isOwnProfile ? 'grid-cols-3' : 'grid-cols-2'}`}>
             <TabsTrigger value="videos">
-              <Video className="w-4 h-4 mr-2" />
-              Videos ({userVideos.length})
+              ---
             </TabsTrigger>
-            <TabsTrigger value="about">
-              <User className="w-4 h-4 mr-2" />
-              About
+            <TabsTrigger value="bio">
+              ---
             </TabsTrigger>
             {isOwnProfile && (
               <TabsTrigger value="settings">
-                <Settings className="w-4 h-4 mr-2" />
-                Settings
+                ---
               </TabsTrigger>
             )}
           </TabsList>
@@ -517,18 +479,18 @@ export default function Profile() {
                     size="lg"
                     className="bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70"
                   >
-                    🎬 Upload Your First Video
+                    Upload Your First Video
                   </Button>
                 )}
               </div>
             </div>
           </TabsContent>
 
-          {/* About Tab */}
-          <TabsContent value="about" className="mt-6">
+          {/* Bio Tab */}
+          <TabsContent value="bio" className="mt-6">
             <Card className="minecraft-panel">
               <CardHeader>
-                <CardTitle>About {profileUser.username}</CardTitle>
+                <CardTitle>Bio - {profileUser.username}</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 {profileUser.bio ? (
