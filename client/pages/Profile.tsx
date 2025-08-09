@@ -553,6 +553,19 @@ export default function Profile() {
                   </CardHeader>
                   <CardContent>
                     <form onSubmit={handleSubmit} className="space-y-4">
+                      <div>
+                        <Label htmlFor="avatar">Profile Picture</Label>
+                        <Input
+                          id="avatar"
+                          type="file"
+                          accept="image/*"
+                          onChange={handleAvatarUpload}
+                          disabled={uploadingAvatar}
+                        />
+                        <p className="text-sm text-muted-foreground mt-1">
+                          Recommended size: 400x400px. Max file size: 2MB
+                        </p>
+                      </div>
                       <div className="grid grid-cols-2 gap-4">
                         <div>
                           <Label htmlFor="username">Username</Label>
