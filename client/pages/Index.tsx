@@ -94,9 +94,9 @@ export default function Index() {
               <CardContent className="p-6 text-center">
                 <div className="w-16 h-16 bg-primary/20 rounded-xl flex items-center justify-center mx-auto mb-4">
                 </div>
-                <h3 className="text-xl font-semibold mb-3">Social Hub</h3>
+                <h3 className="text-xl font-semibold mb-3">Actually Good Chat</h3>
                 <p className="text-muted-foreground">
-                  Connect with friends, join voice chats, and build your community in one place.
+                  Chat with friends without lag. Voice chat that doesn't cut out every 5 seconds.
                 </p>
               </CardContent>
             </Card>
