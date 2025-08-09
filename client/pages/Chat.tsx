@@ -685,7 +685,7 @@ export default function Chat() {
             <ScrollArea className="flex-1 p-4">
               <div className="space-y-4">
                 {activeTab === "general" ? (
-                  generalMessages.map((message) => (
+                  (generalMessages || []).map((message) => (
                     <div key={message.id} className="flex items-start space-x-3">
                       <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0">
                         <span className="text-sm font-semibold">
