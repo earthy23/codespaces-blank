@@ -522,7 +522,7 @@ export default function Chat() {
                   </button>
 
                   {/* Direct Message Chats */}
-                  {chats.map((chat) => (
+                  {(chats || []).map((chat) => (
                     <Link
                       key={chat.id}
                       to={`/chat/${chat.id}`}
