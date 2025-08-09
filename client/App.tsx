@@ -84,11 +84,7 @@ function App() {
                           <Route path="/forums" element={<Forums />} />
                           <Route path="/profile" element={<Profile />} />
                           <Route
-                            path="/profile/:userId"
-                            element={<Profile />}
-                          />
-                          <Route
-                            path="/profile/user/:username"
+                            path="/profile/:username"
                             element={<Profile />}
                           />
                           <Route path="/news" element={<News />} />
